@@ -39,7 +39,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
     // import own libraries
-    //implementation project(path: ':customwidgets')
+    implementation project(path: ':customwidgets')
 
     // test libraries
     testImplementation "junit:junit:$propJUnitVersion"

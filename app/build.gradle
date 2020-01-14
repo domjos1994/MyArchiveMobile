@@ -42,7 +42,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
     // import own libraries
-    //implementation project(path: ':customwidgets')
+    implementation project(path: ':customwidgets')
     implementation project(path: ':myarchivelibrary')
 
     // test libraries
