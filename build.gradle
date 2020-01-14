@@ -1,0 +1,40 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+ext.propVersion = 1
+ext.propVersionCode = "0.1.alpha.1"
+
+ext.propJavaVersion = "8"
+
+ext.propCompVersion = 29
+ext.propMinVersion = 20
+ext.propAndroidVersion = "1.1.0"
+
+ext.propJUnitVersion = "4.12"
+ext.propJUnitExtVersion = "1.1.1"
+ext.propEspressoVersion = "3.2.0"
+
+ext.propDatabaseVersion = "2.0.1"
+ext.propSQLiteCipherVersion = "4.3.0@aar"
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

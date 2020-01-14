@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navMainHome">
+
+    <fragment
+        android:id="@+id/navMainHome"
+        android:name="de.domjos.myarchivemobile.fragments.MainHomeFragment"
+        android:label="@string/main_navigation_home"
+        tools:layout="@layout/main_fragment_home" />
+
+    <fragment
+        android:id="@+id/navMainMediaMusic"
+        android:name="de.domjos.myarchivemobile.fragments.MainMusicFragment"
+        android:label="@string/main_navigation_media_music"
+        tools:layout="@layout/main_fragment_music" />
+
+    <fragment
+        android:id="@+id/navMainMediaMovies"
+        android:name="de.domjos.myarchivemobile.fragments.MainMoviesFragment"
+        android:label="@string/main_navigation_media_movies"
+        tools:layout="@layout/main_fragment_movies" />
+
+    <fragment
+        android:id="@+id/navMainMediaBooks"
+        android:name="de.domjos.myarchivemobile.fragments.MainBooksFragment"
+        android:label="@string/main_navigation_media_books"
+        tools:layout="@layout/main_fragment_books" />
+
+    <fragment
+        android:id="@+id/navMainMediaGames"
+        android:name="de.domjos.myarchivemobile.fragments.MainGamesFragment"
+        android:label="@string/main_navigation_media_games"
+        tools:layout="@layout/main_fragment_games" />
+</navigation>

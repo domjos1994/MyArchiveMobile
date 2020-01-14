@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion propCompVersion
+
+    defaultConfig {
+        applicationId "de.domjos.myarchivemobile"
+        minSdkVersion propMinVersion
+        targetSdkVersion propCompVersion
+        versionCode propVersion
+        versionName propVersionCode
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = propJavaVersion
+        sourceCompatibility = propJavaVersion
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // database
+    implementation "net.zetetic:android-database-sqlcipher:$propSQLiteCipherVersion"
+    implementation "androidx.sqlite:sqlite:$propDatabaseVersion"
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    implementation 'androidx.navigation:navigation-fragment:2.1.0'
+    implementation 'androidx.navigation:navigation-ui:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+
+    // import own libraries
+    //implementation project(path: ':customwidgets')
+    implementation project(path: ':myarchivelibrary')
+
+    // test libraries
+    testImplementation "junit:junit:$propJUnitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExtVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspressoVersion"
+}

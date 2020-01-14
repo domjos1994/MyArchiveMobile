@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">MyArchiveMobile</string>
+
+    <string name="main_navigation_home">Home</string>
+    <string name="main_navigation_media">Media</string>
+    <string name="main_navigation_media_music">Music</string>
+    <string name="main_navigation_media_movies">Movies</string>
+    <string name="main_navigation_media_books">Books</string>
+    <string name="main_navigation_media_games">Games</string>
+
+    <string name="book">Book</string>
+
+    <string name="media_general">General</string>
+    <string name="media_cover">Cover</string>
+    <string name="media_tags">Tags</string>
+    <string name="media_persons_companies">Persons and Companies</string>
+
+    <string name="sys_password">T9yYQsFHzr9DTNNGonIT</string>
+</resources>

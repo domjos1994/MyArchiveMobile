@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion propCompVersion
+
+    defaultConfig {
+        minSdkVersion propMinVersion
+        targetSdkVersion propCompVersion
+        versionCode propVersion
+        versionName propVersionCode
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = propJavaVersion
+        sourceCompatibility = propJavaVersion
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // database
+    implementation "net.zetetic:android-database-sqlcipher:$propSQLiteCipherVersion"
+    implementation "androidx.sqlite:sqlite:$propDatabaseVersion"
+
+    // barcode
+    implementation 'com.google.zxing:android-integration:3.3.0'
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+
+    // import own libraries
+    //implementation project(path: ':customwidgets')
+
+    // test libraries
+    testImplementation "junit:junit:$propJUnitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExtVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspressoVersion"
+}

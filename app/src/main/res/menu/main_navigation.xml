@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/navMainHome"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/main_navigation_home" />
+
+    <item android:title="@string/main_navigation_media">
+        <menu>
+            <item
+                android:id="@+id/navMainMediaMusic"
+                android:icon="@drawable/ic_music_note_black_24dp"
+                android:title="@string/main_navigation_media_music" />
+            <item
+                android:id="@+id/navMainMediaMovies"
+                android:icon="@drawable/ic_local_movies_black_24dp"
+                android:title="@string/main_navigation_media_movies" />
+            <item
+                android:id="@+id/navMainMediaBooks"
+                android:icon="@drawable/ic_book_black_24dp"
+                android:title="@string/main_navigation_media_books" />
+            <item
+                android:id="@+id/navMainMediaGames"
+                android:icon="@drawable/ic_games_black_24dp"
+                android:title="@string/main_navigation_media_games" />
+        </menu>
+    </item>
+
+</menu>
