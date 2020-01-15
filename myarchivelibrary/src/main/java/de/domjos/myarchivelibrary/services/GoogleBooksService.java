@@ -15,7 +15,6 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
 public class GoogleBooksService extends JSONService {
-    private final static String API_KEY = "AIzaSyBWddyH1OLqMKaTq1BEnP-QKMvHeBzmma8";
     private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
     private String code;
 
@@ -24,7 +23,7 @@ public class GoogleBooksService extends JSONService {
     }
 
     public Book execute() throws Exception {
-        String content = this.readUrl(new URL(GoogleBooksService.BASE_URL + code + "&key=" + GoogleBooksService.API_KEY));
+        String content = this.readUrl(new URL(GoogleBooksService.BASE_URL + code));
         return this.getBookFromJsonString(content);
     }
 
