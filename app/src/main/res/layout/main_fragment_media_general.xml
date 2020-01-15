@@ -1,10 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/txtMediaGeneralTitle"
+            android:hint="@string/media_general_title"
+            android:autofillHints="@string/media_general_title"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/txtMediaGeneralOriginalTitle"
+            android:hint="@string/media_general_originalTitle"
+            android:autofillHints="@string/media_general_originalTitle"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaGeneralReleaseDate"
+            android:hint="@string/media_general_releaseDate"
+            android:autofillHints="@string/media_general_releaseDate"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10">
+            <EditText
+                android:id="@+id/txtMediaGeneralCode"
+                android:hint="@string/media_general_code"
+                android:autofillHints="@string/media_general_code"
+                android:inputType="text"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+            <ImageButton
+                android:id="@+id/cmdMediaGeneralCodeSearch"
+                android:contentDescription="@string/media_general_code"
+                app:srcCompat="@drawable/ic_search_black_24dp"
+                android:src="@drawable/ic_search_black_24dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                tools:ignore="VectorDrawableCompat" />
+            <ImageButton
+                android:id="@+id/cmdMediaGeneralCodeScan"
+                android:contentDescription="@string/media_general_code"
+                app:srcCompat="@drawable/ic_scan_black_24dp"
+                android:src="@drawable/ic_scan_black_24dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                tools:ignore="VectorDrawableCompat" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/txtMediaGeneralPrice"
+            android:hint="@string/media_general_price"
+            android:autofillHints="@string/media_general_price"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <AutoCompleteTextView
+            android:id="@+id/txtMediaGeneralCategory"
+            android:hint="@string/media_general_category"
+            android:autofillHints="@string/media_general_category"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/txtMediaGeneralTags"
+            android:hint="@string/media_general_tags"
+            android:autofillHints="@string/media_general_tags"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaGeneralDescription"
+            android:hint="@string/media_general_description"
+            android:autofillHints="@string/media_general_description"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+    </LinearLayout>
+</ScrollView>

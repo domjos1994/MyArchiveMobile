@@ -9,11 +9,29 @@
     <string name="main_navigation_media_games">Games</string>
 
     <string name="book">Book</string>
+    <string name="book_numberOfPages">Number of pages</string>
+    <string name="book_type">Type</string>
+    <string name="book_path">Path</string>
 
     <string name="media_general">General</string>
+    <string name="media_general_title">Title</string>
+    <string name="media_general_originalTitle">Original-Title</string>
+    <string name="media_general_releaseDate">Release-Date</string>
+    <string name="media_general_code">Code</string>
+    <string name="media_general_price">Price</string>
+    <string name="media_general_category">Category</string>
+    <string name="media_general_tags">Tags</string>
+    <string name="media_general_description">Description</string>
+
     <string name="media_cover">Cover</string>
-    <string name="media_tags">Tags</string>
     <string name="media_persons_companies">Persons and Companies</string>
 
+    <string name="media_persons">Persons</string>
+    <string name="media_companies">Companies</string>
+
     <string name="sys_password">T9yYQsFHzr9DTNNGonIT</string>
+    <string name="sys_add">Add</string>
+    <string name="sys_edit">Edit</string>
+    <string name="sys_cancel">Cancel</string>
+    <string name="sys_save">Save</string>
 </resources>

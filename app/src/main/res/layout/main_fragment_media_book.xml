@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/txtMediaBookNumberOfPages"
+            android:hint="@string/book_numberOfPages"
+            android:autofillHints="@string/book_numberOfPages"
+            android:inputType="numberSigned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <Spinner
+            android:id="@+id/spMediaBookType"
+            android:hint="@string/book_type"
+            android:autofillHints="@string/book_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaBookPath"
+            android:hint="@string/book_path"
+            android:autofillHints="@string/book_path"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+    </LinearLayout>
+</ScrollView>

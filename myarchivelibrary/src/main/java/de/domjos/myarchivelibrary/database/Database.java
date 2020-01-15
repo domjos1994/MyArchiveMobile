@@ -47,7 +47,9 @@ public class Database extends SQLiteOpenHelper {
         String content = Database.readRawTextFile(this.context, R.raw.init);
         if(content != null) {
             for(String query : content.split(";")) {
-                db.execSQL(query.trim());
+                if(!query.trim().isEmpty()) {
+                    db.execSQL(query.trim());
+                }
             }
         }
     }
@@ -136,7 +138,11 @@ public class Database extends SQLiteOpenHelper {
     public void insertOrUpdateBook(Book book) {
         SQLiteStatement statement = this.getStatement(book, Arrays.asList("type", "numberOfPages", "path"));
         this.insertOrUpdateBaseMediaObject(statement, book, book.getTable());
-        statement.bindString(9, book.getType().name());
+        if(book.getType()!=null) {
+            statement.bindString(9, book.getType().name());
+        } else {
+            statement.bindNull(9);
+        }
         statement.bindDouble(10, book.getNumberOfPages());
         statement.bindString(11, book.getPath());
         statement.execute();
@@ -311,7 +317,11 @@ public class Database extends SQLiteOpenHelper {
         } else {
             sqLiteStatement.bindLong(6, 0);
         }
-        sqLiteStatement.bindBlob(7, baseMediaObject.getCover());
+        if(baseMediaObject.getCover() != null) {
+            sqLiteStatement.bindBlob(7, baseMediaObject.getCover());
+        } else {
+            sqLiteStatement.bindNull(7);
+        }
         sqLiteStatement.bindString(8, baseMediaObject.getDescription());
         for(BaseDescriptionObject tag : baseMediaObject.getTags()) {
             this.insertOrUpdateBaseObject(tag, "tags", table, baseMediaObject.getId());
@@ -329,8 +339,10 @@ public class Database extends SQLiteOpenHelper {
         baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
         baseMediaObject.setOriginalTitle(cursor.getString(cursor.getColumnIndex("originalTitle")));
         String dt = cursor.getString(cursor.getColumnIndex("releaseDate"));
-        if(dt.isEmpty()) {
-            baseMediaObject.setReleaseDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
+        if(dt != null) {
+            if(!dt.isEmpty()) {
+                baseMediaObject.setReleaseDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
+            }
         }
         baseMediaObject.setCode(cursor.getString(cursor.getColumnIndex("code")));
         baseMediaObject.setPrice(cursor.getDouble(cursor.getColumnIndex("price")));
@@ -346,6 +358,13 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private long insertOrUpdateBaseObject(BaseDescriptionObject baseDescriptionObject, String table, String foreignTable, long id) {
+        for(BaseDescriptionObject tmp : this.getBaseObjects(table, "", id, "")) {
+            if(tmp.getTitle().equals(baseDescriptionObject.getTitle())) {
+                baseDescriptionObject.setId(tmp.getId());
+                break;
+            }
+        }
+
         SQLiteStatement statement;
         if(baseDescriptionObject.getId() == 0) {
             statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s(title, description) VALUES(?, ?)", table));
@@ -374,9 +393,9 @@ public class Database extends SQLiteOpenHelper {
         return baseDescriptionObject.getId();
     }
 
-    private List<BaseDescriptionObject> getBaseObjects(String table, String foreignTable, long id, String where) {
+    public List<BaseDescriptionObject> getBaseObjects(String table, String foreignTable, long id, String where) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        if(!foreignTable.trim().isEmpty()) {
+        if(foreignTable.trim().isEmpty()) {
             if(!where.isEmpty()) {
                 where = " WHERE " + where;
             }
@@ -396,9 +415,9 @@ public class Database extends SQLiteOpenHelper {
                 Cursor tmp = this.getReadableDatabase().rawQuery(String.format("SELECT * FROM %s WHERE id=%s", table, cursor.getLong(cursor.getColumnIndex(table))), null);
                 while (tmp.moveToNext()) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                    baseDescriptionObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-                    baseDescriptionObject.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+                    baseDescriptionObject.setId(tmp.getLong(tmp.getColumnIndex("id")));
+                    baseDescriptionObject.setTitle(tmp.getString(tmp.getColumnIndex("title")));
+                    baseDescriptionObject.setDescription(tmp.getString(tmp.getColumnIndex("description")));
                     baseDescriptionObjects.add(baseDescriptionObject);
                 }
                 tmp.close();
@@ -410,6 +429,15 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private void insertOrUpdatePerson(Person person, String foreignTable, long id) {
+        try {
+            for(Person tmp : this.getPersons("", 0)) {
+                if(tmp.getFirstName().equals(person.getFirstName()) && tmp.getLastName().equals(person.getLastName())) {
+                    person.setId(tmp.getId());
+                    break;
+                }
+            }
+        } catch (Exception ignored) {}
+
         SQLiteStatement statement;
         if(person.getId() == 0) {
             statement = this.getWritableDatabase().compileStatement("INSERT INTO persons(firstName, lastName, birthDate, image, description) VALUES(?, ?, ?, ?, ?)");
@@ -424,7 +452,11 @@ public class Database extends SQLiteOpenHelper {
         } else {
             statement.bindNull(3);
         }
-        statement.bindBlob(4, person.getImage());
+        if(person.getImage()!=null) {
+            statement.bindBlob(4, person.getImage());
+        } else {
+            statement.bindNull(4);
+        }
         statement.bindString(5, person.getDescription());
 
         if(person.getId() == 0) {
@@ -442,9 +474,9 @@ public class Database extends SQLiteOpenHelper {
         statement.close();
     }
 
-    private List<Person> getPersons(String foreignTable, long id) throws Exception {
+    public List<Person> getPersons(String foreignTable, long id) throws Exception {
         List<Person> people = new LinkedList<>();
-        if(!foreignTable.trim().isEmpty()) {
+        if(foreignTable.trim().isEmpty()) {
             Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM persons", null);
             while (cursor.moveToNext()) {
                 Person person = new Person();
@@ -468,17 +500,17 @@ public class Database extends SQLiteOpenHelper {
                 Cursor tmp = this.getReadableDatabase().rawQuery(String.format("SELECT * FROM persons WHERE id=%s", cursor.getLong(cursor.getColumnIndex("persons"))), null);
                 while (tmp.moveToNext()) {
                     Person person = new Person();
-                    person.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                    person.setFirstName(cursor.getString(cursor.getColumnIndex("firstName")));
-                    person.setLastName(cursor.getString(cursor.getColumnIndex("lastName")));
-                    String dt = cursor.getString(cursor.getColumnIndex("birthDate"));
+                    person.setId(tmp.getLong(tmp.getColumnIndex("id")));
+                    person.setFirstName(tmp.getString(tmp.getColumnIndex("firstName")));
+                    person.setLastName(tmp.getString(tmp.getColumnIndex("lastName")));
+                    String dt = tmp.getString(tmp.getColumnIndex("birthDate"));
                     if(dt!=null) {
                         if(!dt.isEmpty()) {
                             person.setBirthDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
                         }
                     }
-                    person.setImage(cursor.getBlob(cursor.getColumnIndex("image")));
-                    person.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+                    person.setImage(tmp.getBlob(tmp.getColumnIndex("image")));
+                    person.setDescription(tmp.getString(tmp.getColumnIndex("description")));
                     people.add(person);
                 }
                 tmp.close();
@@ -490,6 +522,15 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private void insertOrUpdateCompany(Company company, String foreignTable, long id) {
+        try {
+            for(Company tmp : this.getCompanies("", 0)) {
+                if(tmp.getTitle().equals(company.getTitle())) {
+                    company.setId(tmp.getId());
+                    break;
+                }
+            }
+        } catch (Exception ignored) {}
+
         SQLiteStatement statement;
         if(company.getId() == 0) {
             statement = this.getWritableDatabase().compileStatement("INSERT INTO companies(title, foundation, cover, description) VALUES(?, ?, ?, ?)");
@@ -503,7 +544,11 @@ public class Database extends SQLiteOpenHelper {
         } else {
             statement.bindNull(2);
         }
-        statement.bindBlob(3, company.getCover());
+        if(company.getCover() != null) {
+            statement.bindBlob(3, company.getCover());
+        } else {
+            statement.bindNull(3);
+        }
         statement.bindString(4, company.getDescription());
 
         if(company.getId() == 0) {
@@ -521,9 +566,9 @@ public class Database extends SQLiteOpenHelper {
         statement.close();
     }
 
-    private List<Company> getCompanies(String foreignTable, long id) throws Exception {
+    public List<Company> getCompanies(String foreignTable, long id) throws Exception {
         List<Company> companies = new LinkedList<>();
-        if(!foreignTable.trim().isEmpty()) {
+        if(foreignTable.trim().isEmpty()) {
             Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM companies", null);
             while (cursor.moveToNext()) {
                 Company company = new Company();
@@ -546,16 +591,16 @@ public class Database extends SQLiteOpenHelper {
                 Cursor tmp = this.getReadableDatabase().rawQuery(String.format("SELECT * FROM companies WHERE id=%s", cursor.getLong(cursor.getColumnIndex("companies"))), null);
                 while (tmp.moveToNext()) {
                     Company company = new Company();
-                    company.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                    company.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-                    String dt = cursor.getString(cursor.getColumnIndex("foundation"));
+                    company.setId(tmp.getLong(tmp.getColumnIndex("id")));
+                    company.setTitle(tmp.getString(tmp.getColumnIndex("title")));
+                    String dt = tmp.getString(tmp.getColumnIndex("foundation"));
                     if(dt!=null) {
                         if(!dt.isEmpty()) {
                             company.setFoundation(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
                         }
                     }
-                    company.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
-                    company.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+                    company.setCover(tmp.getBlob(tmp.getColumnIndex("cover")));
+                    company.setDescription(tmp.getString(tmp.getColumnIndex("description")));
                     companies.add(company);
                 }
                 tmp.close();

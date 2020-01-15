@@ -1,7 +1,12 @@
 package de.domjos.myarchivemobile.activities;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -11,21 +16,27 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.widget.Toolbar;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.view.Menu;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.util.List;
 import java.util.UUID;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.fragments.MainBooksFragment;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
     private AppBarConfiguration appBarConfiguration;
+    private NavHostFragment navHostFragment;
     public static Globals GLOBALS = new Globals();
 
     public MainActivity() {
@@ -39,6 +50,8 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public void initControls() {
+        this.initPermissions();
+
         // init toolbar
         Toolbar toolbar = this.findViewById(R.id.toolbar);
         this.setSupportActionBar(toolbar);
@@ -51,6 +64,7 @@ public final class MainActivity extends AbstractActivity {
             R.id.navMainHome, R.id.navMainMediaMusic, R.id.navMainMediaMovies, R.id.navMainMediaBooks, R.id.navMainMediaGames
         ).setDrawerLayout(drawerLayout).build();
 
+        this.navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, this.appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -75,6 +89,20 @@ public final class MainActivity extends AbstractActivity {
         return NavigationUI.navigateUp(navController, this.appBarConfiguration) || super.onSupportNavigateUp();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull  int[] grantResults) {
+        this.initPermissions();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
+        for(Fragment fragment : fragments) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void initGlobals() throws Exception {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         String pwd = MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, "", true);
@@ -86,5 +114,14 @@ public final class MainActivity extends AbstractActivity {
         SQLiteDatabase.loadLibs(this.getApplicationContext());
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
+    }
+
+    private void initPermissions() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 99);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 99);
+        }
     }
 }

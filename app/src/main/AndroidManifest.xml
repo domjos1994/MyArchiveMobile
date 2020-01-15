@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="de.domjos.myarchivemobile">
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <dist:module dist:instant="true" />
 
     <application
