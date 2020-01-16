@@ -8,10 +8,27 @@
     <string name="main_navigation_media_books">Books</string>
     <string name="main_navigation_media_games">Games</string>
 
+    <string name="scanner">Scanner</string>
+
     <string name="book">Book</string>
     <string name="book_numberOfPages">Number of pages</string>
     <string name="book_type">Type</string>
     <string name="book_path">Path</string>
+    <string name="book_edition">Edition</string>
+    <string name="book_topics">Topics</string>
+
+    <string name="movie">Movie</string>
+    <string name="movie_length">Length</string>
+    <string name="movie_type">Type</string>
+    <string name="movie_path">Path</string>
+
+    <string name="game">Game</string>
+    <string name="game_length">Length</string>
+    <string name="game_type">Type</string>
+
+    <string name="album">Album</string>
+    <string name="album_number">Number of Disks</string>
+    <string name="album_type">Type</string>
 
     <string name="media_general">General</string>
     <string name="media_general_title">Title</string>

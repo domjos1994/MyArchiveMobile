@@ -10,9 +10,9 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
 public abstract class AbstractPagerAdapter<T extends BaseMediaObject> extends FragmentStatePagerAdapter {
-    protected Context context;
+    private Context context;
 
-    public AbstractPagerAdapter(@NonNull FragmentManager fm, Context context) {
+    AbstractPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.context = context;
     }

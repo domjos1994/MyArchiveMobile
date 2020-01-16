@@ -29,60 +29,66 @@ public class GoogleBooksService extends JSONService {
 
     private Book getBookFromJsonString(String content) throws Exception {
         JSONObject jsonObject = new JSONObject(content);
-        Book book = new Book();
-        JSONObject item = jsonObject.getJSONArray("items").getJSONObject(0);
-        JSONObject volumeInfo = item.getJSONObject("volumeInfo");
-        book.setTitle(getString(volumeInfo, "title"));
-        book.setOriginalTitle(getString(volumeInfo, "subtitle"));
-        book.setNumberOfPages(getInt(volumeInfo, "pageCount"));
-        book.setDescription(getString(volumeInfo, "description"));
 
-        try {
-            String date = getString(volumeInfo, "publishedDate");
-            if(!date.isEmpty()) {
-                if(date.contains("-")) {
-                    book.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
-                } else {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date());
-                    calendar.set(Calendar.YEAR, Integer.parseInt(date));
-                    book.setReleaseDate(calendar.getTime());
+        if(jsonObject.has("items")) {
+            JSONObject item = jsonObject.getJSONArray("items").getJSONObject(0);
+            if(item.has("volumeInfo")) {
+                Book book = new Book();
+                JSONObject volumeInfo = item.getJSONObject("volumeInfo");
+                book.setTitle(getString(volumeInfo, "title"));
+                book.setOriginalTitle(getString(volumeInfo, "subtitle"));
+                book.setNumberOfPages(getInt(volumeInfo, "pageCount"));
+                book.setDescription(getString(volumeInfo, "description"));
+
+                try {
+                    String date = getString(volumeInfo, "publishedDate");
+                    if(!date.isEmpty()) {
+                        if(date.contains("-")) {
+                            book.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
+                        } else {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(new Date());
+                            calendar.set(Calendar.YEAR, Integer.parseInt(date));
+                            book.setReleaseDate(calendar.getTime());
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                if(volumeInfo.has("authors")) {
+                    JSONArray jsonArray = volumeInfo.getJSONArray("authors");
+                    for(int i = 0; i<=jsonArray.length()-1; i++) {
+                        Person person = new Person();
+                        person.setFirstName(jsonArray.getString(i).split(" ")[0]);
+                        person.setLastName(jsonArray.getString(i).replace(jsonArray.getString(i).split(" ")[0], ""));
+                        book.getPersons().add(person);
+                    }
                 }
-            }
-        } catch (Exception ignored) {}
 
-        if(volumeInfo.has("authors")) {
-            JSONArray jsonArray = volumeInfo.getJSONArray("authors");
-            for(int i = 0; i<=jsonArray.length()-1; i++) {
-                Person person = new Person();
-                person.setFirstName(jsonArray.getString(i).split(" ")[0]);
-                person.setLastName(jsonArray.getString(i).replace(jsonArray.getString(i).split(" ")[0], ""));
-                book.getPersons().add(person);
-            }
-        }
+                if(volumeInfo.has("publisher")) {
+                    String publisher = volumeInfo.getString("publisher");
+                    Company company = new Company();
+                    company.setTitle(publisher);
+                    book.setCompanies(Collections.singletonList(company));
+                }
 
-        if(volumeInfo.has("publisher")) {
-            String publisher = volumeInfo.getString("publisher");
-            Company company = new Company();
-            company.setTitle(publisher);
-            book.setCompanies(Collections.singletonList(company));
-        }
+                if(volumeInfo.has("categories")) {
+                    JSONArray jsonArray = volumeInfo.getJSONArray("categories");
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(jsonArray.getString(0));
+                    book.setCategory(baseDescriptionObject);
+                }
 
-        if(volumeInfo.has("categories")) {
-            JSONArray jsonArray = volumeInfo.getJSONArray("categories");
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setTitle(jsonArray.getString(0));
-            book.setCategory(baseDescriptionObject);
-        }
-
-        if(volumeInfo.has("imageLinks")) {
-            JSONObject imageObject = volumeInfo.getJSONObject("imageLinks");
-            if(imageObject.has("thumbnail")) {
-                book.setCover(Converter.convertStringToByteArray(imageObject.getString("thumbnail")));
+                if(volumeInfo.has("imageLinks")) {
+                    JSONObject imageObject = volumeInfo.getJSONObject("imageLinks");
+                    if(imageObject.has("thumbnail")) {
+                        book.setCover(Converter.convertStringToByteArray(imageObject.getString("thumbnail")));
+                    }
+                }
+                return book;
             }
         }
 
-        return book;
+        return null;
     }
 }
 

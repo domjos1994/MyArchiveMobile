@@ -13,7 +13,8 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         app:itemIcon="@drawable/ic_book_black_24dp"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:listItemBackground="@drawable/side_nav_bar"
+        android:padding="4dp"/>
 
     <TextView
         android:layout_width="match_parent"

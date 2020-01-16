@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">MyArchiveLibrary</string>
 
+    <string name="scanner_codes">Codes</string>
+
+    <string name="service_google_search">Google Books</string>
+    <string name="service_google_search_content">Search in Google Books…</string>
+
     <string name="sqLite_name">MyArchiveMobile.db</string>
     <string name="sqLite_version">1</string>
 </resources>

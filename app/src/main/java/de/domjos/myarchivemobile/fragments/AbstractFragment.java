@@ -6,7 +6,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 
 public abstract class AbstractFragment extends Fragment {
-    protected AbstractPagerAdapter abstractPagerAdapter;
+    AbstractPagerAdapter abstractPagerAdapter;
 
     public abstract void setMediaObject(BaseMediaObject baseMediaObject);
     public abstract BaseMediaObject getMediaObject();

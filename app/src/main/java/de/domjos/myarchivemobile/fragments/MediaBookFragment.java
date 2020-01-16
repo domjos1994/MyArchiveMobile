@@ -2,7 +2,9 @@ package de.domjos.myarchivemobile.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,6 +14,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -20,6 +23,7 @@ import de.domjos.myarchivemobile.R;
 
 public class MediaBookFragment extends AbstractFragment {
     private EditText txtMediaBookNumberOfPages, txtMediaBookPath;
+    private EditText txtMediaBookEdition, txtMediaBookTopics;
     private Spinner spMediaBookType;
     private ArrayAdapter<String> typeAdapter;
 
@@ -36,6 +40,9 @@ public class MediaBookFragment extends AbstractFragment {
         this.txtMediaBookNumberOfPages = view.findViewById(R.id.txtMediaBookNumberOfPages);
         this.txtMediaBookPath = view.findViewById(R.id.txtMediaBookPath);
 
+        this.txtMediaBookEdition = view.findViewById(R.id.txtMediaBookEdition);
+        this.txtMediaBookTopics = view.findViewById(R.id.txtMediaBookTopics);
+
         this.spMediaBookType = view.findViewById(R.id.spMediaBookType);
         this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
         for(Book.Type type : Book.Type.values()) {
@@ -43,18 +50,20 @@ public class MediaBookFragment extends AbstractFragment {
         }
         this.spMediaBookType.setAdapter(this.typeAdapter);
         this.typeAdapter.notifyDataSetChanged();
+
+        this.changeMode(false);
     }
 
     @Override
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         this.book = (Book) baseMediaObject;
-        if(this.txtMediaBookNumberOfPages != null) {
-            this.txtMediaBookNumberOfPages.setText(String.valueOf(this.book.getNumberOfPages()));
-            this.txtMediaBookPath.setText(this.book.getPath());
+        this.txtMediaBookNumberOfPages.setText(String.valueOf(this.book.getNumberOfPages()));
+        this.txtMediaBookPath.setText(this.book.getPath());
+        this.txtMediaBookEdition.setText(this.book.getEdition());
+        this.txtMediaBookTopics.setText(TextUtils.join("\n", this.book.getTopics()));
 
-            if(this.book.getType() != null) {
-                this.spMediaBookType.setSelection(this.typeAdapter.getPosition(this.book.getType().name()));
-            }
+        if(this.book.getType() != null) {
+            this.spMediaBookType.setSelection(this.typeAdapter.getPosition(this.book.getType().name()));
         }
     }
 
@@ -64,6 +73,8 @@ public class MediaBookFragment extends AbstractFragment {
             this.book.setNumberOfPages(Integer.parseInt(this.txtMediaBookNumberOfPages.getText().toString()));
         }
         this.book.setPath(this.txtMediaBookPath.getText().toString());
+        this.book.setEdition(this.txtMediaBookEdition.getText().toString());
+        this.book.setTopics(Arrays.asList(this.txtMediaBookTopics.getText().toString().split("\n")));
         this.book.setType(Book.Type.valueOf(this.spMediaBookType.getSelectedItem().toString()));
         return this.book;
     }
@@ -73,6 +84,8 @@ public class MediaBookFragment extends AbstractFragment {
         this.txtMediaBookNumberOfPages.setEnabled(editMode);
         this.txtMediaBookPath.setEnabled(editMode);
         this.spMediaBookType.setEnabled(editMode);
+        this.txtMediaBookEdition.setEnabled(editMode);
+        this.txtMediaBookTopics.setEnabled(editMode);
     }
 
     @Override

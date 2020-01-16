@@ -34,5 +34,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaBookEdition"
+            android:hint="@string/book_edition"
+            android:autofillHints="@string/book_edition"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaBookTopics"
+            android:hint="@string/book_topics"
+            android:autofillHints="@string/book_topics"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>

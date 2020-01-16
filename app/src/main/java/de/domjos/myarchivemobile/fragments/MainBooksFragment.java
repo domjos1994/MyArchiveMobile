@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
@@ -20,15 +21,17 @@ import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
 
 
-public class MainBooksFragment extends Fragment {
+public class MainBooksFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvBooks;
     private BookPagerAdapter bookPagerAdapter;
     private BottomNavigationView bottomNavigationView;
+    private String search;
 
     private BaseDescriptionObject currentObject = null;
 
@@ -141,8 +144,16 @@ public class MainBooksFragment extends Fragment {
 
     private void reload() {
         try {
+            if(this.search != null) {
+                if(!this.search.isEmpty()) {
+                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                }
+            } else {
+                this.search = "";
+            }
+
             this.lvBooks.getAdapter().clear();
-            for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("")) {
+            for(Book book : MainActivity.GLOBALS.getDatabase().getBooks(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(book.getTitle());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(book.getReleaseDate(), "yyyy-MM-dd"));
@@ -152,6 +163,32 @@ public class MainBooksFragment extends Fragment {
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
+    }
+
+    @Override
+    public void setCodes(String codes, String parent) {
+        try {
+            if(parent.equals(this.getString(R.string.main_navigation_media_books))) {
+                String[] code = codes.split("\n");
+                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                List<Book> books = googleBooksTask.execute(code).get();
+                for(Book book : books) {
+                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                }
+                this.reload();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
+    }
+
+    @Override
+    public void reload(String search, boolean reload) {
+        this.search = search;
+
+        if(reload) {
+            this.reload();
         }
     }
 }

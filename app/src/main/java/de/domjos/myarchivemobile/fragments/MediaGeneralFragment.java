@@ -10,11 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.Converter;
@@ -43,6 +45,7 @@ public class MediaGeneralFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaGeneralTitle = view.findViewById(R.id.txtMediaGeneralTitle);
         this.txtMediaGeneralOriginalTitle = view.findViewById(R.id.txtMediaGeneralOriginalTitle);
@@ -75,13 +78,23 @@ public class MediaGeneralFragment extends AbstractFragment {
 
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
             try {
-                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.string.app_name, R.string.app_name, R.mipmap.ic_launcher_round);
-                Book book = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get().get(0);
-                this.abstractPagerAdapter.setMediaObject(book);
+                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
+                if(books != null) {
+                    if(!books.isEmpty()) {
+                        this.abstractPagerAdapter.setMediaObject(books.get(0));
+                    }
+                }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
             }
         });
+
+        if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
+            this.cmdMediaGeneralSearch.setVisibility(View.GONE);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 9);
+            this.txtMediaGeneralCode.setLayoutParams(layoutParams);
+        }
 
         this.changeMode(false);
     }
@@ -165,7 +178,11 @@ public class MediaGeneralFragment extends AbstractFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        String result = IntentHelper.getScanResult(requestCode, resultCode, intent);
-        this.txtMediaGeneralCode.setText(result);
+        try {
+            String result = IntentHelper.getScanResult(requestCode, resultCode, intent);
+            this.txtMediaGeneralCode.setText(result);
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
     }
 }

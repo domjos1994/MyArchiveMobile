@@ -5,13 +5,14 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.services.GoogleBooksService;
 
 public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
 
-    public GoogleBooksTask(Activity activity, int title, int content, int icon) {
-        super(activity, title, content, true, icon);
+    public GoogleBooksTask(Activity activity, int icon) {
+        super(activity, R.string.service_google_search, R.string.service_google_search_content, true, icon);
     }
 
     @Override
@@ -27,8 +28,10 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
             try {
                 GoogleBooksService googleBooksService = new GoogleBooksService(code);
                 Book book = googleBooksService.execute();
-                book.setCode(code.trim());
-                books.add(book);
+                if(book != null) {
+                    book.setCode(code.trim());
+                    books.add(book);
+                }
             } catch (Exception ex) {
                 super.printException(ex);
             }

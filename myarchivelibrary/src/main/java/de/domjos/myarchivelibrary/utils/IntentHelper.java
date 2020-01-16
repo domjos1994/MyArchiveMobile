@@ -28,7 +28,9 @@ public class IntentHelper {
         if(resultCode == RESULT_OK) {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
             if(intentResult != null) {
-                return intentResult.getContents();
+                if(intentResult.getContents() != null) {
+                    return intentResult.getContents();
+                }
             }
         }
         return "";
