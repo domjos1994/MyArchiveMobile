@@ -152,7 +152,7 @@ public class MainMusicFragment extends ParentFragment {
             for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(album.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(album.getReleaseDate(), "yyyy-MM-dd"));
+                baseDescriptionObject.setDescription(Converter.convertDateToString(album.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(album.getCover());
                 baseDescriptionObject.setObject(album);
                 this.lvAlbums.getAdapter().add(baseDescriptionObject);

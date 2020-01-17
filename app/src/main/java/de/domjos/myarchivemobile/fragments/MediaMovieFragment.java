@@ -18,7 +18,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 
-public class MediaMovieFragment extends AbstractFragment {
+public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaMovieLength, txtMediaMoviePath;
     private Spinner spMediaMovieType;
     private ArrayAdapter<String> typeAdapter;

@@ -128,12 +128,24 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = null;
         switch (item.getItemId()) {
             case R.id.menMainScanner:
-                Intent intent = new Intent(MainActivity.this, ScanActivity.class);
+                intent = new Intent(MainActivity.this, ScanActivity.class);
                 intent.putExtra("parent", Objects.requireNonNull(this.navHostFragment.getNavController().getCurrentDestination()).getLabel());
-                this.startActivityForResult(intent, 99);
-                return true;
+                break;
+            case R.id.menMainPersons:
+                intent = new Intent(MainActivity.this, PersonActivity.class);
+                break;
+            case R.id.menMainCompanies:
+                intent = new Intent(MainActivity.this, CompanyActivity.class);
+                break;
+            case R.id.menMainCategoriesAndTags:
+                intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
+                break;
+        }
+        if(intent != null) {
+            this.startActivityForResult(intent, 99);
         }
         return super.onOptionsItemSelected(item);
     }

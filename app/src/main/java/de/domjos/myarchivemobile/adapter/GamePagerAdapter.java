@@ -16,15 +16,15 @@ import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
 
 public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
-    private AbstractFragment mediaCoverFragment;
-    private AbstractFragment mediaGeneralFragment;
-    private AbstractFragment mediaGameFragment;
-    private AbstractFragment mediaPersonsCompaniesFragment;
+    private AbstractFragment<BaseMediaObject> mediaCoverFragment;
+    private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
+    private AbstractFragment<BaseMediaObject> mediaGameFragment;
+    private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
 
     public GamePagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
 
-        this.mediaCoverFragment = new MediaCoverFragment();
+        this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaGameFragment = new MediaGameFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();

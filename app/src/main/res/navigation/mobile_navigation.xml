@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/navMainHome"
         android:name="de.domjos.myarchivemobile.fragments.MainHomeFragment"
-        android:label="@string/main_navigation_home"
+        android:label="@string/app_name"
         tools:layout="@layout/main_fragment_home" />
 
     <fragment
@@ -34,4 +34,10 @@
         android:name="de.domjos.myarchivemobile.fragments.MainGamesFragment"
         android:label="@string/main_navigation_media_games"
         tools:layout="@layout/main_fragment_games" />
+
+    <fragment
+        android:id="@+id/navMainLibrary"
+        android:name="de.domjos.myarchivemobile.fragments.MainLibraryFragment"
+        android:label="@string/library"
+        tools:layout="@layout/main_fragment_library" />
 </navigation>

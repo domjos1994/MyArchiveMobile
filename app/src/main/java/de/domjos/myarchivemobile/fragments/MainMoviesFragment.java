@@ -152,7 +152,7 @@ public class MainMoviesFragment extends ParentFragment {
             for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(movie.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(movie.getReleaseDate(), "yyyy-MM-dd"));
+                baseDescriptionObject.setDescription(Converter.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(movie.getCover());
                 baseDescriptionObject.setObject(movie);
                 this.lvMovies.getAdapter().add(baseDescriptionObject);

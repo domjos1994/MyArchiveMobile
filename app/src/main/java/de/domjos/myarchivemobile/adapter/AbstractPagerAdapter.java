@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
-public abstract class AbstractPagerAdapter<T extends BaseMediaObject> extends FragmentStatePagerAdapter {
+public abstract class AbstractPagerAdapter<T> extends FragmentStatePagerAdapter {
     private Context context;
 
     AbstractPagerAdapter(@NonNull FragmentManager fm, Context context) {

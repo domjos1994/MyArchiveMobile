@@ -10,9 +10,8 @@ import androidx.annotation.NonNull;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
-import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainHomeFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvMedia;
@@ -44,36 +43,7 @@ public class MainHomeFragment extends ParentFragment {
             }
 
             this.lvMedia.getAdapter().clear();
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(this.search)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(baseMediaObject.getTitle());
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
-                baseDescriptionObject.setDescription(this.getString(R.string.book));
-                baseDescriptionObject.setObject(baseMediaObject);
-                this.lvMedia.getAdapter().add(baseDescriptionObject);
-            }
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(this.search)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(baseMediaObject.getTitle());
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
-                baseDescriptionObject.setDescription(this.getString(R.string.movie));
-                baseDescriptionObject.setObject(baseMediaObject);
-                this.lvMedia.getAdapter().add(baseDescriptionObject);
-            }
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(this.search)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(baseMediaObject.getTitle());
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
-                baseDescriptionObject.setDescription(this.getString(R.string.album));
-                baseDescriptionObject.setObject(baseMediaObject);
-                this.lvMedia.getAdapter().add(baseDescriptionObject);
-            }
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(this.search)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(baseMediaObject.getTitle());
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
-                baseDescriptionObject.setDescription(this.getString(R.string.game));
-                baseDescriptionObject.setObject(baseMediaObject);
+            for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
                 this.lvMedia.getAdapter().add(baseDescriptionObject);
             }
         } catch (Exception ex) {

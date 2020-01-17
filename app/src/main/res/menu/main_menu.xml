@@ -6,4 +6,19 @@
         android:id="@+id/menMainScanner"
         android:title="@string/scanner"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menMainPersons"
+        android:title="@string/media_persons"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menMainCompanies"
+        android:title="@string/media_companies"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menMainCategoriesAndTags"
+        android:title="@string/categories_and_tags"
+        app:showAsAction="never"/>
 </menu>

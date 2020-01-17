@@ -29,7 +29,7 @@ import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
-public class MediaGeneralFragment extends AbstractFragment {
+public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
     private EditText txtMediaGeneralCode, txtMediaGeneralPrice, txtMediaGeneralDescription;
     private AutoCompleteTextView txtMediaGeneralCategory;
@@ -106,7 +106,7 @@ public class MediaGeneralFragment extends AbstractFragment {
         this.txtMediaGeneralTitle.setText(this.baseMediaObject.getTitle());
         this.txtMediaGeneralOriginalTitle.setText(this.baseMediaObject.getOriginalTitle());
         if(this.baseMediaObject.getReleaseDate() != null) {
-            this.txtMediaGeneralReleaseDate.setText(Converter.convertDateToString(this.baseMediaObject.getReleaseDate(), "yyyy-MM-dd"));
+            this.txtMediaGeneralReleaseDate.setText(Converter.convertDateToString(this.baseMediaObject.getReleaseDate(), this.getString(R.string.sys_date_format)));
         } else {
             this.txtMediaGeneralReleaseDate.setText("");
         }
@@ -131,7 +131,7 @@ public class MediaGeneralFragment extends AbstractFragment {
         try {
             this.baseMediaObject.setTitle(this.txtMediaGeneralTitle.getText().toString());
             this.baseMediaObject.setOriginalTitle(this.txtMediaGeneralOriginalTitle.getText().toString());
-            this.baseMediaObject.setReleaseDate(Converter.convertStringToDate(this.txtMediaGeneralReleaseDate.getText().toString(), "yyyy-MM-dd"));
+            this.baseMediaObject.setReleaseDate(Converter.convertStringToDate(this.txtMediaGeneralReleaseDate.getText().toString(), this.getString(R.string.sys_date_format)));
             this.baseMediaObject.setCode(this.txtMediaGeneralCode.getText().toString());
             this.baseMediaObject.setPrice(Double.parseDouble(this.txtMediaGeneralPrice.getText().toString()));
             this.baseMediaObject.setDescription(this.txtMediaGeneralDescription.getText().toString());

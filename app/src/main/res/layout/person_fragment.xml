@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10">
+            <EditText
+                android:id="@+id/txtPersonFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:inputType="text"
+                android:hint="@string/media_persons_firstName"
+                android:autofillHints="@string/media_persons_firstName"
+                tools:targetApi="o" />
+
+            <EditText
+                android:id="@+id/txtPersonLastName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:inputType="text"
+                android:hint="@string/media_persons_lastName"
+                android:autofillHints="@string/media_persons_lastName"
+                tools:targetApi="o" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/txtPersonBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:hint="@string/media_persons_birthDate"
+            android:autofillHints="@string/media_persons_birthDate"
+            tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtPersonDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:hint="@string/sys_description"
+            android:autofillHints="@string/sys_description"
+            tools:targetApi="o" />
+    </LinearLayout>
+</ScrollView>

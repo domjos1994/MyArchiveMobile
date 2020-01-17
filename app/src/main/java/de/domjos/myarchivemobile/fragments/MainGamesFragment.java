@@ -152,7 +152,7 @@ public class MainGamesFragment extends ParentFragment {
             for(Game game : MainActivity.GLOBALS.getDatabase().getGames(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(game.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(game.getReleaseDate(), "yyyy-MM-dd"));
+                baseDescriptionObject.setDescription(Converter.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(game.getCover());
                 baseDescriptionObject.setObject(game);
                 this.lvGames.getAdapter().add(baseDescriptionObject);

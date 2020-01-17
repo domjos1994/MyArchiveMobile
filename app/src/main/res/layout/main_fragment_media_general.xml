@@ -12,8 +12,8 @@
         android:orientation="vertical">
         <EditText
             android:id="@+id/txtMediaGeneralTitle"
-            android:hint="@string/media_general_title"
-            android:autofillHints="@string/media_general_title"
+            android:hint="@string/sys_title"
+            android:autofillHints="@string/sys_title"
             android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,8 +100,8 @@
 
         <EditText
             android:id="@+id/txtMediaGeneralDescription"
-            android:hint="@string/media_general_description"
-            android:autofillHints="@string/media_general_description"
+            android:hint="@string/sys_description"
+            android:autofillHints="@string/sys_description"
             android:inputType="textMultiLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

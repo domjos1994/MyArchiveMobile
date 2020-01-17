@@ -18,7 +18,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 
-public class MediaAlbumFragment extends AbstractFragment {
+public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaAlbumNumberOfDisks;
     private Spinner spMediaAlbumType;
     private ArrayAdapter<String> typeAdapter;

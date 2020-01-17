@@ -21,7 +21,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
-public class MediaPersonsCompaniesFragment extends AbstractFragment {
+public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObject> {
     private MultiAutoCompleteTextView txtMediaPersons, txtMediaCompanies;
 
     private BaseMediaObject baseMediaObject;
@@ -60,6 +60,8 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment {
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+
+        this.changeMode(false);
     }
 
     @Override

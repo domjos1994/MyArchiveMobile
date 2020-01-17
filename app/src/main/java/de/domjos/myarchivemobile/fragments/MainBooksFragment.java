@@ -156,7 +156,7 @@ public class MainBooksFragment extends ParentFragment {
             for(Book book : MainActivity.GLOBALS.getDatabase().getBooks(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(book.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(book.getReleaseDate(), "yyyy-MM-dd"));
+                baseDescriptionObject.setDescription(Converter.convertDateToString(book.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(book.getCover());
                 baseDescriptionObject.setObject(book);
                 this.lvBooks.getAdapter().add(baseDescriptionObject);

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,7 +20,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
 
-public class MediaBookFragment extends AbstractFragment {
+public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaBookNumberOfPages, txtMediaBookPath;
     private EditText txtMediaBookEdition, txtMediaBookTopics;
     private Spinner spMediaBookType;

@@ -12,19 +12,21 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 
-public class MediaCoverFragment extends AbstractFragment {
+public class MediaCoverFragment<T> extends AbstractFragment<T> {
     private ImageButton cmdMediaCoverPhoto, cmdMediaCoverGallery;
     private ImageView ivMediaCover;
+
+    private T object;
 
     @Nullable
     @Override
@@ -45,25 +47,62 @@ public class MediaCoverFragment extends AbstractFragment {
     }
 
     @Override
-    public void setMediaObject(BaseMediaObject baseMediaObject) {
+    public void setMediaObject(T object) {
+        this.object = object;
+
         if(this.ivMediaCover != null) {
-            if(baseMediaObject.getCover() != null) {
-                this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(baseMediaObject.getCover(), 0, baseMediaObject.getCover().length));
-            } else {
-                this.ivMediaCover.setImageBitmap(null);
+            if(this.object instanceof BaseMediaObject) {
+                BaseMediaObject baseMediaObject = (BaseMediaObject) this.object;
+                if(baseMediaObject.getCover() != null) {
+                    this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(baseMediaObject.getCover(), 0, baseMediaObject.getCover().length));
+                } else {
+                    this.ivMediaCover.setImageBitmap(null);
+                }
+            }
+            if(this.object instanceof Person) {
+                Person person = (Person) this.object;
+                if(person.getImage() != null) {
+                    this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(person.getImage(), 0, person.getImage().length));
+                } else {
+                    this.ivMediaCover.setImageBitmap(null);
+                }
+            }
+            if(this.object instanceof Company) {
+                Company company = (Company) this.object;
+                if(company.getCover() != null) {
+                    this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(company.getCover(), 0, company.getCover().length));
+                } else {
+                    this.ivMediaCover.setImageBitmap(null);
+                }
             }
         }
     }
 
     @Override
-    public BaseMediaObject getMediaObject() {
-        BaseMediaObject baseMediaObject = new BaseMediaObject();
-        if(this.ivMediaCover.getDrawable()!=null) {
-            try {
-                baseMediaObject.setCover(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
-            } catch (Exception ignored) {}
+    public T getMediaObject() {
+        if(this.object instanceof BaseMediaObject) {
+            if(this.ivMediaCover.getDrawable()!=null) {
+                try {
+                    ((BaseMediaObject) this.object).setCover(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+                } catch (Exception ignored) {}
+            }
         }
-        return baseMediaObject;
+        if(this.object instanceof Person) {
+            if(this.ivMediaCover.getDrawable() != null) {
+                try {
+                    ((Person) this.object).setImage(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+                } catch (Exception ignored) {}
+            }
+        }
+        if(this.object instanceof Company) {
+            if(this.ivMediaCover.getDrawable() != null) {
+                try {
+                    ((Company) this.object).setCover(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+                } catch (Exception ignored) {}
+            }
+        }
+
+        return this.object;
     }
 
     @Override

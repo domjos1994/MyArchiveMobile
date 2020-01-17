@@ -5,11 +5,11 @@ import androidx.fragment.app.Fragment;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 
-public abstract class AbstractFragment extends Fragment {
+public abstract class AbstractFragment<T> extends Fragment {
     AbstractPagerAdapter abstractPagerAdapter;
 
-    public abstract void setMediaObject(BaseMediaObject baseMediaObject);
-    public abstract BaseMediaObject getMediaObject();
+    public abstract void setMediaObject(T baseMediaObject);
+    public abstract T getMediaObject();
 
     public void setAbstractPagerAdapter(AbstractPagerAdapter abstractPagerAdapter) {
         this.abstractPagerAdapter = abstractPagerAdapter;
