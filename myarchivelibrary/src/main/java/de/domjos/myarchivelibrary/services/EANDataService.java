@@ -47,7 +47,7 @@ public class EANDataService extends JSONService {
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
         if(statusObject.has("code")) {
-            if(statusObject.getString("code").equals("404")) {
+            if(statusObject.getString("code").startsWith("4")) {
                 return null;
             }
         }
@@ -81,7 +81,7 @@ public class EANDataService extends JSONService {
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
         if(statusObject.has("code")) {
-            if(statusObject.getString("code").equals("404")) {
+            if(statusObject.getString("code").startsWith("4")) {
                 return null;
             }
         }
@@ -98,7 +98,7 @@ public class EANDataService extends JSONService {
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
         if(statusObject.has("code")) {
-            if(statusObject.getString("code").equals("404")) {
+            if(statusObject.getString("code").startsWith("4")) {
                 return null;
             }
         }
