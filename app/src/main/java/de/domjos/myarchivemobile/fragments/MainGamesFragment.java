@@ -12,13 +12,16 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
+import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
@@ -164,7 +167,19 @@ public class MainGamesFragment extends ParentFragment {
 
     @Override
     public void setCodes(String codes, String parent) {
-
+        try {
+            if(parent.equals(this.getString(R.string.main_navigation_media_games))) {
+                String[] code = codes.split("\n");
+                EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                List<Game> games = eanDataService.execute(code).get();
+                for(Game game : games) {
+                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                }
+                this.reload();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
     }
 
     @Override
@@ -173,6 +188,23 @@ public class MainGamesFragment extends ParentFragment {
 
         if(reload) {
             this.reload();
+        }
+    }
+
+    @Override
+    public void select() {
+        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
+        if(id != 0) {
+            for(int i = 0; i<=this.lvGames.getAdapter().getItemCount()-1; i++) {
+                BaseDescriptionObject baseDescriptionObject = this.lvGames.getAdapter().getItem(i);
+                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                if(baseMediaObject.getId() == id) {
+                    currentObject = baseDescriptionObject;
+                    gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
+                    changeMode(false, true);
+                    return;
+                }
+            }
         }
     }
 }

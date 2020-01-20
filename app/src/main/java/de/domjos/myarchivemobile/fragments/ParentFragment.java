@@ -7,4 +7,6 @@ public abstract class ParentFragment extends Fragment {
     public abstract void setCodes(String codes, String label);
 
     public abstract void reload(String search, boolean reload);
+
+    public abstract void select();
 }

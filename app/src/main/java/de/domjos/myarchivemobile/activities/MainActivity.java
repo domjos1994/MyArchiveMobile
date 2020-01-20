@@ -5,6 +5,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -21,6 +22,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -40,6 +42,7 @@ import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
+    private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private NavHostFragment navHostFragment;
     public static Globals GLOBALS = new Globals();
@@ -107,9 +110,9 @@ public final class MainActivity extends AbstractActivity {
         ).setDrawerLayout(drawerLayout).build();
 
         this.navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, this.appBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        this.navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, this.navController, this.appBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, this.navController);
 
         // init globals
         try {
@@ -176,6 +179,23 @@ public final class MainActivity extends AbstractActivity {
         List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
         for(Fragment fragment : fragments) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void selectTab(String title, long id) {
+        Bundle args = new Bundle();
+        args.putLong("id", id);
+        if(title.trim().equals(this.getString(R.string.book))) {
+            this.navController.navigate(R.id.navMainMediaBooks, args);
+        }
+        if(title.trim().equals(this.getString(R.string.movie))) {
+            this.navController.navigate(R.id.navMainMediaMovies, args);
+        }
+        if(title.trim().equals(this.getString(R.string.game))) {
+            this.navController.navigate(R.id.navMainMediaGames, args);
+        }
+        if(title.trim().equals(this.getString(R.string.album))) {
+            this.navController.navigate(R.id.navMainMediaMusic, args);
         }
     }
 

@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainHomeFragment extends ParentFragment {
@@ -25,6 +27,16 @@ public class MainHomeFragment extends ParentFragment {
             @Override
             public void onReload() {
                 reload();
+            }
+        });
+
+        this.lvMedia.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(BaseDescriptionObject listObject) {
+                MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+                if(mainActivity != null) {
+                    mainActivity.selectTab(listObject.getDescription(), ((BaseMediaObject) listObject.getObject()).getId());
+                }
             }
         });
 
@@ -63,5 +75,10 @@ public class MainHomeFragment extends ParentFragment {
         if(reload) {
             this.reload();
         }
+    }
+
+    @Override
+    public void select() {
+
     }
 }

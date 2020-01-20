@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
 import androidx.annotation.NonNull;
@@ -24,6 +23,12 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivelibrary.model.media.games.Game;
+import de.domjos.myarchivelibrary.model.media.movies.Movie;
+import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
+import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
+import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
@@ -78,23 +83,43 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
             try {
-                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.mipmap.ic_launcher_round);
-                List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
-                if(books != null) {
-                    if(!books.isEmpty()) {
-                        this.abstractPagerAdapter.setMediaObject(books.get(0));
+                if((this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
+                    if (books != null) {
+                        if (!books.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(books.get(0));
+                        }
+                    }
+                } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
+                    EANDataMovieTask eanDataTask = new EANDataMovieTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    List<Movie> movies = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
+                    if(movies != null) {
+                        if(!movies.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
+                    }
+                } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
+                    EANDataAlbumTask eanDataTask = new EANDataAlbumTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    List<Album> albums = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
+                    if(albums != null) {
+                        if(!albums.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(albums.get(0));
+                        }
+                    }
+                } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
+                    EANDataGameTask eanDataTask = new EANDataGameTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    List<Game> games = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
+                    if(games != null) {
+                        if(!games.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(games.get(0));
+                        }
                     }
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
             }
         });
-
-        if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
-            this.cmdMediaGeneralSearch.setVisibility(View.GONE);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 9);
-            this.txtMediaGeneralCode.setLayoutParams(layoutParams);
-        }
 
         this.changeMode(false);
     }

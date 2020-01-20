@@ -7,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -20,6 +21,7 @@ import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
@@ -189,6 +191,23 @@ public class MainBooksFragment extends ParentFragment {
 
         if(reload) {
             this.reload();
+        }
+    }
+
+    @Override
+    public void select() {
+        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
+        if(id != 0) {
+            for(int i = 0; i<=this.lvBooks.getAdapter().getItemCount()-1; i++) {
+                BaseDescriptionObject baseDescriptionObject = this.lvBooks.getAdapter().getItem(i);
+                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                if(baseMediaObject.getId() == id) {
+                    currentObject = baseDescriptionObject;
+                    bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
+                    changeMode(false, true);
+                    return;
+                }
+            }
         }
     }
 }

@@ -12,13 +12,18 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
+import de.domjos.myarchivelibrary.services.EANDataService;
+import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.MoviePagerAdapter;
@@ -164,7 +169,19 @@ public class MainMoviesFragment extends ParentFragment {
 
     @Override
     public void setCodes(String codes, String parent) {
-
+        try {
+            if(parent.equals(this.getString(R.string.main_navigation_media_movies))) {
+                String[] code = codes.split("\n");
+                EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                List<Movie> movies = eanDataService.execute(code).get();
+                for(Movie movie : movies) {
+                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                }
+                this.reload();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
     }
 
     @Override
@@ -173,6 +190,23 @@ public class MainMoviesFragment extends ParentFragment {
 
         if(reload) {
             this.reload();
+        }
+    }
+
+    @Override
+    public void select() {
+        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
+        if(id != 0) {
+            for(int i = 0; i<=this.lvMovies.getAdapter().getItemCount()-1; i++) {
+                BaseDescriptionObject baseDescriptionObject = this.lvMovies.getAdapter().getItem(i);
+                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                if(baseMediaObject.getId() == id) {
+                    currentObject = baseDescriptionObject;
+                    moviePagerAdapter.setMediaObject((Movie) currentObject.getObject());
+                    changeMode(false, true);
+                    return;
+                }
+            }
         }
     }
 }

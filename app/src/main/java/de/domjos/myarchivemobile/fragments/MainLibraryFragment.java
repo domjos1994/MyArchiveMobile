@@ -242,6 +242,11 @@ public class MainLibraryFragment extends ParentFragment {
         }
     }
 
+    @Override
+    public void select() {
+
+    }
+
     private void initControls(View view) {
         this.lvMediaLibrary = view.findViewById(R.id.lvMediaLibrary);
         this.lvMediaHistory = view.findViewById(R.id.lvMediaHistory);
