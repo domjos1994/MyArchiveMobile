@@ -3,28 +3,35 @@
     <string name="album">Album</string>
     <string name="album_number">Anzahl Tonträger</string>
     <string name="album_type">Typ</string>
+
     <string name="book">Buch</string>
     <string name="book_edition">Edition</string>
     <string name="book_numberOfPages">Anzahl Seiten</string>
     <string name="book_path">Pfad</string>
     <string name="book_topics">Themen</string>
     <string name="book_type">Typ</string>
+
     <string name="game">Spiel</string>
     <string name="game_length">Länge</string>
     <string name="game_type">Typ</string>
+
     <string name="library">Bibliothek</string>
     <string name="library_deadline">Stichtag</string>
     <string name="library_numberOfDays">Anzahl Tage</string>
     <string name="library_numberOfWeeks">Anzahl Wochen</string>
     <string name="library_returnedAt">Zurückgegeben am</string>
+
     <string name="main_navigation_media">Medie</string>
     <string name="main_navigation_media_books">Bücher</string>
     <string name="main_navigation_media_games">Spiele</string>
     <string name="main_navigation_media_movies">Filme</string>
     <string name="main_navigation_media_music">Musik</string>
+
     <string name="media_companies">Firmen</string>
     <string name="media_companies_foundation">Gründungs-Datum</string>
+
     <string name="media_cover">Logo</string>
+
     <string name="media_general">Generell</string>
     <string name="media_general_category">Kategorie</string>
     <string name="media_general_code">Code</string>
@@ -32,17 +39,32 @@
     <string name="media_general_price">Preis</string>
     <string name="media_general_releaseDate">Erscheinungs-Datum</string>
     <string name="media_general_tags">Tags</string>
+
     <string name="media_persons">Personen</string>
     <string name="media_persons_birthDate">Geburtsdatum</string>
     <string name="media_persons_companies">Personen und Firmen</string>
     <string name="media_persons_firstName">Vorname</string>
     <string name="media_persons_lastName">Nachname</string>
+
     <string name="movie">Film</string>
     <string name="movie_length">Länge</string>
     <string name="movie_path">Pfad</string>
     <string name="movie_type">Type</string>
+
     <string name="scanner">Scanner</string>
+
     <string name="categories_and_tags">Kategorien und Tags</string>
+
+    <string name="settings">Einstellungen</string>
+    <string name="settings_general">Generell</string>
+    <string name="settings_general_notifications">Notifikationen</string>
+    <string name="settings_general_notifications_summary">Notifikationen aktivieren!</string>
+    <string name="settings_general_debug">Debug-Modus</string>
+    <string name="settings_general_debug_summary">Debug-Modus aktivieren!</string>
+    <string name="settings_services">Webservices</string>
+    <string name="settings_services_eandata">EANData-Schlüssel</string>
+    <string name="settings_services_eandata_summary">EANData Schlüssel setzen!</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_cancel">Abbrehen</string>
     <string name="sys_date_format">dd.MM.yyyy</string>

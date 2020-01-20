@@ -27,7 +27,6 @@ public class ScanActivity extends AbstractActivity {
     private EditText txtScannerCodes;
     private BeepManager beepManager;
     private String lastText;
-    private BarcodeCallback callback;
     private ImageButton cmdScannerSave;
 
     public ScanActivity() {
@@ -50,26 +49,27 @@ public class ScanActivity extends AbstractActivity {
         this.barcodeView = this.findViewById(R.id.barcode_scanner);
         this.txtScannerCodes = this.findViewById(R.id.txtScannerCodes);
         this.cmdScannerSave = this.findViewById(R.id.cmdScannerSave);
-        this.callback = new BarcodeCallback() {
+        BarcodeCallback callback = new BarcodeCallback() {
             @Override
             public void barcodeResult(BarcodeResult result) {
-                if(result.getText() == null || result.getText().equals(lastText)) {
+                if (result.getText() == null || result.getText().equals(lastText)) {
                     return;
                 }
 
                 lastText = result.getText();
                 barcodeView.setStatusText(result.getText());
                 beepManager.playBeepSoundAndVibrate();
-                txtScannerCodes.setText(txtScannerCodes.getText() + "\n" + result.getText());
+                txtScannerCodes.setText(String.format("%s%n%s", txtScannerCodes.getText(), result.getText()));
             }
 
             @Override
-            public void possibleResultPoints(List<ResultPoint> resultPoints) {}
+            public void possibleResultPoints(List<ResultPoint> resultPoints) {
+            }
         };
 
         this.barcodeView.getBarcodeView().setDecoderFactory(new DefaultDecoderFactory());
         this.barcodeView.initializeFromIntent(getIntent());
-        this.barcodeView.decodeContinuous(this.callback);
+        this.barcodeView.decodeContinuous(callback);
 
         this.beepManager = new BeepManager(this);
     }

@@ -173,7 +173,7 @@ public class MainMusicFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_music))) {
                 String[] code = codes.split("\n");
-                EANDataAlbumTask eanDataService = new EANDataAlbumTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                EANDataAlbumTask eanDataService = new EANDataAlbumTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Album> albums = eanDataService.execute(code).get();
                 for(Album album : albums) {
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);

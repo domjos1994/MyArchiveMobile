@@ -146,6 +146,9 @@ public final class MainActivity extends AbstractActivity {
             case R.id.menMainCategoriesAndTags:
                 intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
                 break;
+            case R.id.menMainSettings:
+                intent = new Intent(MainActivity.this, SettingsActivity.class);
+                break;
         }
         if(intent != null) {
             this.startActivityForResult(intent, 99);

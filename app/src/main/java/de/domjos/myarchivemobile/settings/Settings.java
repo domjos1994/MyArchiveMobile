@@ -3,11 +3,14 @@ package de.domjos.myarchivemobile.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.preference.PreferenceManager;
+
 import de.domjos.customwidgets.utils.Crypto;
 import de.domjos.myarchivemobile.R;
 
 public final class Settings {
     private SharedPreferences sharedPreferences;
+    private SharedPreferences userPreferences;
     private Crypto crypto;
 
     // keys
@@ -16,6 +19,7 @@ public final class Settings {
     public Settings(Context context) throws Exception {
 
         this.sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.crypto = new Crypto(context, context.getString(R.string.sys_password));
     }
 
@@ -80,5 +84,17 @@ public final class Settings {
             editor.putLong(key, (Long) object);
         }
         editor.apply();
+    }
+
+    public boolean isNotifications() {
+        return this.userPreferences.getBoolean("swtNotifications", false);
+    }
+
+    public boolean isDebugMode() {
+        return this.userPreferences.getBoolean("swtDebugMode", false);
+    }
+
+    public String getEANDataKey() {
+        return this.userPreferences.getString("txtEANDataKey", "");
     }
 }

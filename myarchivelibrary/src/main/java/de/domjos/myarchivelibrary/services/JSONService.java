@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class JSONService {
+public abstract class JSONService {
 
     String readUrl(URL url) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -29,7 +29,11 @@ public class JSONService {
 
     String getString(JSONObject obj, String key) throws Exception {
         if(obj.has(key)) {
-            return obj.getString(key);
+            if(!obj.isNull(key)) {
+                return obj.getString(key);
+            } else {
+                return "";
+            }
         } else {
             return "";
         }
@@ -37,9 +41,25 @@ public class JSONService {
 
     Integer getInt(JSONObject obj, String key) throws Exception {
         if(obj.has(key)) {
-            return obj.getInt(key);
+            if(!obj.isNull(key)) {
+                return obj.getInt(key);
+            } else {
+                return 0;
+            }
         } else {
             return 0;
+        }
+    }
+
+    Double getDouble(JSONObject obj, String key) throws Exception {
+        if(obj.has(key)) {
+            if(!obj.isNull(key)) {
+                return obj.getDouble(key);
+            } else {
+                return 0.0;
+            }
+        } else {
+            return 0.0;
         }
     }
 }

@@ -25,6 +25,7 @@ import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -234,6 +235,124 @@ public class Database extends SQLiteOpenHelper {
         return games;
     }
 
+    public void insertOrUpdateLibraryObject(LibraryObject libraryObject, BaseMediaObject baseMediaObject) {
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(libraryObject, Arrays.asList("media", "type", "person", "numberOfDays", "numberOfWeeks", "deadLine", "returnedAt"));
+        sqLiteStatement.bindLong(1, baseMediaObject.getId());
+        if(baseMediaObject instanceof Book) {
+            sqLiteStatement.bindString(2, "books");
+        }
+        if(baseMediaObject instanceof Movie) {
+            sqLiteStatement.bindString(2, "movies");
+        }
+        if(baseMediaObject instanceof Album) {
+            sqLiteStatement.bindString(2, "albums");
+        }
+        if(baseMediaObject instanceof Game) {
+            sqLiteStatement.bindString(2, "games");
+        }
+        sqLiteStatement.bindLong(3, this.insertOrUpdatePerson(libraryObject.getPerson(), "", 0));
+        sqLiteStatement.bindLong(4, libraryObject.getNumberOfDays());
+        sqLiteStatement.bindLong(5, libraryObject.getNumberOfWeeks());
+        if(libraryObject.getDeadLine() != null) {
+            sqLiteStatement.bindString(6, Converter.convertDateToString(libraryObject.getDeadLine(), "yyyy-MM-dd"));
+        } else {
+            sqLiteStatement.bindNull(6);
+        }
+        if(libraryObject.getReturned() != null) {
+            sqLiteStatement.bindString(7, Converter.convertDateToString(libraryObject.getReturned(), "yyyy-MM-dd"));
+        } else {
+            sqLiteStatement.bindNull(7);
+        }
+        sqLiteStatement.execute();
+        sqLiteStatement.close();
+    }
+
+    private List<LibraryObject> getLibraryObjects(String where) throws Exception {
+        List<LibraryObject> libraryObjects = new LinkedList<>();
+        if(!where.trim().isEmpty()) {
+            where = " WHERE " + where;
+        }
+
+        List<Person> persons = this.getPersons("", 0);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM library" + where, null);
+        while (cursor.moveToNext()) {
+            LibraryObject libraryObject = new LibraryObject();
+            for(Person person : persons) {
+                if(cursor.getLong(cursor.getColumnIndex("person"))==person.getId()) {
+                    libraryObject.setPerson(person);
+                    break;
+                }
+            }
+            libraryObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            libraryObject.setNumberOfDays(cursor.getInt(cursor.getColumnIndex("numberOfDays")));
+            libraryObject.setNumberOfWeeks(cursor.getInt(cursor.getColumnIndex("numberOfWeeks")));
+            String deadline = cursor.getString(cursor.getColumnIndex("deadLine"));
+            if(deadline!=null) {
+                if(!deadline.isEmpty()) {
+                    libraryObject.setDeadLine(Converter.convertStringToDate(deadline, "yyyy-MM-dd"));
+                }
+            }
+            String returnedAt = cursor.getString(cursor.getColumnIndex("returnedAt"));
+            if(returnedAt!=null) {
+                if(!returnedAt.isEmpty()) {
+                    libraryObject.setReturned(Converter.convertStringToDate(returnedAt, "yyyy-MM-dd"));
+                }
+            }
+            libraryObjects.add(libraryObject);
+        }
+        cursor.close();
+        return libraryObjects;
+    }
+
+    public List<BaseMediaObject> getObjects(String table, long id) throws Exception {
+        String booksWhere = "id IN (", moviesWhere = "id IN (", gamesWhere = "id IN (", albumsWhere = "id IN (";
+
+        switch (table) {
+            case "tags":
+            case "persons":
+            case "companies":
+                booksWhere += this.getWhere("books", table, id);
+                moviesWhere += this.getWhere("movies", table, id);
+                gamesWhere += this.getWhere("games", table, id);
+                albumsWhere += this.getWhere("albums", table, id);
+                break;
+            case "categories":
+                booksWhere += this.getCategoryWhere("books", id);
+                moviesWhere += this.getCategoryWhere("movies", id);
+                gamesWhere += this.getCategoryWhere("games", id);
+                albumsWhere += this.getCategoryWhere("albums", id);
+                break;
+        }
+
+        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+        baseMediaObjects.addAll(this.getBooks(booksWhere));
+        baseMediaObjects.addAll(this.getMovies(moviesWhere));
+        baseMediaObjects.addAll(this.getGames(gamesWhere));
+        baseMediaObjects.addAll(this.getAlbums(albumsWhere));
+        return baseMediaObjects;
+    }
+
+
+    private String getCategoryWhere(String table, long id) {
+        List<Long> idList = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT id FROM %s WHERE category=?", table), new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            idList.add(cursor.getLong(cursor.getColumnIndex("id")));
+        }
+        cursor.close();
+        return TextUtils.join(", ", idList) + ")";
+    }
+
+    private String getWhere(String table, String foreignTable, long id) {
+        List<Long> idList = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT %s FROM %s_%s WHERE id=?", table, table, foreignTable), new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            idList.add(cursor.getLong(cursor.getColumnIndex(table)));
+        }
+        cursor.close();
+        return TextUtils.join(", ", idList) + ")";
+    }
+
     public void deleteItem(DatabaseObject databaseObject) {
         this.getWritableDatabase().execSQL(String.format("DELETE FROM %s WHERE id=%s", databaseObject.getTable(), databaseObject.getId()));
     }
@@ -275,14 +394,25 @@ public class Database extends SQLiteOpenHelper {
     private SQLiteStatement getStatement(DatabaseObject databaseObject, List<String> columns) {
         List<String> baseColumns = Arrays.asList("title", "originalTitle", "releaseDate", "code", "price", "category", "cover", "description");
         String[] allColumns = new String[baseColumns.size() + columns.size()];
-        String[] allQuestionMarks = new String[baseColumns.size() + columns.size()];
 
         int i = 0;
         for(String column : baseColumns) {
             allColumns[i] = column;
-            allQuestionMarks[i] = "?";
             i++;
         }
+        for(String column : columns) {
+            allColumns[i] = column;
+            i++;
+        }
+
+        return this.getBaseStatement(databaseObject, Arrays.asList(allColumns));
+    }
+
+    private SQLiteStatement getBaseStatement(DatabaseObject databaseObject, List<String> columns) {
+        String[] allColumns = new String[columns.size()];
+        String[] allQuestionMarks = new String[columns.size()];
+
+        int i = 0;
         for(String column : columns) {
             allColumns[i] = column;
             allQuestionMarks[i] = "?";
@@ -333,6 +463,9 @@ public class Database extends SQLiteOpenHelper {
         for(Company company : baseMediaObject.getCompanies()) {
             this.insertOrUpdateCompany(company, table, baseMediaObject.getId());
         }
+        for(LibraryObject libraryObject : baseMediaObject.getLibraryObjects()) {
+            this.insertOrUpdateLibraryObject(libraryObject, baseMediaObject);
+        }
     }
 
     private void getMediaObjectFromCursor(Cursor cursor, BaseMediaObject baseMediaObject, String table) throws Exception {
@@ -356,9 +489,10 @@ public class Database extends SQLiteOpenHelper {
         baseMediaObject.setTags(this.getBaseObjects("tags", table, baseMediaObject.getId(), ""));
         baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
         baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
+        baseMediaObject.setLibraryObjects(this.getLibraryObjects("media=" + baseMediaObject.getId() + " AND type='" + table + "'"));
     }
 
-    private long insertOrUpdateBaseObject(BaseDescriptionObject baseDescriptionObject, String table, String foreignTable, long id) {
+    public long insertOrUpdateBaseObject(BaseDescriptionObject baseDescriptionObject, String table, String foreignTable, long id) {
         // return if object is empty
         if(baseDescriptionObject.getTitle().trim().isEmpty()) {
             return 0L;
@@ -435,10 +569,10 @@ public class Database extends SQLiteOpenHelper {
         return baseDescriptionObjects;
     }
 
-    private void insertOrUpdatePerson(Person person, String foreignTable, long id) {
+    public long insertOrUpdatePerson(Person person, String foreignTable, long id) {
         try {
             if(person.getFirstName().trim().equals("") && person.getLastName().trim().equals("")) {
-                return;
+                return 0L;
             }
 
             for(Person tmp : this.getPersons("", 0)) {
@@ -454,12 +588,17 @@ public class Database extends SQLiteOpenHelper {
             statement = this.getWritableDatabase().compileStatement("INSERT INTO persons(firstName, lastName, birthDate, image, description) VALUES(?, ?, ?, ?, ?)");
         } else {
             statement = this.getWritableDatabase().compileStatement("UPDATE persons SET firstName=?, lastName=?, birthDate=?, image=?, description=? WHERE id=?");
-            statement.bindLong(6, id);
+            statement.bindLong(6, person.getId());
         }
         statement.bindString(1, person.getFirstName());
         statement.bindString(2, person.getLastName());
         if(person.getBirthDate() != null) {
-            statement.bindString(3, Objects.requireNonNull(Converter.convertDateToString(person.getBirthDate(), "yyyy-MM-dd")));
+            String dt = Converter.convertDateToString(person.getBirthDate(), "yyyy-MM-dd");
+            if(dt != null) {
+                statement.bindString(3, dt);
+            } else {
+                statement.bindNull(3);
+            }
         } else {
             statement.bindNull(3);
         }
@@ -477,12 +616,15 @@ public class Database extends SQLiteOpenHelper {
         }
         statement.close();
 
-        this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_persons WHERE persons=%s", foreignTable, person.getId()));
-        statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_persons(persons, %s) VALUES(?, ?)", foreignTable, foreignTable));
-        statement.bindLong(1, person.getId());
-        statement.bindLong(2, id);
-        statement.executeInsert();
-        statement.close();
+        if(!foreignTable.isEmpty()) {
+            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_persons WHERE persons=%s", foreignTable, person.getId()));
+            statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_persons(persons, %s) VALUES(?, ?)", foreignTable, foreignTable));
+            statement.bindLong(1, person.getId());
+            statement.bindLong(2, id);
+            statement.executeInsert();
+            statement.close();
+        }
+        return person.getId();
     }
 
     public List<Person> getPersons(String foreignTable, long id) throws Exception {
@@ -494,7 +636,8 @@ public class Database extends SQLiteOpenHelper {
                 person.setId(cursor.getLong(cursor.getColumnIndex("id")));
                 person.setFirstName(cursor.getString(cursor.getColumnIndex("firstName")));
                 person.setLastName(cursor.getString(cursor.getColumnIndex("lastName")));
-                String dt = cursor.getString(cursor.getColumnIndex("birthDate"));
+                int index = cursor.getColumnIndex("birthDate");
+                String dt = cursor.getString(index);
                 if(dt!=null) {
                     if(!dt.isEmpty()) {
                         person.setBirthDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
@@ -532,7 +675,7 @@ public class Database extends SQLiteOpenHelper {
         return people;
     }
 
-    private void insertOrUpdateCompany(Company company, String foreignTable, long id) {
+    public void insertOrUpdateCompany(Company company, String foreignTable, long id) {
         try {
             if(company.getTitle().trim().equals("")) {
                 return;
@@ -551,7 +694,7 @@ public class Database extends SQLiteOpenHelper {
             statement = this.getWritableDatabase().compileStatement("INSERT INTO companies(title, foundation, cover, description) VALUES(?, ?, ?, ?)");
         } else {
             statement = this.getWritableDatabase().compileStatement("UPDATE companies SET title=?, foundation=?, cover=?, description=? WHERE id=?");
-            statement.bindLong(5, id);
+            statement.bindLong(5, company.getId());
         }
         statement.bindString(1, company.getTitle());
         if(company.getFoundation() != null) {
@@ -573,12 +716,14 @@ public class Database extends SQLiteOpenHelper {
         }
         statement.close();
 
-        this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_companies WHERE companies=%s", foreignTable, company.getId()));
-        statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_companies(companies, %s) VALUES(?, ?)", foreignTable, foreignTable));
-        statement.bindLong(1, company.getId());
-        statement.bindLong(2, id);
-        statement.executeInsert();
-        statement.close();
+        if(!foreignTable.isEmpty()) {
+            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_companies WHERE companies=%s", foreignTable, company.getId()));
+            statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_companies(companies, %s) VALUES(?, ?)", foreignTable, foreignTable));
+            statement.bindLong(1, company.getId());
+            statement.bindLong(2, id);
+            statement.executeInsert();
+            statement.close();
+        }
     }
 
     public List<Company> getCompanies(String foreignTable, long id) throws Exception {

@@ -21,4 +21,9 @@
         android:id="@+id/menMainCategoriesAndTags"
         android:title="@string/categories_and_tags"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menMainSettings"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
 </menu>

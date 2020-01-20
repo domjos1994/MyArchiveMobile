@@ -22,7 +22,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.CategoriesTagsActivity"
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.domjos.myarchivemobile.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.CategoriesTagsActivity"
             android:label="@string/categories_and_tags"
             android:parentActivityName=".activities.MainActivity">
             <meta-data

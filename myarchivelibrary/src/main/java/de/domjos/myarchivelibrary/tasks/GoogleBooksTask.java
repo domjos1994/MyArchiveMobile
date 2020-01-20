@@ -11,8 +11,8 @@ import de.domjos.myarchivelibrary.services.GoogleBooksService;
 
 public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
 
-    public GoogleBooksTask(Activity activity, int icon) {
-        super(activity, R.string.service_google_search, R.string.service_google_search_content, true, icon);
+    public GoogleBooksTask(Activity activity, boolean showNotifications, int icon) {
+        super(activity, R.string.service_google_search, R.string.service_google_search_content, showNotifications, icon);
     }
 
     @Override

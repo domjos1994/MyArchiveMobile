@@ -17,6 +17,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
     private List<Person> persons;
     private List<Company> companies;
     private List<BaseDescriptionObject> tags;
+    private List<LibraryObject> libraryObjects;
     private byte[] cover;
 
     public BaseMediaObject() {
@@ -30,6 +31,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
         this.persons = new LinkedList<>();
         this.companies = new LinkedList<>();
         this.tags = new LinkedList<>();
+        this.libraryObjects = new LinkedList<>();
     }
 
     public String getOriginalTitle() {
@@ -102,5 +104,13 @@ public class BaseMediaObject extends BaseDescriptionObject {
 
     public void setCover(byte[] cover) {
         this.cover = cover;
+    }
+
+    public List<LibraryObject> getLibraryObjects() {
+        return this.libraryObjects;
+    }
+
+    public void setLibraryObjects(List<LibraryObject> libraryObjects) {
+        this.libraryObjects = libraryObjects;
     }
 }

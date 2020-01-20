@@ -170,7 +170,7 @@ public class MainGamesFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_games))) {
                 String[] code = codes.split("\n");
-                EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Game> games = eanDataService.execute(code).get();
                 for(Game game : games) {
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);

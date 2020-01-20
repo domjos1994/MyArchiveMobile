@@ -1,13 +1,9 @@
 <resources>
     <string name="app_name" translatable="false">MyArchiveMobile</string>
 
-    <string name="main_navigation_media">Media</string>
-    <string name="main_navigation_media_music">Music</string>
-    <string name="main_navigation_media_movies">Movies</string>
-    <string name="main_navigation_media_books">Books</string>
-    <string name="main_navigation_media_games">Games</string>
-
-    <string name="scanner">Scanner</string>
+    <string name="album">Album</string>
+    <string name="album_number">Number of Disks</string>
+    <string name="album_type">Type</string>
 
     <string name="book">Book</string>
     <string name="book_numberOfPages">Number of pages</string>
@@ -16,18 +12,26 @@
     <string name="book_edition">Edition</string>
     <string name="book_topics">Topics</string>
 
-    <string name="movie">Movie</string>
-    <string name="movie_length">Length</string>
-    <string name="movie_type">Type</string>
-    <string name="movie_path">Path</string>
-
     <string name="game">Game</string>
     <string name="game_length">Length</string>
     <string name="game_type">Type</string>
 
-    <string name="album">Album</string>
-    <string name="album_number">Number of Disks</string>
-    <string name="album_type">Type</string>
+    <string name="library">Library</string>
+    <string name="library_numberOfDays">Number of Days</string>
+    <string name="library_numberOfWeeks">Number of Weeks</string>
+    <string name="library_deadline">Deadline</string>
+    <string name="library_returnedAt">Returned at</string>
+
+    <string name="main_navigation_media">Media</string>
+    <string name="main_navigation_media_music">Music</string>
+    <string name="main_navigation_media_movies">Movies</string>
+    <string name="main_navigation_media_books">Books</string>
+    <string name="main_navigation_media_games">Games</string>
+
+    <string name="media_companies">Companies</string>
+    <string name="media_companies_foundation">Foundation-Date</string>
+
+    <string name="media_cover">Cover</string>
 
     <string name="media_general">General</string>
     <string name="media_general_originalTitle">Original-Title</string>
@@ -37,24 +41,30 @@
     <string name="media_general_category">Category</string>
     <string name="media_general_tags">Tags</string>
 
-    <string name="media_cover">Cover</string>
-    <string name="media_persons_companies">Persons and Companies</string>
-
     <string name="media_persons">Persons</string>
+    <string name="media_persons_companies">Persons and Companies</string>
     <string name="media_persons_firstName">FirstName</string>
     <string name="media_persons_lastName">LastName</string>
     <string name="media_persons_birthDate">BirthDate</string>
 
-    <string name="media_companies">Companies</string>
-    <string name="media_companies_foundation">Foundation-Date</string>
+    <string name="movie">Movie</string>
+    <string name="movie_length">Length</string>
+    <string name="movie_type">Type</string>
+    <string name="movie_path">Path</string>
 
-    <string name="library">Library</string>
-    <string name="library_numberOfDays">Number of Days</string>
-    <string name="library_numberOfWeeks">Number of Weeks</string>
-    <string name="library_deadline">Deadline</string>
-    <string name="library_returnedAt">Returned at</string>
+    <string name="scanner">Scanner</string>
 
     <string name="categories_and_tags">Categories and Tags</string>
+
+    <string name="settings">Settings</string>
+    <string name="settings_general">General</string>
+    <string name="settings_general_notifications">Notifications</string>
+    <string name="settings_general_notifications_summary">Enable Notifications!</string>
+    <string name="settings_general_debug">Debug-Mode</string>
+    <string name="settings_general_debug_summary">Enable Debug-Mode</string>
+    <string name="settings_services">Webservices</string>
+    <string name="settings_services_eandata">EANData-Key</string>
+    <string name="settings_services_eandata_summary">Set EANData-Key!</string>
 
     <string name="sys_password" translatable="false">T9yYQsFHzr9DTNNGonIT</string>
     <string name="sys_add">Add</string>

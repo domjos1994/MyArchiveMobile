@@ -172,7 +172,7 @@ public class MainMoviesFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_movies))) {
                 String[] code = codes.split("\n");
-                EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Movie> movies = eanDataService.execute(code).get();
                 for(Movie movie : movies) {
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);

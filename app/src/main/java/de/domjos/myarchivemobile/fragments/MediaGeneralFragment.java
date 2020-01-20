@@ -84,7 +84,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
             try {
                 if((this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
                     List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if (books != null) {
                         if (!books.isEmpty()) {
@@ -92,7 +92,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
-                    EANDataMovieTask eanDataTask = new EANDataMovieTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    EANDataMovieTask eanDataTask = new EANDataMovieTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Movie> movies = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(movies != null) {
                         if(!movies.isEmpty()) {
@@ -100,7 +100,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
-                    EANDataAlbumTask eanDataTask = new EANDataAlbumTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    EANDataAlbumTask eanDataTask = new EANDataAlbumTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Album> albums = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(albums != null) {
                         if(!albums.isEmpty()) {
@@ -108,7 +108,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
-                    EANDataGameTask eanDataTask = new EANDataGameTask(this.getActivity(), R.mipmap.ic_launcher_round);
+                    EANDataGameTask eanDataTask = new EANDataGameTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Game> games = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(games != null) {
                         if(!games.isEmpty()) {
