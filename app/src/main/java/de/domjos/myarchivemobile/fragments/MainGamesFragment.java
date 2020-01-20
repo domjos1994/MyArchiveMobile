@@ -18,6 +18,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -33,6 +34,7 @@ public class MainGamesFragment extends ParentFragment {
     private String search;
 
     private BaseDescriptionObject currentObject = null;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_games, container, false);
@@ -81,14 +83,16 @@ public class MainGamesFragment extends ParentFragment {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Game game = this.gamePagerAdapter.getMediaObject();
-                    if(this.currentObject!=null) {
-                        game.setId(((Game) this.currentObject.getObject()).getId());
+                    if(this.validator.getState()) {
+                        Game game = this.gamePagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            game.setId(((Game) this.currentObject.getObject()).getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                        this.changeMode(false, false);
+                        this.currentObject = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                    this.changeMode(false, false);
-                    this.currentObject = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -122,6 +126,7 @@ public class MainGamesFragment extends ParentFragment {
         tabLayout.setupWithViewPager(viewPager);
 
         this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.validator = this.gamePagerAdapter.initValidator();
         viewPager.setAdapter(this.gamePagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

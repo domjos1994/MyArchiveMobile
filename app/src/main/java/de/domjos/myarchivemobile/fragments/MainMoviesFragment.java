@@ -18,6 +18,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -35,6 +36,7 @@ public class MainMoviesFragment extends ParentFragment {
     private String search;
 
     private BaseDescriptionObject currentObject = null;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_movies, container, false);
@@ -83,14 +85,16 @@ public class MainMoviesFragment extends ParentFragment {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Movie movie = this.moviePagerAdapter.getMediaObject();
-                    if(this.currentObject!=null) {
-                        movie.setId(((Movie) this.currentObject.getObject()).getId());
+                    if(this.validator.getState()) {
+                        Movie movie = this.moviePagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            movie.setId(((Movie) this.currentObject.getObject()).getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                        this.changeMode(false, false);
+                        this.currentObject = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
-                    this.changeMode(false, false);
-                    this.currentObject = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -124,6 +128,7 @@ public class MainMoviesFragment extends ParentFragment {
         tabLayout.setupWithViewPager(viewPager);
 
         this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.validator = this.moviePagerAdapter.initValidator();
         viewPager.setAdapter(this.moviePagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

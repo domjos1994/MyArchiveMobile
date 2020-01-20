@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -42,6 +43,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private ImageButton cmdMediaGeneralScan, cmdMediaGeneralSearch;
 
     private BaseMediaObject baseMediaObject;
+    private Validator validator;
 
     @Nullable
     @Override
@@ -122,6 +124,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         });
 
         this.changeMode(false);
+        this.validator = this.initValidation(this.validator);
     }
 
     @Override
@@ -197,8 +200,12 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        this.validator = validator;
+        if(this.txtMediaGeneralTitle != null) {
+            this.validator.addEmptyValidator(this.txtMediaGeneralTitle);
+        }
+        return this.validator;
     }
 
     @Override

@@ -7,8 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.AbstractFragment;
 import de.domjos.myarchivemobile.fragments.MediaAlbumFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
@@ -98,5 +100,14 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     @Override
     public int getCount() {
         return 4;
+    }
+
+    @Override
+    public Validator initValidator() {
+        Validator validator = new Validator(super.context, R.mipmap.ic_launcher_round);
+        validator = this.mediaGeneralFragment.initValidation(validator);
+        validator = this.mediaCoverFragment.initValidation(validator);
+        validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
+        return this.mediaAlbumFragment.initValidation(validator);
     }
 }

@@ -11,6 +11,7 @@ import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivemobile.R;
@@ -22,6 +23,7 @@ public final class PersonActivity extends AbstractActivity {
     private BottomNavigationView bottomNavigationView;
 
     private Person person = null;
+    private Validator validator;
 
     public PersonActivity() {
         super(R.layout.person_activity);
@@ -74,14 +76,16 @@ public final class PersonActivity extends AbstractActivity {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Person person = this.personPagerAdapter.getMediaObject();
-                    if(this.person!=null) {
-                        person.setId(this.person.getId());
+                    if(this.validator.getState()) {
+                        Person person = this.personPagerAdapter.getMediaObject();
+                        if(this.person!=null) {
+                            person.setId(this.person.getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
+                        this.changeMode(false, false);
+                        this.person = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
-                    this.changeMode(false, false);
-                    this.person = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -99,6 +103,7 @@ public final class PersonActivity extends AbstractActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         this.personPagerAdapter = new PersonPagerAdapter(this.getSupportFragmentManager(), getApplicationContext());
+        this.validator = this.personPagerAdapter.initValidator();
         viewPager.setAdapter(this.personPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

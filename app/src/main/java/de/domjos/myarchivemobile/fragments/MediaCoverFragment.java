@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -113,8 +114,8 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        return validator;
     }
 
     @Override

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
@@ -88,8 +89,8 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        return validator;
     }
 
     @Override

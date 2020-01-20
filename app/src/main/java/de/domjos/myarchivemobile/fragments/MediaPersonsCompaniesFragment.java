@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -111,8 +112,8 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        return validator;
     }
 
     @Override

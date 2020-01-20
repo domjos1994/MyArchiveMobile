@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivemobile.R;
 
@@ -66,7 +67,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        return validator;
     }
 }

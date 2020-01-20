@@ -18,13 +18,11 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
-import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
@@ -36,6 +34,7 @@ public class MainMusicFragment extends ParentFragment {
     private String search;
 
     private BaseDescriptionObject currentObject = null;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_music, container, false);
@@ -84,14 +83,16 @@ public class MainMusicFragment extends ParentFragment {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Album album = this.albumPagerAdapter.getMediaObject();
-                    if(this.currentObject!=null) {
-                        album.setId(((Album) this.currentObject.getObject()).getId());
+                    if(this.validator.getState()) {
+                        Album album = this.albumPagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            album.setId(((Album) this.currentObject.getObject()).getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                        this.changeMode(false, false);
+                        this.currentObject = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
-                    this.changeMode(false, false);
-                    this.currentObject = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -125,6 +126,7 @@ public class MainMusicFragment extends ParentFragment {
         tabLayout.setupWithViewPager(viewPager);
 
         this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.validator = this.albumPagerAdapter.initValidator();
         viewPager.setAdapter(this.albumPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

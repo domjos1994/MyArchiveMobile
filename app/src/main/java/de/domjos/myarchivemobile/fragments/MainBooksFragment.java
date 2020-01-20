@@ -18,6 +18,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -34,6 +35,7 @@ public class MainBooksFragment extends ParentFragment {
     private String search;
 
     private BaseDescriptionObject currentObject = null;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_books, container, false);
@@ -82,14 +84,16 @@ public class MainBooksFragment extends ParentFragment {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Book book = this.bookPagerAdapter.getMediaObject();
-                    if(this.currentObject!=null) {
-                        book.setId(((Book) this.currentObject.getObject()).getId());
+                    if(this.validator.getState()) {
+                        Book book = this.bookPagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            book.setId(((Book) this.currentObject.getObject()).getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                        this.changeMode(false, false);
+                        this.currentObject = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                    this.changeMode(false, false);
-                    this.currentObject = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -123,6 +127,7 @@ public class MainBooksFragment extends ParentFragment {
         tabLayout.setupWithViewPager(viewPager);
 
         this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.validator = this.bookPagerAdapter.initValidator();
         viewPager.setAdapter(this.bookPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

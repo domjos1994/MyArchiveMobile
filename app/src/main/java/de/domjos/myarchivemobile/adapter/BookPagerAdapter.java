@@ -10,8 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.AbstractFragment;
 import de.domjos.myarchivemobile.fragments.MediaBookFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
@@ -102,5 +104,14 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     @Override
     public int getCount() {
         return 4;
+    }
+
+    @Override
+    public Validator initValidator() {
+        Validator validator = new Validator(super.context, R.mipmap.ic_launcher_round);
+        validator = this.mediaGeneralFragment.initValidation(validator);
+        validator = this.mediaCoverFragment.initValidation(validator);
+        validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
+        return this.mediaBookFragment.initValidation(validator);
     }
 }

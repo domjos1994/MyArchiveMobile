@@ -11,6 +11,7 @@ import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -24,6 +25,7 @@ public final class CompanyActivity extends AbstractActivity {
     private BottomNavigationView bottomNavigationView;
 
     private Company company = null;
+    private Validator validator;
 
     public CompanyActivity() {
         super(R.layout.company_activity);
@@ -76,14 +78,16 @@ public final class CompanyActivity extends AbstractActivity {
                     this.reload();
                     break;
                 case R.id.cmdSave:
-                    Company company = this.companyPagerAdapter.getMediaObject();
-                    if(this.company !=null) {
-                        company.setId(this.company.getId());
+                    if(this.validator.getState()) {
+                        Company company = this.companyPagerAdapter.getMediaObject();
+                        if(this.company !=null) {
+                            company.setId(this.company.getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
+                        this.changeMode(false, false);
+                        this.company = null;
+                        this.reload();
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
-                    this.changeMode(false, false);
-                    this.company = null;
-                    this.reload();
                     break;
             }
             return true;
@@ -101,6 +105,7 @@ public final class CompanyActivity extends AbstractActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         this.companyPagerAdapter = new CompanyPagerAdapter(this.getSupportFragmentManager(), getApplicationContext());
+        this.validator = this.companyPagerAdapter.initValidator();
         viewPager.setAdapter(this.companyPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {

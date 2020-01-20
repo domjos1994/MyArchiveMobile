@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivemobile.R;
 
@@ -48,7 +49,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
     }
 
     @Override
-    public void initValidation() {
-
+    public Validator initValidation(Validator validator) {
+        return validator;
     }
 }
