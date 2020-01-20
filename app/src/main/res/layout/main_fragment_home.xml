@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:itemIcon="@mipmap/ic_launcher_round"
-        app:listItemBackground="@drawable/side_nav_bar"
+        app:listItemBackground="@drawable/background"
+        app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 </LinearLayout>

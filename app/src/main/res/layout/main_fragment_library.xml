@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         app:itemIcon="@mipmap/ic_launcher_round"
-        app:listItemBackground="@drawable/side_nav_bar"
+        app:listItemBackground="@drawable/background"
         app:readOnly="true"
         android:padding="4dp"/>
 
@@ -28,7 +28,8 @@
         android:layout_height="0dp"
         android:layout_weight="3"
         app:itemIcon="@drawable/ic_local_library_black_24dp"
-        app:listItemBackground="@drawable/side_nav_bar"
+        app:listItemBackground="@drawable/background"
+        app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 
     <EditText

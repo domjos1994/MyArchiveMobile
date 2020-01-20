@@ -7,4 +7,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:itemIcon="@mipmap/ic_launcher_round"
     app:readOnly="true"
-    app:listItemBackground="@drawable/side_nav_bar"/>
+    app:listItemBackground="@drawable/background"
+    app:listItemDivider="@drawable/divider"/>
