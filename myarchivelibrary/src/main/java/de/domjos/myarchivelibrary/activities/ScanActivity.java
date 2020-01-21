@@ -62,7 +62,7 @@ public class ScanActivity extends AbstractActivity {
                     if(!txtScannerCodes.getText().toString().trim().isEmpty()) {
                         txtScannerCodes.setText(String.format("%s%n%s", txtScannerCodes.getText().toString(), result.getText()));
                     } else {
-                        txtScannerCodes.setText(txtScannerCodes.getText().toString());
+                        txtScannerCodes.setText(result.getText());
                     }
 
                 }
