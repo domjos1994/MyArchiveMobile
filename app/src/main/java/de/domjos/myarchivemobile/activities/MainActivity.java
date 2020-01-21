@@ -125,6 +125,7 @@ public final class MainActivity extends AbstractActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
         return true;
     }
 
@@ -148,6 +149,9 @@ public final class MainActivity extends AbstractActivity {
                 break;
             case R.id.menMainSettings:
                 intent = new Intent(MainActivity.this, SettingsActivity.class);
+                break;
+            case R.id.menMainLog:
+                intent = new Intent(MainActivity.this, LogActivity.class);
                 break;
         }
         if(intent != null) {

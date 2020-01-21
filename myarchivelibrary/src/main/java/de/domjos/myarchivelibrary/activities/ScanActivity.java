@@ -9,7 +9,6 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
@@ -28,6 +27,8 @@ public class ScanActivity extends AbstractActivity {
     private BeepManager beepManager;
     private String lastText;
     private ImageButton cmdScannerSave;
+    private String parent;
+    private boolean single;
 
     public ScanActivity() {
         super(R.layout.scan_activity);
@@ -35,13 +36,7 @@ public class ScanActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.cmdScannerSave.setOnClickListener(event -> {
-            Intent intent = new Intent();
-            intent.putExtra("parent", this.getIntent().getStringExtra("parent"));
-            intent.putExtra("codes", txtScannerCodes.getText().toString());
-            this.setResult(RESULT_OK, intent);
-            this.finish();
-        });
+        this.cmdScannerSave.setOnClickListener(event -> this.finishAction());
     }
 
     @Override
@@ -59,7 +54,13 @@ public class ScanActivity extends AbstractActivity {
                 lastText = result.getText();
                 barcodeView.setStatusText(result.getText());
                 beepManager.playBeepSoundAndVibrate();
-                txtScannerCodes.setText(String.format("%s%n%s", txtScannerCodes.getText(), result.getText()));
+
+                if(single) {
+                    txtScannerCodes.setText(result.getText());
+                    finishAction();
+                } else {
+                    txtScannerCodes.setText(String.format("%s%n%s", txtScannerCodes.getText(), result.getText()));
+                }
             }
 
             @Override
@@ -69,9 +70,17 @@ public class ScanActivity extends AbstractActivity {
 
         this.barcodeView.getBarcodeView().setDecoderFactory(new DefaultDecoderFactory());
         this.barcodeView.initializeFromIntent(getIntent());
-        this.barcodeView.decodeContinuous(callback);
+
+        if(this.single) {
+            this.barcodeView.decodeSingle(callback);
+        } else {
+            this.barcodeView.decodeContinuous(callback);
+        }
 
         this.beepManager = new BeepManager(this);
+
+        this.parent = this.getIntent().getStringExtra("parent");
+        this.single = this.getIntent().getBooleanExtra("single", false);
     }
 
     @Override
@@ -89,5 +98,13 @@ public class ScanActivity extends AbstractActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+
+    private void finishAction() {
+        Intent intent = new Intent();
+        intent.putExtra("parent", this.parent);
+        intent.putExtra("codes", txtScannerCodes.getText().toString());
+        this.setResult(RESULT_OK, intent);
+        this.finish();
     }
 }

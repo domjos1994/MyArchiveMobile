@@ -22,6 +22,8 @@
     <string name="library_deadline">Deadline</string>
     <string name="library_returnedAt">Returned at</string>
 
+    <string name="log" translatable="false">Log</string>
+
     <string name="main_navigation_media">Media</string>
     <string name="main_navigation_media_music">Music</string>
     <string name="main_navigation_media_movies">Movies</string>

@@ -21,6 +21,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
+import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -34,6 +35,8 @@ import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
@@ -81,7 +84,12 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.cmdMediaGeneralSearch = view.findViewById(R.id.cmdMediaGeneralCodeSearch);
         this.cmdMediaGeneralScan = view.findViewById(R.id.cmdMediaGeneralCodeScan);
 
-        this.cmdMediaGeneralScan.setOnClickListener(view1 -> IntentHelper.startScan(this.getActivity()));
+        this.cmdMediaGeneralScan.setOnClickListener(view1 -> {
+            Intent intent = new Intent(this.getActivity(), ScanActivity.class);
+            intent.putExtra("parent", "");
+            intent.putExtra("single", true);
+            startActivityForResult(intent, 234);
+        });
 
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
             try {
@@ -202,7 +210,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     @Override
     public Validator initValidation(Validator validator) {
         this.validator = validator;
-        if(this.txtMediaGeneralTitle != null) {
+        if(this.txtMediaGeneralTitle != null  && this.validator != null) {
             this.validator.addEmptyValidator(this.txtMediaGeneralTitle);
         }
         return this.validator;
@@ -211,8 +219,9 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         try {
-            String result = IntentHelper.getScanResult(requestCode, resultCode, intent);
-            this.txtMediaGeneralCode.setText(result);
+            if(resultCode == RESULT_OK && requestCode == 234) {
+                this.txtMediaGeneralCode.setText(intent.getStringExtra("codes"));
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

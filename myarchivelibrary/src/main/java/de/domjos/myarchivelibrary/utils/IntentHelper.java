@@ -8,9 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
@@ -18,23 +15,6 @@ import static android.app.Activity.RESULT_OK;
 public class IntentHelper {
     private final static int GALLERY_CODE = 999;
     private final static int CAMERA_CODE = 998;
-
-    public static void startScan(Activity activity) {
-        IntentIntegrator scanIntegrator = new IntentIntegrator(activity);
-        scanIntegrator.initiateScan();
-    }
-
-    public static String getScanResult(int requestCode, int resultCode, Intent intent) {
-        if(resultCode == RESULT_OK) {
-            IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-            if(intentResult != null) {
-                if(intentResult.getContents() != null) {
-                    return intentResult.getContents();
-                }
-            }
-        }
-        return "";
-    }
 
 
     public static void startGalleryIntent(Activity activity) {
