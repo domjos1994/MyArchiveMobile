@@ -5,7 +5,9 @@
 
     <string name="service_google_search" translatable="false">Google Books</string>
     <string name="service_google_search_content">Search in Google Books…</string>
+
     <string name="service_ean_data_search" translatable="false">EANData</string>
+    <string name="service_ean_data_key" translatable="false">ACDEF0595E238EA3</string>
     <string name="service_ean_data_search_content">Search in EANData…</string>
 
     <string name="sqLite_name" translatable="false">MyArchiveMobile.db</string>

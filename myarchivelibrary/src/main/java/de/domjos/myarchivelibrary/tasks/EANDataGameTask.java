@@ -29,7 +29,7 @@ public class EANDataGameTask extends AbstractTask<String, Void, List<Game>> {
 
         for(String code : strings) {
             try {
-                EANDataService eanDataService = new EANDataService(code, this.key);
+                EANDataService eanDataService = new EANDataService(code, this.key, super.getContext());
                 Game game = eanDataService.executeGame();
 
                 if(game != null) {

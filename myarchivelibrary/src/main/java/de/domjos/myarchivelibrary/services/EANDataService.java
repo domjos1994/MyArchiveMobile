@@ -1,11 +1,14 @@
 package de.domjos.myarchivelibrary.services;
 
+import android.content.Context;
+
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.Calendar;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -16,14 +19,16 @@ import de.domjos.myarchivelibrary.model.media.music.Album;
 
 public class EANDataService extends JSONService {
     private final static String BASE_URL = "https://eandata.com/feed/?v=3&keycode=%s&mode=json&find=%s";
-    private String key = "ACDEF0595E238EA3";
+    private String key = "";
     private String code;
 
-    public EANDataService(String code, String key) {
+    public EANDataService(String code, String key, Context context) {
         this.code = code;
 
         if(!key.isEmpty()) {
             this.key = key;
+        } else {
+            this.key = context.getString(R.string.service_ean_data_key);
         }
     }
 

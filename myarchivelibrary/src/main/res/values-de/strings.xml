@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="scanner_codes">Codes</string>
+
     <string name="service_google_search_content">In Google Books suchen…</string>
+
     <string name="service_ean_data_search_content">In EANData suchen…</string>
 
     <string name="scanner_save">Übernehmen</string>

@@ -29,7 +29,7 @@ public class EANDataMovieTask extends AbstractTask<String, Void, List<Movie>> {
 
         for(String code : strings) {
             try {
-                EANDataService eanDataService = new EANDataService(code, this.key);
+                EANDataService eanDataService = new EANDataService(code, this.key, super.getContext());
                 Movie movie = eanDataService.executeMovie();
 
                 if(movie != null) {

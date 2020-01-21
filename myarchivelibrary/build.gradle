@@ -37,10 +37,14 @@ dependencies {
     implementation ("com.journeyapps:zxing-android-embedded:3.5.0") {transitive = false}
     implementation 'com.google.zxing:core:3.3.2'
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    // pdf
+    implementation 'com.itextpdf:itextg:5.5.10'
 
     // import own libraries
     implementation project(path: ':customwidgets')
+
+    // android
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 
     // test libraries
     testImplementation "junit:junit:$propJUnitVersion"

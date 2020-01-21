@@ -5,7 +5,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -15,12 +14,11 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import androidx.appcompat.widget.Toolbar;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -28,6 +26,7 @@ import android.view.MenuItem;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -220,18 +219,27 @@ public final class MainActivity extends AbstractActivity {
     }
 
     private void initPermissions() {
-        String extStore = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        String camera = Manifest.permission.CAMERA;
-        String internet = Manifest.permission.INTERNET;
         Activity act = MainActivity.this;
-        int grant = PackageManager.PERMISSION_GRANTED;
+        try {
+            int grant = PackageManager.PERMISSION_GRANTED;
 
-        if(
-            ContextCompat.checkSelfPermission(act, extStore) != grant ||
-            ContextCompat.checkSelfPermission(act, camera) != grant ||
-            ContextCompat.checkSelfPermission(act, internet) != grant) {
+            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_PERMISSIONS);
+            if(info.requestedPermissions != null) {
 
-            ActivityCompat.requestPermissions(act, new String[]{extStore, camera, internet}, 99);
+                List<String> permissions = new LinkedList<>();
+                boolean grantState = true;
+                for(String perm : info.requestedPermissions) {
+                    permissions.add(perm);
+                    if(ContextCompat.checkSelfPermission(act, perm) != grant) {
+                        grantState = false;
+                    }
+                }
+                if(!grantState) {
+                    ActivityCompat.requestPermissions(act, permissions.toArray(new String[]{}), 99);
+                }
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, act);
         }
     }
 }

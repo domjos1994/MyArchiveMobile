@@ -29,7 +29,7 @@ public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
 
         for(String code : strings) {
             try {
-                EANDataService eanDataService = new EANDataService(code, this.key);
+                EANDataService eanDataService = new EANDataService(code, this.key, super.getContext());
                 Album album = eanDataService.executeAlbum();
 
                 if(album != null) {
