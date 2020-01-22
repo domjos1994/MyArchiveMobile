@@ -1,7 +1,13 @@
 package de.domjos.myarchivemobile.helper;
 
+import android.app.Activity;
 import android.content.Context;
 
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
+
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,5 +78,24 @@ public class ControlsHelper {
         }
         baseDescriptionObject.setObject(baseMediaObject);
         return baseDescriptionObject;
+    }
+
+    public static FilePickerDialog openFilePicker(boolean multi, boolean directory, List<String> extensions, Activity activity) {
+        DialogProperties dialogProperties = new DialogProperties();
+        if(multi) {
+            dialogProperties.selection_mode = DialogConfigs.MULTI_MODE;
+        } else {
+            dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
+        }
+        if(directory) {
+            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
+        } else {
+            dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
+        }
+        dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.extensions = extensions.toArray(new String[]{});
+        return new FilePickerDialog(activity, dialogProperties);
     }
 }

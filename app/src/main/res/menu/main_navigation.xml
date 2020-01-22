@@ -8,11 +8,6 @@
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/app_name" />
 
-    <item
-        android:id="@+id/navMainLibrary"
-        android:icon="@drawable/ic_local_library_black_24dp"
-        android:title="@string/library" />
-
     <item android:title="@string/main_navigation_media">
         <menu>
             <item
@@ -32,5 +27,16 @@
                 android:icon="@drawable/ic_games_black_24dp"
                 android:title="@string/main_navigation_media_games" />
         </menu>
+    </item>
+
+    <item android:title="@string/media_general">
+        <item
+            android:id="@+id/navMainLibrary"
+            android:icon="@drawable/ic_local_library_black_24dp"
+            android:title="@string/library" />
+        <item
+            android:id="@+id/navMainExport"
+            android:icon="@drawable/ic_import_export_black_24dp"
+            android:title="@string/export" />
     </item>
 </menu>

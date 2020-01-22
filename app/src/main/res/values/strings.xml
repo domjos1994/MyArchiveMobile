@@ -12,6 +12,8 @@
     <string name="book_edition">Edition</string>
     <string name="book_topics">Topics</string>
 
+    <string name="export">Export</string>
+
     <string name="game">Game</string>
     <string name="game_length">Length</string>
     <string name="game_type">Type</string>
@@ -76,4 +78,5 @@
     <string name="sys_title">Title</string>
     <string name="sys_description">Description</string>
     <string name="sys_date_format">yyyy-MM-dd</string>
+    <string name="export_search">...</string>
 </resources>

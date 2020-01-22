@@ -11,6 +11,8 @@
     <string name="book_topics">Themen</string>
     <string name="book_type">Typ</string>
 
+    <string name="export">Export</string>
+
     <string name="game">Spiel</string>
     <string name="game_length">Länge</string>
     <string name="game_type">Typ</string>
@@ -72,4 +74,5 @@
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_save">Speichern</string>
     <string name="sys_title">Titel</string>
+    <string name="export_search">...</string>
 </resources>

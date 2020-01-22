@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="10">
+
+    <TableRow>
+        <EditText
+            android:id="@+id/txtExportPath"
+            android:hint="@string/movie_path"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="9"/>
+        <Button
+            android:id="@+id/cmdExportPath"
+            android:text="@string/export_search"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+    </TableRow>
+
+    <TableRow>
+        <CheckBox
+            android:id="@+id/chkExportBooks"
+            android:hint="@string/main_navigation_media_books"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="5"/>
+        <CheckBox
+            android:id="@+id/chkExportMovies"
+            android:hint="@string/main_navigation_media_movies"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="5"/>
+    </TableRow>
+
+    <TableRow>
+        <CheckBox
+            android:id="@+id/chkExportMusic"
+            android:hint="@string/main_navigation_media_music"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="5"/>
+        <CheckBox
+            android:id="@+id/chkExportGames"
+            android:hint="@string/main_navigation_media_games"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="5"/>
+    </TableRow>
+    <TableRow>
+    <ImageButton
+        android:id="@+id/cmdExport"
+        android:src="@drawable/ic_import_export_black_24dp"
+        app:srcCompat="@drawable/ic_import_export_black_24dp"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="10"
+        tools:ignore="VectorDrawableCompat" />
+    </TableRow>
+</TableLayout>
