@@ -1,5 +1,7 @@
 package de.domjos.myarchivelibrary.services;
 
+import android.content.Context;
+import de.domjos.myarchivelibrary.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,15 +17,17 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
 public class GoogleBooksService extends JSONService {
-    private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
+    private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s";
+    private final String KEY;
     private String code;
 
-    public GoogleBooksService(String code) {
+    public GoogleBooksService(String code, Context context) {
         this.code = code;
+        this.KEY = context.getString(R.string.service_google_key);
     }
 
     public Book execute() throws Exception {
-        String content = this.readUrl(new URL(GoogleBooksService.BASE_URL + code));
+        String content = this.readUrl(new URL(String.format(GoogleBooksService.BASE_URL, this.code, this.KEY)));
         return this.getBookFromJsonString(content);
     }
 
