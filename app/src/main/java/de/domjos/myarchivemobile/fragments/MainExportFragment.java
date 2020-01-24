@@ -32,6 +32,7 @@ public class MainExportFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_export, container, false);
 
         EditText txtExportPath = root.findViewById(R.id.txtExportPath);
+        EditText txtExportName = root.findViewById(R.id.txtExportName);
         Button cmdExportPath = root.findViewById(R.id.cmdExportPath);
         cmdExportPath.setOnClickListener(event -> {
             FilePickerDialog dialog = ControlsHelper.openFilePicker(false, true, Arrays.asList("pdf", "PDF"), MainExportFragment.this.getActivity());
@@ -42,6 +43,7 @@ public class MainExportFragment extends ParentFragment {
                     }
                 }
             });
+            dialog.show();
         });
 
         CheckBox chkExportBooks = root.findViewById(R.id.chkExportBooks);
@@ -52,7 +54,7 @@ public class MainExportFragment extends ParentFragment {
         ImageButton cmdExport = root.findViewById(R.id.cmdExport);
         cmdExport.setOnClickListener(event -> {
             try {
-                String path = txtExportPath.getText().toString() + File.separatorChar + "export.pdf";
+                String path = txtExportPath.getText().toString() + File.separatorChar  + txtExportName.getText().toString() + ".pdf";
                 List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
                 if(chkExportBooks.isChecked()) {
                     baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getBooks(""));

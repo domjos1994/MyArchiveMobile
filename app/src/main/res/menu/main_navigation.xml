@@ -29,14 +29,16 @@
         </menu>
     </item>
 
-    <item android:title="@string/media_general">
-        <item
-            android:id="@+id/navMainLibrary"
-            android:icon="@drawable/ic_local_library_black_24dp"
-            android:title="@string/library" />
-        <item
-            android:id="@+id/navMainExport"
-            android:icon="@drawable/ic_import_export_black_24dp"
-            android:title="@string/export" />
+    <item android:title="@string/media_general" >
+        <menu>
+            <item
+                android:id="@+id/navMainLibrary"
+                android:icon="@drawable/ic_local_library_black_24dp"
+                android:title="@string/library" />
+            <item
+                android:id="@+id/navMainExport"
+                android:icon="@drawable/ic_import_export_black_24dp"
+                android:title="@string/export" />
+        </menu>
     </item>
 </menu>

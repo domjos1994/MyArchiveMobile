@@ -2,12 +2,16 @@ package de.domjos.myarchivelibrary.services;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.FileOutputStream;
@@ -41,7 +45,8 @@ public class PDFService {
 
 
         this.document = new Document();
-        PdfWriter.getInstance(this.document, new FileOutputStream(file));
+        PdfWriter pdfWriter = PdfWriter.getInstance(this.document, new FileOutputStream(file));
+        pdfWriter.setPageEvent(new PDFService.HeaderFooter(PDFService.P));
         this.document.open();
     }
 
@@ -52,7 +57,7 @@ public class PDFService {
         this.newPage();
     }
 
-    public void addTable(Map<String, Float> columns, List<List<String>> content, int headerColor, int contentColor) throws Exception {
+    public void addTable(Map<String, Float> columns, List<List<String>> content, int headerColor, int contentColor, float padding) throws Exception {
         float[] columnSizes = new float[columns.values().size()];
         int i = 0;
         for(Float size : columns.values()) {
@@ -61,6 +66,7 @@ public class PDFService {
         }
 
         PdfPTable pdfPTable = new PdfPTable(columnSizes);
+        pdfPTable.setPaddingTop(padding);
         for(String columnHeader : columns.keySet()) {
             PdfPCell cell = new PdfPCell(new Phrase(columnHeader, this.fonts.get(PDFService.H5)));
             cell.setBackgroundColor(new BaseColor(headerColor));
@@ -113,5 +119,24 @@ public class PDFService {
 
     public void close() {
         this.document.close();
+    }
+
+    private class HeaderFooter extends PdfPageEventHelper {
+        private String font;
+
+        HeaderFooter(String font) {
+            this.font = font;
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            Rectangle rect = writer.getPageSize();
+            try {
+                ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("(c) 2020 MyArchiveMobile", fonts.get(this.font)), 10, 18, 0);
+                ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_RIGHT, new Phrase(String.valueOf(writer.getPageNumber()), fonts.get(this.font)), rect.getWidth() - 10, 18, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

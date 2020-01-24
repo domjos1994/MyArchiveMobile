@@ -13,13 +13,23 @@
             android:hint="@string/movie_path"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight="9"/>
+            android:layout_weight="8"/>
         <Button
             android:id="@+id/cmdExportPath"
             android:text="@string/export_search"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="2"/>
+    </TableRow>
+
+    <TableRow>
+        <EditText
+            android:id="@+id/txtExportName"
+            android:hint="@string/export_name"
+            android:text="@string/export_name_default"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="10"/>
     </TableRow>
 
     <TableRow>

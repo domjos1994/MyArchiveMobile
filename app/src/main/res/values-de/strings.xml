@@ -12,6 +12,8 @@
     <string name="book_type">Typ</string>
 
     <string name="export">Export</string>
+    <string name="export_name">Datei-Name</string>
+    <string name="export_name_default">export</string>
 
     <string name="game">Spiel</string>
     <string name="game_length">Länge</string>

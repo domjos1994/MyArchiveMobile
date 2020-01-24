@@ -13,6 +13,8 @@
     <string name="book_topics">Topics</string>
 
     <string name="export">Export</string>
+    <string name="export_name">File-Name</string>
+    <string name="export_name_default">export</string>
 
     <string name="game">Game</string>
     <string name="game_length">Length</string>

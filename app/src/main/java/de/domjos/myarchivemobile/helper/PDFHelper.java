@@ -131,39 +131,43 @@ public class PDFHelper {
     }
 
     private void addPersons(List<Person> people) throws Exception {
-        Map<String, Float> columns = new LinkedHashMap<>();
-        columns.put(this.context.getString(R.string.media_persons_firstName), 150.0f);
-        columns.put(this.context.getString(R.string.media_persons_lastName), 150.0f);
-        columns.put(this.context.getString(R.string.media_persons_birthDate), 150.0f);
+        if(!people.isEmpty()) {
+            Map<String, Float> columns = new LinkedHashMap<>();
+            columns.put(this.context.getString(R.string.media_persons_firstName), 150.0f);
+            columns.put(this.context.getString(R.string.media_persons_lastName), 150.0f);
+            columns.put(this.context.getString(R.string.media_persons_birthDate), 150.0f);
 
-        List<List<String>> rows = new LinkedList<>();
-        for(Person person : people) {
-            String birthDate = "";
-            if(person.getBirthDate() != null) {
-                birthDate = Converter.convertDateToString(person.getBirthDate(), this.context.getString(R.string.sys_date_format));
+            List<List<String>> rows = new LinkedList<>();
+            for(Person person : people) {
+                String birthDate = "";
+                if(person.getBirthDate() != null) {
+                    birthDate = Converter.convertDateToString(person.getBirthDate(), this.context.getString(R.string.sys_date_format));
+                }
+
+                rows.add(Arrays.asList(person.getFirstName(), person.getLastName(), birthDate));
             }
 
-            rows.add(Arrays.asList(person.getFirstName(), person.getLastName(), birthDate));
+            this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10f);
         }
-
-        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor);
     }
 
     private void addCompanies(List<Company> companies) throws Exception {
-        Map<String, Float> columns = new LinkedHashMap<>();
-        columns.put(this.context.getString(R.string.sys_title), 150.0f);
-        columns.put(this.context.getString(R.string.media_companies_foundation), 150.0f);
+        if(!companies.isEmpty()) {
+            Map<String, Float> columns = new LinkedHashMap<>();
+            columns.put(this.context.getString(R.string.sys_title), 150.0f);
+            columns.put(this.context.getString(R.string.media_companies_foundation), 150.0f);
 
-        List<List<String>> rows = new LinkedList<>();
-        for(Company company : companies) {
-            String foundation = "";
-            if(company.getFoundation() != null) {
-                foundation = Converter.convertDateToString(company.getFoundation(), this.context.getString(R.string.sys_date_format));
+            List<List<String>> rows = new LinkedList<>();
+            for(Company company : companies) {
+                String foundation = "";
+                if(company.getFoundation() != null) {
+                    foundation = Converter.convertDateToString(company.getFoundation(), this.context.getString(R.string.sys_date_format));
+                }
+
+                rows.add(Arrays.asList(company.getTitle(), foundation));
             }
 
-            rows.add(Arrays.asList(company.getTitle(), foundation));
+            this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10f);
         }
-
-        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor);
     }
 }

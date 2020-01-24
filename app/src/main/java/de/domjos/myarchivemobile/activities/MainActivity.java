@@ -46,6 +46,8 @@ public final class MainActivity extends AbstractActivity {
     private NavHostFragment navHostFragment;
     public static Globals GLOBALS = new Globals();
     private SearchView cmdSearch;
+    private Menu menu;
+    private String label;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -70,6 +72,20 @@ public final class MainActivity extends AbstractActivity {
         this.cmdSearch.setOnCloseListener(() -> {
             initSearch("");
             return false;
+        });
+
+        this.navHostFragment.getNavController().addOnDestinationChangedListener((controller, destination, arguments) -> {
+            this.label = Objects.requireNonNull(destination.getLabel()).toString();
+            if(this.menu != null) {
+                menu.findItem(R.id.menMainScanner).setVisible(
+                        (
+                                this.label.equals(this.getString(R.string.main_navigation_media_books)) ||
+                                        this.label.equals(this.getString(R.string.main_navigation_media_movies)) ||
+                                        this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
+                                        this.label.equals(this.getString(R.string.main_navigation_media_games))
+                        )
+                );
+            }
         });
     }
 
@@ -113,6 +129,8 @@ public final class MainActivity extends AbstractActivity {
         NavigationUI.setupActionBarWithNavController(this, this.navController, this.appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, this.navController);
 
+        this.label = Objects.requireNonNull(Objects.requireNonNull(this.navHostFragment.getNavController().getCurrentDestination()).getLabel()).toString();
+
         // init globals
         try {
             this.initGlobals();
@@ -123,8 +141,17 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainScanner).setVisible(
+                (
+                        this.label.equals(this.getString(R.string.main_navigation_media_books)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_movies)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_games))
+                )
+        );
         return true;
     }
 
@@ -135,7 +162,7 @@ public final class MainActivity extends AbstractActivity {
         switch (item.getItemId()) {
             case R.id.menMainScanner:
                 intent = new Intent(MainActivity.this, ScanActivity.class);
-                intent.putExtra("parent", Objects.requireNonNull(this.navHostFragment.getNavController().getCurrentDestination()).getLabel());
+                intent.putExtra("parent", this.label);
                 break;
             case R.id.menMainPersons:
                 intent = new Intent(MainActivity.this, PersonActivity.class);
@@ -174,6 +201,9 @@ public final class MainActivity extends AbstractActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && requestCode==99) {
+            if(this.menu != null) {
+                this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+            }
             List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
             for(Fragment fragment : fragments) {
                 if(fragment instanceof ParentFragment) {
