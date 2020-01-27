@@ -24,6 +24,7 @@
     <string name="library_numberOfDays">Anzahl Tage</string>
     <string name="library_numberOfWeeks">Anzahl Wochen</string>
     <string name="library_returnedAt">Zurückgegeben am</string>
+    <string name="library_lendOut">Ausgeliehen</string>
 
     <string name="main_navigation_media">Medien</string>
     <string name="main_navigation_media_books">Bücher</string>

@@ -332,164 +332,8 @@ public class Database extends SQLiteOpenHelper {
         return baseMediaObjects;
     }
 
-
-    private String getCategoryWhere(String table, long id) {
-        List<Long> idList = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT id FROM %s WHERE category=?", table), new String[]{String.valueOf(id)});
-        while (cursor.moveToNext()) {
-            idList.add(cursor.getLong(cursor.getColumnIndex("id")));
-        }
-        cursor.close();
-        return TextUtils.join(", ", idList) + ")";
-    }
-
-    private String getWhere(String table, String foreignTable, long id) {
-        List<Long> idList = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT %s FROM %s_%s WHERE id=?", table, table, foreignTable), new String[]{String.valueOf(id)});
-        while (cursor.moveToNext()) {
-            idList.add(cursor.getLong(cursor.getColumnIndex(table)));
-        }
-        cursor.close();
-        return TextUtils.join(", ", idList) + ")";
-    }
-
     public void deleteItem(DatabaseObject databaseObject) {
         this.getWritableDatabase().execSQL(String.format("DELETE FROM %s WHERE id=%s", databaseObject.getTable(), databaseObject.getId()));
-    }
-
-    private void insertOrUpdateSong(Song song, long id) {
-        SQLiteStatement statement = this.getStatement(song, Arrays.asList("length", "path", "album"));
-        this.insertOrUpdateBaseMediaObject(statement, song);
-        statement.bindDouble(9, song.getLength());
-        statement.bindString(10, song.getPath());
-        statement.bindLong(11, id);
-
-        if(song.getId() == 0) {
-            song.setId(statement.executeInsert());
-        } else {
-            statement.execute();
-        }
-        statement.close();
-
-        this.saveForeignTables(song, song.getTable());
-    }
-
-    private List<Song> getSongs(String where) throws Exception {
-        List<Song> songs = new LinkedList<>();
-        if(!where.trim().isEmpty()) {
-            where = " WHERE " + where;
-        }
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM songs" + where, null);
-        while (cursor.moveToNext()) {
-            Song song = new Song();
-            this.getMediaObjectFromCursor(cursor, song, "songs");
-            song.setLength(cursor.getDouble(cursor.getColumnIndex("length")));
-            song.setPath(cursor.getString(cursor.getColumnIndex("path")));
-            songs.add(song);
-        }
-        cursor.close();
-        return songs;
-    }
-
-    private SQLiteStatement getStatement(DatabaseObject databaseObject, List<String> columns) {
-        List<String> baseColumns = Arrays.asList("title", "originalTitle", "releaseDate", "code", "price", "category", "cover", "description");
-        String[] allColumns = new String[baseColumns.size() + columns.size()];
-
-        int i = 0;
-        for(String column : baseColumns) {
-            allColumns[i] = column;
-            i++;
-        }
-        for(String column : columns) {
-            allColumns[i] = column;
-            i++;
-        }
-
-        return this.getBaseStatement(databaseObject, Arrays.asList(allColumns));
-    }
-
-    private SQLiteStatement getBaseStatement(DatabaseObject databaseObject, List<String> columns) {
-        String[] allColumns = new String[columns.size()];
-        String[] allQuestionMarks = new String[columns.size()];
-
-        int i = 0;
-        for(String column : columns) {
-            allColumns[i] = column;
-            allQuestionMarks[i] = "?";
-            i++;
-        }
-
-        if(databaseObject.getId() == 0) {
-            String columnString = TextUtils.join(", ", allColumns);
-            String questionString = TextUtils.join(", ", allQuestionMarks);
-
-            return this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s(%s) VALUES(%s)", databaseObject.getTable(), columnString, questionString));
-        } else {
-            String columnString = (TextUtils.join("=?, ", allColumns)) + "=?";
-            return this.getWritableDatabase().compileStatement(String.format("UPDATE %s SET %s WHERE id=%s", databaseObject.getTable(), columnString, databaseObject.getId()));
-        }
-    }
-
-    private void insertOrUpdateBaseMediaObject(SQLiteStatement sqLiteStatement, BaseMediaObject baseMediaObject) {
-        sqLiteStatement.bindString(1, baseMediaObject.getTitle());
-        sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
-        if(baseMediaObject.getReleaseDate()!=null) {
-            sqLiteStatement.bindString(3, Objects.requireNonNull(Converter.convertDateToString(baseMediaObject.getReleaseDate(), "yyyy-MM-dd")));
-        } else {
-            sqLiteStatement.bindNull(3);
-        }
-        sqLiteStatement.bindString(4, baseMediaObject.getCode());
-        sqLiteStatement.bindDouble(5, baseMediaObject.getPrice());
-        if(baseMediaObject.getCategory()!=null) {
-            sqLiteStatement.bindLong(6, this.insertOrUpdateBaseObject(baseMediaObject.getCategory(), "categories", "", 0));
-        } else {
-            sqLiteStatement.bindLong(6, 0);
-        }
-        if(baseMediaObject.getCover() != null) {
-            sqLiteStatement.bindBlob(7, baseMediaObject.getCover());
-        } else {
-            sqLiteStatement.bindNull(7);
-        }
-        sqLiteStatement.bindString(8, baseMediaObject.getDescription());
-    }
-
-    private void saveForeignTables(BaseMediaObject baseMediaObject, String table) {
-        for(BaseDescriptionObject tag : baseMediaObject.getTags()) {
-            this.insertOrUpdateBaseObject(tag, "tags", table, baseMediaObject.getId());
-        }
-        for(Person person : baseMediaObject.getPersons()) {
-            this.insertOrUpdatePerson(person, table, baseMediaObject.getId());
-        }
-        for(Company company : baseMediaObject.getCompanies()) {
-            this.insertOrUpdateCompany(company, table, baseMediaObject.getId());
-        }
-        for(LibraryObject libraryObject : baseMediaObject.getLibraryObjects()) {
-            this.insertOrUpdateLibraryObject(libraryObject, baseMediaObject);
-        }
-    }
-
-    private void getMediaObjectFromCursor(Cursor cursor, BaseMediaObject baseMediaObject, String table) throws Exception {
-        baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
-        baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-        baseMediaObject.setOriginalTitle(cursor.getString(cursor.getColumnIndex("originalTitle")));
-        String dt = cursor.getString(cursor.getColumnIndex("releaseDate"));
-        if(dt != null) {
-            if(!dt.isEmpty()) {
-                baseMediaObject.setReleaseDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
-            }
-        }
-        baseMediaObject.setCode(cursor.getString(cursor.getColumnIndex("code")));
-        baseMediaObject.setPrice(cursor.getDouble(cursor.getColumnIndex("price")));
-        int category = cursor.getInt(cursor.getColumnIndex("category"));
-        if(category != 0) {
-            baseMediaObject.setCategory(this.getBaseObjects("categories", "", 0, "id=" + category).get(0));
-        }
-        baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
-        baseMediaObject.setDescription(cursor.getString(cursor.getColumnIndex("description")));
-        baseMediaObject.setTags(this.getBaseObjects("tags", table, baseMediaObject.getId(), ""));
-        baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
-        baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
-        baseMediaObject.setLibraryObjects(this.getLibraryObjects("media=" + baseMediaObject.getId() + " AND type='" + table + "'"));
     }
 
     public long insertOrUpdateBaseObject(BaseDescriptionObject baseDescriptionObject, String table, String foreignTable, long id) {
@@ -769,6 +613,170 @@ public class Database extends SQLiteOpenHelper {
         }
 
         return companies;
+    }
+
+    private void insertOrUpdateSong(Song song, long id) {
+        SQLiteStatement statement = this.getStatement(song, Arrays.asList("length", "path", "album"));
+        this.insertOrUpdateBaseMediaObject(statement, song);
+        statement.bindDouble(9, song.getLength());
+        statement.bindString(10, song.getPath());
+        statement.bindLong(11, id);
+
+        if(song.getId() == 0) {
+            song.setId(statement.executeInsert());
+        } else {
+            statement.execute();
+        }
+        statement.close();
+
+        this.saveForeignTables(song, song.getTable());
+    }
+
+    private List<Song> getSongs(String where) throws Exception {
+        List<Song> songs = new LinkedList<>();
+        if(!where.trim().isEmpty()) {
+            where = " WHERE " + where;
+        }
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM songs" + where, null);
+        while (cursor.moveToNext()) {
+            Song song = new Song();
+            this.getMediaObjectFromCursor(cursor, song, "songs");
+            song.setLength(cursor.getDouble(cursor.getColumnIndex("length")));
+            song.setPath(cursor.getString(cursor.getColumnIndex("path")));
+            songs.add(song);
+        }
+        cursor.close();
+        return songs;
+    }
+
+    private SQLiteStatement getStatement(DatabaseObject databaseObject, List<String> columns) {
+        List<String> baseColumns = Arrays.asList("title", "originalTitle", "releaseDate", "code", "price", "category", "cover", "description");
+        String[] allColumns = new String[baseColumns.size() + columns.size()];
+
+        int i = 0;
+        for(String column : baseColumns) {
+            allColumns[i] = column;
+            i++;
+        }
+        for(String column : columns) {
+            allColumns[i] = column;
+            i++;
+        }
+
+        return this.getBaseStatement(databaseObject, Arrays.asList(allColumns));
+    }
+
+    private SQLiteStatement getBaseStatement(DatabaseObject databaseObject, List<String> columns) {
+        String[] allColumns = new String[columns.size()];
+        String[] allQuestionMarks = new String[columns.size()];
+
+        int i = 0;
+        for(String column : columns) {
+            allColumns[i] = column;
+            allQuestionMarks[i] = "?";
+            i++;
+        }
+
+        if(databaseObject.getId() == 0) {
+            String columnString = TextUtils.join(", ", allColumns);
+            String questionString = TextUtils.join(", ", allQuestionMarks);
+
+            return this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s(%s) VALUES(%s)", databaseObject.getTable(), columnString, questionString));
+        } else {
+            String columnString = (TextUtils.join("=?, ", allColumns)) + "=?";
+            return this.getWritableDatabase().compileStatement(String.format("UPDATE %s SET %s WHERE id=%s", databaseObject.getTable(), columnString, databaseObject.getId()));
+        }
+    }
+
+    private void insertOrUpdateBaseMediaObject(SQLiteStatement sqLiteStatement, BaseMediaObject baseMediaObject) {
+        sqLiteStatement.bindString(1, baseMediaObject.getTitle());
+        sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
+        if(baseMediaObject.getReleaseDate()!=null) {
+            sqLiteStatement.bindString(3, Objects.requireNonNull(Converter.convertDateToString(baseMediaObject.getReleaseDate(), "yyyy-MM-dd")));
+        } else {
+            sqLiteStatement.bindNull(3);
+        }
+        sqLiteStatement.bindString(4, baseMediaObject.getCode());
+        sqLiteStatement.bindDouble(5, baseMediaObject.getPrice());
+        if(baseMediaObject.getCategory()!=null) {
+            sqLiteStatement.bindLong(6, this.insertOrUpdateBaseObject(baseMediaObject.getCategory(), "categories", "", 0));
+        } else {
+            sqLiteStatement.bindLong(6, 0);
+        }
+        if(baseMediaObject.getCover() != null) {
+            sqLiteStatement.bindBlob(7, baseMediaObject.getCover());
+        } else {
+            sqLiteStatement.bindNull(7);
+        }
+        sqLiteStatement.bindString(8, baseMediaObject.getDescription());
+    }
+
+    private void saveForeignTables(BaseMediaObject baseMediaObject, String table) {
+        for(BaseDescriptionObject tag : baseMediaObject.getTags()) {
+            this.insertOrUpdateBaseObject(tag, "tags", table, baseMediaObject.getId());
+        }
+        for(Person person : baseMediaObject.getPersons()) {
+            this.insertOrUpdatePerson(person, table, baseMediaObject.getId());
+        }
+        for(Company company : baseMediaObject.getCompanies()) {
+            this.insertOrUpdateCompany(company, table, baseMediaObject.getId());
+        }
+        for(LibraryObject libraryObject : baseMediaObject.getLibraryObjects()) {
+            this.insertOrUpdateLibraryObject(libraryObject, baseMediaObject);
+        }
+    }
+
+    private void getMediaObjectFromCursor(Cursor cursor, BaseMediaObject baseMediaObject, String table) throws Exception {
+        baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
+        baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+        baseMediaObject.setOriginalTitle(cursor.getString(cursor.getColumnIndex("originalTitle")));
+        String dt = cursor.getString(cursor.getColumnIndex("releaseDate"));
+        if(dt != null) {
+            if(!dt.isEmpty()) {
+                baseMediaObject.setReleaseDate(Converter.convertStringToDate(dt, "yyyy-MM-dd"));
+            }
+        }
+        baseMediaObject.setCode(cursor.getString(cursor.getColumnIndex("code")));
+        baseMediaObject.setPrice(cursor.getDouble(cursor.getColumnIndex("price")));
+        int category = cursor.getInt(cursor.getColumnIndex("category"));
+        if(category != 0) {
+            baseMediaObject.setCategory(this.getBaseObjects("categories", "", 0, "id=" + category).get(0));
+        }
+        baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
+        baseMediaObject.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+        baseMediaObject.setTags(this.getBaseObjects("tags", table, baseMediaObject.getId(), ""));
+        baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
+        baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
+
+        baseMediaObject.setLendOut(false);
+        List<LibraryObject> libraryObjects = this.getLibraryObjects("media=" + baseMediaObject.getId() + " AND type='" + table + "'");
+        for(LibraryObject libraryObject : libraryObjects) {
+            if(libraryObject.getReturned() == null) {
+                baseMediaObject.setLendOut(true);
+                break;
+            }
+        }
+        baseMediaObject.setLibraryObjects(libraryObjects);
+    }
+
+    private String getCategoryWhere(String table, long id) {
+        List<Long> idList = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT id FROM %s WHERE category=?", table), new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            idList.add(cursor.getLong(cursor.getColumnIndex("id")));
+        }
+        cursor.close();
+        return TextUtils.join(", ", idList) + ")";
+    }
+
+    private String getWhere(String table, String foreignTable, long id) {
+        List<Long> idList = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT %s FROM %s_%s WHERE id=?", table, table, foreignTable), new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            idList.add(cursor.getLong(cursor.getColumnIndex(table)));
+        }
+        cursor.close();
+        return TextUtils.join(", ", idList) + ")";
     }
 
     private SQLiteDatabase getWritableDatabase() {

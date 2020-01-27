@@ -26,38 +26,44 @@ public class ControlsHelper {
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws Exception {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(search)) {
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
             baseDescriptionObject.setCover(baseMediaObject.getCover());
             baseDescriptionObject.setDescription(context.getString(R.string.book));
             baseDescriptionObject.setObject(baseMediaObject);
             baseDescriptionObjects.add(baseDescriptionObject);
         }
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(search)) {
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
             baseDescriptionObject.setCover(baseMediaObject.getCover());
             baseDescriptionObject.setDescription(context.getString(R.string.movie));
             baseDescriptionObject.setObject(baseMediaObject);
             baseDescriptionObjects.add(baseDescriptionObject);
         }
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(search)) {
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
             baseDescriptionObject.setCover(baseMediaObject.getCover());
             baseDescriptionObject.setDescription(context.getString(R.string.album));
             baseDescriptionObject.setObject(baseMediaObject);
             baseDescriptionObjects.add(baseDescriptionObject);
         }
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(search)) {
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
             baseDescriptionObject.setCover(baseMediaObject.getCover());
             baseDescriptionObject.setDescription(context.getString(R.string.game));
             baseDescriptionObject.setObject(baseMediaObject);
             baseDescriptionObjects.add(baseDescriptionObject);
         }
         return baseDescriptionObjects;
+    }
+
+    private static BaseDescriptionObject setItem(Context context, BaseMediaObject baseMediaObject) {
+        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+        if(baseMediaObject.isLendOut()) {
+            baseDescriptionObject.setTitle(baseMediaObject.getTitle() + " (" + context.getString(R.string.library_lendOut) + ")");
+        } else {
+            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+        }
+        return baseDescriptionObject;
     }
 
     public static BaseDescriptionObject convertMediaToDescriptionObject(BaseMediaObject baseMediaObject, Context context) {

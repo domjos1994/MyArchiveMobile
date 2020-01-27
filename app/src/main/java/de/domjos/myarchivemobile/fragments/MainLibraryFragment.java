@@ -159,6 +159,7 @@ public class MainLibraryFragment extends ParentFragment {
 
             this.lvMediaLibrary.getAdapter().clear();
             for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
+                baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
                 this.lvMediaLibrary.getAdapter().add(baseDescriptionObject);
             }
             this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);

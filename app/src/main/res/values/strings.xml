@@ -25,6 +25,7 @@
     <string name="library_numberOfWeeks">Number of Weeks</string>
     <string name="library_deadline">Deadline</string>
     <string name="library_returnedAt">Returned at</string>
+    <string name="library_lendOut">Lend Out</string>
 
     <string name="log" translatable="false">Log</string>
 

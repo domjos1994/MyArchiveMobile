@@ -13,6 +13,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
     private Date releaseDate;
     private String code;
     private double price;
+    private boolean lendOut;
     private BaseDescriptionObject category;
     private List<Person> persons;
     private List<Company> companies;
@@ -112,5 +113,13 @@ public class BaseMediaObject extends BaseDescriptionObject {
 
     public void setLibraryObjects(List<LibraryObject> libraryObjects) {
         this.libraryObjects = libraryObjects;
+    }
+
+    public boolean isLendOut() {
+        return this.lendOut;
+    }
+
+    public void setLendOut(boolean lendOut) {
+        this.lendOut = lendOut;
     }
 }
