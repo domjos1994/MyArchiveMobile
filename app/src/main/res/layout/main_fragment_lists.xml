@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10">
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvMediaLists"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        app:itemIcon="@drawable/ic_format_list_bulleted_black_24dp"
+        app:listItemBackground="@drawable/background"
+        app:readOnly="true"
+        android:padding="4dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"/>
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvMediaObjects"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        app:itemIcon="@drawable/ic_format_list_bulleted_black_24dp"
+        app:listItemBackground="@drawable/background"
+        app:listItemDivider="@drawable/divider"
+        android:padding="4dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:padding="4dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/txtListsTitle"
+                android:hint="@string/sys_title"
+                android:inputType="text"
+                android:autofillHints="@string/sys_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+            <EditText
+                android:id="@+id/txtListsDeadline"
+                android:hint="@string/library_deadline"
+                android:inputType="date"
+                android:autofillHints="@string/library_deadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+            <EditText
+                android:id="@+id/txtListsDescription"
+                android:hint="@string/sys_description"
+                android:inputType="textMultiLine"
+                android:autofillHints="@string/sys_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="#fff"
+        app:itemTextColor="#fff"
+        app:menu="@menu/controls"/>
+</LinearLayout>

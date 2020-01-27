@@ -26,6 +26,7 @@ import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
+import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -304,6 +305,71 @@ public class Database extends SQLiteOpenHelper {
         return libraryObjects;
     }
 
+    public void insertOrUpdateMediaList(MediaList mediaList) {
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaList, Arrays.asList("title", "deadLine", "description"));
+        sqLiteStatement.bindString(1, mediaList.getTitle());
+        if(mediaList.getDeadLine() != null) {
+            sqLiteStatement.bindString(2, Converter.convertDateToString(mediaList.getDeadLine(), "yyyy-MM-dd"));
+        } else {
+            sqLiteStatement.bindNull(2);
+        }
+        sqLiteStatement.bindString(3, mediaList.getDescription());
+
+        if(mediaList.getId() != 0) {
+            sqLiteStatement.execute();
+        } else {
+            mediaList.setId(sqLiteStatement.executeInsert());
+        }
+        sqLiteStatement.close();
+
+        this.getWritableDatabase().execSQL("DELETE FROM media_lists WHERE list=?", new String[]{String.valueOf(mediaList.getId())});
+
+        for(BaseMediaObject baseMediaObject : mediaList.getBaseMediaObjects()) {
+            sqLiteStatement = this.getWritableDatabase().compileStatement("INSERT INTO media_lists(list, media, type) VALUES(?, ?, ?)");
+            sqLiteStatement.bindLong(1, mediaList.getId());
+            sqLiteStatement.bindLong(2, baseMediaObject.getId());
+            if(baseMediaObject instanceof Book) {
+                sqLiteStatement.bindString(3, "books");
+            }
+            if(baseMediaObject instanceof Movie) {
+                sqLiteStatement.bindString(3, "movies");
+            }
+            if(baseMediaObject instanceof Album) {
+                sqLiteStatement.bindString(3, "albums");
+            }
+            if(baseMediaObject instanceof Game) {
+                sqLiteStatement.bindString(3, "games");
+            }
+            sqLiteStatement.executeInsert();
+            sqLiteStatement.close();
+        }
+    }
+
+    public List<MediaList> getMediaLists(String where) throws Exception {
+        List<MediaList> mediaLists = new LinkedList<>();
+        if(!where.trim().isEmpty()) {
+            where = " WHERE " + where;
+        }
+
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM lists" + where, null);
+        while (cursor.moveToNext()) {
+            MediaList mediaList = new MediaList();
+            mediaList.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            mediaList.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+            mediaList.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+            String deadLine = cursor.getString(cursor.getColumnIndex("deadLine"));
+            if(deadLine != null) {
+                if( !deadLine.isEmpty() ) {
+                    mediaList.setDeadLine(Converter.convertStringToDate(deadLine, "yyyy-MM-dd"));
+                }
+            }
+            mediaList.setBaseMediaObjects(this.getObjects("lists", mediaList.getId()));
+            mediaLists.add(mediaList);
+        }
+        cursor.close();
+        return mediaLists;
+    }
+
     public List<BaseMediaObject> getObjects(String table, long id) throws Exception {
         String booksWhere = "id IN (", moviesWhere = "id IN (", gamesWhere = "id IN (", albumsWhere = "id IN (";
 
@@ -321,6 +387,11 @@ public class Database extends SQLiteOpenHelper {
                 moviesWhere += this.getCategoryWhere("movies", id);
                 gamesWhere += this.getCategoryWhere("games", id);
                 albumsWhere += this.getCategoryWhere("albums", id);
+            case "lists":
+                booksWhere += this.getListWhere("books", id);
+                moviesWhere += this.getListWhere("movies", id);
+                gamesWhere += this.getListWhere("games", id);
+                albumsWhere += this.getListWhere("albums", id);
                 break;
         }
 
@@ -757,6 +828,16 @@ public class Database extends SQLiteOpenHelper {
             }
         }
         baseMediaObject.setLibraryObjects(libraryObjects);
+    }
+
+    private String getListWhere(String table, long id) {
+        List<Long> idList = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT media FROM media_lists WHERE list=? AND type=?", new String[]{String.valueOf(id), table});
+        while (cursor.moveToNext()) {
+            idList.add(cursor.getLong(cursor.getColumnIndex("media")));
+        }
+        cursor.close();
+        return TextUtils.join(", ", idList) + ")";
     }
 
     private String getCategoryWhere(String table, long id) {

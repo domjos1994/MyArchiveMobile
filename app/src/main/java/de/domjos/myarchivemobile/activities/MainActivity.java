@@ -26,6 +26,7 @@ import android.view.MenuItem;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,8 @@ import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.services.LibraryService;
+import de.domjos.myarchivemobile.services.ListService;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.settings.Settings;
 
@@ -248,7 +251,7 @@ public final class MainActivity extends AbstractActivity {
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
 
-        ControlsHelper.scheduleJob(MainActivity.this);
+        ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
     }
 
     private void initPermissions() {

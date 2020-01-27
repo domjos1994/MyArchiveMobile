@@ -28,6 +28,10 @@
     <string name="library_lendOut">Lend Out</string>
     <string name="library_msg">%s lend out by %s has reached the deadline!</string>
 
+    <string name="lists">Lists</string>
+    <string name="lists_dialog_title">Select Media</string>
+    <string name="lists_msg">List %s has reached the deadline!</string>
+
     <string name="log" translatable="false">Log</string>
 
     <string name="main_navigation_media">Media</string>

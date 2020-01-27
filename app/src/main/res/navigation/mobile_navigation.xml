@@ -42,6 +42,12 @@
         tools:layout="@layout/main_fragment_library" />
 
     <fragment
+        android:id="@+id/navMainLists"
+        android:name="de.domjos.myarchivemobile.fragments.MainListsFragment"
+        android:label="@string/lists"
+        tools:layout="@layout/main_fragment_lists" />
+
+    <fragment
         android:id="@+id/navMainExport"
         android:name="de.domjos.myarchivemobile.fragments.MainExportFragment"
         android:label="@string/export"

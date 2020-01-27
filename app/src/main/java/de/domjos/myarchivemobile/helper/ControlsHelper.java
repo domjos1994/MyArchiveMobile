@@ -3,6 +3,7 @@ package de.domjos.myarchivemobile.helper;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 
@@ -77,21 +78,23 @@ public class ControlsHelper {
         return currentObject;
     }
 
-    public static void scheduleJob(Context context) {
-        ComponentName serviceComponent = new ComponentName(context, LibraryService.class);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-            builder.setPeriodic(1000 * 60 * 60 * 24);
+    public static void scheduleJob(Context context, List<Class<? extends JobService>> classes) {
+        for(Class<? extends JobService> serviceClass : classes) {
+            ComponentName serviceComponent = new ComponentName(context, serviceClass);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+                builder.setPeriodic(1000 * 60 * 60 * 24);
 
-            JobScheduler jobScheduler;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                jobScheduler = context.getSystemService(JobScheduler.class);
-            } else {
-                jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            }
+                JobScheduler jobScheduler;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    jobScheduler = context.getSystemService(JobScheduler.class);
+                } else {
+                    jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                }
 
-            if(jobScheduler != null) {
-                jobScheduler.schedule(builder.build());
+                if(jobScheduler != null) {
+                    jobScheduler.schedule(builder.build());
+                }
             }
         }
     }

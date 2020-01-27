@@ -36,6 +36,10 @@
                 android:icon="@drawable/ic_local_library_black_24dp"
                 android:title="@string/library" />
             <item
+                android:id="@+id/navMainLists"
+                android:icon="@drawable/ic_format_list_bulleted_black_24dp"
+                android:title="@string/lists" />
+            <item
                 android:id="@+id/navMainExport"
                 android:icon="@drawable/ic_import_export_black_24dp"
                 android:title="@string/export" />
