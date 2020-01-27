@@ -1,6 +1,8 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
 import androidx.annotation.NonNull;
@@ -35,8 +38,10 @@ import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
@@ -133,6 +138,24 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.changeMode(false);
         this.validator = this.initValidation(this.validator);
+        this.testConnection();
+    }
+
+    private void testConnection() {
+        this.hideSearchButton(ControlsHelper.hasNetwork(Objects.requireNonNull(this.getContext())));
+
+        ConnectivityManager manager = (ConnectivityManager) Objects.requireNonNull(this.getContext()).getSystemService(CONNECTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Objects.requireNonNull(manager).addDefaultNetworkActiveListener(() -> this.hideSearchButton(ControlsHelper.hasNetwork(this.getContext())));
+        }
+    }
+
+    private void hideSearchButton(boolean network) {
+        this.cmdMediaGeneralSearch.setVisibility(network ? View.VISIBLE : View.GONE);
+
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralCode.getLayoutParams();
+        layoutParams.weight = network ? 8 : 9;
+        this.txtMediaGeneralCode.setLayoutParams(layoutParams);
     }
 
     @Override

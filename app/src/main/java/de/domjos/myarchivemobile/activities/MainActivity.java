@@ -155,6 +155,7 @@ public final class MainActivity extends AbstractActivity {
                         this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
                         this.label.equals(this.getString(R.string.main_navigation_media_games))
                 )
+                && ControlsHelper.hasNetwork(this.getApplicationContext())
         );
         return true;
     }
