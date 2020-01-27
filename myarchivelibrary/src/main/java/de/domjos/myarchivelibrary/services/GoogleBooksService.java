@@ -85,7 +85,7 @@ public class GoogleBooksService extends JSONService {
                 if(volumeInfo.has("imageLinks")) {
                     JSONObject imageObject = volumeInfo.getJSONObject("imageLinks");
                     if(imageObject.has("thumbnail")) {
-                        book.setCover(Converter.convertStringToByteArray(imageObject.getString("thumbnail")));
+                        book.setCover(Converter.convertStringToByteArray(imageObject.getString("thumbnail").replace("http://", "https://")));
                     }
                 }
                 return book;
