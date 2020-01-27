@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -73,7 +72,11 @@ public class Database extends SQLiteOpenHelper {
     public void insertOrUpdateAlbum(Album album) {
         SQLiteStatement statement = this.getStatement(album, Arrays.asList("type", "numberOfDisks"));
         this.insertOrUpdateBaseMediaObject(statement, album);
-        statement.bindString(9, album.getType().name());
+        if(album.getType() != null) {
+            statement.bindString(9, album.getType().name());
+        } else {
+            statement.bindNull(9);
+        }
         statement.bindLong(10, album.getNumberOfDisks());
 
         if(album.getId() == 0) {
@@ -115,7 +118,11 @@ public class Database extends SQLiteOpenHelper {
     public void insertOrUpdateMovie(Movie movie) {
         SQLiteStatement statement = this.getStatement(movie, Arrays.asList("type", "length", "path"));
         this.insertOrUpdateBaseMediaObject(statement, movie);
-        statement.bindString(9, movie.getType().name());
+        if(movie.getType() != null) {
+            statement.bindString(9, movie.getType().name());
+        } else {
+            statement.bindNull(9);
+        }
         statement.bindDouble(10, movie.getLength());
         statement.bindString(11, movie.getPath());
 
@@ -203,7 +210,11 @@ public class Database extends SQLiteOpenHelper {
     public void insertOrUpdateGame(Game game) {
         SQLiteStatement statement = this.getStatement(game, Arrays.asList("type", "length"));
         this.insertOrUpdateBaseMediaObject(statement, game);
-        statement.bindString(9, game.getType().name());
+        if(game.getType() != null) {
+            statement.bindString(9, game.getType().name());
+        } else {
+            statement.bindNull(9);
+        }
         statement.bindDouble(10, game.getLength());
 
         if(game.getId() == 0) {
@@ -262,7 +273,7 @@ public class Database extends SQLiteOpenHelper {
             sqLiteStatement.bindNull(6);
         }
         if(libraryObject.getReturned() != null) {
-            sqLiteStatement.bindString(7, Converter.convertDateToString(libraryObject.getReturned(), "yyyy-MM-dd"));
+            sqLiteStatement.bindString(7, Objects.requireNonNull(Converter.convertDateToString(libraryObject.getReturned(), "yyyy-MM-dd")));
         } else {
             sqLiteStatement.bindNull(7);
         }
