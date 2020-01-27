@@ -37,6 +37,7 @@ import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.settings.Settings;
 
@@ -238,7 +239,7 @@ public final class MainActivity extends AbstractActivity {
     private void initGlobals() throws Exception {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         String pwd = MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, "", true);
-        if(pwd.trim().isEmpty()) {
+        if (pwd != null && pwd.trim().isEmpty()) {
             pwd = UUID.randomUUID().toString();
             MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, pwd, true);
         }
@@ -246,6 +247,8 @@ public final class MainActivity extends AbstractActivity {
         SQLiteDatabase.loadLibs(this.getApplicationContext());
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
+
+        ControlsHelper.scheduleJob(MainActivity.this);
     }
 
     private void initPermissions() {

@@ -1,6 +1,9 @@
 package de.domjos.myarchivemobile.helper;
 
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
@@ -19,9 +22,28 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.services.LibraryService;
 
 public class ControlsHelper {
 
+    public static void scheduleJob(Context context) {
+        ComponentName serviceComponent = new ComponentName(context, LibraryService.class);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+            builder.setPeriodic(1000 * 60 * 60 * 24);
+
+            JobScheduler jobScheduler;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                jobScheduler = context.getSystemService(JobScheduler.class);
+            } else {
+                jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            }
+
+            if(jobScheduler != null) {
+                jobScheduler.schedule(builder.build());
+            }
+        }
+    }
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws Exception {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();

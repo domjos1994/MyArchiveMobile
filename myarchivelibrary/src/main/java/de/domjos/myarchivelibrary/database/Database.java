@@ -254,7 +254,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindLong(4, libraryObject.getNumberOfDays());
         sqLiteStatement.bindLong(5, libraryObject.getNumberOfWeeks());
         if(libraryObject.getDeadLine() != null) {
-            sqLiteStatement.bindString(6, Converter.convertDateToString(libraryObject.getDeadLine(), "yyyy-MM-dd"));
+            sqLiteStatement.bindString(6, Objects.requireNonNull(Converter.convertDateToString(libraryObject.getDeadLine(), "yyyy-MM-dd")));
         } else {
             sqLiteStatement.bindNull(6);
         }
