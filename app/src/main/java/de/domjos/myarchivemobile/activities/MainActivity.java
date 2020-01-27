@@ -45,6 +45,8 @@ import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
+    private final static boolean INIT_WITH_EXAMPLE_DATA = false;
+
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private NavHostFragment navHostFragment;
@@ -138,6 +140,10 @@ public final class MainActivity extends AbstractActivity {
         // init globals
         try {
             this.initGlobals();
+
+            if(MainActivity.INIT_WITH_EXAMPLE_DATA) {
+                MainActivity.GLOBALS.getDatabase().insertExampleData();
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }

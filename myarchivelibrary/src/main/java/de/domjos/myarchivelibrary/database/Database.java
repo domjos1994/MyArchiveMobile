@@ -16,7 +16,9 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.myarchivelibrary.R;
@@ -684,6 +686,58 @@ public class Database extends SQLiteOpenHelper {
         }
 
         return companies;
+    }
+
+    public void insertExampleData() {
+        for(int i = 0; i<=10; i++) {
+            Book book = new Book();
+            book.setTitle("book " + i);
+            this.insertOrUpdateBook((Book) this.setFields(book));
+        }
+        for(int i = 0; i<=10; i++) {
+            Movie movie = new Movie();
+            movie.setTitle("movie " + i);
+            this.insertOrUpdateMovie((Movie) this.setFields(movie));
+        }
+        for(int i = 0; i<=10; i++) {
+            Album album = new Album();
+            album.setTitle("movie " + i);
+            this.insertOrUpdateAlbum((Album) this.setFields(album));
+        }
+        for(int i = 0; i<=10; i++) {
+            Game game = new Game();
+            game.setTitle("game " + i);
+            this.insertOrUpdateGame((Game) this.setFields(game));
+        }
+    }
+
+    private BaseMediaObject setFields(BaseMediaObject baseMediaObject) {
+        for(int j = 0; j<=3; j++) {
+            Random generator = new Random();
+            Company company = new Company();
+            company.setTitle("Company "  + generator.nextInt(3));
+            baseMediaObject.getCompanies().add(company);
+        }
+
+        for(int j = 0; j<=3; j++) {
+            Random generator = new Random();
+            Person person = new Person();
+            person.setFirstName("Person");
+            person.setLastName(String.valueOf(generator.nextInt(3)));
+            baseMediaObject.getPersons().add(person);
+        }
+
+        for(int j = 0; j<=3; j++) {
+            Random generator = new Random();
+            BaseDescriptionObject tag = new BaseDescriptionObject();
+            tag.setTitle("Tag "  + generator.nextInt(3));
+            baseMediaObject.getTags().add(tag);
+        }
+
+        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+        baseDescriptionObject.setTitle("Category");
+        baseMediaObject.setCategory(baseDescriptionObject);
+        return baseMediaObject;
     }
 
     private void insertOrUpdateSong(Song song, long id) {
