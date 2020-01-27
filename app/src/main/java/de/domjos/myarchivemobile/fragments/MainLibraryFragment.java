@@ -276,7 +276,8 @@ public class MainLibraryFragment extends ParentFragment {
         }
     }
 
-    private void changeMode(boolean editMode, boolean selected) {
+    @Override
+    public  void changeMode(boolean editMode, boolean selected) {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected && this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).isVisible());
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);

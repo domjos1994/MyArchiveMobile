@@ -26,6 +26,7 @@ import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainGamesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvGames;
@@ -107,7 +108,8 @@ public class MainGamesFragment extends ParentFragment {
         this.gamePagerAdapter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void changeMode(boolean editMode, boolean selected) {
+    @Override
+    public  void changeMode(boolean editMode, boolean selected) {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
@@ -125,7 +127,7 @@ public class MainGamesFragment extends ParentFragment {
         viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(viewPager);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
         this.validator = this.gamePagerAdapter.initValidator();
         viewPager.setAdapter(this.gamePagerAdapter);
 

@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -22,9 +24,58 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
+import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.services.LibraryService;
 
 public class ControlsHelper {
+
+    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
+        try {
+            long id = -1;
+            if(fragment.getArguments() != null) {
+                if(fragment.getArguments().containsKey("id")) {
+                    id = fragment.getArguments().getLong("id");
+                }
+            }
+
+            if(id != -1) {
+                if(id == 0) {
+                    fragment.changeMode(true, false);
+                    abstractPagerAdapter.setMediaObject(emptyObject);
+                    currentObject = null;
+                } else {
+                    BaseMediaObject baseMediaObject = null;
+                    if(emptyObject instanceof Album) {
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums("id=" + id).get(0);
+                    }
+                    if(emptyObject instanceof Movie) {
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies("id=" + id).get(0);
+                    }
+                    if(emptyObject instanceof Game) {
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames("id=" + id).get(0);
+                    }
+                    if(emptyObject instanceof Book) {
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks("id=" + id).get(0);
+                    }
+                    if(baseMediaObject != null) {
+                        for(int i = 0; i<=lv.getAdapter().getItemCount()-1; i++) {
+                            BaseDescriptionObject baseDescriptionObject = lv.getAdapter().getItem(i);
+                            if(((BaseMediaObject)baseDescriptionObject.getObject()).getId()==baseMediaObject.getId()) {
+                                currentObject = baseDescriptionObject;
+                                break;
+                            }
+                        }
+                        fragment.changeMode(false, true);
+                        abstractPagerAdapter.setMediaObject(baseMediaObject);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
+        }
+        return currentObject;
+    }
 
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, LibraryService.class);

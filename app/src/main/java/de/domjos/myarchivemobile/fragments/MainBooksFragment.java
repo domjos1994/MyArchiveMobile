@@ -26,6 +26,7 @@ import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 
 public class MainBooksFragment extends ParentFragment {
@@ -108,7 +109,8 @@ public class MainBooksFragment extends ParentFragment {
         this.bookPagerAdapter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void changeMode(boolean editMode, boolean selected) {
+    @Override
+    public  void changeMode(boolean editMode, boolean selected) {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
@@ -126,7 +128,7 @@ public class MainBooksFragment extends ParentFragment {
         viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(viewPager);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
         viewPager.setAdapter(this.bookPagerAdapter);
 

@@ -21,13 +21,12 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.services.EANDataService;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.MoviePagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMoviesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvMovies;
@@ -109,7 +108,8 @@ public class MainMoviesFragment extends ParentFragment {
         this.moviePagerAdapter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void changeMode(boolean editMode, boolean selected) {
+    @Override
+    public void changeMode(boolean editMode, boolean selected) {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
@@ -127,7 +127,7 @@ public class MainMoviesFragment extends ParentFragment {
         viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(viewPager);
 
-        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
         this.validator = this.moviePagerAdapter.initValidator();
         viewPager.setAdapter(this.moviePagerAdapter);
 

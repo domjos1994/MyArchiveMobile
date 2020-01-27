@@ -26,6 +26,7 @@ import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMusicFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvAlbums;
@@ -107,7 +108,8 @@ public class MainMusicFragment extends ParentFragment {
         this.albumPagerAdapter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void changeMode(boolean editMode, boolean selected) {
+    @Override
+    public void changeMode(boolean editMode, boolean selected) {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
@@ -125,7 +127,7 @@ public class MainMusicFragment extends ParentFragment {
         viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(viewPager);
 
-        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext());
+        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album()));
         this.validator = this.albumPagerAdapter.initValidator();
         viewPager.setAdapter(this.albumPagerAdapter);
 
@@ -144,7 +146,11 @@ public class MainMusicFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
+
+
     }
+
+
 
     private void reload() {
         try {

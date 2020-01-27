@@ -2,11 +2,9 @@ package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -25,10 +23,13 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaBookFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private Runnable runnable;
+    private boolean first = true;
 
-    public BookPagerAdapter(@NonNull FragmentManager fm, Context context) {
+    public BookPagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
         super(fm, context);
 
+        this.runnable = runnable;
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaBookFragment = new MediaBookFragment();
@@ -38,6 +39,16 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaBookFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
+    }
+
+    @Override
+    public void finishUpdate(@NonNull ViewGroup container) {
+        super.finishUpdate(container);
+
+        if(this.first) {
+            this.runnable.run();
+            this.first = false;
+        }
     }
 
     @NonNull

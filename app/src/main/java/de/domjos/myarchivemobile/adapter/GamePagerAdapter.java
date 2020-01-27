@@ -2,6 +2,7 @@ package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,10 +23,13 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaGameFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private Runnable runnable;
+    private boolean first = true;
 
-    public GamePagerAdapter(@NonNull FragmentManager fm, Context context) {
+    public GamePagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
         super(fm, context);
 
+        this.runnable = runnable;
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaGameFragment = new MediaGameFragment();
@@ -35,6 +39,16 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaGameFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
+    }
+
+    @Override
+    public void finishUpdate(@NonNull ViewGroup container) {
+        super.finishUpdate(container);
+
+        if(this.first) {
+            this.runnable.run();
+            this.first = false;
+        }
     }
 
     @NonNull
