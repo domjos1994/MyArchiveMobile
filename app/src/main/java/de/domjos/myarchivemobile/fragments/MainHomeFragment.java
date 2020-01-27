@@ -4,9 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -28,12 +33,75 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainHomeFragment extends ParentFragment {
+    private Animation fabOpen, fabClose, fabClock, fabAntiClock;
+    private FloatingActionButton fabAppAdd, fabAppBooks, fabAppMusic, fabAppMovies, fabAppGames;
+    private TextView lblAppBooks, lblAppMusic, lblAppMovies, lblAppGames;
+
     private SwipeRefreshDeleteList lvMedia;
     private String search;
+    private boolean isOpen = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_home, container, false);
+
+        this.fabOpen = AnimationUtils.loadAnimation(this.getActivity(), R.anim.fab_open);
+        this.fabClose = AnimationUtils.loadAnimation(this.getActivity(), R.anim.fab_close);
+        this.fabClock = AnimationUtils.loadAnimation(this.getActivity(), R.anim.fab_rotate_clock);
+        this.fabAntiClock = AnimationUtils.loadAnimation(this.getActivity(), R.anim.fab_rotate_anticlock);
+
+        this.fabAppAdd = root.findViewById(R.id.fabAppAdd);
+        this.fabAppBooks = root.findViewById(R.id.fabAppBook);
+        this.fabAppMusic = root.findViewById(R.id.fabAppMusic);
+        this.fabAppMovies = root.findViewById(R.id.fabAppMovies);
+        this.fabAppGames = root.findViewById(R.id.fabAppGames);
+
+        this.lblAppBooks = root.findViewById(R.id.lblAppBook);
+        this.lblAppMusic = root.findViewById(R.id.lblAppMusic);
+        this.lblAppMovies = root.findViewById(R.id.lblAppMovies);
+        this.lblAppGames = root.findViewById(R.id.lblAppGames);
+
         this.lvMedia = root.findViewById(R.id.lvMedia);
+
+        this.fabAppAdd.setOnClickListener(view -> {
+            this.showAnimation(this.lblAppBooks, this.fabAppBooks);
+            this.showAnimation(this.lblAppMusic, this.fabAppMusic);
+            this.showAnimation(this.lblAppMovies, this.fabAppMovies);
+            this.showAnimation(this.lblAppGames, this.fabAppGames);
+            if(this.isOpen) {
+                this.fabAppAdd.startAnimation(this.fabAntiClock);
+            } else {
+                this.fabAppAdd.startAnimation(this.fabClock);
+            }
+            this.isOpen = !this.isOpen;
+        });
+
+        this.fabAppBooks.setOnClickListener(view -> {
+            MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(this.getString(R.string.book), 0);
+            }
+        });
+
+        this.fabAppMusic.setOnClickListener(view -> {
+            MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(this.getString(R.string.album), 0);
+            }
+        });
+
+        this.fabAppMovies.setOnClickListener(view -> {
+            MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(this.getString(R.string.movie), 0);
+            }
+        });
+
+        this.fabAppGames.setOnClickListener(view -> {
+            MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(this.getString(R.string.game), 0);
+            }
+        });
 
         this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, new SwipeRefreshDeleteList.ButtonClickListener() {
             @Override
@@ -140,5 +208,17 @@ public class MainHomeFragment extends ParentFragment {
     @Override
     public void select() {
 
+    }
+
+    private void showAnimation(TextView lbl, FloatingActionButton fab) {
+        if(this.isOpen) {
+            lbl.setVisibility(View.INVISIBLE);
+            fab.startAnimation(this.fabClose);
+            fab.setClickable(false);
+        } else {
+            lbl.setVisibility(View.VISIBLE);
+            fab.startAnimation(this.fabOpen);
+            fab.setClickable(true);
+        }
     }
 }
