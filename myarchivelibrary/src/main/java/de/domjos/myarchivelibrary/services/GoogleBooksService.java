@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 
 import de.domjos.customwidgets.utils.Converter;
@@ -17,7 +16,7 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
 public class GoogleBooksService extends JSONService {
-    private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s";
+    private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s&projection=full";
     private final String KEY;
     private String code;
 
@@ -48,7 +47,12 @@ public class GoogleBooksService extends JSONService {
                     String date = getString(volumeInfo, "publishedDate");
                     if(!date.isEmpty()) {
                         if(date.contains("-")) {
-                            book.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
+                            String[] spl = date.split("-");
+                            if(spl.length == 2) {
+                                book.setReleaseDate(Converter.convertStringToDate(date + "-01", "yyyy-MM-dd"));
+                            } else {
+                                book.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
+                            }
                         } else {
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(new Date());
@@ -63,7 +67,7 @@ public class GoogleBooksService extends JSONService {
                     for(int i = 0; i<=jsonArray.length()-1; i++) {
                         Person person = new Person();
                         person.setFirstName(jsonArray.getString(i).split(" ")[0]);
-                        person.setLastName(jsonArray.getString(i).replace(jsonArray.getString(i).split(" ")[0], ""));
+                        person.setLastName(jsonArray.getString(i).replace(jsonArray.getString(i).split(" ")[0], "").trim());
                         book.getPersons().add(person);
                     }
                 }
@@ -72,7 +76,7 @@ public class GoogleBooksService extends JSONService {
                     String publisher = volumeInfo.getString("publisher");
                     Company company = new Company();
                     company.setTitle(publisher);
-                    book.setCompanies(Collections.singletonList(company));
+                    book.getCompanies().add(company);
                 }
 
                 if(volumeInfo.has("categories")) {
