@@ -87,6 +87,8 @@ public final class CompanyActivity extends AbstractActivity {
                         this.changeMode(false, false);
                         this.company = null;
                         this.reload();
+                    } else {
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
                     }
                     break;
             }
@@ -142,6 +144,7 @@ public final class CompanyActivity extends AbstractActivity {
     }
 
     protected void changeMode(boolean editMode, boolean selected) {
+        this.validator.clear();
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);

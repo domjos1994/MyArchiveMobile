@@ -17,6 +17,7 @@ import de.domjos.myarchivemobile.R;
 public class CompanyFragment extends AbstractFragment<Company> {
     private EditText txtCompanyTitle, txtCompanyFoundation, txtCompanyDescription;
     private Company company;
+    private Validator validator;
 
     @Nullable
     @Override
@@ -30,6 +31,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.txtCompanyFoundation = view.findViewById(R.id.txtCompanyFoundation);
         this.txtCompanyDescription = view.findViewById(R.id.txtCompanyDescription);
 
+        this.validator = this.initValidation(this.validator);
         this.changeMode(false);
     }
 
@@ -68,6 +70,10 @@ public class CompanyFragment extends AbstractFragment<Company> {
 
     @Override
     public Validator initValidation(Validator validator) {
-        return validator;
+        this.validator = validator;
+        if(this.txtCompanyTitle != null  && this.validator != null) {
+            this.validator.addEmptyValidator(this.txtCompanyTitle);
+        }
+        return this.validator;
     }
 }

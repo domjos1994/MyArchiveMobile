@@ -17,6 +17,7 @@ import de.domjos.myarchivemobile.R;
 public class PersonFragment extends AbstractFragment<Person> {
     private EditText txtPersonFirstName, txtPersonLastName, txtPersonBirthDate, txtPersonDescription;
     private Person person;
+    private Validator validator;
 
     @Nullable
     @Override
@@ -31,6 +32,7 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.txtPersonBirthDate = view.findViewById(R.id.txtPersonBirthDate);
         this.txtPersonDescription = view.findViewById(R.id.txtPersonDescription);
 
+        this.validator = this.initValidation(this.validator);
         this.changeMode(false);
     }
 
@@ -72,6 +74,10 @@ public class PersonFragment extends AbstractFragment<Person> {
 
     @Override
     public Validator initValidation(Validator validator) {
-        return validator;
+        this.validator = validator;
+        if(this.txtPersonLastName != null  && this.validator != null) {
+            this.validator.addEmptyValidator(this.txtPersonLastName);
+        }
+        return this.validator;
     }
 }

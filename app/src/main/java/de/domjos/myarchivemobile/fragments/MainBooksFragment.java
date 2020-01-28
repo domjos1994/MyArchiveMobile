@@ -94,6 +94,8 @@ public class MainBooksFragment extends ParentFragment {
                         this.changeMode(false, false);
                         this.currentObject = null;
                         this.reload();
+                    } else {
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
                     break;
             }
@@ -111,6 +113,7 @@ public class MainBooksFragment extends ParentFragment {
 
     @Override
     public  void changeMode(boolean editMode, boolean selected) {
+        this.validator.clear();
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);

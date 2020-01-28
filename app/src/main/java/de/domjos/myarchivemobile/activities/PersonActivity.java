@@ -85,6 +85,8 @@ public final class PersonActivity extends AbstractActivity {
                         this.changeMode(false, false);
                         this.person = null;
                         this.reload();
+                    } else {
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
                     }
                     break;
             }
@@ -140,6 +142,7 @@ public final class PersonActivity extends AbstractActivity {
     }
 
     protected void changeMode(boolean editMode, boolean selected) {
+        this.validator.clear();
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);

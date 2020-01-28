@@ -10,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -24,6 +25,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     private BaseDescriptionObject baseDescriptionObject;
     private String table = "tags";
+    private Validator validator;
 
     public CategoriesTagsActivity() {
         super(R.layout.categories_tags_activity);
@@ -74,14 +76,18 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                     this.baseDescriptionObject = null;
                     break;
                 case R.id.cmdSave:
-                    BaseDescriptionObject baseDescriptionObject = this.getObject();
-                    if(this.baseDescriptionObject != null) {
-                        baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                    if(this.validator.getState()) {
+                        BaseDescriptionObject baseDescriptionObject = this.getObject();
+                        if(this.baseDescriptionObject != null) {
+                            baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
+                        this.changeMode(false, false);
+                        this.setObject(new BaseDescriptionObject());
+                        this.baseDescriptionObject = null;
+                    } else {
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
                     }
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
-                    this.changeMode(false, false);
-                    this.setObject(new BaseDescriptionObject());
-                    this.baseDescriptionObject = null;
                     break;
             }
             return true;
@@ -106,6 +112,12 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
 
         this.changeMode(false, false);
+    }
+
+    @Override
+    protected void initValidator() {
+        this.validator = new Validator(CategoriesTagsActivity.this, R.mipmap.ic_launcher_round);
+        this.validator.addEmptyValidator(this.txtTitle);
     }
 
     @Override
@@ -145,6 +157,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     }
 
     private void changeMode(boolean editMode, boolean selected) {
+        this.validator.clear();
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
