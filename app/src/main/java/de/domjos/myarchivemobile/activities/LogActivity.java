@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -89,7 +90,7 @@ public final class LogActivity extends AbstractActivity {
         }
     }
 
-    private String getContent() throws Exception {
+    private String getContent() throws ExecutionException, InterruptedException {
         Task task = new Task();
         List<String> items = task.execute().get();
 

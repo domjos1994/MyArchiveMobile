@@ -35,7 +35,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
     private FloatingActionButton fabAppAdd, fabAppBooks, fabAppMusic, fabAppMovies, fabAppGames;
-    private TextView lblAppBooks, lblAppMusic, lblAppMovies, lblAppGames;
+    private TextView lblAppBooks, lblAppMusic, lblAppMovies, lblAppGames, lblEntriesCount;
 
     private SwipeRefreshDeleteList lvMedia;
     private String search;
@@ -59,6 +59,8 @@ public class MainHomeFragment extends ParentFragment {
         this.lblAppMusic = root.findViewById(R.id.lblAppMusic);
         this.lblAppMovies = root.findViewById(R.id.lblAppMovies);
         this.lblAppGames = root.findViewById(R.id.lblAppGames);
+        this.lblEntriesCount = root.findViewById(R.id.lblEntriesCount);
+
 
         this.lvMedia = root.findViewById(R.id.lvMedia);
 
@@ -182,10 +184,15 @@ public class MainHomeFragment extends ParentFragment {
                 this.search = "";
             }
 
+            int counter = 0;
             this.lvMedia.getAdapter().clear();
             for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
                 this.lvMedia.getAdapter().add(baseDescriptionObject);
+                counter++;
             }
+
+            String count = String.format("%s: %s", Objects.requireNonNull(this.getActivity()).getString(R.string.main_navigation_media), counter);
+            this.lblEntriesCount.setText(count);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

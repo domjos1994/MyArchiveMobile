@@ -78,13 +78,15 @@ public final class PersonActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Person person = this.personPagerAdapter.getMediaObject();
-                        if(this.person!=null) {
-                            person.setId(this.person.getId());
+                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), this.lvPersons.getAdapter().getList())) {
+                            if(this.person!=null) {
+                                person.setId(this.person.getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
+                            this.changeMode(false, false);
+                            this.person = null;
+                            this.reload();
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
-                        this.changeMode(false, false);
-                        this.person = null;
-                        this.reload();
                     } else {
                         MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
                     }

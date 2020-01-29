@@ -1,7 +1,10 @@
 package de.domjos.myarchivemobile.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -35,7 +38,6 @@ import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -145,17 +147,43 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.hideSearchButton(ControlsHelper.hasNetwork(Objects.requireNonNull(this.getContext())));
 
         ConnectivityManager manager = (ConnectivityManager) Objects.requireNonNull(this.getContext()).getSystemService(CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Objects.requireNonNull(manager).addDefaultNetworkActiveListener(() -> this.hideSearchButton(ControlsHelper.hasNetwork(this.getContext())));
+        Activity activity = this.getActivity();
+        if(manager != null && activity != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onAvailable(@NonNull Network network) {
+                        hideSearchButton(ControlsHelper.hasNetwork(activity));
+                    }
+
+                    @Override
+                    public void onLosing(@NonNull Network network, int maxMsToLive) {
+                        hideSearchButton(ControlsHelper.hasNetwork(activity));
+                    }
+
+                    @Override
+                    public void onLost(@NonNull Network network) {
+                        hideSearchButton(ControlsHelper.hasNetwork(activity));
+                    }
+
+                    @Override
+                    public void onUnavailable() {
+                        hideSearchButton(ControlsHelper.hasNetwork(activity));
+                    }
+                });
+            }
         }
     }
 
     private void hideSearchButton(boolean network) {
-        this.cmdMediaGeneralSearch.setVisibility(network ? View.VISIBLE : View.GONE);
+        Activity activity = this.getActivity();
+        if(activity != null) {
+            activity.runOnUiThread(()->this.cmdMediaGeneralSearch.setVisibility(network ? View.VISIBLE : View.GONE));
 
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralCode.getLayoutParams();
-        layoutParams.weight = network ? 8 : 9;
-        this.txtMediaGeneralCode.setLayoutParams(layoutParams);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralCode.getLayoutParams();
+            layoutParams.weight = network ? 8 : 9;
+            activity.runOnUiThread(()->this.txtMediaGeneralCode.setLayoutParams(layoutParams));
+        }
     }
 
     @Override
@@ -235,6 +263,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.validator = validator;
         if(this.txtMediaGeneralTitle != null  && this.validator != null) {
             this.validator.addEmptyValidator(this.txtMediaGeneralTitle);
+            this.validator.addLengthValidator(this.txtMediaGeneralCode, 0, 13);
         }
         return this.validator;
     }

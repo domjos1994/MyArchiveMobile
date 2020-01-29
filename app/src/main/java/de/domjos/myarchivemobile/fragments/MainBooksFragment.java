@@ -32,6 +32,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 public class MainBooksFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvBooks;
     private BookPagerAdapter bookPagerAdapter;
+    private ViewPager viewPager;
     private BottomNavigationView bottomNavigationView;
     private String search;
 
@@ -87,13 +88,15 @@ public class MainBooksFragment extends ParentFragment {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Book book = this.bookPagerAdapter.getMediaObject();
-                        if(this.currentObject!=null) {
-                            book.setId(((Book) this.currentObject.getObject()).getId());
+                        if(this.validator.checkDuplicatedEntry(book.getTitle(), this.lvBooks.getAdapter().getList())) {
+                            if(this.currentObject!=null) {
+                                book.setId(((Book) this.currentObject.getObject()).getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                            this.changeMode(false, false);
+                            this.currentObject = null;
+                            this.reload();
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                        this.changeMode(false, false);
-                        this.currentObject = null;
-                        this.reload();
                     } else {
                         MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
@@ -118,6 +121,8 @@ public class MainBooksFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        this.lvBooks.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
 
         this.bookPagerAdapter.changeMode(editMode);
     }
@@ -127,20 +132,20 @@ public class MainBooksFragment extends ParentFragment {
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        ViewPager  viewPager = view.findViewById(R.id.viewPager);
-        viewPager.setOffscreenPageLimit(4);
-        tabLayout.setupWithViewPager(viewPager);
+        this.viewPager = view.findViewById(R.id.viewPager);
+        this.viewPager.setOffscreenPageLimit(4);
+        tabLayout.setupWithViewPager(this.viewPager);
 
         this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
-        viewPager.setAdapter(this.bookPagerAdapter);
+        this.viewPager.setAdapter(this.bookPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
-            viewPager.setCurrentItem(i);
+            this.viewPager.setCurrentItem(i);
         }
         tabLayout.setScrollPosition(0, 0f, true);
-        viewPager.setCurrentItem(0);
+        this.viewPager.setCurrentItem(0);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);

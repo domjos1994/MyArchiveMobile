@@ -80,13 +80,15 @@ public final class CompanyActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Company company = this.companyPagerAdapter.getMediaObject();
-                        if(this.company !=null) {
-                            company.setId(this.company.getId());
+                        if(this.validator.checkDuplicatedEntry(company.getTitle(), this.lvCompanies.getAdapter().getList())) {
+                            if(this.company !=null) {
+                                company.setId(this.company.getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
+                            this.changeMode(false, false);
+                            this.company = null;
+                            this.reload();
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
-                        this.changeMode(false, false);
-                        this.company = null;
-                        this.reload();
                     } else {
                         MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
                     }

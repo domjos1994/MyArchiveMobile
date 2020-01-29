@@ -56,14 +56,16 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     public void setMediaObject(BaseMediaObject baseMediaObject) {
-        this.book = (Book) baseMediaObject;
-        this.txtMediaBookNumberOfPages.setText(String.valueOf(this.book.getNumberOfPages()));
-        this.txtMediaBookPath.setText(this.book.getPath());
-        this.txtMediaBookEdition.setText(this.book.getEdition());
-        this.txtMediaBookTopics.setText(TextUtils.join("\n", this.book.getTopics()));
+        if(baseMediaObject instanceof Book) {
+            this.book = (Book) baseMediaObject;
+            this.txtMediaBookNumberOfPages.setText(String.valueOf(this.book.getNumberOfPages()));
+            this.txtMediaBookPath.setText(this.book.getPath());
+            this.txtMediaBookEdition.setText(this.book.getEdition());
+            this.txtMediaBookTopics.setText(TextUtils.join("\n", this.book.getTopics()));
 
-        if(this.book.getType() != null) {
-            this.spMediaBookType.setSelection(this.typeAdapter.getPosition(this.book.getType().name()));
+            if(this.book.getType() != null) {
+                this.spMediaBookType.setSelection(this.typeAdapter.getPosition(this.book.getType().name()));
+            }
         }
     }
 

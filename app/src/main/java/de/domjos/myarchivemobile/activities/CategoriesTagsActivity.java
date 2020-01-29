@@ -1,5 +1,7 @@
 package de.domjos.myarchivemobile.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,6 +39,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 reload();
+                lvMedia.getAdapter().clear();
             }
 
             @Override
@@ -59,6 +62,17 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             }
         });
 
+        this.lvMedia.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(de.domjos.customwidgets.model.objects.BaseDescriptionObject listObject) {
+                Intent intent = new Intent();
+                intent.putExtra("type", listObject.getDescription());
+                intent.putExtra("id", ((BaseMediaObject) listObject.getObject()).getId());
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+            }
+        });
+
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
@@ -78,13 +92,15 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         BaseDescriptionObject baseDescriptionObject = this.getObject();
-                        if(this.baseDescriptionObject != null) {
-                            baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                        if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), this.lvItems.getAdapter().getList())) {
+                            if(this.baseDescriptionObject != null) {
+                                baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
+                            this.changeMode(false, false);
+                            this.setObject(new BaseDescriptionObject());
+                            this.baseDescriptionObject = null;
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
-                        this.changeMode(false, false);
-                        this.setObject(new BaseDescriptionObject());
-                        this.baseDescriptionObject = null;
                     } else {
                         MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
                     }
@@ -157,7 +173,9 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     }
 
     private void changeMode(boolean editMode, boolean selected) {
-        this.validator.clear();
+        if(this.validator != null) {
+            this.validator.clear();
+        }
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);

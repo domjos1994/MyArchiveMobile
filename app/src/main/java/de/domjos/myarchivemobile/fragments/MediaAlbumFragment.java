@@ -49,11 +49,13 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     public void setMediaObject(BaseMediaObject baseMediaObject) {
-        this.album = (Album) baseMediaObject;
-        this.txtMediaAlbumNumberOfDisks.setText(String.valueOf(this.album.getNumberOfDisks()));
+        if(baseMediaObject instanceof Album) {
+            this.album = (Album) baseMediaObject;
+            this.txtMediaAlbumNumberOfDisks.setText(String.valueOf(this.album.getNumberOfDisks()));
 
-        if(this.album.getType() != null) {
-            this.spMediaAlbumType.setSelection(this.typeAdapter.getPosition(this.album.getType().name()));
+            if(this.album.getType() != null) {
+                this.spMediaAlbumType.setSelection(this.typeAdapter.getPosition(this.album.getType().name()));
+            }
         }
     }
 

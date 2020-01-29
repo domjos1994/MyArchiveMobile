@@ -27,18 +27,18 @@ public class PDFHelper {
 
     private final int headerColor, rowColor;
 
-    public PDFHelper(String file, Context context) throws Exception {
+    public PDFHelper(String file, Context context) {
         this.context = context;
         this.headerColor = context.getResources().getColor(R.color.colorPrimaryDark);
         this.rowColor = context.getResources().getColor(R.color.colorPrimary);
 
-        this.pdfService = new PDFService(file);
+        this.pdfService = new PDFService(file, R.mipmap.ic_launcher_round, context);
 
         byte[] icon = Converter.convertDrawableToByteArray(this.context, R.mipmap.ic_launcher);
         this.pdfService.addHeadPage(icon, this.context.getString(R.string.main_navigation_media), this.context.getString(R.string.app_name));
     }
 
-    public void execute(List<BaseMediaObject> objects) throws Exception {
+    public void execute(List<BaseMediaObject> objects) {
         for(BaseMediaObject baseMediaObject : objects) {
             this.addMediaObject(baseMediaObject);
 
@@ -62,7 +62,7 @@ public class PDFHelper {
         this.pdfService.close();
     }
 
-    private void addMediaObject(BaseMediaObject baseMediaObject) throws Exception {
+    private void addMediaObject(BaseMediaObject baseMediaObject) {
         this.pdfService.addParagraph(baseMediaObject.getTitle(), PDFService.H1, PDFService.CENTER, 20f);
         if(baseMediaObject.getCover() != null) {
             this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 10f);
@@ -90,7 +90,7 @@ public class PDFHelper {
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
     }
 
-    private void addBook(Book book) throws Exception {
+    private void addBook(Book book) {
         StringBuilder stringBuilder = new StringBuilder();
         if(book.getType() != null) {
             stringBuilder.append(this.context.getString(R.string.book_type)).append(": ").append(book.getType().toString()).append("\n");
@@ -102,7 +102,7 @@ public class PDFHelper {
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
     }
 
-    private void addMovie(Movie movie) throws Exception {
+    private void addMovie(Movie movie) {
         StringBuilder stringBuilder = new StringBuilder();
         if(movie.getType() != null) {
             stringBuilder.append(this.context.getString(R.string.movie_type)).append(": ").append(movie.getType().toString()).append("\n");
@@ -112,7 +112,7 @@ public class PDFHelper {
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
     }
 
-    private void addGame(Game game) throws Exception {
+    private void addGame(Game game) {
         StringBuilder stringBuilder = new StringBuilder();
         if(game.getType() != null) {
             stringBuilder.append(this.context.getString(R.string.game_type)).append(": ").append(game.getType().toString()).append("\n");
@@ -121,7 +121,7 @@ public class PDFHelper {
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
     }
 
-    private void addAlbum(Album album) throws Exception {
+    private void addAlbum(Album album) {
         StringBuilder stringBuilder = new StringBuilder();
         if(album.getType() != null) {
             stringBuilder.append(this.context.getString(R.string.album_type)).append(": ").append(album.getType().toString()).append("\n");
@@ -130,7 +130,7 @@ public class PDFHelper {
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
     }
 
-    private void addPersons(List<Person> people) throws Exception {
+    private void addPersons(List<Person> people) {
         if(!people.isEmpty()) {
             Map<String, Float> columns = new LinkedHashMap<>();
             columns.put(this.context.getString(R.string.media_persons_firstName), 150.0f);
@@ -151,7 +151,7 @@ public class PDFHelper {
         }
     }
 
-    private void addCompanies(List<Company> companies) throws Exception {
+    private void addCompanies(List<Company> companies) {
         if(!companies.isEmpty()) {
             Map<String, Float> columns = new LinkedHashMap<>();
             columns.put(this.context.getString(R.string.sys_title), 150.0f);

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
@@ -193,7 +194,7 @@ public class MainLibraryFragment extends ParentFragment {
         }
     }
 
-    private LibraryObject getObject() throws Exception {
+    private LibraryObject getObject() throws ParseException {
         LibraryObject libraryObject = new LibraryObject();
         libraryObject.setNumberOfDays(Integer.parseInt(this.txtLibraryNumberOfDays.getText().toString()));
         libraryObject.setNumberOfWeeks(Integer.parseInt(this.txtMediaLibraryNumberOfWeeks.getText().toString()));

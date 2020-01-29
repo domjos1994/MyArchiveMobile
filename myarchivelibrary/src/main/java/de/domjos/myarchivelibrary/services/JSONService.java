@@ -1,5 +1,6 @@
 package de.domjos.myarchivelibrary.services;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,19 +16,23 @@ public abstract class JSONService {
         String line;
 
         InputStream in = url.openStream();
+        InputStreamReader streamReader = new InputStreamReader(in);
+        BufferedReader reader = new BufferedReader(streamReader);
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append(System.lineSeparator());
             }
         } finally {
+            reader.close();
+            streamReader.close();
             in.close();
         }
 
         return sb.toString();
     }
 
-    String getString(JSONObject obj, String key) throws Exception {
+    String getString(JSONObject obj, String key) throws JSONException {
         if(obj.has(key)) {
             if(!obj.isNull(key)) {
                 return obj.getString(key);
@@ -39,7 +44,7 @@ public abstract class JSONService {
         }
     }
 
-    Integer getInt(JSONObject obj, String key) throws Exception {
+    Integer getInt(JSONObject obj, String key) throws JSONException {
         if(obj.has(key)) {
             if(!obj.isNull(key)) {
                 return obj.getInt(key);
@@ -51,7 +56,7 @@ public abstract class JSONService {
         }
     }
 
-    Double getDouble(JSONObject obj, String key) throws Exception {
+    Double getDouble(JSONObject obj, String key) throws JSONException {
         if(obj.has(key)) {
             if(!obj.isNull(key)) {
                 return obj.getDouble(key);

@@ -1,5 +1,6 @@
 package de.domjos.myarchivelibrary.model.general;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
@@ -51,7 +52,11 @@ public final class Person extends BaseObject implements DatabaseObject {
     }
 
     public void setImage(byte[] image) {
-        this.image = image;
+        if(image == null) {
+            this.image = null;
+        } else {
+            this.image = Arrays.copyOf(image, image.length);
+        }
     }
 
     public String getDescription() {

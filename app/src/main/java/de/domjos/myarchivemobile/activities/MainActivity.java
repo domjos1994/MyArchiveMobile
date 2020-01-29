@@ -20,17 +20,31 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -46,11 +60,18 @@ import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
     private final static boolean INIT_WITH_EXAMPLE_DATA = false;
+    private final static int SETTINGS_REQUEST = 51;
+    private final static int PER_COMP_TAG_CAT_REQUEST = 52;
+    private final static int SCANNER_REQUEST = 53;
+    public final static LinearLayout.LayoutParams OPEN_LIST = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 4);
+    public final static LinearLayout.LayoutParams CLOSE_LIST = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 0);
+    public final static LinearLayout.LayoutParams CLOSE_PAGER = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 6);
+    public final static LinearLayout.LayoutParams OPEN_PAGER = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 10);
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private NavHostFragment navHostFragment;
-    public static Globals GLOBALS = new Globals();
+    public final static Globals GLOBALS = new Globals();
     private SearchView cmdSearch;
     private Menu menu;
     private String label;
@@ -93,6 +114,62 @@ public final class MainActivity extends AbstractActivity {
                 );
             }
         });
+
+        ConnectivityManager manager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
+        if(manager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onAvailable(@NonNull Network network) {
+                        if(menu != null && label != null) {
+                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                        }
+                    }
+
+                    @Override
+                    public void onLosing(@NonNull Network network, int maxMsToLive) {
+                        if(menu != null && label != null) {
+                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                        }
+                    }
+
+                    @Override
+                    public void onLost(@NonNull Network network) {
+                        if(menu != null && label != null) {
+                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                        }
+                    }
+
+                    @Override
+                    public void onUnavailable() {
+                        if(menu != null && label != null) {
+                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private void initSearch(String query) {
@@ -169,30 +246,36 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int requestCode = 0;
         Intent intent = null;
         switch (item.getItemId()) {
             case R.id.menMainScanner:
                 intent = new Intent(MainActivity.this, ScanActivity.class);
                 intent.putExtra("parent", this.label);
+                requestCode = MainActivity.SCANNER_REQUEST;
                 break;
             case R.id.menMainPersons:
                 intent = new Intent(MainActivity.this, PersonActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
                 break;
             case R.id.menMainCompanies:
                 intent = new Intent(MainActivity.this, CompanyActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
                 break;
             case R.id.menMainCategoriesAndTags:
                 intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
                 break;
             case R.id.menMainSettings:
                 intent = new Intent(MainActivity.this, SettingsActivity.class);
+                requestCode = MainActivity.SETTINGS_REQUEST;
                 break;
             case R.id.menMainLog:
                 intent = new Intent(MainActivity.this, LogActivity.class);
                 break;
         }
         if(intent != null) {
-            this.startActivityForResult(intent, 99);
+            this.startActivityForResult(intent, requestCode);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -211,21 +294,31 @@ public final class MainActivity extends AbstractActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode==99) {
-            if(this.menu != null) {
-                this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
-            }
-            List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
-            for(Fragment fragment : fragments) {
-                if(fragment instanceof ParentFragment) {
-                    ((ParentFragment) fragment).setCodes(data.getStringExtra("codes"), data.getStringExtra("parent"));
+        if(resultCode == RESULT_OK) {
+            if(requestCode == MainActivity.SCANNER_REQUEST) {
+                List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
+                for(Fragment fragment : fragments) {
+                    if(fragment instanceof ParentFragment) {
+                        ((ParentFragment) fragment).setCodes(data.getStringExtra("codes"), data.getStringExtra("parent"));
+                    }
                 }
             }
-        }
+            if(requestCode == MainActivity.SETTINGS_REQUEST) {
+                this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+            }
+            if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST) {
+                if(data.hasExtra("type") && data.hasExtra("id")) {
+                    String type = data.getStringExtra("type");
+                    if(type != null) {
+                        this.selectTab(type, data.getLongExtra("id", 0));
+                    }
+                }
+            }
 
-        List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
-        for(Fragment fragment : fragments) {
-            fragment.onActivityResult(requestCode, resultCode, data);
+            List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
+            for(Fragment fragment : fragments) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
@@ -246,7 +339,7 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
-    private void initGlobals() throws Exception {
+    private void initGlobals() throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchPaddingException {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         String pwd = MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, "", true);
         if (pwd != null && pwd.trim().isEmpty()) {

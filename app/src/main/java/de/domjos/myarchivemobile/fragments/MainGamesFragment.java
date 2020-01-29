@@ -32,6 +32,7 @@ public class MainGamesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvGames;
     private GamePagerAdapter gamePagerAdapter;
     private BottomNavigationView bottomNavigationView;
+    private ViewPager viewPager;
     private String search;
 
     private BaseDescriptionObject currentObject = null;
@@ -86,13 +87,15 @@ public class MainGamesFragment extends ParentFragment {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Game game = this.gamePagerAdapter.getMediaObject();
-                        if(this.currentObject!=null) {
-                            game.setId(((Game) this.currentObject.getObject()).getId());
+                        if(this.validator.checkDuplicatedEntry(game.getTitle(), this.lvGames.getAdapter().getList())) {
+                            if(this.currentObject!=null) {
+                                game.setId(((Game) this.currentObject.getObject()).getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                            this.changeMode(false, false);
+                            this.currentObject = null;
+                            this.reload();
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                        this.changeMode(false, false);
-                        this.currentObject = null;
-                        this.reload();
                     } else {
                         MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
@@ -117,6 +120,8 @@ public class MainGamesFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        this.lvGames.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
 
         this.gamePagerAdapter.changeMode(editMode);
     }
@@ -126,20 +131,20 @@ public class MainGamesFragment extends ParentFragment {
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        ViewPager viewPager = view.findViewById(R.id.viewPager);
-        viewPager.setOffscreenPageLimit(4);
-        tabLayout.setupWithViewPager(viewPager);
+        this.viewPager = view.findViewById(R.id.viewPager);
+        this.viewPager.setOffscreenPageLimit(4);
+        tabLayout.setupWithViewPager(this.viewPager);
 
         this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
         this.validator = this.gamePagerAdapter.initValidator();
-        viewPager.setAdapter(this.gamePagerAdapter);
+        this.viewPager.setAdapter(this.gamePagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
-            viewPager.setCurrentItem(i);
+            this.viewPager.setCurrentItem(i);
         }
         tabLayout.setScrollPosition(0, 0f, true);
-        viewPager.setCurrentItem(0);
+        this.viewPager.setCurrentItem(0);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);

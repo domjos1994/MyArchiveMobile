@@ -50,11 +50,13 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     public void setMediaObject(BaseMediaObject baseMediaObject) {
-        this.game = (Game) baseMediaObject;
-        this.txtMediaGameLength.setText(String.valueOf(this.game.getLength()));
+        if(baseMediaObject instanceof Game) {
+            this.game = (Game) baseMediaObject;
+            this.txtMediaGameLength.setText(String.valueOf(this.game.getLength()));
 
-        if(this.game.getType() != null) {
-            this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
+            if(this.game.getType() != null) {
+                this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
+            }
         }
     }
 

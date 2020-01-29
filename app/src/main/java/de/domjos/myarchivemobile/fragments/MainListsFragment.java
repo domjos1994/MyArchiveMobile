@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaList;
@@ -36,6 +38,7 @@ public class MainListsFragment extends ParentFragment {
     private String search;
 
     private MediaList mediaList = null;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_lists, container, false);
@@ -110,16 +113,20 @@ public class MainListsFragment extends ParentFragment {
                     break;
                 case R.id.cmdSave:
                     try {
-                        MediaList mediaList = this.getObject();
-                        if(this.mediaList != null) {
-                            mediaList.setId(this.mediaList.getId());
-                        }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                        if(this.validator.getState()) {
+                            MediaList mediaList = this.getObject();
+                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), this.lvMediaLists.getAdapter().getList())) {
+                                if(this.mediaList != null) {
+                                    mediaList.setId(this.mediaList.getId());
+                                }
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
 
-                        this.changeMode(false, false);
-                        this.mediaList = null;
-                        this.setObject(new MediaList());
-                        this.reload();
+                                this.changeMode(false, false);
+                                this.mediaList = null;
+                                this.setObject(new MediaList());
+                                this.reload();
+                            }
+                        }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
                     }
@@ -182,7 +189,7 @@ public class MainListsFragment extends ParentFragment {
         this.reloadMediaObjects();
     }
 
-    private MediaList getObject() throws Exception {
+    private MediaList getObject() throws ParseException {
         MediaList mediaList = new MediaList();
         mediaList.setTitle(this.txtListTitle.getText().toString());
         if(!this.txtListDeadline.getText().toString().isEmpty()) {
@@ -255,6 +262,11 @@ public class MainListsFragment extends ParentFragment {
 
     }
 
+    private void initValidator() {
+        this.validator = new Validator(this.getActivity(), R.mipmap.ic_launcher_round);
+        this.validator.addEmptyValidator(this.txtListTitle);
+    }
+
     private void initControls(View view) {
         this.lvMediaLists = view.findViewById(R.id.lvMediaLists);
         this.lvMediaObjects = view.findViewById(R.id.lvMediaObjects);
@@ -266,6 +278,7 @@ public class MainListsFragment extends ParentFragment {
 
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
 
+        this.initValidator();
         this.changeMode(false, false);
     }
 

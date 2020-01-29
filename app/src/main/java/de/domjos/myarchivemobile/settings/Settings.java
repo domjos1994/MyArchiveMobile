@@ -5,6 +5,15 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import de.domjos.customwidgets.utils.Crypto;
 import de.domjos.myarchivemobile.R;
 
@@ -16,7 +25,7 @@ public final class Settings {
     // keys
     public final static String DB_PASSWORD = "DB_PASSWORD";
 
-    public Settings(Context context) throws Exception {
+    public Settings(Context context) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
         this.sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -24,12 +33,12 @@ public final class Settings {
     }
 
 
-    public <T> T getSetting(String key, T defVal) throws Exception {
+    public <T> T getSetting(String key, T defVal) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         return this.getSetting(key, defVal, false);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getSetting(String key, T defVal, boolean encrypted) throws Exception {
+    public <T> T getSetting(String key, T defVal, boolean encrypted) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         if(defVal instanceof String) {
             if(encrypted) {
                 String returnValue = this.sharedPreferences.getString(key, (String) defVal);
@@ -58,11 +67,11 @@ public final class Settings {
         return null;
     }
 
-    public <T> void setSetting(String key, T object) throws Exception {
+    public <T> void setSetting(String key, T object) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         this.setSetting(key, object, false);
     }
 
-    public <T> void setSetting(String key, T object, boolean encrypted) throws Exception {
+    public <T> void setSetting(String key, T object, boolean encrypted) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         SharedPreferences.Editor editor = this.sharedPreferences.edit();
         if(object instanceof String) {
             if(encrypted) {

@@ -14,9 +14,9 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -31,29 +31,32 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 
-import static android.content.Context.CONNECTIVITY_SERVICE;
-
 public class ControlsHelper {
 
-    public static boolean hasNetwork(Context context){
-        boolean have_WIFI= false;
-        boolean have_MobileData = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo[] networkInfos = Objects.requireNonNull(connectivityManager).getAllNetworkInfo();
-        for(NetworkInfo info:networkInfos){
-            if (info.getTypeName().equalsIgnoreCase("WIFI"))if (info.isConnected())have_WIFI=true;
-            if (info.getTypeName().equalsIgnoreCase("MOBILE DATA"))if (info.isConnected())have_MobileData=true;
+    public static boolean hasNetwork(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null) {
+                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                    return true;
+                } else {
+                    return activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
+                }
+            } else {
+                return false;
+            }
         }
-        return have_WIFI||have_MobileData;
+        return true;
     }
 
+
+    @SuppressWarnings("unchecked")
     public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
         try {
             long id = -1;
             if(fragment.getArguments() != null) {
-                if(fragment.getArguments().containsKey("id")) {
-                    id = fragment.getArguments().getLong("id");
-                }
+                id = fragment.getArguments().containsKey("id") ? fragment.getArguments().getLong("id") : -1;
             }
 
             if(id != -1) {
@@ -62,18 +65,19 @@ public class ControlsHelper {
                     abstractPagerAdapter.setMediaObject(emptyObject);
                     currentObject = null;
                 } else {
+                    String where = "id=" + id;
                     BaseMediaObject baseMediaObject = null;
                     if(emptyObject instanceof Album) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums("id=" + id).get(0);
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where).get(0);
                     }
                     if(emptyObject instanceof Movie) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies("id=" + id).get(0);
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where).get(0);
                     }
                     if(emptyObject instanceof Game) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames("id=" + id).get(0);
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where).get(0);
                     }
                     if(emptyObject instanceof Book) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks("id=" + id).get(0);
+                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where).get(0);
                     }
                     if(baseMediaObject != null) {
                         for(int i = 0; i<=lv.getAdapter().getItemCount()-1; i++) {
@@ -115,7 +119,7 @@ public class ControlsHelper {
         }
     }
 
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws Exception {
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws ParseException {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(search)) {
             BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);

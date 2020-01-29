@@ -1,5 +1,6 @@
 package de.domjos.myarchivelibrary.model.media;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,7 +105,11 @@ public class BaseMediaObject extends BaseDescriptionObject {
     }
 
     public void setCover(byte[] cover) {
-        this.cover = cover;
+        if(cover == null) {
+            this.cover = null;
+        } else {
+            this.cover = Arrays.copyOf(cover, cover.length);
+        }
     }
 
     public List<LibraryObject> getLibraryObjects() {

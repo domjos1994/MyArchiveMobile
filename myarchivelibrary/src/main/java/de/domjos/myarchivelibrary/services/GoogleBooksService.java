@@ -3,8 +3,10 @@ package de.domjos.myarchivelibrary.services;
 import android.content.Context;
 import de.domjos.myarchivelibrary.R;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,12 +27,12 @@ public class GoogleBooksService extends JSONService {
         this.KEY = context.getString(R.string.service_google_key);
     }
 
-    public Book execute() throws Exception {
+    public Book execute() throws IOException, JSONException {
         String content = this.readUrl(new URL(String.format(GoogleBooksService.BASE_URL, this.code, this.KEY)));
         return this.getBookFromJsonString(content);
     }
 
-    private Book getBookFromJsonString(String content) throws Exception {
+    private Book getBookFromJsonString(String content) throws JSONException {
         JSONObject jsonObject = new JSONObject(content);
 
         if(jsonObject.has("items")) {

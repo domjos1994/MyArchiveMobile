@@ -50,12 +50,14 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     public void setMediaObject(BaseMediaObject baseMediaObject) {
-        this.movie = (Movie) baseMediaObject;
-        this.txtMediaMovieLength.setText(String.valueOf(this.movie.getLength()));
-        this.txtMediaMoviePath.setText(this.movie.getPath());
+        if(baseMediaObject instanceof Movie) {
+            this.movie = (Movie) baseMediaObject;
+            this.txtMediaMovieLength.setText(String.valueOf(this.movie.getLength()));
+            this.txtMediaMoviePath.setText(this.movie.getPath());
 
-        if(this.movie.getType() != null) {
-            this.spMediaMovieType.setSelection(this.typeAdapter.getPosition(this.movie.getType().name()));
+            if(this.movie.getType() != null) {
+                this.spMediaMovieType.setSelection(this.typeAdapter.getPosition(this.movie.getType().name()));
+            }
         }
     }
 

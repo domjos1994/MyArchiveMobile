@@ -1,5 +1,6 @@
 package de.domjos.myarchivelibrary.model.general;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
@@ -29,7 +30,11 @@ public final class Company extends BaseDescriptionObject implements DatabaseObje
     }
 
     public void setCover(byte[] cover) {
-        this.cover = cover;
+        if(cover == null) {
+            this.cover = null;
+        } else {
+            this.cover = Arrays.copyOf(cover, cover.length);
+        }
     }
 
     @Override
