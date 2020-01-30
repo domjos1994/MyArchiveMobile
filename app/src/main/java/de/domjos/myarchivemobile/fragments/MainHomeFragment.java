@@ -105,69 +105,55 @@ public class MainHomeFragment extends ParentFragment {
             }
         });
 
-        this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, new SwipeRefreshDeleteList.ButtonClickListener() {
-            @Override
-            public void onClick(List<BaseDescriptionObject> objectList) {
-                try {
-                    AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-                    b.setTitle(getString(R.string.media_persons));
-                    List<String> personsString = new LinkedList<>();
-                    List<Person> people = MainActivity.GLOBALS.getDatabase().getPersons("", 0);
-                    for(Person person : people) {
-                        personsString.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
+        this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, objectList -> {
+            try {
+                AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+                b.setTitle(getString(R.string.media_persons));
+                List<String> personsString = new LinkedList<>();
+                List<Person> people = MainActivity.GLOBALS.getDatabase().getPersons("", 0);
+                for(Person person : people) {
+                    personsString.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
+                }
+                String[] types = personsString.toArray(new String[0]);
+                b.setItems(types, (dialogInterface, i) -> {
+                    for(BaseDescriptionObject baseDescriptionObject : objectList) {
+                        LibraryObject libraryObject = new LibraryObject();
+                        libraryObject.setDeadLine(new Date());
+                        libraryObject.setNumberOfDays(7);
+                        libraryObject.setPerson(people.get(i));
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
                     }
-                    String[] types = personsString.toArray(new String[0]);
-                    b.setItems(types, (dialogInterface, i) -> {
-                        for(BaseDescriptionObject baseDescriptionObject : objectList) {
-                            LibraryObject libraryObject = new LibraryObject();
-                            libraryObject.setDeadLine(new Date());
-                            libraryObject.setNumberOfDays(7);
-                            libraryObject.setPerson(people.get(i));
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
-                        }
-                    });
-                    b.show();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext());
-                }
+                });
+                b.show();
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext());
             }
         });
 
-        this.lvMedia.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
+        this.lvMedia.setOnReloadListener(this::reload);
+
+        this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(listObject.getDescription(), ((BaseMediaObject) listObject.getObject()).getId());
             }
         });
 
-        this.lvMedia.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
-                if(mainActivity != null) {
-                    mainActivity.selectTab(listObject.getDescription(), ((BaseMediaObject) listObject.getObject()).getId());
-                }
+        this.lvMedia.setOnDeleteListener(listObject -> {
+            BaseMediaObject baseMediaObject = (BaseMediaObject) listObject.getObject();
+            if(baseMediaObject instanceof Book) {
+                MainActivity.GLOBALS.getDatabase().deleteItem((Book) baseMediaObject);
             }
-        });
-
-        this.lvMedia.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                BaseMediaObject baseMediaObject = (BaseMediaObject) listObject.getObject();
-                if(baseMediaObject instanceof Book) {
-                    MainActivity.GLOBALS.getDatabase().deleteItem((Book) baseMediaObject);
-                }
-                if(baseMediaObject instanceof Movie) {
-                    MainActivity.GLOBALS.getDatabase().deleteItem((Movie) baseMediaObject);
-                }
-                if(baseMediaObject instanceof Game) {
-                    MainActivity.GLOBALS.getDatabase().deleteItem((Game) baseMediaObject);
-                }
-                if(baseMediaObject instanceof Album) {
-                    MainActivity.GLOBALS.getDatabase().deleteItem((Album) baseMediaObject);
-                }
-                reload();
+            if(baseMediaObject instanceof Movie) {
+                MainActivity.GLOBALS.getDatabase().deleteItem((Movie) baseMediaObject);
             }
+            if(baseMediaObject instanceof Game) {
+                MainActivity.GLOBALS.getDatabase().deleteItem((Game) baseMediaObject);
+            }
+            if(baseMediaObject instanceof Album) {
+                MainActivity.GLOBALS.getDatabase().deleteItem((Album) baseMediaObject);
+            }
+            reload();
         });
 
         this.reload();

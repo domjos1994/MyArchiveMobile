@@ -17,7 +17,6 @@ import java.util.Objects;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 
 public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {

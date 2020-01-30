@@ -46,31 +46,20 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        this.lvItems.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(de.domjos.customwidgets.model.objects.BaseDescriptionObject listObject) {
-                baseDescriptionObject = (BaseDescriptionObject) listObject.getObject();
-                setObject(baseDescriptionObject);
-                changeMode(false, true);
-            }
+        this.lvItems.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.baseDescriptionObject = (BaseDescriptionObject) listObject.getObject();
+            this.setObject(this.baseDescriptionObject);
+            this.changeMode(false, true);
         });
 
-        this.lvItems.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                CategoriesTagsActivity.this.reload();
-            }
-        });
+        this.lvItems.setOnReloadListener(CategoriesTagsActivity.this::reload);
 
-        this.lvMedia.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(de.domjos.customwidgets.model.objects.BaseDescriptionObject listObject) {
-                Intent intent = new Intent();
-                intent.putExtra("type", listObject.getDescription());
-                intent.putExtra("id", ((BaseMediaObject) listObject.getObject()).getId());
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-            }
+        this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            Intent intent = new Intent();
+            intent.putExtra("type", listObject.getDescription());
+            intent.putExtra("id", ((BaseMediaObject) listObject.getObject()).getId());
+            setResult(Activity.RESULT_OK, intent);
+            finish();
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {

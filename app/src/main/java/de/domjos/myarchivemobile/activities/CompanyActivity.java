@@ -14,10 +14,8 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
-import de.domjos.myarchivemobile.adapter.PersonPagerAdapter;
 
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
@@ -34,28 +32,17 @@ public final class CompanyActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvCompanies.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                CompanyActivity.this.reload();
-            }
+        this.lvCompanies.setOnReloadListener(CompanyActivity.this::reload);
+        this.lvCompanies.setOnDeleteListener(listObject -> {
+            Company company = (Company) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(company);
+            this.changeMode(false, false);
+            this.companyPagerAdapter.setMediaObject(new Company());
         });
-        this.lvCompanies.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Company company = (Company) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(company);
-                changeMode(false, false);
-                companyPagerAdapter.setMediaObject(new Company());
-            }
-        });
-        this.lvCompanies.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                company = (Company) listObject.getObject();
-                companyPagerAdapter.setMediaObject(company);
-                changeMode(false, true);
-            }
+        this.lvCompanies.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.company = (Company) listObject.getObject();
+            this.companyPagerAdapter.setMediaObject(this.company);
+            this.changeMode(false, true);
         });
 
 

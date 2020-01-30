@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10">
+    android:layout_height="match_parent">
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-        android:id="@+id/lvPersons"
-        android:layout_width="match_parent"
+        android:id="@+id/lvMediaMovies"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="4"
-        app:itemIcon="@drawable/ic_person_black_24dp"
+        app:itemIcon="@drawable/ic_local_movies_black_24dp"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
-        android:padding="4dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#000"/>
+        android:padding="4dp"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.86"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/viewPager"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="6">
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.86"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lvMediaMovies">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
@@ -38,10 +37,13 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/controls"/>
-</LinearLayout>
+        app:menu="@menu/controls"
+        app:layout_constraintHeight_percent="0.14"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

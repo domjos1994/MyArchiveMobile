@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -42,28 +43,17 @@ public class MainGamesFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_games, container, false);
         this.initControls(root);
 
-        this.lvGames.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainGamesFragment.this.reload();
-            }
+        this.lvGames.setOnReloadListener(MainGamesFragment.this::reload);
+        this.lvGames.setOnDeleteListener(listObject -> {
+            Game game = (Game) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(game);
+            this.changeMode(false, false);
+            this.gamePagerAdapter.setMediaObject(new Game());
         });
-        this.lvGames.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Game game = (Game) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(game);
-                changeMode(false, false);
-                gamePagerAdapter.setMediaObject(new Game());
-            }
-        });
-        this.lvGames.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentObject = listObject;
-                gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
-                changeMode(false, true);
-            }
+        this.lvGames.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
+            this.changeMode(false, true);
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -120,8 +110,11 @@ public class MainGamesFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
-        this.lvGames.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+
+        if(this.lvGames.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+            this.lvGames.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+        }
 
         this.gamePagerAdapter.changeMode(editMode);
     }

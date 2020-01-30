@@ -44,50 +44,31 @@ public class MainListsFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_lists, container, false);
         this.initControls(root);
 
-        this.lvMediaLists.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainListsFragment.this.reload();
-            }
+        this.lvMediaLists.setOnReloadListener(MainListsFragment.this::reload);
+
+        this.lvMediaLists.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.mediaList = (MediaList) listObject.getObject();
+            this.setObject(this.mediaList);
+            this.changeMode(false, true);
         });
 
-        this.lvMediaLists.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                mediaList = (MediaList) listObject.getObject();
-                setObject(mediaList);
-                changeMode(false, true);
-            }
+        this.lvMediaLists.setOnDeleteListener(listObject -> {
+            this.mediaList = (MediaList) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(this.mediaList);
+            this.mediaList = null;
+            this.setObject(new MediaList());
+            this.changeMode(false, false);
+            this.reload();
         });
 
-        this.lvMediaLists.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                mediaList = (MediaList) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(mediaList);
-                mediaList = null;
-                setObject(new MediaList());
-                changeMode(false, false);
-                reload();
-            }
-        });
+        this.lvMediaObjects.setOnReloadListener(MainListsFragment.this::reloadMediaObjects);
 
-        this.lvMediaObjects.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainListsFragment.this.reloadMediaObjects();
-            }
-        });
-
-        this.lvMediaObjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                if(mediaList!=null) {
-                    for(int i = 0; i<=mediaList.getBaseMediaObjects().size()-1; i++) {
-                        if(((BaseMediaObject) listObject.getObject()).getId()==mediaList.getBaseMediaObjects().get(i).getId()) {
-                            mediaList.getBaseMediaObjects().remove(i);
-                            break;
-                        }
+        this.lvMediaObjects.setOnDeleteListener(listObject -> {
+            if(this.mediaList!=null) {
+                for(int i = 0; i<=this.mediaList.getBaseMediaObjects().size()-1; i++) {
+                    if(((BaseMediaObject) listObject.getObject()).getId()==this.mediaList.getBaseMediaObjects().get(i).getId()) {
+                        this.mediaList.getBaseMediaObjects().remove(i);
+                        break;
                     }
                 }
             }

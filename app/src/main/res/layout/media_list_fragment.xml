@@ -8,5 +8,6 @@
     app:itemIcon="@mipmap/ic_launcher_round"
     app:readOnly="true"
     app:listItemBackground="@drawable/background"
+    app:selectedListItemBackground="@drawable/selected_background"
     app:listItemDivider="@drawable/divider"
     android:padding="4dp"/>

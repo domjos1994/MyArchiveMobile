@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -42,28 +43,17 @@ public class MainMoviesFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_movies, container, false);
         this.initControls(root);
 
-        this.lvMovies.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainMoviesFragment.this.reload();
-            }
+        this.lvMovies.setOnReloadListener(MainMoviesFragment.this::reload);
+        this.lvMovies.setOnDeleteListener(listObject -> {
+            Movie movie = (Movie) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(movie);
+            this.changeMode(false, false);
+            this.moviePagerAdapter.setMediaObject(new Movie());
         });
-        this.lvMovies.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Movie movie = (Movie) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(movie);
-                changeMode(false, false);
-                moviePagerAdapter.setMediaObject(new Movie());
-            }
-        });
-        this.lvMovies.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentObject = listObject;
-                moviePagerAdapter.setMediaObject((Movie) currentObject.getObject());
-                changeMode(false, true);
-            }
+        this.lvMovies.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            this.moviePagerAdapter.setMediaObject((Movie) this.currentObject.getObject());
+            this.changeMode(false, true);
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -120,8 +110,11 @@ public class MainMoviesFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
-        this.lvMovies.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+
+        if(this.lvMovies.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+            this.lvMovies.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+        }
 
         this.moviePagerAdapter.changeMode(editMode);
     }

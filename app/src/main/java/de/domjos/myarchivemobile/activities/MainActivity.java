@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkRequest;
@@ -75,6 +76,7 @@ public final class MainActivity extends AbstractActivity {
     private SearchView cmdSearch;
     private Menu menu;
     private String label;
+    private boolean onlyOrientationChanged = false;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -322,6 +324,17 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT || newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            this.onlyOrientationChanged = true;
+        } else {
+            this.onlyOrientationChanged = false;
+        }
+
+        super.onConfigurationChanged(newConfig);
+    }
+
     public void selectTab(String title, long id) {
         Bundle args = new Bundle();
         args.putLong("id", id);
@@ -351,7 +364,9 @@ public final class MainActivity extends AbstractActivity {
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
 
-        ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
+        if(!this.onlyOrientationChanged) {
+            ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
+        }
     }
 
     private void initPermissions() {

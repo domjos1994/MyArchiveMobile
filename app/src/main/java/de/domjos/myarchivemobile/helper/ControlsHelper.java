@@ -89,6 +89,7 @@ public class ControlsHelper {
                         }
                         fragment.changeMode(false, true);
                         abstractPagerAdapter.setMediaObject(baseMediaObject);
+                        lv.select(currentObject);
                     }
                 }
             }

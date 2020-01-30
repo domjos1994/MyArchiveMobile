@@ -42,54 +42,35 @@ public class MainLibraryFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_library, container, false);
         this.initControls(root);
 
-        this.lvMediaLibrary.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainLibraryFragment.this.reload();
-            }
+        this.lvMediaLibrary.setOnReloadListener(MainLibraryFragment.this::reload);
+
+        this.lvMediaLibrary.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(true);
+            this.reloadLibraryObjects();
         });
 
-        this.lvMediaLibrary.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentObject = listObject;
-                bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(true);
-                reloadLibraryObjects();
-            }
+        this.lvMediaHistory.setOnReloadListener(MainLibraryFragment.this::reloadLibraryObjects);
+
+        this.lvMediaHistory.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.libraryObject = (LibraryObject) listObject.getObject();
+            this.changeMode(false, true);
+            this.setObject(this.libraryObject);
         });
 
-        this.lvMediaHistory.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainLibraryFragment.this.reloadLibraryObjects();
-            }
-        });
-
-        this.lvMediaHistory.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                libraryObject = (LibraryObject) listObject.getObject();
-                changeMode(false, true);
-                setObject(libraryObject);
-            }
-        });
-
-        this.lvMediaHistory.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                long id = ((LibraryObject) listObject.getObject()).getId();
-                MainActivity.GLOBALS.getDatabase().deleteItem((LibraryObject) listObject.getObject());
-                BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                    if(baseMediaObject.getLibraryObjects().get(i).getId()==id) {
-                        baseMediaObject.getLibraryObjects().remove(i);
-                        break;
-                    }
+        this.lvMediaHistory.setOnDeleteListener(listObject -> {
+            long id = ((LibraryObject) listObject.getObject()).getId();
+            MainActivity.GLOBALS.getDatabase().deleteItem((LibraryObject) listObject.getObject());
+            BaseMediaObject baseMediaObject = (BaseMediaObject) this.currentObject.getObject();
+            for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                if(baseMediaObject.getLibraryObjects().get(i).getId()==id) {
+                    baseMediaObject.getLibraryObjects().remove(i);
+                    break;
                 }
-                changeMode(false, false);
-                setObject(new LibraryObject());
-                libraryObject = null;
             }
+            this.changeMode(false, false);
+            this.setObject(new LibraryObject());
+            this.libraryObject = null;
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -284,6 +265,7 @@ public class MainLibraryFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
 
+        this.lvMediaHistory.setReadOnly(editMode);
         this.txtLibraryPerson.setEnabled(editMode);
         this.txtLibraryNumberOfDays.setEnabled(editMode);
         this.txtMediaLibraryNumberOfWeeks.setEnabled(editMode);

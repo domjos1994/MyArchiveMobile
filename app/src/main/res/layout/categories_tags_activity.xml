@@ -25,6 +25,7 @@
         android:layout_weight="9"
         app:itemIcon="@drawable/ic_tag_black_24dp"
         app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 
@@ -40,6 +41,8 @@
         android:layout_weight="6"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/divider"
         app:readOnly="true"
         android:padding="4dp"/>
 

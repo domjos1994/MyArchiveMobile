@@ -14,6 +14,7 @@
         android:layout_weight="4"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
         android:padding="4dp"/>
@@ -30,6 +31,7 @@
         android:layout_weight="3"
         app:itemIcon="@drawable/ic_local_library_black_24dp"
         app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 

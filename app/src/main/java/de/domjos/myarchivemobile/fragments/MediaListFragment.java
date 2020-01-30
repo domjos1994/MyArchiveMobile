@@ -18,7 +18,6 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
-import de.domjos.myarchivemobile.activities.MainActivity;
 
 public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObject>> {
     private SwipeRefreshDeleteList lvMedia;
@@ -33,17 +32,14 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.lvMedia = view.findViewById(R.id.lvMedia);
 
-        this.lvMedia.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                Intent intent = new Intent();
-                intent.putExtra("type", listObject.getDescription());
-                intent.putExtra("id", ((BaseMediaObject) listObject.getObject()).getId());
-                Activity activity = MediaListFragment.this.getActivity();
-                if(activity != null) {
-                    activity.setResult(Activity.RESULT_OK, intent);
-                    activity.finish();
-                }
+        this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            Intent intent = new Intent();
+            intent.putExtra("type", listObject.getDescription());
+            intent.putExtra("id", ((BaseMediaObject) listObject.getObject()).getId());
+            Activity activity = MediaListFragment.this.getActivity();
+            if(activity != null) {
+                activity.setResult(Activity.RESULT_OK, intent);
+                activity.finish();
             }
         });
     }

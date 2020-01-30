@@ -32,28 +32,17 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvPersons.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                PersonActivity.this.reload();
-            }
+        this.lvPersons.setOnReloadListener(PersonActivity.this::reload);
+        this.lvPersons.setOnDeleteListener(listObject -> {
+            Person person = (Person) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(person);
+            this.changeMode(false, false);
+            this.personPagerAdapter.setMediaObject(new Person());
         });
-        this.lvPersons.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Person person = (Person) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(person);
-                changeMode(false, false);
-                personPagerAdapter.setMediaObject(new Person());
-            }
-        });
-        this.lvPersons.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                person = (Person) listObject.getObject();
-                personPagerAdapter.setMediaObject(person);
-                changeMode(false, true);
-            }
+        this.lvPersons.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.person = (Person) listObject.getObject();
+            this.personPagerAdapter.setMediaObject(this.person);
+            this.changeMode(false, true);
         });
 
 

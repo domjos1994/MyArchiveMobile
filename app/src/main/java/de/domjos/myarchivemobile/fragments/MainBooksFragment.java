@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -43,28 +44,17 @@ public class MainBooksFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_books, container, false);
         this.initControls(root);
 
-        this.lvBooks.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainBooksFragment.this.reload();
-            }
+        this.lvBooks.setOnReloadListener(MainBooksFragment.this::reload);
+        this.lvBooks.setOnDeleteListener(listObject -> {
+            Book book = (Book) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(book);
+            this.changeMode(false, false);
+            this.bookPagerAdapter.setMediaObject(new Book());
         });
-        this.lvBooks.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Book book = (Book) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(book);
-                changeMode(false, false);
-                bookPagerAdapter.setMediaObject(new Book());
-            }
-        });
-        this.lvBooks.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentObject = listObject;
-                bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
-                changeMode(false, true);
-            }
+        this.lvBooks.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
+            this.changeMode(false, true);
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -121,8 +111,11 @@ public class MainBooksFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
-        this.lvBooks.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+
+        if(this.lvBooks.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+            this.lvBooks.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+        }
 
         this.bookPagerAdapter.changeMode(editMode);
     }

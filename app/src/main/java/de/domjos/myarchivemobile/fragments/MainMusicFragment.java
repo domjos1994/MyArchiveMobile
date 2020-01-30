@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -42,28 +43,17 @@ public class MainMusicFragment extends ParentFragment {
         View root = inflater.inflate(R.layout.main_fragment_music, container, false);
         this.initControls(root);
 
-        this.lvAlbums.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                MainMusicFragment.this.reload();
-            }
+        this.lvAlbums.setOnReloadListener(MainMusicFragment.this::reload);
+        this.lvAlbums.setOnDeleteListener(listObject -> {
+            Album album = (Album) listObject.getObject();
+            MainActivity.GLOBALS.getDatabase().deleteItem(album);
+            this.changeMode(false, false);
+            this.albumPagerAdapter.setMediaObject(new Album());
         });
-        this.lvAlbums.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                Album album = (Album) listObject.getObject();
-                MainActivity.GLOBALS.getDatabase().deleteItem(album);
-                changeMode(false, false);
-                albumPagerAdapter.setMediaObject(new Album());
-            }
-        });
-        this.lvAlbums.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentObject = listObject;
-                albumPagerAdapter.setMediaObject((Album) currentObject.getObject());
-                changeMode(false, true);
-            }
+        this.lvAlbums.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            this.albumPagerAdapter.setMediaObject((Album) this.currentObject.getObject());
+            this.changeMode(false, true);
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -120,8 +110,11 @@ public class MainMusicFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
-        this.lvAlbums.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-        this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+
+        if(this.lvAlbums.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+            this.lvAlbums.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
+            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
+        }
 
         this.albumPagerAdapter.changeMode(editMode);
     }
