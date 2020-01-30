@@ -49,6 +49,7 @@ public class Database extends SQLiteOpenHelper {
     private final static String TITLE = "title";
     private final static String COVER = "cover";
 
+    private SQLiteDatabase database;
     private Context context;
     private String password;
 
@@ -692,6 +693,14 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    public void close() {
+        if(this.database != null) {
+            if(this.database.isOpen()) {
+                this.database.close();
+            }
+        }
+    }
+
     private BaseMediaObject setFields(BaseMediaObject baseMediaObject) {
         for(int j = 0; j<=3; j++) {
             Random generator = new Random();
@@ -891,11 +900,22 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private SQLiteDatabase getWritableDatabase() {
-        return this.getWritableDatabase(this.password);
+        if(this.database == null)  {
+            this.database = this.getWritableDatabase(this.password);
+        }
+        return this.database;
     }
 
     private SQLiteDatabase getReadableDatabase() {
-        return this.getReadableDatabase(this.password);
+        if(this.database != null) {
+            if(this.database.isReadOnly()) {
+                this.database.close();
+                this.database = this.getReadableDatabase(this.password);
+            }
+        } else {
+            this.database = this.getReadableDatabase(this.password);
+        }
+        return this.database;
     }
 
     private static String readRawTextFile(Context ctx, int resId) {
