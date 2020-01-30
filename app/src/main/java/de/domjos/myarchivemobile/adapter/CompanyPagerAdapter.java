@@ -23,6 +23,7 @@ import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
+    private FragmentManager fragmentManager;
     private CompanyFragment companyFragment;
     private MediaCoverFragment<Company> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
@@ -30,7 +31,9 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
 
     public CompanyPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
+
         this.context = context;
+        this.fragmentManager = fm;
 
         this.companyFragment = new CompanyFragment();
         this.mediaCoverFragment = new MediaCoverFragment<>();
@@ -81,12 +84,25 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment;
         switch (position) {
             case 0:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.companyFragment = (CompanyFragment) fragment;
+                }
                 return this.companyFragment;
             case 1:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                }
                 return this.mediaCoverFragment;
             case 2:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaListFragment = (MediaListFragment) fragment;
+                }
                 return this.mediaListFragment;
             default:
                 return new Fragment();

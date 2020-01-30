@@ -12,13 +12,10 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
-import de.domjos.myarchivemobile.fragments.AbstractFragment;
-import de.domjos.myarchivemobile.fragments.MediaBookFragment;
-import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
-import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
-import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
+import de.domjos.myarchivemobile.fragments.*;
 
 public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
+    private FragmentManager fragmentManager;
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaBookFragment;
@@ -30,6 +27,8 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         super(fm, context);
 
         this.runnable = runnable;
+        this.fragmentManager = fm;
+
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaBookFragment = new MediaBookFragment();
@@ -54,14 +53,31 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment;
         switch (position) {
             case 0:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
+                }
                 return this.mediaGeneralFragment;
             case 1:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                }
                 return this.mediaCoverFragment;
             case 2:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
+                }
                 return this.mediaPersonsCompaniesFragment;
             case 3:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaBookFragment = (MediaBookFragment) fragment;
+                }
                 return this.mediaBookFragment;
             default:
                 return new Fragment();

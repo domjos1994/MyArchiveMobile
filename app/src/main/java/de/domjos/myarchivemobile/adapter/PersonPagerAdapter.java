@@ -23,6 +23,7 @@ import de.domjos.myarchivemobile.fragments.PersonFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
+    private FragmentManager fragmentManager;
     private PersonFragment personFragment;
     private MediaCoverFragment<Person> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
@@ -30,7 +31,9 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
 
     public PersonPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
+
         this.context = context;
+        this.fragmentManager = fm;
 
         this.personFragment = new PersonFragment();
         this.mediaCoverFragment = new MediaCoverFragment<>();
@@ -81,12 +84,25 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment;
         switch (position) {
             case 0:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.personFragment = (PersonFragment) fragment;
+                }
                 return this.personFragment;
             case 1:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                }
                 return this.mediaCoverFragment;
             case 2:
+                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
+                if(fragment!=null) {
+                    this.mediaListFragment = (MediaListFragment) fragment;
+                }
                 return this.mediaListFragment;
             default:
                 return new Fragment();
