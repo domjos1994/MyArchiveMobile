@@ -120,14 +120,15 @@
         android:id="@+id/lvMedia"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/filter"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:padding="4dp"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
-        android:padding="4dp"
-        android:layout_above="@+id/footer"
-        android:layout_below="@+id/filter"/>
+        app:selectedListItemBackground="@drawable/selected_background" />
 
     <LinearLayout
         android:id="@+id/footer"
@@ -153,146 +154,146 @@
             android:gravity="center"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/lblAppGames"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="286dp"
-        android:layout_marginEnd="88dp"
-        android:padding="8dp"
-        android:text="@string/main_navigation_media_games"
-        android:visibility="invisible" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppGames"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="276dp"
-        android:layout_marginEnd="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="83dp"
+        android:layout_marginBottom="72dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:elevation="16dp"
         android:focusable="true"
+        android:src="@drawable/ic_games_black_24dp"
         android:visibility="invisible"
+        app:fabSize="mini"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_games_black_24dp"
-        android:src="@drawable/ic_games_black_24dp"
-        tools:targetApi="lollipop"
-        tools:ignore="VectorDrawableCompat" />
-
-    <TextView
-        android:id="@+id/lblAppMovies"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="226dp"
-        android:layout_marginEnd="88dp"
-        android:padding="8dp"
-        android:text="@string/main_navigation_media_movies"
-        android:visibility="invisible" />
+        tools:ignore="VectorDrawableCompat"
+        tools:targetApi="lollipop" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppMovies"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="216dp"
-        android:layout_marginEnd="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="83dp"
+        android:layout_marginBottom="30dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:elevation="16dp"
         android:focusable="true"
+        android:src="@drawable/ic_local_movies_black_24dp"
         android:visibility="invisible"
+        app:fabSize="mini"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_local_movies_black_24dp"
-        android:src="@drawable/ic_local_movies_black_24dp"
-        tools:targetApi="lollipop"
-        tools:ignore="VectorDrawableCompat" />
-
-    <TextView
-        android:id="@+id/lblAppMusic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="166dp"
-        android:layout_marginEnd="88dp"
-        android:padding="8dp"
-        android:text="@string/main_navigation_media_music"
-        android:visibility="invisible" />
+        tools:ignore="VectorDrawableCompat"
+        tools:targetApi="lollipop" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="156dp"
-        android:layout_marginEnd="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="52dp"
+        android:layout_marginBottom="103dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:elevation="16dp"
         android:focusable="true"
+        android:src="@drawable/ic_music_note_black_24dp"
         android:visibility="invisible"
+        app:fabSize="mini"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_music_note_black_24dp"
-        android:src="@drawable/ic_music_note_black_24dp"
-        tools:targetApi="lollipop"
-        tools:ignore="VectorDrawableCompat" />
-
-    <TextView
-        android:id="@+id/lblAppBook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="106dp"
-        android:layout_marginEnd="88dp"
-        android:padding="8dp"
-        android:text="@string/main_navigation_media_books"
-        android:visibility="invisible"/>
+        tools:ignore="VectorDrawableCompat"
+        tools:targetApi="lollipop" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppBook"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="96dp"
-        android:layout_marginEnd="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="103dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:elevation="16dp"
         android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_book_black_24dp"
         android:visibility="invisible"
+        app:fabSize="mini"
+        app:maxImageSize="12dp"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_book_black_24dp"
-        android:src="@drawable/ic_book_black_24dp"
-        tools:targetApi="lollipop"
-        tools:ignore="VectorDrawableCompat" />
+        tools:ignore="VectorDrawableCompat"
+        tools:targetApi="lollipop" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="36dp"
-        android:layout_marginEnd="24dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:elevation="16dp"
         android:focusable="true"
+        android:src="@drawable/ic_add_circle_outline_black_24dp"
         android:visibility="visible"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
-        android:src="@drawable/ic_add_circle_outline_black_24dp"
         tools:ignore="VectorDrawableCompat"
         tools:targetApi="lollipop" />
+
+
+
+    <TextView
+        android:id="@+id/lblAppBook"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="@string/main_navigation_media_books"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/lblAppMusic"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="@string/main_navigation_media_music"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/lblAppMovies"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="@string/main_navigation_media_movies"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/lblAppGames"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="@string/main_navigation_media_games"
+        android:visibility="invisible" />
 </RelativeLayout>

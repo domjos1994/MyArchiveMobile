@@ -16,6 +16,9 @@
     <string name="export_name">File-Name</string>
     <string name="export_name_default">export</string>
 
+    <string name="filter_no_filter">No Filter</string>
+    <string name="filter_temp">Temporary Settings</string>
+
     <string name="game">Game</string>
     <string name="game_length">Length</string>
     <string name="game_type">Type</string>
@@ -87,4 +90,5 @@
     <string name="sys_description">Description</string>
     <string name="sys_date_format">yyyy-MM-dd</string>
     <string name="export_search">...</string>
+    <string name="sys_search">Search</string>
 </resources>

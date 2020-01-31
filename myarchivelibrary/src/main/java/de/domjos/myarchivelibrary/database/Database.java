@@ -28,6 +28,7 @@ import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
+import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -79,7 +80,9 @@ public class Database extends SQLiteOpenHelper {
         String content = Database.readRawTextFile(this.context, R.raw.update);
         if(content != null) {
             for(String query : content.split(";")) {
-                db.execSQL(query.trim());
+                if(!query.trim().isEmpty()) {
+                    db.execSQL(query.trim());
+                }
             }
         }
     }
@@ -362,6 +365,45 @@ public class Database extends SQLiteOpenHelper {
         }
         cursor.close();
         return mediaLists;
+    }
+
+    public void insertOrUpdateFilter(MediaFilter mediaFilter) {
+        List<MediaFilter> mediaFilters = this.getFilters("title='" + mediaFilter.getTitle() + "'");
+        if(mediaFilters!=null) {
+            if(!mediaFilters.isEmpty()) {
+                mediaFilter.setId(mediaFilters.get(0).getId());
+            }
+        }
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", "categories", "tags", "books", "movies", "music", "games"));
+        sqLiteStatement.bindString(1, mediaFilter.getTitle());
+        sqLiteStatement.bindString(2, mediaFilter.getSearch());
+        sqLiteStatement.bindString(3, mediaFilter.getCategories());
+        sqLiteStatement.bindString(4, mediaFilter.getTags());
+        sqLiteStatement.bindLong(5, mediaFilter.isBooks() ? 1 : 0);
+        sqLiteStatement.bindLong(6, mediaFilter.isMovies() ? 1 : 0);
+        sqLiteStatement.bindLong(7, mediaFilter.isMusic() ? 1 : 0);
+        sqLiteStatement.bindLong(8, mediaFilter.isGames() ? 1 : 0);
+        sqLiteStatement.execute();
+    }
+
+    public List<MediaFilter> getFilters(String where) {
+        List<MediaFilter> mediaFilters = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM filters" + this.where(where), null);
+        while (cursor.moveToNext()) {
+            MediaFilter mediaFilter = new MediaFilter();
+            mediaFilter.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            mediaFilter.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+            mediaFilter.setSearch(cursor.getString(cursor.getColumnIndex("search")));
+            mediaFilter.setCategories(cursor.getString(cursor.getColumnIndex("categories")));
+            mediaFilter.setTags(cursor.getString(cursor.getColumnIndex("tags")));
+            mediaFilter.setBooks(cursor.getInt(cursor.getColumnIndex("books")) == 1);
+            mediaFilter.setMovies(cursor.getInt(cursor.getColumnIndex("movies")) == 1);
+            mediaFilter.setMusic(cursor.getInt(cursor.getColumnIndex("music")) == 1);
+            mediaFilter.setGames(cursor.getInt(cursor.getColumnIndex("games")) == 1);
+            mediaFilters.add(mediaFilter);
+        }
+        cursor.close();
+        return mediaFilters;
     }
 
     public List<BaseMediaObject> getObjects(String table, long id) throws ParseException {

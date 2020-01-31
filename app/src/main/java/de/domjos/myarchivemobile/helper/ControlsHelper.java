@@ -22,6 +22,7 @@ import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -151,6 +152,131 @@ public class ControlsHelper {
             baseDescriptionObjects.add(baseDescriptionObject);
         }
         return baseDescriptionObjects;
+    }
+
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) throws ParseException {
+        List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
+        StringBuilder where = new StringBuilder();
+        if(!mediaFilter.getSearch().trim().isEmpty()) {
+            String search = mediaFilter.getSearch();
+            where.append("title like '").append(search.replace("|", "' or title like '").replace("&", "' and title like '")).append("'");
+        }
+        List<String> categories = new LinkedList<>();
+        if(mediaFilter.getCategories().contains("|")) {
+            for(String category : mediaFilter.getCategories().split("\\|")) {
+                if(!category.trim().isEmpty()) {
+                    categories.add(category);
+                }
+            }
+        }
+        List<List<String>> tags = new LinkedList<>();
+        for(String orTags : mediaFilter.getTags().split("\\|")) {
+            if(!orTags.trim().isEmpty()) {
+                List<String> tmpTags = new LinkedList<>();
+                for(String andTags : orTags.split("&")) {
+                    if(!andTags.trim().isEmpty()) {
+                        tmpTags.add(andTags.trim());
+                    }
+                }
+                tags.add(tmpTags);
+            }
+        }
+
+        if(mediaFilter.isBooks()) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(where.toString())) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                    baseDescriptionObject.setDescription(context.getString(R.string.book));
+                    baseDescriptionObject.setObject(baseMediaObject);
+                    baseDescriptionObjects.add(baseDescriptionObject);
+                }
+            }
+        }
+        if(mediaFilter.isMovies()) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(where.toString())) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                    baseDescriptionObject.setDescription(context.getString(R.string.movie));
+                    baseDescriptionObject.setObject(baseMediaObject);
+                    baseDescriptionObjects.add(baseDescriptionObject);
+                }
+            }
+        }
+        if(mediaFilter.isMusic()) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(where.toString())) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                    baseDescriptionObject.setDescription(context.getString(R.string.album));
+                    baseDescriptionObject.setObject(baseMediaObject);
+                    baseDescriptionObjects.add(baseDescriptionObject);
+                }
+            }
+        }
+        if(mediaFilter.isGames()) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(where.toString())) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                    baseDescriptionObject.setDescription(context.getString(R.string.game));
+                    baseDescriptionObject.setObject(baseMediaObject);
+                    baseDescriptionObjects.add(baseDescriptionObject);
+                }
+            }
+        }
+
+        return baseDescriptionObjects;
+    }
+
+
+    private static boolean isValidItemForFilter(BaseMediaObject baseMediaObject, List<String> categories, List<List<String>> tags) {
+        if(!categories.isEmpty()) {
+            if(baseMediaObject.getCategory() == null) {
+                return false;
+            } else {
+                boolean contains = false;
+                for(String category : categories) {
+                    if(baseMediaObject.getCategory().getTitle().trim().equals(category)) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if(!contains) {
+                    return false;
+                }
+            }
+        }
+
+        if(!tags.isEmpty()) {
+            if(baseMediaObject.getTags().isEmpty()) {
+                return false;
+            } else {
+                List<String> titles = new LinkedList<>();
+                for(de.domjos.myarchivelibrary.model.base.BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
+                    titles.add(baseDescriptionObject.getTitle().trim());
+                }
+
+                boolean contains = false;
+                for(List<String> andTags : tags) {
+                    boolean andContains = true;
+                    for(String tag : andTags) {
+                        if(!titles.contains(tag)) {
+                            andContains = false;
+                            break;
+                        }
+                    }
+                    if(andContains) {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                return contains;
+            }
+        }
+        return true;
     }
 
     private static BaseDescriptionObject setItem(Context context, BaseMediaObject baseMediaObject) {

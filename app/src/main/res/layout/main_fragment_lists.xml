@@ -20,7 +20,7 @@
         app:readOnly="true"
         android:padding="4dp"/>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>
@@ -36,7 +36,7 @@
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>

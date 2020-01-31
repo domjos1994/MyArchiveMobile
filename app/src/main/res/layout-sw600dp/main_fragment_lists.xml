@@ -18,18 +18,9 @@
         app:readOnly="true"
         android:padding="4dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintHeight_percent="0.425"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/separator"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#000"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@+id/lvMediaLists"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/separator"/>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMediaObjects"
@@ -42,39 +33,55 @@
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/navigationView"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/lvMediaLists"
+        app:layout_constraintBottom_toTopOf="@+id/separator"/>
+
+    <TextView
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"
+        app:layout_constraintTop_toBottomOf="@+id/lvMediaLists"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <ScrollView
-        android:layout_width="0dp"
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
         android:padding="4dp"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintHeight_percent="0.86"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lvMediaLists">
-        <LinearLayout
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        app:layout_constraintBottom_toTopOf="@+id/navigationView"
+        app:layout_constraintEnd_toEndOf="parent">
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <EditText
-                android:id="@+id/txtListsTitle"
-                android:hint="@string/sys_title"
-                android:inputType="text"
-                android:autofillHints="@string/sys_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:targetApi="o" />
-            <EditText
-                android:id="@+id/txtListsDeadline"
-                android:hint="@string/library_deadline"
-                android:inputType="date"
-                android:autofillHints="@string/library_deadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:targetApi="o" />
+            android:orientation="vertical"
+            android:weightSum="2">
+            <TableRow>
+                <EditText
+                    android:id="@+id/txtListsTitle"
+                    android:hint="@string/sys_title"
+                    android:inputType="text"
+                    android:autofillHints="@string/sys_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:targetApi="o" />
+                <EditText
+                    android:id="@+id/txtListsDeadline"
+                    android:hint="@string/library_deadline"
+                    android:inputType="date"
+                    android:autofillHints="@string/library_deadline"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:targetApi="o" />
+            </TableRow>
             <EditText
                 android:id="@+id/txtListsDescription"
                 android:hint="@string/sys_description"
@@ -83,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:targetApi="o" />
-        </LinearLayout>
+        </TableLayout>
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -95,7 +102,7 @@
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
         app:menu="@menu/controls"
-        app:layout_constraintHeight_percent="0.14"
+        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -13,7 +14,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>
@@ -29,7 +30,7 @@
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>
@@ -46,7 +47,7 @@
         app:readOnly="true"
         android:padding="4dp"/>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"/>
@@ -63,15 +64,19 @@
             <EditText
                 android:id="@+id/txtTitle"
                 android:hint="@string/sys_title"
+                android:autofillHints="@string/sys_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"/>
+                android:inputType="text"
+                tools:targetApi="o" />
             <EditText
                 android:id="@+id/txtDescription"
                 android:hint="@string/sys_description"
+                android:autofillHints="@string/sys_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"/>
+                android:inputType="text"
+                tools:targetApi="o"/>
         </LinearLayout>
     </ScrollView>
 

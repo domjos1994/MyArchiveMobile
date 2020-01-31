@@ -1,101 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <Spinner
+        android:id="@+id/spItems"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"
+        app:layout_constraintTop_toBottomOf="@id/spItems"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-        android:id="@+id/lvMediaLists"
+        android:id="@+id/lvCategoriesOrTags"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="4"
-        app:itemIcon="@drawable/ic_format_list_bulleted_black_24dp"
+        app:itemIcon="@drawable/ic_tag_black_24dp"
+        app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/divider"
+        android:padding="4dp"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        app:layout_constraintBottom_toTopOf="@+id/controls"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvMedia"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
         android:padding="4dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintHeight_percent="0.425"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        app:layout_constraintBottom_toTopOf="@+id/controls"
+        app:layout_constraintStart_toEndOf="@+id/lvCategoriesOrTags"/>
 
     <TextView
-        android:id="@+id/separator"
-        android:layout_width="0dp"
+        android:id="@+id/bottomSeparator"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#000"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@+id/lvMediaLists"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-        android:id="@+id/lvMediaObjects"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        app:itemIcon="@drawable/ic_format_list_bulleted_black_24dp"
-        app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
-        android:padding="4dp"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/navigationView"/>
+        app:layout_constraintTop_toBottomOf="@id/lvMedia"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:id="@+id/controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:padding="4dp"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintHeight_percent="0.86"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lvMediaLists">
+        app:layout_constraintTop_toBottomOf="@id/bottomSeparator"
+        app:layout_constraintBottom_toTopOf="@+id/navigationView"
+        app:layout_constraintStart_toStartOf="parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <EditText
-                android:id="@+id/txtListsTitle"
+                android:id="@+id/txtTitle"
                 android:hint="@string/sys_title"
-                android:inputType="text"
                 android:autofillHints="@string/sys_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:targetApi="o" />
+                android:inputType="text"
+                tools:targetApi="o"/>
             <EditText
-                android:id="@+id/txtListsDeadline"
-                android:hint="@string/library_deadline"
-                android:inputType="date"
-                android:autofillHints="@string/library_deadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:targetApi="o" />
-            <EditText
-                android:id="@+id/txtListsDescription"
+                android:id="@+id/txtDescription"
                 android:hint="@string/sys_description"
-                android:inputType="textMultiLine"
                 android:autofillHints="@string/sys_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:targetApi="o" />
+                android:inputType="text"
+                tools:targetApi="o"/>
         </LinearLayout>
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
         app:menu="@menu/controls"
-        app:layout_constraintHeight_percent="0.14"
+        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

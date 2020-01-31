@@ -1,11 +1,21 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,11 +29,13 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
+import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -36,6 +48,14 @@ public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
     private FloatingActionButton fabAppAdd, fabAppBooks, fabAppMusic, fabAppMovies, fabAppGames;
     private TextView lblAppBooks, lblAppMusic, lblAppMovies, lblAppGames, lblEntriesCount;
+
+    private TableLayout filter;
+    private MediaFilter tempFilter;
+    private Spinner spFilter;
+    private ArrayAdapter<MediaFilter> arrayAdapter;
+    private EditText txtFilterName, txtFilterSearch, txtFilterCategories, txtFilterTags;
+    private ImageButton cmdFilterExpand, cmdFilterSave, cmdFilterDelete;
+    private CheckBox chkFilterBooks, chkFilterMovies, chkFilterMusic, chkFilterGames;
 
     private SwipeRefreshDeleteList lvMedia;
     private String search;
@@ -63,6 +83,8 @@ public class MainHomeFragment extends ParentFragment {
 
 
         this.lvMedia = root.findViewById(R.id.lvMedia);
+        this.initFilter(root);
+        this.initFilterActions();
 
         this.fabAppAdd.setOnClickListener(view -> {
             this.showAnimation(this.lblAppBooks, this.fabAppBooks);
@@ -130,7 +152,7 @@ public class MainHomeFragment extends ParentFragment {
             }
         });
 
-        this.lvMedia.setOnReloadListener(this::reload);
+        this.lvMedia.setOnReloadListener(()->this.reload(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition())));
 
         this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
@@ -153,14 +175,187 @@ public class MainHomeFragment extends ParentFragment {
             if(baseMediaObject instanceof Album) {
                 MainActivity.GLOBALS.getDatabase().deleteItem((Album) baseMediaObject);
             }
-            reload();
+            reload(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
         });
 
-        this.reload();
+        this.reload(null);
         return root;
     }
 
-    private void reload() {
+    private void initFilter(View view) {
+        this.filter = view.findViewById(R.id.filter);
+        this.spFilter = view.findViewById(R.id.spFilter);
+        this.cmdFilterExpand = view.findViewById(R.id.cmdFilterExpand);
+        this.txtFilterName = view.findViewById(R.id.txtFilterName);
+        this.cmdFilterSave = view.findViewById(R.id.cmdFilterSave);
+        this.cmdFilterDelete = view.findViewById(R.id.cmdFilterDelete);
+        this.chkFilterBooks = view.findViewById(R.id.chkFilterBooks);
+        this.chkFilterMovies = view.findViewById(R.id.chkFilterMovies);
+        this.chkFilterMusic = view.findViewById(R.id.chkFilterMusic);
+        this.chkFilterGames = view.findViewById(R.id.chkFilterGames);
+        this.txtFilterSearch = view.findViewById(R.id.txtFilterSearch);
+        this.txtFilterCategories = view.findViewById(R.id.txtFilterCategory);
+        this.txtFilterTags = view.findViewById(R.id.txtFilterTags);
+
+        this.arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
+        this.spFilter.setAdapter(this.arrayAdapter);
+        this.arrayAdapter.notifyDataSetChanged();
+    }
+
+    private void initFilterActions() {
+        this.chkFilterGames.setOnCheckedChangeListener((compoundButton, b) -> this.setTempFilter());
+        this.chkFilterMovies.setOnCheckedChangeListener((compoundButton, b) -> this.setTempFilter());
+        this.chkFilterMusic.setOnCheckedChangeListener((compoundButton, b) -> this.setTempFilter());
+        this.chkFilterBooks.setOnCheckedChangeListener((compoundButton, b) -> this.setTempFilter());
+        this.txtFilterTags.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                setTempFilter();
+            }
+        });
+        this.txtFilterCategories.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                setTempFilter();
+            }
+        });
+        this.txtFilterSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                setTempFilter();
+            }
+        });
+
+        this.cmdFilterExpand.setOnClickListener(view -> {
+            int px30 = Converter.convertDPToPixels(30, Objects.requireNonNull(this.getContext()));
+            if(this.filter.getLayoutParams().height == px30) {
+                this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
+            } else {
+                this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                this.filter.getLayoutParams().height = px30;
+            }
+            this.filter.requestLayout();
+        });
+        this.cmdFilterDelete.setOnClickListener(view -> {
+            MediaFilter mediaFilter = this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition());
+            if(mediaFilter!=null) {
+                MainActivity.GLOBALS.getDatabase().deleteItem(mediaFilter);
+                this.reloadFilter();
+            }
+        });
+        this.cmdFilterSave.setOnClickListener(view -> {
+            this.getObject(this.tempFilter);
+            MainActivity.GLOBALS.getDatabase().insertOrUpdateFilter(this.tempFilter);
+            this.reloadFilter();
+            this.setObject(this.tempFilter);
+        });
+        this.spFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(Objects.requireNonNull(arrayAdapter.getItem(i)).getTitle().equals(getString(R.string.filter_temp))) {
+                    getObject(tempFilter);
+                    reload(tempFilter);
+                } else {
+                    reload(arrayAdapter.getItem(i));
+                }
+
+                setObject(Objects.requireNonNull(arrayAdapter.getItem(i)));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        this.reloadFilter();
+    }
+
+    private void reloadFilter() {
+        this.arrayAdapter.clear();
+        MediaFilter mediaFilter = new MediaFilter();
+        mediaFilter.setTitle(this.getString(R.string.filter_no_filter));
+        this.arrayAdapter.add(mediaFilter);
+        this.tempFilter = new MediaFilter();
+        this.tempFilter.setTitle(this.getString(R.string.filter_temp));
+        this.arrayAdapter.add(this.tempFilter);
+
+        for(MediaFilter filter : MainActivity.GLOBALS.getDatabase().getFilters("")) {
+            this.arrayAdapter.add(filter);
+        }
+        this.reload(null);
+    }
+
+    private void setObject(MediaFilter mediaFilter) {
+        if(!mediaFilter.getTitle().equals(this.getString(R.string.filter_temp))) {
+            this.txtFilterName.setText(mediaFilter.getTitle());
+        } else {
+            this.txtFilterName.setText("");
+        }
+        this.txtFilterSearch.setText(mediaFilter.getSearch());
+        this.txtFilterCategories.setText(mediaFilter.getCategories());
+        this.txtFilterTags.setText(mediaFilter.getTags());
+
+        this.chkFilterBooks.setChecked(mediaFilter.isBooks());
+        this.chkFilterMovies.setChecked(mediaFilter.isMovies());
+        this.chkFilterMusic.setChecked(mediaFilter.isMusic());
+        this.chkFilterGames.setChecked(mediaFilter.isGames());
+    }
+
+    private void getObject(MediaFilter mediaFilter) {
+        if(!mediaFilter.getTitle().equals(this.getString(R.string.filter_no_filter))) {
+            if(!txtFilterName.getText().toString().trim().isEmpty()) {
+                mediaFilter.setTitle(txtFilterName.getText().toString());
+            }
+        }
+        mediaFilter.setSearch(txtFilterSearch.getText().toString());
+        mediaFilter.setCategories(txtFilterCategories.getText().toString());
+        mediaFilter.setTags(txtFilterTags.getText().toString());
+
+        mediaFilter.setBooks(chkFilterBooks.isChecked());
+        mediaFilter.setMovies(chkFilterMovies.isChecked());
+        mediaFilter.setMusic(chkFilterMusic.isChecked());
+        mediaFilter.setGames(chkFilterGames.isChecked());
+    }
+
+    private void setTempFilter() {
+        tempFilter = Objects.requireNonNull(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
+        if(tempFilter.getTitle().equals(this.getString(R.string.filter_temp))) {
+            this.getObject(tempFilter);
+            reload(tempFilter);
+        }
+    }
+
+    private void reload(MediaFilter mediaFilter) {
         try {
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
@@ -172,7 +367,17 @@ public class MainHomeFragment extends ParentFragment {
 
             int counter = 0;
             this.lvMedia.getAdapter().clear();
-            for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
+            List<BaseDescriptionObject> baseDescriptionObjects;
+            if(mediaFilter==null) {
+                baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), this.search);
+            } else {
+                if(mediaFilter.getTitle().trim().equals(this.getString(R.string.filter_no_filter))) {
+                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), this.search);
+                } else {
+                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), mediaFilter);
+                }
+            }
+            for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                 this.lvMedia.getAdapter().add(baseDescriptionObject);
                 counter++;
             }
@@ -194,7 +399,7 @@ public class MainHomeFragment extends ParentFragment {
         this.search = search;
 
         if(reload) {
-            this.reload();
+            this.reload(null);
         }
     }
 
