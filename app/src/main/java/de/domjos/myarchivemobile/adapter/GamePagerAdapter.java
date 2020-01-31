@@ -58,25 +58,37 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
             case 0:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
+                    if(fragment instanceof MediaGeneralFragment) {
+                        this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaGeneralFragment).attach(this.mediaGeneralFragment).commit();
+                    }
                 }
                 return this.mediaGeneralFragment;
             case 1:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                    if(fragment instanceof MediaCoverFragment) {
+                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
+                    }
                 }
                 return this.mediaCoverFragment;
             case 2:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
+                    if(fragment instanceof  MediaPersonsCompaniesFragment) {
+                        this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaPersonsCompaniesFragment).attach(this.mediaPersonsCompaniesFragment).commit();
+                    }
                 }
                 return this.mediaPersonsCompaniesFragment;
             case 3:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaGameFragment = (MediaGameFragment) fragment;
+                    if(fragment instanceof MediaGameFragment) {
+                        this.mediaGameFragment = (MediaGameFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaGameFragment).attach(this.mediaGameFragment).commit();
+                    }
                 }
                 return this.mediaGameFragment;
             default:

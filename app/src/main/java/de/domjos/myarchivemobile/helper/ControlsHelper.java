@@ -9,9 +9,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import androidx.viewpager.widget.ViewPager;
+
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 import java.text.ParseException;
@@ -33,6 +36,15 @@ import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 
 public class ControlsHelper {
+
+    public static void initTabs(TabLayout tabLayout, ViewPager viewPager) {
+        for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
+            tabLayout.setScrollPosition(i, 0f, true);
+            viewPager.setCurrentItem(i);
+        }
+        tabLayout.setScrollPosition(0, 0f, true);
+        viewPager.setCurrentItem(0);
+    }
 
     public static boolean hasNetwork(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

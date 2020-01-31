@@ -58,25 +58,37 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
             case 0:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
+                    if(fragment instanceof MediaGeneralFragment) {
+                        this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaGeneralFragment).attach(this.mediaGeneralFragment).commit();
+                    }
                 }
                 return this.mediaGeneralFragment;
             case 1:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                    if(fragment instanceof MediaCoverFragment) {
+                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
+                    }
                 }
                 return this.mediaCoverFragment;
             case 2:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
+                    if(fragment instanceof  MediaPersonsCompaniesFragment) {
+                        this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaPersonsCompaniesFragment).attach(this.mediaPersonsCompaniesFragment).commit();
+                    }
                 }
                 return this.mediaPersonsCompaniesFragment;
             case 3:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaBookFragment = (MediaBookFragment) fragment;
+                    if(fragment instanceof MediaBookFragment) {
+                        this.mediaBookFragment = (MediaBookFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaBookFragment).attach(this.mediaBookFragment).commit();
+                    }
                 }
                 return this.mediaBookFragment;
             default:

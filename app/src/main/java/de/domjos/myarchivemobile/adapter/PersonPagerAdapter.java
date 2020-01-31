@@ -89,19 +89,28 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
             case 0:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.personFragment = (PersonFragment) fragment;
+                    if(fragment instanceof PersonFragment) {
+                        this.personFragment = (PersonFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.personFragment).attach(this.personFragment).commit();
+                    }
                 }
                 return this.personFragment;
             case 1:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                    if(fragment instanceof MediaCoverFragment) {
+                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
+                    }
                 }
                 return this.mediaCoverFragment;
             case 2:
                 fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
                 if(fragment!=null) {
-                    this.mediaListFragment = (MediaListFragment) fragment;
+                    if(fragment instanceof MediaListFragment) {
+                        this.mediaListFragment = (MediaListFragment) fragment;
+                        this.fragmentManager.beginTransaction().detach(this.mediaListFragment).attach(this.mediaListFragment).commit();
+                    }
                 }
                 return this.mediaListFragment;
             default:

@@ -133,12 +133,7 @@ public class MainBooksFragment extends ParentFragment {
         this.validator = this.bookPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.bookPagerAdapter);
 
-        for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
-            tabLayout.setScrollPosition(i, 0f, true);
-            this.viewPager.setCurrentItem(i);
-        }
-        tabLayout.setScrollPosition(0, 0f, true);
-        this.viewPager.setCurrentItem(0);
+        ControlsHelper.initTabs(tabLayout, viewPager);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
