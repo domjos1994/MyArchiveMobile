@@ -146,7 +146,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private void testConnection() {
         this.hideSearchButton(ControlsHelper.hasNetwork(Objects.requireNonNull(this.getContext())));
 
-        ConnectivityManager manager = (ConnectivityManager) Objects.requireNonNull(this.getContext()).getSystemService(CONNECTIVITY_SERVICE);
+        /*ConnectivityManager manager = (ConnectivityManager) Objects.requireNonNull(this.getContext()).getSystemService(CONNECTIVITY_SERVICE);
         Activity activity = this.getActivity();
         if(manager != null && activity != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -172,7 +172,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     }
                 });
             }
-        }
+        }*/
     }
 
     private void hideSearchButton(boolean network) {

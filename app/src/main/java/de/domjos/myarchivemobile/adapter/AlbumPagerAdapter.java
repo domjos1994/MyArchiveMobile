@@ -19,7 +19,6 @@ import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
 
 public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
-    private FragmentManager fragmentManager;
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaAlbumFragment;
@@ -30,7 +29,6 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     public AlbumPagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
         super(fm, context);
 
-        this.fragmentManager = fm;
         this.runnable = runnable;
 
         this.mediaCoverFragment = new MediaCoverFragment<>();
@@ -57,43 +55,18 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
         switch (position) {
             case 0:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaGeneralFragment) {
-                        this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaGeneralFragment).attach(this.mediaGeneralFragment).commit();
-                    }
-                }
+                this.mediaGeneralFragment = (MediaGeneralFragment) super.getFragment(position, this.mediaGeneralFragment);
                 return this.mediaGeneralFragment;
             case 1:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaCoverFragment) {
-                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
-                    }
-                }
+                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof  MediaPersonsCompaniesFragment) {
-                        this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaPersonsCompaniesFragment).attach(this.mediaPersonsCompaniesFragment).commit();
-                    }
-                }
+                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) super.getFragment(position, this.mediaPersonsCompaniesFragment);
                 return this.mediaPersonsCompaniesFragment;
             case 3:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaAlbumFragment) {
-                        this.mediaAlbumFragment = (MediaAlbumFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaAlbumFragment).attach(this.mediaAlbumFragment).commit();
-                    }
-                }
+                this.mediaAlbumFragment = (MediaAlbumFragment) super.getFragment(position, this.mediaAlbumFragment);
                 return this.mediaAlbumFragment;
             default:
                 return new Fragment();

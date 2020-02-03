@@ -15,7 +15,6 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.*;
 
 public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
-    private FragmentManager fragmentManager;
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaBookFragment;
@@ -27,7 +26,6 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         super(fm, context);
 
         this.runnable = runnable;
-        this.fragmentManager = fm;
 
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
@@ -53,43 +51,18 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
         switch (position) {
             case 0:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaGeneralFragment) {
-                        this.mediaGeneralFragment = (MediaGeneralFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaGeneralFragment).attach(this.mediaGeneralFragment).commit();
-                    }
-                }
+                this.mediaGeneralFragment = (MediaGeneralFragment) super.getFragment(position, this.mediaGeneralFragment);
                 return this.mediaGeneralFragment;
             case 1:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaCoverFragment) {
-                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
-                    }
-                }
+                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof  MediaPersonsCompaniesFragment) {
-                        this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaPersonsCompaniesFragment).attach(this.mediaPersonsCompaniesFragment).commit();
-                    }
-                }
+                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) super.getFragment(position, this.mediaPersonsCompaniesFragment);
                 return this.mediaPersonsCompaniesFragment;
             case 3:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaBookFragment) {
-                        this.mediaBookFragment = (MediaBookFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaBookFragment).attach(this.mediaBookFragment).commit();
-                    }
-                }
+                this.mediaBookFragment = (MediaBookFragment) super.getFragment(position, this.mediaBookFragment);
                 return this.mediaBookFragment;
             default:
                 return new Fragment();

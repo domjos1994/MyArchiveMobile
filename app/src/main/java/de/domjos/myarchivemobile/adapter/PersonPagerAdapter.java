@@ -23,7 +23,6 @@ import de.domjos.myarchivemobile.fragments.PersonFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
-    private FragmentManager fragmentManager;
     private PersonFragment personFragment;
     private MediaCoverFragment<Person> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
@@ -33,7 +32,6 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
         super(fm, context);
 
         this.context = context;
-        this.fragmentManager = fm;
 
         this.personFragment = new PersonFragment();
         this.mediaCoverFragment = new MediaCoverFragment<>();
@@ -84,34 +82,15 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
         switch (position) {
             case 0:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof PersonFragment) {
-                        this.personFragment = (PersonFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.personFragment).attach(this.personFragment).commit();
-                    }
-                }
+                this.personFragment = (PersonFragment) super.getFragment(position, this.personFragment);
                 return this.personFragment;
             case 1:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaCoverFragment) {
-                        this.mediaCoverFragment = (MediaCoverFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaCoverFragment).attach(this.mediaCoverFragment).commit();
-                    }
-                }
+                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                fragment = this.fragmentManager.findFragmentByTag(this.getFragmentTag(position));
-                if(fragment!=null) {
-                    if(fragment instanceof MediaListFragment) {
-                        this.mediaListFragment = (MediaListFragment) fragment;
-                        this.fragmentManager.beginTransaction().detach(this.mediaListFragment).attach(this.mediaListFragment).commit();
-                    }
-                }
+                this.mediaListFragment = (MediaListFragment) super.getFragment(position, this.mediaListFragment);
                 return this.mediaListFragment;
             default:
                 return new Fragment();

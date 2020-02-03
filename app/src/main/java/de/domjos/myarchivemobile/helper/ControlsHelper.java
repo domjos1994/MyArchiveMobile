@@ -38,12 +38,12 @@ import de.domjos.myarchivemobile.fragments.ParentFragment;
 public class ControlsHelper {
 
     public static void initTabs(TabLayout tabLayout, ViewPager viewPager) {
-        for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
+        /*for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
             viewPager.setCurrentItem(i);
         }
         tabLayout.setScrollPosition(0, 0f, true);
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(0);*/
     }
 
     public static boolean hasNetwork(Context context) {
