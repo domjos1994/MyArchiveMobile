@@ -2,10 +2,6 @@ package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkRequest;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -29,6 +25,8 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
+import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -38,12 +36,13 @@ import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
+import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
+import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
@@ -105,7 +104,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if (books != null) {
                         if (!books.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(books.get(0));
+                            Book book = books.get(0);
+                            WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            book.setPersons(wikiDataPersonTask.execute(book.getPersons().toArray(new Person[]{})).get());
+                            WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            book.setCompanies(wikiDataCompanyTask.execute(book.getCompanies().toArray(new Company[]{})).get());
+
+                            this.abstractPagerAdapter.setMediaObject(book);
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
@@ -113,7 +118,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     List<Movie> movies = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(movies != null) {
                         if(!movies.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                            Movie movie = movies.get(0);
+                            WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            movie.setPersons(wikiDataPersonTask.execute(movie.getPersons().toArray(new Person[]{})).get());
+                            WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            movie.setCompanies(wikiDataCompanyTask.execute(movie.getCompanies().toArray(new Company[]{})).get());
+
+                            this.abstractPagerAdapter.setMediaObject(movie);
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
@@ -121,7 +132,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     List<Album> albums = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(albums != null) {
                         if(!albums.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(albums.get(0));
+                            Album album = albums.get(0);
+                            WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            album.setPersons(wikiDataPersonTask.execute(album.getPersons().toArray(new Person[]{})).get());
+                            WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            album.setCompanies(wikiDataCompanyTask.execute(album.getCompanies().toArray(new Company[]{})).get());
+
+                            this.abstractPagerAdapter.setMediaObject(album);
                         }
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
@@ -129,7 +146,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     List<Game> games = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(games != null) {
                         if(!games.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(games.get(0));
+                            Game game = games.get(0);
+                            WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            game.setPersons(wikiDataPersonTask.execute(game.getPersons().toArray(new Person[]{})).get());
+                            WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                            game.setCompanies(wikiDataCompanyTask.execute(game.getCompanies().toArray(new Company[]{})).get());
+
+                            this.abstractPagerAdapter.setMediaObject(game);
                         }
                     }
                 }
@@ -145,34 +168,6 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
     private void testConnection() {
         this.hideSearchButton(ControlsHelper.hasNetwork(Objects.requireNonNull(this.getContext())));
-
-        /*ConnectivityManager manager = (ConnectivityManager) Objects.requireNonNull(this.getContext()).getSystemService(CONNECTIVITY_SERVICE);
-        Activity activity = this.getActivity();
-        if(manager != null && activity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
-                    @Override
-                    public void onAvailable(@NonNull Network network) {
-                        hideSearchButton(ControlsHelper.hasNetwork(activity));
-                    }
-
-                    @Override
-                    public void onLosing(@NonNull Network network, int maxMsToLive) {
-                        hideSearchButton(ControlsHelper.hasNetwork(activity));
-                    }
-
-                    @Override
-                    public void onLost(@NonNull Network network) {
-                        hideSearchButton(ControlsHelper.hasNetwork(activity));
-                    }
-
-                    @Override
-                    public void onUnavailable() {
-                        hideSearchButton(ControlsHelper.hasNetwork(activity));
-                    }
-                });
-            }
-        }*/
     }
 
     private void hideSearchButton(boolean network) {

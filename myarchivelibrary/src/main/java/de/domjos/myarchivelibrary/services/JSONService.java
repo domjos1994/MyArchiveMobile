@@ -7,29 +7,43 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
-public abstract class JSONService {
+abstract class JSONService {
 
     String readUrl(URL url) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String line;
-
-        InputStream in = url.openStream();
-        InputStreamReader streamReader = new InputStreamReader(in);
-        BufferedReader reader = new BufferedReader(streamReader);
-        try {
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append(System.lineSeparator());
-            }
-        } finally {
-            reader.close();
-            streamReader.close();
-            in.close();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setUseCaches(false);
+        connection.connect();
+        String error = this.read(connection.getErrorStream());
+        if(!error.isEmpty()) {
+            return error;
         }
+        return this.read(connection.getInputStream());
+    }
 
-        return sb.toString();
+    private String read(InputStream inputStream) throws IOException {
+        if(inputStream != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            InputStreamReader streamReader = new InputStreamReader(inputStream);
+            BufferedReader reader = new BufferedReader(streamReader);
+            try {
+
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append(System.lineSeparator());
+                }
+            } finally {
+                reader.close();
+                streamReader.close();
+                inputStream.close();
+            }
+
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 
     String getString(JSONObject obj, String key) throws JSONException {

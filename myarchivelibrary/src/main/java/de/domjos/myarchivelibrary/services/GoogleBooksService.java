@@ -1,15 +1,14 @@
 package de.domjos.myarchivelibrary.services;
 
-import android.content.Context;
-import de.domjos.myarchivelibrary.R;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.services.books.Books;
+import com.google.api.services.books.model.Volume;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
@@ -18,87 +17,126 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
 public class GoogleBooksService extends JSONService {
-    private final static String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s&projection=full";
-    private final String KEY;
     private String code;
 
-    public GoogleBooksService(String code, Context context) {
+    public GoogleBooksService(String code) {
         this.code = code;
-        this.KEY = context.getString(R.string.service_google_key);
     }
 
-    public Book execute() throws IOException, JSONException {
-        String content = this.readUrl(new URL(String.format(GoogleBooksService.BASE_URL, this.code, this.KEY)));
-        return this.getBookFromJsonString(content);
+    public Book execute() throws IOException {
+        Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
+        Books.Volumes.List list = books.volumes().list("isbn:" + this.code).setProjection("FULL");
+        return this.getBookFromList(list);
     }
 
-    private Book getBookFromJsonString(String content) throws JSONException {
-        JSONObject jsonObject = new JSONObject(content);
-
-        if(jsonObject.has("items")) {
-            JSONObject item = jsonObject.getJSONArray("items").getJSONObject(0);
-            if(item.has("volumeInfo")) {
-                Book book = new Book();
-                JSONObject volumeInfo = item.getJSONObject("volumeInfo");
-                book.setTitle(getString(volumeInfo, "title"));
-                book.setOriginalTitle(getString(volumeInfo, "subtitle"));
-                book.setNumberOfPages(getInt(volumeInfo, "pageCount"));
-                book.setDescription(getString(volumeInfo, "description"));
-
-                try {
-                    String date = getString(volumeInfo, "publishedDate");
-                    if(!date.isEmpty()) {
-                        if(date.contains("-")) {
-                            String[] spl = date.split("-");
-                            if(spl.length == 2) {
-                                book.setReleaseDate(Converter.convertStringToDate(date + "-01", "yyyy-MM-dd"));
-                            } else {
-                                book.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
-                            }
-                        } else {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(new Date());
-                            calendar.set(Calendar.YEAR, Integer.parseInt(date));
-                            book.setReleaseDate(calendar.getTime());
+    private Book getBookFromList(Books.Volumes.List list) throws IOException {
+        if(list != null) {
+            List<Volume> volumes = list.execute().getItems();
+            if(volumes!=null) {
+                if(!volumes.isEmpty()) {
+                    Volume volume = volumes.get(0);
+                    Book book = new Book();
+                    if(volume.getVolumeInfo()!=null) {
+                        Volume.VolumeInfo info = volume.getVolumeInfo();
+                        book.setTitle(info.getTitle());
+                        book.setOriginalTitle(info.getSubtitle());
+                        if(info.getPageCount() != null) {
+                            book.setNumberOfPages(info.getPageCount());
                         }
+                        book.setDescription(info.getDescription());
+                        book.setReleaseDate(this.getReleaseDate(info.getPublishedDate()));
+
+                        if(info.getAuthors() != null) {
+                            if(!info.getAuthors().isEmpty()) {
+                                for(String author : info.getAuthors()) {
+                                    Person person = new Person();
+                                    String firstName = author.split(" ")[0];
+                                    person.setFirstName(firstName);
+                                    person.setLastName(author.replace(firstName, "").trim());
+                                    book.getPersons().add(person);
+                                }
+                            }
+                        }
+
+                        if(info.getPublisher() != null) {
+                            if(!info.getPublisher().isEmpty()) {
+                                Company company = new Company();
+                                company.setTitle(info.getPublisher());
+                                book.getCompanies().add(company);
+                            }
+                        }
+
+                        if(info.getCategories() != null) {
+                            if(!info.getCategories().isEmpty()) {
+                                for(String category : info.getCategories()) {
+                                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                    baseDescriptionObject.setTitle(category);
+                                    book.getTags().add(baseDescriptionObject);
+                                }
+                            }
+                        }
+
+                        if(info.getImageLinks() != null) {
+                            Volume.VolumeInfo.ImageLinks imageLinks = info.getImageLinks();
+
+                            if(imageLinks.getLarge() != null) {
+                                if(!imageLinks.getLarge().isEmpty()) {
+                                    book.setCover(Converter.convertStringToByteArray(imageLinks.getLarge()));
+                                }
+                            }
+
+                            if(book.getCover() == null) {
+                                if(imageLinks.getMedium() != null) {
+                                    if(!imageLinks.getMedium().isEmpty()) {
+                                        book.setCover(Converter.convertStringToByteArray(imageLinks.getMedium()));
+                                    }
+                                }
+                            }
+
+                            if(book.getCover() == null) {
+                                if(imageLinks.getSmall() != null) {
+                                    if(!imageLinks.getSmall().isEmpty()) {
+                                        book.setCover(Converter.convertStringToByteArray(imageLinks.getSmall()));
+                                    }
+                                }
+                            }
+
+                            if(book.getCover() == null) {
+                                if(imageLinks.getThumbnail() != null) {
+                                    if(!imageLinks.getThumbnail().isEmpty()) {
+                                        book.setCover(Converter.convertStringToByteArray(imageLinks.getThumbnail()));
+                                    }
+                                }
+                            }
+                        }
+                        return book;
                     }
-                } catch (Exception ignored) {}
-
-                if(volumeInfo.has("authors")) {
-                    JSONArray jsonArray = volumeInfo.getJSONArray("authors");
-                    for(int i = 0; i<=jsonArray.length()-1; i++) {
-                        Person person = new Person();
-                        person.setFirstName(jsonArray.getString(i).split(" ")[0]);
-                        person.setLastName(jsonArray.getString(i).replace(jsonArray.getString(i).split(" ")[0], "").trim());
-                        book.getPersons().add(person);
-                    }
                 }
-
-                if(volumeInfo.has("publisher")) {
-                    String publisher = volumeInfo.getString("publisher");
-                    Company company = new Company();
-                    company.setTitle(publisher);
-                    book.getCompanies().add(company);
-                }
-
-                if(volumeInfo.has("categories")) {
-                    JSONArray jsonArray = volumeInfo.getJSONArray("categories");
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(jsonArray.getString(0));
-                    book.setCategory(baseDescriptionObject);
-                }
-
-                if(volumeInfo.has("imageLinks")) {
-                    JSONObject imageObject = volumeInfo.getJSONObject("imageLinks");
-                    if(imageObject.has("thumbnail")) {
-                        book.setCover(Converter.convertStringToByteArray(imageObject.getString("thumbnail").replace("http://", "https://")));
-                    }
-                }
-                return book;
             }
         }
-
         return null;
+    }
+
+    private Date getReleaseDate(String date) {
+        Date dt = null;
+        try {
+            if(!date.isEmpty()) {
+                if(date.contains("-")) {
+                    String[] spl = date.split("-");
+                    if(spl.length == 2) {
+                        dt = Converter.convertStringToDate(date + "-01", "yyyy-MM-dd");
+                    } else {
+                        dt = Converter.convertStringToDate(date, "yyyy-MM-dd");
+                    }
+                } else {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.set(Calendar.YEAR, Integer.parseInt(date));
+                    dt = calendar.getTime();
+                }
+            }
+        } catch (Exception ignored) {}
+        return dt;
     }
 }
 

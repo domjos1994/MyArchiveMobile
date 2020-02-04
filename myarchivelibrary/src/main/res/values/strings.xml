@@ -4,8 +4,10 @@
     <string name="scanner_codes">Codes</string>
 
     <string name="service_google_search" translatable="false">Google Books</string>
-    <string name="service_google_key" translatable="false">AIzaSyAaVQThRmTqNYDCUH0-dPR19vQM42RXBok</string>
     <string name="service_google_search_content">Search in Google Books…</string>
+
+    <string name="service_wiki_data_search" translatable="false">WikiData</string>
+    <string name="service_wiki_data_search_content">Search in WikiData…</string>
 
     <string name="service_ean_data_search" translatable="false">EANData</string>
     <string name="service_ean_data_key" translatable="false">ACDEF0595E238EA3</string>

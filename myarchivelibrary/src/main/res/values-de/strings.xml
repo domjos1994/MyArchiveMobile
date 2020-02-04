@@ -6,6 +6,8 @@
 
     <string name="service_ean_data_search_content">In EANData suchen…</string>
 
+    <string name="service_wiki_data_search_content">In WikiData suchen…</string>
+
     <string name="scanner_save">Übernehmen</string>
     <string name="scanner_cancel">Abbrechen</string>
 </resources>

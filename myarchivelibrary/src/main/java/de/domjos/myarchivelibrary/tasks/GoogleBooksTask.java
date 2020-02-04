@@ -26,7 +26,7 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
 
         for(String code : strings) {
             try {
-                GoogleBooksService googleBooksService = new GoogleBooksService(code, super.getContext());
+                GoogleBooksService googleBooksService = new GoogleBooksService(code);
                 Book book = googleBooksService.execute();
                 if(book != null) {
                     book.setCode(code.trim());

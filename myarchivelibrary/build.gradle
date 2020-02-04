@@ -29,6 +29,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // services
+    implementation 'com.google.apis:google-api-services-books:v1-rev112-1.25.0'
+    implementation 'com.google.http-client:google-http-client-android:1.32.1'
+
     // database
     implementation "net.zetetic:android-database-sqlcipher:$propSQLiteCipherVersion"
     implementation "androidx.sqlite:sqlite:$propDatabaseVersion"
@@ -45,6 +49,7 @@ dependencies {
 
     // android
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
 
     // test libraries
     testImplementation "junit:junit:$propJUnitVersion"

@@ -13,7 +13,7 @@ ext.propJUnitVersion = "4.12"
 ext.propJUnitExtVersion = "1.1.1"
 ext.propEspressoVersion = "3.2.0"
 
-ext.propDatabaseVersion = "2.0.1"
+ext.propDatabaseVersion = "2.1.0"
 ext.propSQLiteCipherVersion = "4.3.0@aar"
 
 buildscript {
