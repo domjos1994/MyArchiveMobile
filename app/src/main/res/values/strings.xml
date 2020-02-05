@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">MyArchiveMobile</string>
+    <string name="app_name">MyArchiveMobile</string>
 
     <string name="album">Album</string>
     <string name="album_number">Number of Disks</string>
@@ -29,7 +29,7 @@
     <string name="library_deadline">Deadline</string>
     <string name="library_returnedAt">Returned at</string>
     <string name="library_lendOut">Lend Out</string>
-    <string name="library_msg">%s lend out by %s has reached the deadline!</string>
+    <string name="library_msg" formatted="false">%s lend out by %s has reached the deadline!</string>
 
     <string name="lists">Lists</string>
     <string name="lists_dialog_title">Select Media</string>

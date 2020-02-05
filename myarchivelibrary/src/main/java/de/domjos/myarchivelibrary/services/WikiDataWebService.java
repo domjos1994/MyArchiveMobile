@@ -25,7 +25,7 @@ public class WikiDataWebService extends JSONService {
         String searchURL = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=%s&format=json&language=%s";
 
         String url = String.format(searchURL, companyName.replace(" ", "%20"), Locale.getDefault().getLanguage().toLowerCase());
-        String dataText = this.readUrl(new URL(url));
+        String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONArray jsonArray = obj.getJSONArray("search");
         if(jsonArray.length() != 0) {
@@ -45,7 +45,7 @@ public class WikiDataWebService extends JSONService {
         person.setLastName(this.lastName);
         if(!this.id.isEmpty()) {
             String url = String.format(this.claimURL, this.id, Locale.getDefault().getCountry().toLowerCase());
-            String dataText = this.readUrl(new URL(url));
+            String dataText = readUrl(new URL(url));
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
 
@@ -94,7 +94,7 @@ public class WikiDataWebService extends JSONService {
         company.setTitle(this.companyName);
         if(!this.id.isEmpty()) {
             String url = String.format(this.claimURL, this.id, Locale.getDefault().getCountry().toLowerCase());
-            String dataText = super.readUrl(new URL(url));
+            String dataText = readUrl(new URL(url));
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
 
@@ -119,7 +119,7 @@ public class WikiDataWebService extends JSONService {
 
     private byte[] getImage(String name) throws Exception {
         String url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&format=json&titles=File:" + name.replace(" ", "_");
-        String dataText = super.readUrl(new URL(url));
+        String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONObject pages = obj.getJSONObject("query").getJSONObject("pages");
         Iterator<String> iterator = pages.keys();
@@ -135,7 +135,7 @@ public class WikiDataWebService extends JSONService {
 
     private String getValue(String id) throws Exception {
         String url = String.format("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=%s&languages=%s&format=json", id, Locale.getDefault().getCountry().toLowerCase());
-        String dataText = super.readUrl(new URL(url));
+        String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONObject idObj = obj.getJSONObject("entities").getJSONObject(id);
         return idObj.getJSONObject("labels").getJSONObject(Locale.getDefault().getCountry().toLowerCase()).getString("value");

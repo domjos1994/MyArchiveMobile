@@ -90,7 +90,20 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
                 Person tmp = new Person();
                 tmp.setFirstName(spl[0].trim());
                 tmp.setLastName(person.replace(spl[0], "").trim());
-                this.baseMediaObject.getPersons().add(tmp);
+
+                if(this.baseMediaObject.getPersons() != null) {
+                    boolean contains = false;
+                    if(!this.baseMediaObject.getPersons().isEmpty()) {
+                        for(Person current : this.baseMediaObject.getPersons()) {
+                            if(current.getFirstName().trim().equalsIgnoreCase(tmp.getFirstName().trim()) && current.getLastName().trim().equalsIgnoreCase(tmp.getLastName().trim())) {
+                                contains = true;
+                            }
+                        }
+                    }
+                    if(!contains) {
+                        this.baseMediaObject.getPersons().add(tmp);
+                    }
+                }
             }
         }
 
@@ -98,7 +111,21 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
             if(!company.trim().isEmpty()) {
                 Company tmp = new Company();
                 tmp.setTitle(company.trim());
-                this.baseMediaObject.getCompanies().add(tmp);
+
+                if(this.baseMediaObject.getCompanies() != null) {
+                    boolean contains = false;
+                    if(!this.baseMediaObject.getCompanies().isEmpty()) {
+                        for(Company current : this.baseMediaObject.getCompanies()) {
+                            if(current.getTitle().trim().equalsIgnoreCase(tmp.getTitle().trim())) {
+                                contains = true;
+                            }
+                        }
+                    }
+
+                    if(!contains) {
+                        this.baseMediaObject.getCompanies().add(tmp);
+                    }
+                }
             }
         }
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">MyArchiveMobile</string>
+
     <string name="album">Album</string>
     <string name="album_number">Anzahl Tonträger</string>
     <string name="album_type">Typ</string>
@@ -28,7 +30,7 @@
     <string name="library_numberOfWeeks">Anzahl Wochen</string>
     <string name="library_returnedAt">Zurückgegeben am</string>
     <string name="library_lendOut">Ausgeliehen</string>
-    <string name="library_msg">%s ausgeliehen von %s hat den Stichtag erreicht!</string>
+    <string name="library_msg" formatted="false">%s ausgeliehen von %s hat den Stichtag erreicht!</string>
 
     <string name="lists">Listen</string>
     <string name="lists_dialog_title">Medien wählen</string>
@@ -85,6 +87,6 @@
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_save">Speichern</string>
     <string name="sys_title">Titel</string>
-    <string name="export_search">...</string>
+    <string name="export_search">…</string>
     <string name="sys_search">Suche</string>
 </resources>

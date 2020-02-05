@@ -12,18 +12,18 @@ import java.net.URL;
 
 abstract class JSONService {
 
-    String readUrl(URL url) throws IOException {
+    static String readUrl(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setUseCaches(false);
         connection.connect();
-        String error = this.read(connection.getErrorStream());
+        String error = read(connection.getErrorStream());
         if(!error.isEmpty()) {
             return error;
         }
-        return this.read(connection.getInputStream());
+        return read(connection.getInputStream());
     }
 
-    private String read(InputStream inputStream) throws IOException {
+    private static String read(InputStream inputStream) throws IOException {
         if(inputStream != null) {
             StringBuilder sb = new StringBuilder();
             String line;

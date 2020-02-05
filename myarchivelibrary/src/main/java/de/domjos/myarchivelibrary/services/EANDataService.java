@@ -39,17 +39,17 @@ public class EANDataService extends JSONService {
     }
 
     public Movie executeMovie() throws JSONException, IOException, ParseException {
-        String content = this.readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
         return this.getMovieFromJsonString(content);
     }
 
     public Album executeAlbum() throws JSONException, IOException, ParseException {
-        String content = this.readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
         return this.getAlbumFromJsonString(content);
     }
 
     public Game executeGame() throws JSONException, IOException, ParseException {
-        String content = this.readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
         return this.getGameFromJsonString(content);
     }
 

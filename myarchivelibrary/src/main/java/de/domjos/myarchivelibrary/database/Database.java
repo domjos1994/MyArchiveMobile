@@ -464,7 +464,7 @@ public class Database extends SQLiteOpenHelper {
             statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s(title, description) VALUES(?, ?)", table));
         } else {
             statement = this.getWritableDatabase().compileStatement(String.format("UPDATE %s SET title=?, description=? WHERE id=?", table));
-            statement.bindLong(3, id);
+            statement.bindLong(3, baseDescriptionObject.getId());
         }
         statement.bindString(1, baseDescriptionObject.getTitle());
         statement.bindString(2, baseDescriptionObject.getDescription());
@@ -477,7 +477,7 @@ public class Database extends SQLiteOpenHelper {
         statement.close();
 
         if(!foreignTable.trim().isEmpty()) {
-            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_%s WHERE %s=%s", foreignTable, table, table, baseDescriptionObject.getId()));
+            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_%s WHERE %s=%s AND %s=%s", foreignTable, table, foreignTable, id, table, baseDescriptionObject.getId()));
             statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_%s(%s, %s) VALUES(?, ?)", foreignTable, table, table, foreignTable));
             statement.bindLong(1, baseDescriptionObject.getId());
             statement.bindLong(2, id);
@@ -566,7 +566,7 @@ public class Database extends SQLiteOpenHelper {
         statement.close();
 
         if(!foreignTable.isEmpty()) {
-            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_persons WHERE persons=%s", foreignTable, person.getId()));
+            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_persons WHERE %s=%s AND persons=%s", foreignTable, foreignTable, id, person.getId()));
             statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_persons(persons, %s) VALUES(?, ?)", foreignTable, foreignTable));
             statement.bindLong(1, person.getId());
             statement.bindLong(2, id);
@@ -643,7 +643,7 @@ public class Database extends SQLiteOpenHelper {
         }
         statement.bindString(1, company.getTitle());
         if(company.getFoundation() != null) {
-            statement.bindString(2, Converter.convertDateToString(company.getFoundation(), Database.DATE_FORMAT));
+            statement.bindString(2, Objects.requireNonNull(Converter.convertDateToString(company.getFoundation(), Database.DATE_FORMAT)));
         } else {
             statement.bindNull(2);
         }
@@ -662,7 +662,7 @@ public class Database extends SQLiteOpenHelper {
         statement.close();
 
         if(!foreignTable.isEmpty()) {
-            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_companies WHERE companies=%s", foreignTable, company.getId()));
+            this.getWritableDatabase().execSQL(String.format("DELETE FROM %s_companies WHERE %s=%s AND companies=%s", foreignTable, foreignTable, id, company.getId()));
             statement = this.getWritableDatabase().compileStatement(String.format("INSERT INTO %s_companies(companies, %s) VALUES(?, ?)", foreignTable, foreignTable));
             statement.bindLong(1, company.getId());
             statement.bindLong(2, id);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    xmlns:tools="http://schemas.android.com/tools"
     package="de.domjos.myarchivemobile">
 
     <uses-feature android:name="android.hardware.camera" />
@@ -14,7 +13,6 @@
     <dist:module dist:instant="true" />
 
     <application
-        android:allowBackup="true"
         android:configChanges="orientation|screenSize"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,7 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules">
+
         <activity
             android:name=".activities.LogActivity"
             android:label="@string/log"
@@ -72,26 +72,13 @@
                 android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name="de.domjos.myarchivemobile.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.ebay.api.client.auth.oauth2.ui.OAuthRedirectActivity"
-            android:exported="true"
-            tools:node="replace">
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="domjos.de" android:scheme="https" />
             </intent-filter>
         </activity>
 
