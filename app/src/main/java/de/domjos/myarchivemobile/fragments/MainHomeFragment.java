@@ -11,7 +11,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -348,11 +347,13 @@ public class MainHomeFragment extends ParentFragment {
     }
 
     private void setTempFilter() {
-        tempFilter = Objects.requireNonNull(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
-        if(tempFilter.getTitle().equals(this.getString(R.string.filter_temp))) {
-            this.getObject(tempFilter);
-            reload(tempFilter);
-        }
+        try {
+            tempFilter = Objects.requireNonNull(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
+            if(tempFilter.getTitle().equals(this.getString(R.string.filter_temp))) {
+                this.getObject(tempFilter);
+                reload(tempFilter);
+            }
+        } catch (Exception ignored) {}
     }
 
     private void reload(MediaFilter mediaFilter) {

@@ -1,6 +1,7 @@
 package de.domjos.myarchivemobile.helper;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 
 import java.util.Arrays;
@@ -27,10 +28,16 @@ public class PDFHelper {
 
     private final int headerColor, rowColor;
 
+    @SuppressWarnings("deprecation")
     public PDFHelper(String file, Context context) {
         this.context = context;
-        this.headerColor = context.getResources().getColor(R.color.colorPrimaryDark);
-        this.rowColor = context.getResources().getColor(R.color.colorPrimary);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            this.headerColor = context.getColor(R.color.colorPrimaryDark);
+            this.rowColor = context.getColor(R.color.colorPrimary);
+        } else {
+            this.headerColor = context.getResources().getColor(R.color.colorPrimaryDark);
+            this.rowColor = context.getResources().getColor(R.color.colorPrimary);
+        }
 
         this.pdfService = new PDFService(file, R.mipmap.ic_launcher_round, context);
 

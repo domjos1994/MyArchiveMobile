@@ -128,7 +128,7 @@ public class MainGamesFragment extends ParentFragment {
         this.viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
         this.validator = this.gamePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.gamePagerAdapter);
 

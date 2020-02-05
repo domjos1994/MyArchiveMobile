@@ -128,7 +128,7 @@ public class MainMusicFragment extends ParentFragment {
         this.viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album()));
+        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album()));
         this.validator = this.albumPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.albumPagerAdapter);
 

@@ -128,7 +128,7 @@ public class MainMoviesFragment extends ParentFragment {
         this.viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
+        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
         this.validator = this.moviePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.moviePagerAdapter);
 

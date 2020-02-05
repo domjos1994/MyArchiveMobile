@@ -46,6 +46,7 @@ public class ControlsHelper {
         viewPager.setCurrentItem(0);*/
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean hasNetwork(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if(cm != null) {

@@ -120,14 +120,16 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Bitmap bitmap = IntentHelper.getCameraIntentResult(requestCode, resultCode, intent);
-        if(bitmap!=null) {
-            this.ivMediaCover.setImageBitmap(bitmap);
-        } else {
-            bitmap = IntentHelper.getGalleryIntentResult(requestCode, resultCode, intent, this.getActivity());
-            if(bitmap != null) {
+        try {
+            Bitmap bitmap = IntentHelper.getCameraIntentResult(requestCode, resultCode, intent);
+            if(bitmap!=null) {
                 this.ivMediaCover.setImageBitmap(bitmap);
+            } else {
+                bitmap = IntentHelper.getGalleryIntentResult(requestCode, resultCode, intent, this.getActivity());
+                if(bitmap != null) {
+                    this.ivMediaCover.setImageBitmap(bitmap);
+                }
             }
-        }
+        } catch (Exception ignored) {}
     }
 }

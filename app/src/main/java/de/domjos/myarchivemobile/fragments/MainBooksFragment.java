@@ -129,7 +129,7 @@ public class MainBooksFragment extends ParentFragment {
         this.viewPager.setOffscreenPageLimit(4);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
+        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.bookPagerAdapter);
 

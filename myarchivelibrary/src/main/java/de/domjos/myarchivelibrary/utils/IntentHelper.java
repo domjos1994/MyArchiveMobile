@@ -2,12 +2,13 @@ package de.domjos.myarchivelibrary.utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.ParcelFileDescriptor;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
@@ -22,22 +23,14 @@ public class IntentHelper {
         activity.startActivityForResult(i, IntentHelper.GALLERY_CODE);
     }
 
-    public static Bitmap getGalleryIntentResult(int requestCode, int resultCode, Intent intent, Activity activity) {
+    public static Bitmap getGalleryIntentResult(int requestCode, int resultCode, Intent intent, Activity activity) throws FileNotFoundException {
         if(resultCode == RESULT_OK && requestCode == IntentHelper.GALLERY_CODE) {
             Uri selectedImage = intent.getData();
 
             if(selectedImage != null) {
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                Cursor cursor = activity.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                if(cursor != null) {
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
-                    cursor.close();
-
-                    return BitmapFactory.decodeFile(picturePath);
+                ParcelFileDescriptor parcelFileDescriptor = activity.getContentResolver().openFileDescriptor(selectedImage, "r");
+                if(parcelFileDescriptor != null) {
+                    return BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
                 }
             }
         }
