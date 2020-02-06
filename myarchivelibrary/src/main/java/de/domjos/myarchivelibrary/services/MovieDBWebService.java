@@ -18,45 +18,48 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 
-public class MovieDBWebService extends JSONService {
+public class MovieDBWebService extends TitleWebservice<Movie> {
     private final static String BASE_URL = "https://api.themoviedb.org/3";
     private final static String IMAGE_URL = "https://image.tmdb.org/t/p/w500";
-    private final String SEARCH;
-    private final Context CONTEXT;
     private String type;
 
     public MovieDBWebService(Context context, String search) {
-        this.SEARCH = search;
-        this.CONTEXT = context;
+        super(context, search);
     }
 
+    @Override
     public Movie execute() throws IOException, JSONException {
         return this.getMovieFromJson();
     }
 
     private Movie getMovieFromJson() throws JSONException, IOException {
-        List<Movie> movies = MovieDBWebService.getMovies(this.CONTEXT, this.SEARCH);
-        if(movies.size() != 0) {
-            Movie movie = movies.get(0);
-            long movieId = movie.getId();
-            this.type = movie.getDescription();
-            JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type +"/" + movieId + "?api_key=" + this.CONTEXT.getString(R.string.service_movie_db_key) + "&language=" + Locale.getDefault().getLanguage())));
+        List<BaseMediaObject> movies = MovieDBWebService.getMedia(this.CONTEXT, this.SEARCH);
+        if(movies != null) {
+            if(movies.size() != 0) {
+                BaseMediaObject baseMediaObject = movies.get(0);
+                Movie movie = (Movie) baseMediaObject;
+                long movieId = movie.getId();
+                movie.setId(0);
+                this.type = movie.getDescription();
+                JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type +"/" + movieId + "?api_key=" + this.CONTEXT.getString(R.string.service_movie_db_key) + "&language=" + Locale.getDefault().getLanguage())));
 
-            movie = new Movie();
-            movie.setTitle(this.setString(resultObject, Arrays.asList("name", "title")));
-            movie.setOriginalTitle(this.setString(resultObject, Arrays.asList("original_name", "original_title")));
-            movie.setDescription(resultObject.getString("overview"));
+                movie = new Movie();
+                movie.setTitle(this.setString(resultObject, Arrays.asList("name", "title")));
+                movie.setOriginalTitle(this.setString(resultObject, Arrays.asList("original_name", "original_title")));
+                movie.setDescription(resultObject.getString("overview"));
 
-            this.getLength(resultObject, movie);
-            this.getReleaseDate(resultObject, movie);
-            this.getPoster(resultObject, movie);
-            this.getGenres(resultObject, movie);
-            this.getCompanies(resultObject, movie);
-            this.getPersons(movieId, movie);
+                this.getLength(resultObject, movie);
+                this.getReleaseDate(resultObject, movie);
+                this.getPoster(resultObject, movie);
+                this.getGenres(resultObject, movie);
+                this.getCompanies(resultObject, movie);
+                this.getPersons(movieId, movie);
 
-            return movie;
+                return movie;
+            }
         }
         return null;
     }
@@ -72,8 +75,8 @@ public class MovieDBWebService extends JSONService {
         return "";
     }
 
-    public static List<Movie> getMovies(Context context, String search) throws IOException, JSONException {
-        List<Movie> movies = new LinkedList<>();
+    public static List<BaseMediaObject> getMedia(Context context, String search) throws IOException, JSONException {
+        List<BaseMediaObject> movies = new LinkedList<>();
         String key = context.getString(R.string.service_movie_db_key);
         String url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebService.BASE_URL, key, Locale.getDefault().getLanguage(), search);
         JSONObject jsonObject = new JSONObject(readUrl(new URL(url)));

@@ -36,11 +36,13 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.services.AudioDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebService;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
+import de.domjos.myarchivelibrary.tasks.TheAudioDBTask;
 import de.domjos.myarchivelibrary.tasks.TheMovieDBTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
@@ -99,11 +101,18 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                         public void run() {
                             try {
                                 getActivity().runOnUiThread(titleAdapter::clear);
-                                List<Movie> movies = MovieDBWebService.getMovies(Objects.requireNonNull(getActivity()), editable.toString());
-                                for(Movie movie : movies) {
-                                    getActivity().runOnUiThread(()->titleAdapter.add(movie.getTitle()));
+                                List<BaseMediaObject> movies = null;
+                                if(abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
+                                    movies = MovieDBWebService.getMedia(Objects.requireNonNull(getActivity()), editable.toString());
+                                } else if(abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
+                                    movies = AudioDBWebservice.getMedia(editable.toString());
                                 }
-                                getActivity().runOnUiThread(()->txtMediaGeneralTitle.showDropDown());
+                                if(movies != null) {
+                                    for(BaseMediaObject baseMediaObject : movies) {
+                                        getActivity().runOnUiThread(()->titleAdapter.add(baseMediaObject.getTitle()));
+                                    }
+                                    getActivity().runOnUiThread(()->txtMediaGeneralTitle.showDropDown());
+                                }
                             } catch (Exception ex) {
                                 getActivity().runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext()));
                             }
@@ -117,7 +126,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
         if(this.abstractPagerAdapter != null) {
-            if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
+            if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) || (this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
                 layoutParams.weight = 9;
                 this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
             } else {
@@ -155,11 +164,21 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
             try {
-                TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
-                List<Movie> movies = theMovieDBTask.execute(this.txtMediaGeneralTitle.getText().toString()).get();
-                if(movies != null) {
-                    if(!movies.isEmpty()) {
-                        this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                if(this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
+                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                    List<Movie> movies = theMovieDBTask.execute(this.txtMediaGeneralTitle.getText().toString()).get();
+                    if(movies != null) {
+                        if(!movies.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
+                    }
+                } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
+                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                    List<Album> movies = theMovieDBTask.execute(this.txtMediaGeneralTitle.getText().toString()).get();
+                    if(movies != null) {
+                        if(!movies.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
                     }
                 }
             } catch (Exception ex) {
