@@ -116,12 +116,14 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         });
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
-        if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
-            layoutParams.weight = 9;
-            this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
-        } else {
-            layoutParams.weight = 10;
-            this.cmdMediaGeneralTitleSearch.setVisibility(View.GONE);
+        if(this.abstractPagerAdapter != null) {
+            if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
+                layoutParams.weight = 9;
+                this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
+            } else {
+                layoutParams.weight = 10;
+                this.cmdMediaGeneralTitleSearch.setVisibility(View.GONE);
+            }
         }
 
         this.txtMediaGeneralCategory = view.findViewById(R.id.txtMediaGeneralCategory);

@@ -55,6 +55,8 @@ public class LibraryService extends JobService {
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+        } finally {
+            this.database.close();
         }
         return false;
     }

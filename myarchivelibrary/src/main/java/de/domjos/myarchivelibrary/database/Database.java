@@ -15,8 +15,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -85,6 +87,39 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
         }
+    }
+
+    public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content) {
+        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+        for(Map.Entry<DatabaseObject, String> entry : content.entrySet()) {
+            Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover FROM " + entry.getKey().getTable() + where(entry.getValue()), new String[]{});
+            while (cursor.moveToNext()) {
+                BaseMediaObject baseMediaObject = null;
+                switch (entry.getKey().getTable()) {
+                    case "books":
+                        baseMediaObject = new Book();
+                        break;
+                    case "movies":
+                        baseMediaObject = new Movie();
+                        break;
+                    case "games":
+                        baseMediaObject = new Game();
+                        break;
+                    case "albums":
+                        baseMediaObject = new Album();
+                        break;
+                }
+
+                if(baseMediaObject != null) {
+                    baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
+                    baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+                    baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
+                    baseMediaObjects.add(baseMediaObject);
+                }
+            }
+            cursor.close();
+        }
+        return baseMediaObjects;
     }
 
     public void insertOrUpdateAlbum(Album album) {
@@ -406,7 +441,7 @@ public class Database extends SQLiteOpenHelper {
         return mediaFilters;
     }
 
-    public List<BaseMediaObject> getObjects(String table, long id) throws ParseException {
+    public List<BaseMediaObject> getObjects(String table, long id) {
         String start = "id IN (";
         String booksWhere = start, moviesWhere = start, gamesWhere = start, albumsWhere = start;
 
@@ -433,12 +468,12 @@ public class Database extends SQLiteOpenHelper {
                 break;
         }
 
-        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-        baseMediaObjects.addAll(this.getBooks(booksWhere));
-        baseMediaObjects.addAll(this.getMovies(moviesWhere));
-        baseMediaObjects.addAll(this.getGames(gamesWhere));
-        baseMediaObjects.addAll(this.getAlbums(albumsWhere));
-        return baseMediaObjects;
+        Map<DatabaseObject, String> mp = new LinkedHashMap<>();
+        mp.put(new Book(), booksWhere);
+        mp.put(new Movie(), moviesWhere);
+        mp.put(new Game(), gamesWhere);
+        mp.put(new Album(), albumsWhere);
+        return this.getObjectList(mp);
     }
 
     public void deleteItem(DatabaseObject databaseObject) {

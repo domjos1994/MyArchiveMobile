@@ -18,12 +18,15 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -82,16 +85,32 @@ public class ControlsHelper {
                     String where = "id=" + id;
                     BaseMediaObject baseMediaObject = null;
                     if(emptyObject instanceof Album) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where).get(0);
+                        if(currentObject != null) {
+                            baseMediaObject = (Album) currentObject.getObject();
+                        } else {
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where).get(0);
+                        }
                     }
                     if(emptyObject instanceof Movie) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where).get(0);
+                        if(currentObject != null) {
+                            baseMediaObject = (Movie) currentObject.getObject();
+                        } else {
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where).get(0);
+                        }
                     }
                     if(emptyObject instanceof Game) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where).get(0);
+                        if(currentObject != null) {
+                            baseMediaObject = (Game) currentObject.getObject();
+                        } else {
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where).get(0);
+                        }
                     }
                     if(emptyObject instanceof Book) {
-                        baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where).get(0);
+                        if(currentObject != null) {
+                            baseMediaObject = (Book) currentObject.getObject();
+                        } else {
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where).get(0);
+                        }
                     }
                     if(baseMediaObject != null) {
                         for(int i = 0; i<=lv.getAdapter().getItemCount()-1; i++) {
@@ -136,7 +155,43 @@ public class ControlsHelper {
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws ParseException {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(search)) {
+        Map<DatabaseObject, String> mp = new LinkedHashMap<>();
+        mp.put(new Book(), search);
+        mp.put(new Movie(), search);
+        mp.put(new Album(), search);
+        mp.put(new Game(), search);
+        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp)) {
+            if(baseMediaObject instanceof Book) {
+                BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                baseDescriptionObject.setDescription(context.getString(R.string.book));
+                baseDescriptionObject.setObject(baseMediaObject);
+                baseDescriptionObjects.add(baseDescriptionObject);
+            }
+            if(baseMediaObject instanceof Movie) {
+                BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                baseDescriptionObject.setDescription(context.getString(R.string.movie));
+                baseDescriptionObject.setObject(baseMediaObject);
+                baseDescriptionObjects.add(baseDescriptionObject);
+            }
+            if(baseMediaObject instanceof Album) {
+                BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                baseDescriptionObject.setDescription(context.getString(R.string.album));
+                baseDescriptionObject.setObject(baseMediaObject);
+                baseDescriptionObjects.add(baseDescriptionObject);
+            }
+            if(baseMediaObject instanceof Game) {
+                BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
+                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                baseDescriptionObject.setDescription(context.getString(R.string.game));
+                baseDescriptionObject.setObject(baseMediaObject);
+                baseDescriptionObjects.add(baseDescriptionObject);
+            }
+        }
+
+        /*for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(search)) {
             BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
             baseDescriptionObject.setCover(baseMediaObject.getCover());
             baseDescriptionObject.setDescription(context.getString(R.string.book));
@@ -163,7 +218,7 @@ public class ControlsHelper {
             baseDescriptionObject.setDescription(context.getString(R.string.game));
             baseDescriptionObject.setObject(baseMediaObject);
             baseDescriptionObjects.add(baseDescriptionObject);
-        }
+        }*/
         return baseDescriptionObjects;
     }
 

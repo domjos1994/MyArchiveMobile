@@ -25,7 +25,7 @@ public class GoogleBooksService extends JSONService {
 
     public Book execute() throws IOException {
         Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
-        Books.Volumes.List list = books.volumes().list("isbn:" + this.code).setProjection("FULL");
+        Books.Volumes.List list = books.volumes().list("isbn:" + this.code).setProjection("full");
         return this.getBookFromList(list);
     }
 
