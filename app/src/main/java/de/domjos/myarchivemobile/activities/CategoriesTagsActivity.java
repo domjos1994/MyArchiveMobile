@@ -10,10 +10,13 @@ import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
@@ -127,20 +130,30 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
+        if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
+            table = "tags";
+        } else {
+            table = "categories";
+        }
+        String empty = this.getString(R.string.sys_empty);
+        Database database = MainActivity.GLOBALS.getDatabase();
+
         this.lvItems.getAdapter().clear();
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
-            for (BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "")) {
+            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("tags", "", 0, "")) {
                 de.domjos.customwidgets.model.objects.BaseDescriptionObject current = new de.domjos.customwidgets.model.objects.BaseDescriptionObject();
-                current.setTitle(baseDescriptionObject.getTitle());
+                String title = baseDescriptionObject.getTitle();
+                current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
                 current.setObject(baseDescriptionObject);
                 this.lvItems.getAdapter().add(current);
             }
         }
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_category))) {
-            for (BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "")) {
+            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("categories", "", 0, "")) {
                 de.domjos.customwidgets.model.objects.BaseDescriptionObject current = new de.domjos.customwidgets.model.objects.BaseDescriptionObject();
-                current.setTitle(baseDescriptionObject.getTitle());
+                String title = baseDescriptionObject.getTitle();
+                current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
                 current.setObject(baseDescriptionObject);
                 this.lvItems.getAdapter().add(current);
@@ -183,8 +196,13 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 table = "categories";
             }
             if(baseDescriptionObject!=null) {
-                for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(table, baseDescriptionObject.getId())) {
-                    this.lvMedia.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getApplicationContext()));
+                List<BaseMediaObject> mediaObjectList = MainActivity.GLOBALS.getDatabase().getObjects(table, baseDescriptionObject.getId());
+                if(!mediaObjectList.isEmpty()) {
+                    for(BaseMediaObject baseMediaObject : mediaObjectList) {
+                        this.lvMedia.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getApplicationContext()));
+                    }
+                } else {
+
                 }
             }
         } catch (Exception ex) {

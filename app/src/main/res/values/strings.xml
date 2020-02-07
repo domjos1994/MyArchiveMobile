@@ -89,6 +89,7 @@
     <string name="sys_title">Title</string>
     <string name="sys_description">Description</string>
     <string name="sys_date_format">yyyy-MM-dd</string>
-    <string name="export_search">...</string>
+    <string name="export_search">…</string>
     <string name="sys_search">Search</string>
+    <string name="sys_empty" formatted="false"> (Empty)</string>
 </resources>
