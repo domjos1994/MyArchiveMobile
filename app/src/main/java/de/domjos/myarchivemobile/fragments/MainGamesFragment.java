@@ -77,10 +77,10 @@ public class MainGamesFragment extends ParentFragment {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Game game = this.gamePagerAdapter.getMediaObject();
-                        if(this.validator.checkDuplicatedEntry(game.getTitle(), this.lvGames.getAdapter().getList())) {
-                            if(this.currentObject!=null) {
-                                game.setId(((Game) this.currentObject.getObject()).getId());
-                            }
+                        if(this.currentObject!=null) {
+                            game.setId(((Game) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
                             this.changeMode(false, false);
                             this.currentObject = null;
@@ -132,8 +132,6 @@ public class MainGamesFragment extends ParentFragment {
         this.validator = this.gamePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.gamePagerAdapter);
 
-        ControlsHelper.initTabs(tabLayout, viewPager);
-
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
@@ -160,6 +158,7 @@ public class MainGamesFragment extends ParentFragment {
                 baseDescriptionObject.setTitle(game.getTitle());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(game.getCover());
+                baseDescriptionObject.setId(game.getId());
                 baseDescriptionObject.setObject(game);
                 this.lvGames.getAdapter().add(baseDescriptionObject);
             }

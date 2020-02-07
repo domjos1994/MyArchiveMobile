@@ -67,10 +67,10 @@ public final class PersonActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Person person = this.personPagerAdapter.getMediaObject();
-                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), this.lvPersons.getAdapter().getList())) {
-                            if(this.person!=null) {
-                                person.setId(this.person.getId());
-                            }
+                        if(this.person!=null) {
+                            person.setId(this.person.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
                             this.changeMode(false, false);
                             this.person = null;
@@ -124,6 +124,7 @@ public final class PersonActivity extends AbstractActivity {
                 baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(person.getImage());
+                baseDescriptionObject.setId(person.getId());
                 baseDescriptionObject.setObject(person);
                 this.lvPersons.getAdapter().add(baseDescriptionObject);
             }

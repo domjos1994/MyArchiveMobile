@@ -96,12 +96,11 @@ public class MainListsFragment extends ParentFragment {
                     try {
                         if(this.validator.getState()) {
                             MediaList mediaList = this.getObject();
-                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), this.lvMediaLists.getAdapter().getList())) {
-                                if(this.mediaList != null) {
-                                    mediaList.setId(this.mediaList.getId());
-                                }
+                            if(this.mediaList != null) {
+                                mediaList.setId(this.mediaList.getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
                                 MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
-
                                 this.changeMode(false, false);
                                 this.mediaList = null;
                                 this.setObject(new MediaList());
@@ -137,6 +136,7 @@ public class MainListsFragment extends ParentFragment {
                 baseDescriptionObject.setTitle(mediaList.getTitle());
                 baseDescriptionObject.setDescription(mediaList.getDescription());
                 baseDescriptionObject.setObject(mediaList);
+                baseDescriptionObject.setId(mediaList.getId());
                 this.lvMediaLists.getAdapter().add(baseDescriptionObject);
             }
         } catch (Exception ex) {

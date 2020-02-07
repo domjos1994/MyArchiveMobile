@@ -67,10 +67,10 @@ public final class CompanyActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Company company = this.companyPagerAdapter.getMediaObject();
-                        if(this.validator.checkDuplicatedEntry(company.getTitle(), this.lvCompanies.getAdapter().getList())) {
-                            if(this.company !=null) {
-                                company.setId(this.company.getId());
-                            }
+                        if(this.company !=null) {
+                            company.setId(this.company.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
                             this.changeMode(false, false);
                             this.company = null;
@@ -124,6 +124,7 @@ public final class CompanyActivity extends AbstractActivity {
                 baseDescriptionObject.setTitle(company.getTitle());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(company.getCover());
+                baseDescriptionObject.setId(company.getId());
                 baseDescriptionObject.setObject(company);
                 this.lvCompanies.getAdapter().add(baseDescriptionObject);
             }

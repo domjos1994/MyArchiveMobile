@@ -50,6 +50,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
 
     @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public Fragment getItem(int position) {
         switch (position) {
             case 0:

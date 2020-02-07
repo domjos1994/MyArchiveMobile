@@ -74,18 +74,20 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
         if(!jsonObject.isNull("results")) {
             JSONArray jsonArray = jsonObject.getJSONArray("results");
             for(int i = 0; i<=jsonArray.length()-1; i++) {
-                JSONObject resultObject = jsonArray.getJSONObject(i);
-                Movie movie = new Movie();
-                if(resultObject.has("name")) {
-                    movie.setTitle(resultObject.getString("name"));
-                } else if(resultObject.has("title")) {
-                    movie.setTitle(resultObject.getString("title"));
+                if(!jsonArray.isNull(i)) {
+                    JSONObject resultObject = jsonArray.getJSONObject(i);
+                    Movie movie = new Movie();
+                    if(resultObject.has("name")) {
+                        movie.setTitle(resultObject.getString("name"));
+                    } else if(resultObject.has("title")) {
+                        movie.setTitle(resultObject.getString("title"));
+                    }
+                    movie.setId(resultObject.getLong("id"));
+                    movie.setDescription(resultObject.getString("media_type"));
+                    getPoster(resultObject, movie);
+                    getReleaseDate(resultObject, movie);
+                    movies.add(movie);
                 }
-                movie.setId(resultObject.getLong("id"));
-                movie.setDescription(resultObject.getString("media_type"));
-                getPoster(resultObject, movie);
-                getReleaseDate(resultObject, movie);
-                movies.add(movie);
             }
         }
         return movies;

@@ -17,7 +17,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -54,6 +53,7 @@ import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
+import de.domjos.myarchivemobile.helper.CheckNetwork;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.services.LibraryService;
 import de.domjos.myarchivemobile.services.ListService;
@@ -131,7 +131,7 @@ public final class MainActivity extends AbstractActivity {
                             boolean music = label.equals(getString(R.string.main_navigation_media_music));
                             boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                         }
                     }
 
@@ -143,7 +143,7 @@ public final class MainActivity extends AbstractActivity {
                             boolean music = label.equals(getString(R.string.main_navigation_media_music));
                             boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                         }
                     }
 
@@ -155,7 +155,7 @@ public final class MainActivity extends AbstractActivity {
                             boolean music = label.equals(getString(R.string.main_navigation_media_music));
                             boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                         }
                     }
 
@@ -167,7 +167,7 @@ public final class MainActivity extends AbstractActivity {
                             boolean music = label.equals(getString(R.string.main_navigation_media_music));
                             boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && ControlsHelper.hasNetwork(getApplicationContext())));
+                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                         }
                     }
                 });
@@ -241,7 +241,7 @@ public final class MainActivity extends AbstractActivity {
                         this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
                         this.label.equals(this.getString(R.string.main_navigation_media_games))
                 )
-                && ControlsHelper.hasNetwork(this.getApplicationContext())
+                && MainActivity.GLOBALS.isNetwork()
         );
         return true;
     }
@@ -327,11 +327,11 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT || newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            this.onlyOrientationChanged = true;
-        } else {
-            this.onlyOrientationChanged = false;
-        }
+        int result = newConfig.orientation;
+        int land = Configuration.ORIENTATION_LANDSCAPE;
+        int portrait = Configuration.ORIENTATION_PORTRAIT;
+
+        this.onlyOrientationChanged = result == land || result == portrait;
 
         super.onConfigurationChanged(newConfig);
     }
@@ -361,11 +361,14 @@ public final class MainActivity extends AbstractActivity {
             MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, pwd, true);
         }
 
+        CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
+        checkNetwork.registerNetworkCallback();
+
         SQLiteDatabase.loadLibs(this.getApplicationContext());
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
 
-        if(!this.onlyOrientationChanged) {
+        if(!onlyOrientationChanged) {
             ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
         }
     }

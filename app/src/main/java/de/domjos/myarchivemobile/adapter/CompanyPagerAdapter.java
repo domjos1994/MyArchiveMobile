@@ -81,6 +81,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
 
     @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public Fragment getItem(int position) {
         switch (position) {
             case 0:

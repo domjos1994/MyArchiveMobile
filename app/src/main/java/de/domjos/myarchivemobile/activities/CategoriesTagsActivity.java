@@ -84,10 +84,10 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         BaseDescriptionObject baseDescriptionObject = this.getObject();
-                        if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), this.lvItems.getAdapter().getList())) {
-                            if(this.baseDescriptionObject != null) {
-                                baseDescriptionObject.setId(this.baseDescriptionObject.getId());
-                            }
+                        if(this.baseDescriptionObject != null) {
+                            baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
                             this.changeMode(false, false);
                             this.setObject(new BaseDescriptionObject());
@@ -145,6 +145,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
+                current.setId(baseDescriptionObject.getId());
                 current.setObject(baseDescriptionObject);
                 this.lvItems.getAdapter().add(current);
             }
@@ -155,6 +156,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
+                current.setId(baseDescriptionObject.getId());
                 current.setObject(baseDescriptionObject);
                 this.lvItems.getAdapter().add(current);
             }

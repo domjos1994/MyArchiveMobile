@@ -6,15 +6,10 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-
-import androidx.viewpager.widget.ViewPager;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
-import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 import java.text.ParseException;
@@ -39,33 +34,6 @@ import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 
 public class ControlsHelper {
-
-    public static void initTabs(TabLayout tabLayout, ViewPager viewPager) {
-        /*for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
-            tabLayout.setScrollPosition(i, 0f, true);
-            viewPager.setCurrentItem(i);
-        }
-        tabLayout.setScrollPosition(0, 0f, true);
-        viewPager.setCurrentItem(0);*/
-    }
-
-    @SuppressWarnings("deprecation")
-    public static boolean hasNetwork(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(cm != null) {
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (activeNetwork != null) {
-                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                    return true;
-                } else {
-                    return activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
 
 
     @SuppressWarnings("unchecked")
@@ -153,7 +121,7 @@ public class ControlsHelper {
         }
     }
 
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) throws ParseException {
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
         mp.put(new Book(), search);

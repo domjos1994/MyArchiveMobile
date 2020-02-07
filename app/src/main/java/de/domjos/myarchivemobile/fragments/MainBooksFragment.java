@@ -78,10 +78,10 @@ public class MainBooksFragment extends ParentFragment {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Book book = this.bookPagerAdapter.getMediaObject();
-                        if(this.validator.checkDuplicatedEntry(book.getTitle(), this.lvBooks.getAdapter().getList())) {
-                            if(this.currentObject!=null) {
-                                book.setId(((Book) this.currentObject.getObject()).getId());
-                            }
+                        if(this.currentObject!=null) {
+                            book.setId(((Book) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
                             this.changeMode(false, false);
                             this.currentObject = null;
@@ -133,8 +133,6 @@ public class MainBooksFragment extends ParentFragment {
         this.validator = this.bookPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.bookPagerAdapter);
 
-        ControlsHelper.initTabs(tabLayout, viewPager);
-
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
@@ -161,6 +159,7 @@ public class MainBooksFragment extends ParentFragment {
                 baseDescriptionObject.setTitle(book.getTitle());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(book.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(book.getCover());
+                baseDescriptionObject.setId(book.getId());
                 baseDescriptionObject.setObject(book);
                 this.lvBooks.getAdapter().add(baseDescriptionObject);
             }

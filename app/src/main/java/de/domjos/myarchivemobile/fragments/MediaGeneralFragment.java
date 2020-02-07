@@ -43,7 +43,6 @@ import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
-import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -78,7 +77,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
         if(this.abstractPagerAdapter != null) {
-            if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
+            if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment) && MainActivity.GLOBALS.isNetwork()) {
                 layoutParams.weight = 9;
                 this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
             } else {
@@ -127,7 +126,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 }
                 MediaDialog mediaDialog = MediaDialog.newInstance(search, type);
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
-                mediaDialog.show(this.getFragmentManager(), "dialog");
+                mediaDialog.show(this.getParentFragmentManager(), "dialog");
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
             }
@@ -206,7 +205,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     }
 
     private void testConnection() {
-        this.hideSearchButton(ControlsHelper.hasNetwork(Objects.requireNonNull(this.getContext())));
+        this.hideSearchButton(MainActivity.GLOBALS.isNetwork());
     }
 
     private void hideSearchButton(boolean network) {

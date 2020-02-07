@@ -77,10 +77,10 @@ public class MainMoviesFragment extends ParentFragment {
                 case R.id.cmdSave:
                     if(this.validator.getState()) {
                         Movie movie = this.moviePagerAdapter.getMediaObject();
-                        if(this.validator.checkDuplicatedEntry(movie.getTitle(), this.lvMovies.getAdapter().getList())) {
-                            if(this.currentObject!=null) {
-                                movie.setId(((Movie) this.currentObject.getObject()).getId());
-                            }
+                        if(this.currentObject!=null) {
+                            movie.setId(((Movie) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(movie.getTitle(), movie.getId(), this.lvMovies.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
                             this.changeMode(false, false);
                             this.currentObject = null;
@@ -132,8 +132,6 @@ public class MainMoviesFragment extends ParentFragment {
         this.validator = this.moviePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.moviePagerAdapter);
 
-        ControlsHelper.initTabs(tabLayout, viewPager);
-
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
@@ -160,6 +158,7 @@ public class MainMoviesFragment extends ParentFragment {
                 baseDescriptionObject.setTitle(movie.getTitle());
                 baseDescriptionObject.setDescription(Converter.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(movie.getCover());
+                baseDescriptionObject.setId(movie.getId());
                 baseDescriptionObject.setObject(movie);
                 this.lvMovies.getAdapter().add(baseDescriptionObject);
             }
