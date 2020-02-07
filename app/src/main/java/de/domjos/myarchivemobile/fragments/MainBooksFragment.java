@@ -174,7 +174,7 @@ public class MainBooksFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_books))) {
                 String[] code = codes.split("\n");
-                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, "");
                 List<Book> books = googleBooksTask.execute(code).get();
                 for(Book book : books) {
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);

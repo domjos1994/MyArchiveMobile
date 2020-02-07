@@ -19,6 +19,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
+import de.domjos.myarchivelibrary.services.GoogleBooksService;
 import de.domjos.myarchivelibrary.services.MovieDBWebService;
 import de.domjos.myarchivemobile.R;
 
@@ -60,18 +61,24 @@ public class MediaDialog extends DialogFragment {
                     List<BaseMediaObject> objects;
                     if(type.equals(this.getString(R.string.movie))) {
                         objects = MovieDBWebService.getMedia(activity, search);
-                    } else {
+                    } else if(type.equals(this.getString(R.string.album))) {
                         objects = AudioDBWebservice.getMedia(search);
+                    } else if(type.equals(this.getString(R.string.book))) {
+                        objects = GoogleBooksService.getMedia(search);
+                    } else {
+                        objects = null;
                     }
 
                     activity.runOnUiThread(()->lvMedia.getAdapter().clear());
-                    for(BaseMediaObject baseMediaObject : objects) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(baseMediaObject.getTitle());
-                        baseDescriptionObject.setCover(baseMediaObject.getCover());
-                        baseDescriptionObject.setDescription(Converter.convertDateToString(baseMediaObject.getReleaseDate(), this.getString(R.string.sys_date_format)));
-                        baseDescriptionObject.setObject(baseMediaObject);
-                        activity.runOnUiThread(()->lvMedia.getAdapter().add(baseDescriptionObject));
+                    if(objects != null) {
+                        for(BaseMediaObject baseMediaObject : objects) {
+                            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                            baseDescriptionObject.setTitle(baseMediaObject.getTitle());
+                            baseDescriptionObject.setCover(baseMediaObject.getCover());
+                            baseDescriptionObject.setDescription(Converter.convertDateToString(baseMediaObject.getReleaseDate(), this.getString(R.string.sys_date_format)));
+                            baseDescriptionObject.setObject(baseMediaObject);
+                            activity.runOnUiThread(()->lvMedia.getAdapter().add(baseDescriptionObject));
+                        }
                     }
                 } catch (Exception ex) {
                     activity.runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity));
@@ -85,7 +92,7 @@ public class MediaDialog extends DialogFragment {
             Intent intent = new Intent();
             intent.putExtra("id", ((BaseMediaObject)this.currentObject.getObject()).getId());
             intent.putExtra("type", type);
-            intent.putExtra("mediaType", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
+            intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
             Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
             this.dismiss();
         });

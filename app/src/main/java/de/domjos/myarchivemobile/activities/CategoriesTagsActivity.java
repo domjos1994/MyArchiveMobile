@@ -201,8 +201,6 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                     for(BaseMediaObject baseMediaObject : mediaObjectList) {
                         this.lvMedia.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getApplicationContext()));
                     }
-                } else {
-
                 }
             }
         } catch (Exception ex) {

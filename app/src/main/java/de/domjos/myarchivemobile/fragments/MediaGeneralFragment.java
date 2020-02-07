@@ -78,7 +78,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
         if(this.abstractPagerAdapter != null) {
-            if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) || (this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
+            if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
                 layoutParams.weight = 9;
                 this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
             } else {
@@ -122,6 +122,8 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     type = this.getString(R.string.movie);
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
                     type = this.getString(R.string.album);
+                } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment) {
+                    type = this.getString(R.string.book);
                 }
                 MediaDialog mediaDialog = MediaDialog.newInstance(search, type);
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
@@ -137,7 +139,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 boolean notifications = MainActivity.GLOBALS.getSettings().isNotifications();
 
                 if((this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), notifications, icon);
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), notifications, icon, "");
                     List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if (books != null) {
                         if (!books.isEmpty()) {
@@ -311,22 +313,30 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
             if(resultCode == RESULT_OK && requestCode == SUGGESTIONS_REQUEST) {
                 String type = intent.getStringExtra("type");
-                String mediaType = intent.getStringExtra("mediaType");
+                String description = intent.getStringExtra("description");
                 long id = intent.getLongExtra("id", 0);
                 if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
-                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, mediaType);
+                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description);
                     List<Movie> movies = theMovieDBTask.execute(id).get();
                     if(movies != null) {
                         if(!movies.isEmpty()) {
                             this.abstractPagerAdapter.setMediaObject(movies.get(0));
                         }
                     }
-                } else {
+                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.album))) {
                     TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
                     List<Album> movies = theMovieDBTask.execute(id).get();
                     if(movies != null) {
                         if(!movies.isEmpty()) {
                             this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
+                    }
+                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.book))) {
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description);
+                    List<Book> books = googleBooksTask.execute("").get();
+                    if(books != null) {
+                        if(!books.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(books.get(0));
                         }
                     }
                 }
