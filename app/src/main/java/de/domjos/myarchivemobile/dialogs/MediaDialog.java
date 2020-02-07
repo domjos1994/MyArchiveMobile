@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.fragment.app.DialogFragment;
@@ -50,11 +51,33 @@ public class MediaDialog extends DialogFragment {
         Activity activity = Objects.requireNonNull(this.getActivity());
         Bundle arguments = Objects.requireNonNull(this.getArguments());
         String type = arguments.getString("type");
+        String search = arguments.getString("search");
 
+        EditText txtSearch = v.findViewById(R.id.txtSearch);
+        ImageButton cmdSearch = v.findViewById(R.id.cmdSearch);
         SwipeRefreshDeleteList lvMedia = v.findViewById(R.id.lvSuggestions);
         ImageButton cmdSave = v.findViewById(R.id.cmdSave);
+        txtSearch.setText(search);
 
-        String search = arguments.getString("search");
+        this.reload(activity, type, search, lvMedia);
+
+        cmdSearch.setOnClickListener(view -> this.reload(activity, type, txtSearch.getText().toString(), lvMedia));
+
+        lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> this.currentObject = listObject);
+
+        cmdSave.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            intent.putExtra("id", ((BaseMediaObject)this.currentObject.getObject()).getId());
+            intent.putExtra("type", type);
+            intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
+            Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
+            this.dismiss();
+        });
+
+        return v;
+    }
+
+    private void reload(Activity activity, String type, String search, SwipeRefreshDeleteList lvMedia) {
         if(type != null) {
             new Thread(()->{
                 try {
@@ -85,18 +108,5 @@ public class MediaDialog extends DialogFragment {
                 }
             }).start();
         }
-
-        lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> this.currentObject = listObject);
-
-        cmdSave.setOnClickListener(view -> {
-            Intent intent = new Intent();
-            intent.putExtra("id", ((BaseMediaObject)this.currentObject.getObject()).getId());
-            intent.putExtra("type", type);
-            intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
-            Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
-            this.dismiss();
-        });
-
-        return v;
     }
 }
