@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="10">
-            <AutoCompleteTextView
+            <EditText
                 android:id="@+id/txtMediaGeneralTitle"
                 android:hint="@string/sys_title"
                 android:autofillHints="@string/sys_title"

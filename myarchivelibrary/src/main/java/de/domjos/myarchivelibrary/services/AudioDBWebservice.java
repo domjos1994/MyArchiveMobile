@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -22,8 +23,8 @@ import de.domjos.myarchivelibrary.model.media.music.Album;
 public class AudioDBWebservice extends TitleWebservice<Album> {
     private final static String BASE_URL = "https://theaudiodb.com/api/v1/json/1/searchalbum.php?a=";
 
-    public AudioDBWebservice(Context context, String search) {
-        super(context, search);
+    public AudioDBWebservice(Context context, long id) {
+        super(context, id);
     }
 
     @Override
@@ -32,30 +33,23 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
     }
 
     private Album getAlbumFromJson() throws JSONException, IOException {
-        List<BaseMediaObject> albums = AudioDBWebservice.getMedia(this.SEARCH);
-        if(albums != null) {
-            if (albums.size() != 0) {
-                BaseMediaObject baseMediaObject = albums.get(0);
-                Album album = (Album) baseMediaObject;
-                JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/album.php?m=" + album.getId())));
-                JSONObject albumObject = jsonObject.getJSONArray("album").getJSONObject(0);
-                album.setTitle(albumObject.getString("strAlbum"));
-                album.setOriginalTitle(albumObject.getString("strAlbumStripped"));
-                album.setDescription(this.getDescription(albumObject, "strDescription"));
-                album.setReleaseDate(this.setReleaseYear(albumObject, "intYearReleased"));
-                this.setCategory(albumObject, album);
-                album.setCover(this.setCover(albumObject, "strAlbumThumb"));
-                this.setArtist(albumObject, album);
-                album.setId(0);
-                return album;
-            }
-        }
-        return null;
+        Album album = new Album();
+        JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/album.php?m=" + this.SEARCH)));
+        JSONObject albumObject = jsonObject.getJSONArray("album").getJSONObject(0);
+        album.setTitle(albumObject.getString("strAlbum"));
+        album.setOriginalTitle(albumObject.getString("strAlbumStripped"));
+        album.setDescription(this.getDescription(albumObject, "strDescription"));
+        album.setReleaseDate(setReleaseYear(albumObject, "intYearReleased"));
+        this.setCategory(albumObject, album);
+        album.setCover(setCover(albumObject, "strAlbumThumb"));
+        this.setArtist(albumObject, album);
+        album.setId(0);
+        return album;
     }
 
     public static List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-        JSONObject jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + search)));
+        JSONObject jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8"))));
         if(!jsonObject.isNull("album")) {
             JSONArray albumArray = jsonObject.getJSONArray("album");
             for(int i = 0; i<=albumArray.length()-1; i++) {
@@ -63,6 +57,8 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
                 Album baseMediaObject = new Album();
                 baseMediaObject.setId(albumObject.getLong("idAlbum"));
                 baseMediaObject.setTitle(albumObject.getString("strAlbum"));
+                baseMediaObject.setReleaseDate(setReleaseYear(albumObject, "intYearReleased"));
+                baseMediaObject.setCover(setCover(albumObject, "strAlbumThumb"));
                 baseMediaObjects.add(baseMediaObject);
             }
         }
@@ -88,7 +84,7 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         return description;
     }
 
-    private Date setReleaseYear(JSONObject albumObject, String key) {
+    private static Date setReleaseYear(JSONObject albumObject, String key) {
         try {
             int year = albumObject.getInt(key);
             if(year != 0) {
@@ -115,7 +111,7 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         } catch (Exception ignored) {}
     }
 
-    private byte[] setCover(JSONObject albumObject, String key) {
+    private static byte[] setCover(JSONObject albumObject, String key) {
         try {
             if(albumObject.has(key)) {
                 if(!albumObject.isNull(key)) {
@@ -134,9 +130,9 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
                     JSONObject artistObject = jsonObject.getJSONArray("artists").getJSONObject(0);
                     Company company = new Company();
                     company.setTitle(artistObject.getString("strArtist"));
-                    company.setFoundation(this.setReleaseYear(artistObject, "intFormedYear"));
+                    company.setFoundation(setReleaseYear(artistObject, "intFormedYear"));
                     company.setDescription(this.getDescription(artistObject, "strBiography"));
-                    company.setCover(this.setCover(artistObject, "strArtistThumb"));
+                    company.setCover(setCover(artistObject, "strArtistThumb"));
                     album.getCompanies().add(company);
                 }
             }

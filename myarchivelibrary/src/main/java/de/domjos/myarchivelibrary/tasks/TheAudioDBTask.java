@@ -6,12 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
-import de.domjos.myarchivelibrary.services.MovieDBWebService;
 
-public class TheAudioDBTask extends AbstractTask<String, Void, List<Album>> {
+public class TheAudioDBTask extends AbstractTask<Long, Void, List<Album>> {
 
     public TheAudioDBTask(Activity activity, boolean showNotifications, int icon) {
         super(activity, R.string.service_movie_db_search, R.string.service_movie_db_search_content, showNotifications, icon);
@@ -24,12 +22,12 @@ public class TheAudioDBTask extends AbstractTask<String, Void, List<Album>> {
     }
 
     @Override
-    protected List<Album> doInBackground(String... strings) {
+    protected List<Album> doInBackground(Long... ids) {
         LinkedList<Album> movies = new LinkedList<>();
 
-        for(String search : strings) {
+        for(Long id : ids) {
             try {
-                AudioDBWebservice movieDBWebService = new AudioDBWebservice(super.getContext(), search);
+                AudioDBWebservice movieDBWebService = new AudioDBWebservice(super.getContext(), id);
                 Album album = movieDBWebService.execute();
 
                 if(album != null) {

@@ -10,12 +10,12 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
 public abstract class TitleWebservice<T extends BaseMediaObject> extends JSONService {
     final Context CONTEXT;
-    final String SEARCH;
+    final long SEARCH;
 
-    TitleWebservice(Context context, String search) {
+    TitleWebservice(Context context, long id) {
         super();
         this.CONTEXT = context;
-        this.SEARCH = search;
+        this.SEARCH = id;
     }
 
     public abstract T execute() throws JSONException, IOException;

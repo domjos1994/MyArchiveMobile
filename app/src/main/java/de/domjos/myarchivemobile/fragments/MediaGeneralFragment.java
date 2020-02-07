@@ -3,9 +3,7 @@ package de.domjos.myarchivemobile.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +19,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -36,8 +32,6 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
-import de.domjos.myarchivelibrary.services.AudioDBWebservice;
-import de.domjos.myarchivelibrary.services.MovieDBWebService;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
@@ -48,19 +42,22 @@ import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
 
 public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
+    private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
     private EditText txtMediaGeneralCode, txtMediaGeneralPrice, txtMediaGeneralDescription;
-    private AutoCompleteTextView txtMediaGeneralTitle, txtMediaGeneralCategory;
+    private AutoCompleteTextView txtMediaGeneralCategory;
     private MultiAutoCompleteTextView txtMediaGeneralTags;
     private ImageButton cmdMediaGeneralScan, cmdMediaGeneralSearch, cmdMediaGeneralTitleSearch;
 
     private BaseMediaObject baseMediaObject;
     private Validator validator;
+
+    private final static int SUGGESTIONS_REQUEST = 345;
 
     @Nullable
     @Override
@@ -78,51 +75,6 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaGeneralPrice = view.findViewById(R.id.txtMediaGeneralPrice);
         this.txtMediaGeneralDescription = view.findViewById(R.id.txtMediaGeneralDescription);
         this.cmdMediaGeneralTitleSearch = view.findViewById(R.id.cmdMediaGeneralTitleSearch);
-
-        ArrayAdapter<String> titleAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_list_item_1);
-        this.txtMediaGeneralTitle.setAdapter(titleAdapter);
-        titleAdapter.notifyDataSetChanged();
-
-        final Timer[] timer = {new Timer()};
-        this.txtMediaGeneralTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(ControlsHelper.hasNetwork(Objects.requireNonNull(getActivity()))) {
-                    timer[0].cancel();
-                    timer[0] = new Timer();
-                    timer[0].schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                getActivity().runOnUiThread(titleAdapter::clear);
-                                List<BaseMediaObject> movies = null;
-                                if(abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
-                                    movies = MovieDBWebService.getMedia(Objects.requireNonNull(getActivity()), editable.toString());
-                                } else if(abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
-                                    movies = AudioDBWebservice.getMedia(editable.toString());
-                                }
-                                if(movies != null) {
-                                    for(BaseMediaObject baseMediaObject : movies) {
-                                        getActivity().runOnUiThread(()->titleAdapter.add(baseMediaObject.getTitle()));
-                                    }
-                                    getActivity().runOnUiThread(()->txtMediaGeneralTitle.showDropDown());
-                                }
-                            } catch (Exception ex) {
-                                getActivity().runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext()));
-                            }
-                        }
-                    }, 500);
-                } else {
-                    titleAdapter.clear();
-                }
-            }
-        });
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
         if(this.abstractPagerAdapter != null) {
@@ -164,23 +116,16 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
             try {
+                String type = null;
+                String search = this.txtMediaGeneralTitle.getText().toString();
                 if(this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
-                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
-                    List<Movie> movies = theMovieDBTask.execute(this.txtMediaGeneralTitle.getText().toString()).get();
-                    if(movies != null) {
-                        if(!movies.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
-                        }
-                    }
+                    type = this.getString(R.string.movie);
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
-                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
-                    List<Album> movies = theMovieDBTask.execute(this.txtMediaGeneralTitle.getText().toString()).get();
-                    if(movies != null) {
-                        if(!movies.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
-                        }
-                    }
+                    type = this.getString(R.string.album);
                 }
+                MediaDialog mediaDialog = MediaDialog.newInstance(search, type);
+                mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
+                mediaDialog.show(this.getFragmentManager(), "dialog");
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
             }
@@ -357,10 +302,35 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         try {
             if(resultCode == RESULT_OK && requestCode == 234) {
                 this.txtMediaGeneralCode.setText(intent.getStringExtra("codes"));
+            }
+
+            if(resultCode == RESULT_OK && requestCode == SUGGESTIONS_REQUEST) {
+                String type = intent.getStringExtra("type");
+                String mediaType = intent.getStringExtra("mediaType");
+                long id = intent.getLongExtra("id", 0);
+                if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
+                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, mediaType);
+                    List<Movie> movies = theMovieDBTask.execute(id).get();
+                    if(movies != null) {
+                        if(!movies.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
+                    }
+                } else {
+                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                    List<Album> movies = theMovieDBTask.execute(id).get();
+                    if(movies != null) {
+                        if(!movies.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                        }
+                    }
+                }
+
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
