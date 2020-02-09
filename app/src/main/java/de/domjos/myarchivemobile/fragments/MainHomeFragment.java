@@ -46,7 +46,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
     private FloatingActionButton fabAppAdd, fabAppBooks, fabAppMusic, fabAppMovies, fabAppGames;
-    private TextView lblAppBooks, lblAppMusic, lblAppMovies, lblAppGames, lblEntriesCount;
+    private TextView lblEntriesCount;
 
     private TableLayout filter;
     private MediaFilter tempFilter;
@@ -74,10 +74,6 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppMovies = root.findViewById(R.id.fabAppMovies);
         this.fabAppGames = root.findViewById(R.id.fabAppGames);
 
-        this.lblAppBooks = root.findViewById(R.id.lblAppBook);
-        this.lblAppMusic = root.findViewById(R.id.lblAppMusic);
-        this.lblAppMovies = root.findViewById(R.id.lblAppMovies);
-        this.lblAppGames = root.findViewById(R.id.lblAppGames);
         this.lblEntriesCount = root.findViewById(R.id.lblEntriesCount);
 
 
@@ -86,10 +82,10 @@ public class MainHomeFragment extends ParentFragment {
         this.initFilterActions();
 
         this.fabAppAdd.setOnClickListener(view -> {
-            this.showAnimation(this.lblAppBooks, this.fabAppBooks);
-            this.showAnimation(this.lblAppMusic, this.fabAppMusic);
-            this.showAnimation(this.lblAppMovies, this.fabAppMovies);
-            this.showAnimation(this.lblAppGames, this.fabAppGames);
+            this.showAnimation(this.fabAppBooks);
+            this.showAnimation(this.fabAppMusic);
+            this.showAnimation(this.fabAppMovies);
+            this.showAnimation(this.fabAppGames);
             if(this.isOpen) {
                 this.fabAppAdd.startAnimation(this.fabAntiClock);
             } else {
@@ -409,13 +405,11 @@ public class MainHomeFragment extends ParentFragment {
 
     }
 
-    private void showAnimation(TextView lbl, FloatingActionButton fab) {
+    private void showAnimation(FloatingActionButton fab) {
         if(this.isOpen) {
-            lbl.setVisibility(View.INVISIBLE);
             fab.startAnimation(this.fabClose);
             fab.setClickable(false);
         } else {
-            lbl.setVisibility(View.VISIBLE);
             fab.startAnimation(this.fabOpen);
             fab.setClickable(true);
         }
