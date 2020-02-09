@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.Validator;
@@ -52,7 +53,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         if(baseMediaObject instanceof Movie) {
             this.movie = (Movie) baseMediaObject;
-            this.txtMediaMovieLength.setText(String.valueOf(this.movie.getLength()));
+            this.txtMediaMovieLength.setText(new DecimalFormat("0.00").format(this.movie.getLength()));
             this.txtMediaMoviePath.setText(this.movie.getPath());
 
             if(this.movie.getType() != null) {

@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.Validator;
@@ -51,7 +52,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         if(baseMediaObject instanceof Game) {
             this.game = (Game) baseMediaObject;
-            this.txtMediaGameLength.setText(String.valueOf(this.game.getLength()));
+            this.txtMediaGameLength.setText(new DecimalFormat("0.00").format(this.game.getLength()));
 
             if(this.game.getType() != null) {
                 this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));

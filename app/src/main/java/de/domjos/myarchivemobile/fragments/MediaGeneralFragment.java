@@ -17,6 +17,7 @@ import android.widget.MultiAutoCompleteTextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -231,7 +232,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
             this.txtMediaGeneralReleaseDate.setText("");
         }
         this.txtMediaGeneralCode.setText(this.baseMediaObject.getCode());
-        this.txtMediaGeneralPrice.setText(String.valueOf(this.baseMediaObject.getPrice()));
+        this.txtMediaGeneralPrice.setText(new DecimalFormat("0.00").format(this.baseMediaObject.getPrice()));
         if(this.baseMediaObject.getCategory() != null) {
             this.txtMediaGeneralCategory.setText(this.baseMediaObject.getCategory().getTitle());
         } else {
