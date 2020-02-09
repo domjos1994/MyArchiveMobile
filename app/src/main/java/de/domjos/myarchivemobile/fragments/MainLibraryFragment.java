@@ -20,6 +20,7 @@ import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
@@ -75,10 +76,11 @@ public class MainLibraryFragment extends ParentFragment {
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            LibraryObject libraryObject;
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
                     this.changeMode(true, false);
-                    LibraryObject libraryObject = new LibraryObject();
+                    libraryObject = new LibraryObject();
                     libraryObject.setDeadLine(new Date());
                     setObject(libraryObject);
                     this.libraryObject = null;
@@ -97,9 +99,9 @@ public class MainLibraryFragment extends ParentFragment {
                     break;
                 case R.id.cmdSave:
                     try {
-                        this.libraryObject = this.getObject();
-                        this.libraryObject.setId(this.libraryObject.getId());
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(this.libraryObject, (BaseMediaObject) currentObject.getObject());
+                        libraryObject = this.getObject();
+                        libraryObject.setId(this.libraryObject.getId());
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
 
                         if(this.libraryObject.getId() != 0) {
                             BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
@@ -143,6 +145,8 @@ public class MainLibraryFragment extends ParentFragment {
             this.lvMediaLibrary.getAdapter().clear();
             for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
                 baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
+                baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());
+                baseDescriptionObject.setId(baseDescriptionObject.getId());
                 this.lvMediaLibrary.getAdapter().add(baseDescriptionObject);
             }
             this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);
@@ -197,23 +201,27 @@ public class MainLibraryFragment extends ParentFragment {
     }
 
     private void reloadLibraryObjects() {
-        this.lvMediaHistory.getAdapter().clear();
-        if(this.currentObject != null) {
-            BaseMediaObject baseMediaObject = (BaseMediaObject) this.currentObject.getObject();
-            for(LibraryObject libraryObject : baseMediaObject.getLibraryObjects()) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(String.format("%s %s", libraryObject.getPerson().getFirstName(), libraryObject.getPerson().getLastName()).trim());
-                String description = "";
-                if(libraryObject.getDeadLine() != null) {
-                    description = Converter.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format));
+        try {
+            this.lvMediaHistory.getAdapter().clear();
+            if(this.currentObject != null) {
+                DatabaseObject databaseObject = (DatabaseObject) this.currentObject.getObject();
+                for(LibraryObject libraryObject : MainActivity.GLOBALS.getDatabase().getLibraryObjects("type='" + databaseObject.getTable() + "' AND media=" + databaseObject.getId())) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(String.format("%s %s", libraryObject.getPerson().getFirstName(), libraryObject.getPerson().getLastName()).trim());
+                    String description = "";
+                    if(libraryObject.getDeadLine() != null) {
+                        description = Converter.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format));
+                    }
+                    if(libraryObject.getReturned() != null) {
+                        description += " - " + Converter.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format));
+                    }
+                    baseDescriptionObject.setDescription(description);
+                    baseDescriptionObject.setObject(libraryObject);
+                    this.lvMediaHistory.getAdapter().add(baseDescriptionObject);
                 }
-                if(libraryObject.getReturned() != null) {
-                    description += " - " + Converter.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format));
-                }
-                baseDescriptionObject.setDescription(description);
-                baseDescriptionObject.setObject(libraryObject);
-                this.lvMediaHistory.getAdapter().add(baseDescriptionObject);
             }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
     }
 
