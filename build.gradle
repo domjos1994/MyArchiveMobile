@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-ext.propVersion = 7
-ext.propVersionCode = "0.1.alpha.6"
+ext.propVersion = 8
+ext.propVersionCode = "0.1.alpha.7"
 
 ext.propJavaVersion = "8"
 
