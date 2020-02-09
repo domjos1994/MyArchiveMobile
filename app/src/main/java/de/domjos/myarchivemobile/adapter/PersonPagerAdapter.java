@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -36,6 +35,7 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
         this.personFragment = new PersonFragment();
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaListFragment = new MediaListFragment();
+        this.mediaListFragment.setPerson(true);
 
         this.personFragment.setAbstractPagerAdapter(this);
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
@@ -60,6 +60,8 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
                 baseDescriptionObjects.add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.context));
             }
             this.mediaListFragment.setMediaObject(baseDescriptionObjects);
+
+            this.mediaListFragment.setLibraryObjects(MainActivity.GLOBALS.getDatabase().getLendOutObjects(mediaObject));
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }

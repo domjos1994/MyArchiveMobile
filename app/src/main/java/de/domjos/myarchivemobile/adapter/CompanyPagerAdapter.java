@@ -36,6 +36,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
         this.companyFragment = new CompanyFragment();
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaListFragment = new MediaListFragment();
+        this.mediaListFragment.setPerson(false);
 
         this.companyFragment.setAbstractPagerAdapter(this);
         this.mediaCoverFragment.setAbstractPagerAdapter(this);

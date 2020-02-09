@@ -343,6 +343,38 @@ public class Database extends SQLiteOpenHelper {
         return libraryObjects;
     }
 
+    public Map<BaseMediaObject, LibraryObject> getLendOutObjects(Person person) throws ParseException {
+        Map<BaseMediaObject, LibraryObject> mp = new LinkedHashMap<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT media, type, id FROM library WHERE person=" + person.getId(), new String[]{});
+        while (cursor.moveToNext()) {
+            LibraryObject libraryObject = this.getLibraryObjects("id=" + cursor.getLong(cursor.getColumnIndex("id"))).get(0);
+            BaseMediaObject baseMediaObject = null;
+            try {
+                long id = cursor.getLong(cursor.getColumnIndex("media"));
+                String type = cursor.getString(cursor.getColumnIndex("type"));
+                switch (type.trim().toLowerCase()) {
+                    case "books":
+                        baseMediaObject = this.getBooks("id=" + id).get(0);
+                        break;
+                    case "movies":
+                        baseMediaObject = this.getMovies("id=" + id).get(0);
+                        break;
+                    case "albums":
+                        baseMediaObject = this.getAlbums("id=" + id).get(0);
+                        break;
+                    case "games":
+                        baseMediaObject = this.getGames("id=" + id).get(0);
+                        break;
+                }
+            } catch (Exception ex) {
+                continue;
+            }
+            mp.put(baseMediaObject, libraryObject);
+        }
+        cursor.close();
+        return mp;
+    }
+
     public void insertOrUpdateMediaList(MediaList mediaList) {
         SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaList, Arrays.asList(Database.TITLE, Database.DEAD_LINE, Database.DESCRIPTION));
         sqLiteStatement.bindString(1, mediaList.getTitle());

@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-    android:id="@+id/lvMedia"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:itemIcon="@mipmap/ic_launcher_round"
-    app:readOnly="true"
-    app:listItemBackground="@drawable/background"
-    app:selectedListItemBackground="@drawable/selected_background"
-    app:listItemDivider="@drawable/divider"
-    android:padding="4dp"/>
+    android:orientation="vertical"
+    android:weightSum="2">
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvMedia"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:itemIcon="@mipmap/ic_launcher_round"
+        app:readOnly="true"
+        app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/divider"
+        android:padding="4dp"/>
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:itemIcon="@mipmap/ic_launcher_round"
+        app:readOnly="true"
+        app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/divider"
+        android:padding="4dp"/>
+</LinearLayout>
