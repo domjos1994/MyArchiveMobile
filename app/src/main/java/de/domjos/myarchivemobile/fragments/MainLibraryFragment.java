@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
@@ -77,13 +78,15 @@ public class MainLibraryFragment extends ParentFragment {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
                     this.changeMode(true, false);
-                    setObject(new LibraryObject());
+                    LibraryObject libraryObject = new LibraryObject();
+                    libraryObject.setDeadLine(new Date());
+                    setObject(libraryObject);
                     this.libraryObject = null;
                     break;
                 case R.id.cmdEdit:
-                    if(libraryObject != null) {
+                    if(this.libraryObject != null) {
                         this.changeMode(true, true);
-                        setObject(libraryObject);
+                        setObject(this.libraryObject);
                     }
                     break;
                 case R.id.cmdCancel:
@@ -94,22 +97,20 @@ public class MainLibraryFragment extends ParentFragment {
                     break;
                 case R.id.cmdSave:
                     try {
-                        LibraryObject libraryObject = this.getObject();
-                        if(this.libraryObject != null) {
-                            libraryObject.setId(this.libraryObject.getId());
-                        }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+                        this.libraryObject = this.getObject();
+                        this.libraryObject.setId(this.libraryObject.getId());
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(this.libraryObject, (BaseMediaObject) currentObject.getObject());
 
-                        if(libraryObject.getId() != 0) {
+                        if(this.libraryObject.getId() != 0) {
                             BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
                             for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                if(baseMediaObject.getLibraryObjects().get(i).getId()==libraryObject.getId()) {
-                                    baseMediaObject.getLibraryObjects().set(i, libraryObject);
+                                if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                    baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
                                     break;
                                 }
                             }
                         } else {
-                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(libraryObject);
+                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                         }
 
                         this.changeMode(false, false);
