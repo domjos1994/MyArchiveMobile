@@ -314,7 +314,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.close();
     }
 
-    private List<LibraryObject> getLibraryObjects(String where) throws ParseException {
+    public List<LibraryObject> getLibraryObjects(String where) throws ParseException {
         List<LibraryObject> libraryObjects = new LinkedList<>();
         List<Person> persons = this.getPersons("", 0);
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM library" + this.where(where), null);
