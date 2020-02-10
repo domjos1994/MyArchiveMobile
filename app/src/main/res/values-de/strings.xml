@@ -20,6 +20,8 @@
     <string name="filter_no_filter">Kein Filter</string>
     <string name="filter_temp">Temporäre Einstellungen</string>
 
+    <string name="add_media">Medie hinzufügen</string>
+
     <string name="game">Spiel</string>
     <string name="game_length">Länge</string>
     <string name="game_type">Typ</string>

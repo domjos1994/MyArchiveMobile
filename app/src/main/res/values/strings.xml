@@ -19,6 +19,8 @@
     <string name="filter_no_filter">No Filter</string>
     <string name="filter_temp">Temporary Settings</string>
 
+    <string name="add_media">Add Media</string>
+
     <string name="game">Game</string>
     <string name="game_length">Length</string>
     <string name="game_type">Type</string>

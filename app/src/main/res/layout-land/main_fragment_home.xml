@@ -250,6 +250,7 @@
         android:focusable="true"
         android:src="@drawable/ic_add_circle_outline_black_24dp"
         android:visibility="visible"
+        android:contentDescription="@string/add_media"
         app:pressedTranslationZ="12dp"
         app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
         tools:ignore="VectorDrawableCompat"

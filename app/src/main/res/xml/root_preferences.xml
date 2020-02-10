@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         app:title="@string/settings_general"
@@ -24,7 +25,8 @@
             app:key="swtNotifications"
             app:title="@string/settings_general_notifications"
             app:summary="@string/settings_general_notifications_summary"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="true"/>
 
         <SwitchPreference
             app:key="swtDebugMode"
@@ -40,6 +42,7 @@
             app:key="txtEANDataKey"
             app:title="@string/settings_services_eandata"
             app:summary="@string/settings_services_eandata_summary"
+            android:hint="@string/settings_services_eandata_summary"
             app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>
