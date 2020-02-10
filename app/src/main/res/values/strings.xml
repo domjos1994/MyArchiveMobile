@@ -80,8 +80,14 @@
     <string name="settings_general_debug">Debug-Mode</string>
     <string name="settings_general_debug_summary">Enable Debug-Mode</string>
     <string name="settings_services">Webservices</string>
-    <string name="settings_services_eandata">EANData-Key</string>
-    <string name="settings_services_eandata_summary">Set EANData-Key!</string>
+    <string name="settings_services_google_books">Google-Books-Key</string>
+    <string name="settings_services_google_books_summary">Set Google-Books-Key!</string>
+    <string name="settings_services_audio_db">Audio-DB-Key</string>
+    <string name="settings_services_audio_db_summary">Set the Audio-DB-Key!</string>
+    <string name="settings_services_movie_db">Movie-DB-Key</string>
+    <string name="settings_services_movie_db_summary">Set the Movie-DB-Key!</string>
+    <string name="settings_services_ean_data">EANData-Key</string>
+    <string name="settings_services_ean_data_summary">Set EANData-Key!</string>
 
     <string name="sys_password" translatable="false">T9yYQsFHzr9DTNNGonIT</string>
     <string name="sys_add">Add</string>

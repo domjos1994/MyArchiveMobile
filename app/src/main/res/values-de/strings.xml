@@ -79,8 +79,14 @@
     <string name="settings_general_debug">Debug-Modus</string>
     <string name="settings_general_debug_summary">Debug-Modus aktivieren!</string>
     <string name="settings_services">Webservices</string>
-    <string name="settings_services_eandata">EANData-Schlüssel</string>
-    <string name="settings_services_eandata_summary">EANData Schlüssel setzen!</string>
+    <string name="settings_services_google_books">Google-Books-Schlüssel</string>
+    <string name="settings_services_google_books_summary">Google-Books-Schlüssel setzen!</string>
+    <string name="settings_services_audio_db">Audio-DB-Schlüssel</string>
+    <string name="settings_services_audio_db_summary">Audio-DB-Schlüssel setzen!</string>
+    <string name="settings_services_movie_db">Movie-DB-Schlüssel</string>
+    <string name="settings_services_movie_db_summary">Movie-DB-Schlüssel setzen!</string>
+    <string name="settings_services_ean_data">EANData-Schlüssel</string>
+    <string name="settings_services_ean_data_summary">EANData Schlüssel setzen!</string>
 
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_cancel">Abbrehen</string>

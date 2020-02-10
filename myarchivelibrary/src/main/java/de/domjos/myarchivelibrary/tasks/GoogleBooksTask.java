@@ -10,11 +10,12 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.services.GoogleBooksService;
 
 public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
-    private String id;
+    private String id, key;
 
-    public GoogleBooksTask(Activity activity, boolean showNotifications, int icon, String id) {
+    public GoogleBooksTask(Activity activity, boolean showNotifications, int icon, String id, String key) {
         super(activity, R.string.service_google_search, R.string.service_google_search_content, showNotifications, icon);
         this.id = id;
+        this.key = key;
     }
 
     @Override
@@ -30,9 +31,9 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
             try {
                 GoogleBooksService googleBooksService;
                 if(this.id.isEmpty()) {
-                    googleBooksService = new GoogleBooksService(code, "");
+                    googleBooksService = new GoogleBooksService(code, "", this.key);
                 } else {
-                    googleBooksService = new GoogleBooksService("", this.id);
+                    googleBooksService = new GoogleBooksService("", this.id, this.key);
                 }
                 Book book = googleBooksService.execute();
                 if(book != null) {

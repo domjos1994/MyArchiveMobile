@@ -139,7 +139,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 boolean notifications = MainActivity.GLOBALS.getSettings().isNotifications();
 
                 if((this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), notifications, icon, "");
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), notifications, icon, "", MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                     List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if (books != null) {
                         if (!books.isEmpty()) {
@@ -316,7 +316,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 String description = intent.getStringExtra("description");
                 long id = intent.getLongExtra("id", 0);
                 if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
-                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description);
+                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description, MainActivity.GLOBALS.getSettings().getMovieDBKey());
                     List<Movie> movies = theMovieDBTask.execute(id).get();
                     if(movies != null) {
                         if(!movies.isEmpty()) {
@@ -332,7 +332,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                         }
                     }
                 } else if(Objects.requireNonNull(type).equals(this.getString(R.string.book))) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description);
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description, MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                     List<Book> books = googleBooksTask.execute("").get();
                     if(books != null) {
                         if(!books.isEmpty()) {

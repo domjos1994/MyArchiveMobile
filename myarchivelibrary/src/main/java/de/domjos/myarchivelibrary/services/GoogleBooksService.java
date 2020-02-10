@@ -20,10 +20,12 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 public class GoogleBooksService extends JSONService {
     private String code;
     private String id;
+    private String key;
 
-    public GoogleBooksService(String code, String id) {
+    public GoogleBooksService(String code, String id, String key) {
         this.code = code;
         this.id = id;
+        this.key = key;
     }
 
     public Book execute() throws IOException {
@@ -31,6 +33,9 @@ public class GoogleBooksService extends JSONService {
         Books.Volumes.List list;
         if(!this.code.isEmpty()) {
             list = books.volumes().list("isbn:" + this.code).setProjection("full");
+            if(!this.key.isEmpty()) {
+                list = list.setKey(this.key);
+            }
             if(list != null) {
                 List<Volume> volumes = list.execute().getItems();
                 if(volumes != null) {
@@ -45,10 +50,13 @@ public class GoogleBooksService extends JSONService {
         return null;
     }
 
-    public static List<BaseMediaObject> getMedia(String search) throws IOException {
+    public static List<BaseMediaObject> getMedia(String search, String key) throws IOException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
         Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
         Books.Volumes.List list = books.volumes().list("intitle:" + search).setProjection("full");
+        if(!key.isEmpty()) {
+            list.setKey(key);
+        }
         if(list != null) {
             List<Volume> volumes = list.execute().getItems();
             if(volumes != null) {

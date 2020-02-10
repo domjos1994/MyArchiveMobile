@@ -23,6 +23,7 @@ import de.domjos.myarchivelibrary.services.AudioDBWebservice;
 import de.domjos.myarchivelibrary.services.GoogleBooksService;
 import de.domjos.myarchivelibrary.services.MovieDBWebService;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -83,11 +84,11 @@ public class MediaDialog extends DialogFragment {
                 try {
                     List<BaseMediaObject> objects;
                     if(type.equals(this.getString(R.string.movie))) {
-                        objects = MovieDBWebService.getMedia(activity, search);
+                        objects = MovieDBWebService.getMedia(activity, search, MainActivity.GLOBALS.getSettings().getMovieDBKey());
                     } else if(type.equals(this.getString(R.string.album))) {
                         objects = AudioDBWebservice.getMedia(search);
                     } else if(type.equals(this.getString(R.string.book))) {
-                        objects = GoogleBooksService.getMedia(search);
+                        objects = GoogleBooksService.getMedia(search, MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                     } else {
                         objects = null;
                     }

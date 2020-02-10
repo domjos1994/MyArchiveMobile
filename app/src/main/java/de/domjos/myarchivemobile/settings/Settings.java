@@ -106,4 +106,12 @@ public final class Settings {
     public String getEANDataKey() {
         return this.userPreferences.getString("txtEANDataKey", "");
     }
+
+    public String getGoogleBooksKey() {
+        return this.userPreferences.getString("txtGoogleBooksKey", "");
+    }
+
+    public String getMovieDBKey() {
+        return this.userPreferences.getString("txtMovieDBKey", "");
+    }
 }
