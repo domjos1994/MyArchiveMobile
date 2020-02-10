@@ -122,7 +122,7 @@ public class MainHomeFragment extends ParentFragment {
             }
         });
 
-        this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, objectList -> {
+        this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, this.getString(R.string.library), objectList -> {
             try {
                 AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                 b.setTitle(getString(R.string.media_persons));
@@ -252,13 +252,13 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         this.cmdFilterExpand.setOnClickListener(view -> {
-            int px30 = Converter.convertDPToPixels(30, Objects.requireNonNull(this.getContext()));
-            if(this.filter.getLayoutParams().height == px30) {
+            int px48 = Converter.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
+            if(this.filter.getLayoutParams().height == px48) {
                 this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
                 this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
             } else {
                 this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
-                this.filter.getLayoutParams().height = px30;
+                this.filter.getLayoutParams().height = px48;
             }
             this.filter.requestLayout();
         });

@@ -8,7 +8,7 @@
     <TableLayout
         android:id="@+id/filter"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="48dp"
         android:weightSum="10"
         android:layout_alignParentTop="true"
         android:background="@drawable/background">
@@ -17,13 +17,15 @@
             android:layout_height="30dp">
             <Spinner
                 android:id="@+id/spFilter"
+                android:textColorHint="#fff"
+                android:textColor="#fff"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="48dp"
                 android:layout_weight="9"/>
             <ImageButton
                 android:id="@+id/cmdFilterExpand"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/ic_expand_more_black_24dp"
                 android:src="@drawable/ic_expand_more_black_24dp"
@@ -37,6 +39,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
+                android:textColorHint="#fff"
+                android:textColor="#fff"
                 android:inputType="text"
                 android:hint="@string/sys_title"
                 android:autofillHints="@string/sys_title"
@@ -68,13 +72,19 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="5"
-                android:text="@string/main_navigation_media_books"/>
+                android:buttonTint="#fff"
+                android:textColor="#fff"
+                android:text="@string/main_navigation_media_books"
+                tools:targetApi="lollipop" />
             <CheckBox
                 android:id="@+id/chkFilterMovies"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="5"
-                android:text="@string/main_navigation_media_movies"/>
+                android:buttonTint="#fff"
+                android:textColor="#fff"
+                android:text="@string/main_navigation_media_movies"
+                tools:targetApi="lollipop" />
         </TableRow>
         <TableRow>
             <CheckBox
@@ -82,18 +92,26 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="5"
-                android:text="@string/main_navigation_media_music"/>
+                android:buttonTint="#fff"
+                android:textColor="#fff"
+                android:text="@string/main_navigation_media_music"
+                tools:targetApi="lollipop" />
             <CheckBox
                 android:id="@+id/chkFilterGames"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:buttonTint="#fff"
+                android:textColor="#fff"
                 android:layout_weight="5"
-                android:text="@string/main_navigation_media_games"/>
+                android:text="@string/main_navigation_media_games"
+                tools:targetApi="lollipop" />
         </TableRow>
         <EditText
             android:id="@+id/txtFilterSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="#fff"
+            android:textColor="#fff"
             android:inputType="text"
             android:hint="@string/sys_search"
             android:autofillHints="@string/sys_search"
@@ -102,6 +120,8 @@
             android:id="@+id/txtFilterCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="#fff"
+            android:textColor="#fff"
             android:inputType="text"
             android:hint="@string/media_general_category"
             android:autofillHints="@string/media_general_category"
@@ -110,6 +130,8 @@
             android:id="@+id/txtFilterTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="#fff"
+            android:textColor="#fff"
             android:inputType="text"
             android:hint="@string/media_general_tags"
             android:autofillHints="@string/media_general_tags"
@@ -149,6 +171,7 @@
             android:textSize="16sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#fff"
             android:padding="2dp"
             android:layout_gravity="center"
             android:gravity="center"/>

@@ -15,8 +15,7 @@
   -->
 
 <androidx.preference.PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
         app:title="@string/settings_general"
@@ -26,12 +25,14 @@
             app:key="swtNotifications"
             app:title="@string/settings_general_notifications"
             app:summary="@string/settings_general_notifications_summary"
-            app:defaultValue="true" />
+            app:defaultValue="true"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
         <androidx.preference.SwitchPreference
             app:key="swtDebugMode"
             app:title="@string/settings_general_debug"
-            app:summary="@string/settings_general_debug_summary" />
+            app:summary="@string/settings_general_debug_summary"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
     </androidx.preference.PreferenceCategory>
 
@@ -43,19 +44,28 @@
             app:key="txtGoogleBooksKey"
             app:title="@string/settings_services_google_books"
             app:summary="@string/settings_services_google_books_summary"
-            android:hint="@string/settings_services_google_books_summary"/>
+            app:dialogTitle="@string/settings_services_google_books"
+            app:dialogMessage="@string/settings_services_google_books_summary"
+            app:dialogIcon="@drawable/ic_cloud_black_24dp"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
         <androidx.preference.EditTextPreference
             app:key="txtMovieDBKey"
             app:title="@string/settings_services_movie_db"
             app:summary="@string/settings_services_movie_db_summary"
-            android:hint="@string/settings_services_movie_db_summary"/>
+            app:dialogTitle="@string/settings_services_movie_db"
+            app:dialogMessage="@string/settings_services_movie_db_summary"
+            app:dialogIcon="@drawable/ic_cloud_black_24dp"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
         <androidx.preference.EditTextPreference
             app:key="txtEANDataKey"
             app:title="@string/settings_services_ean_data"
             app:summary="@string/settings_services_ean_data_summary"
-            android:hint="@string/settings_services_ean_data_summary"/>
+            app:dialogTitle="@string/settings_services_ean_data"
+            app:dialogMessage="@string/settings_services_ean_data_summary"
+            app:dialogIcon="@drawable/ic_cloud_black_24dp"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
     </androidx.preference.PreferenceCategory>
 
