@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="10">
+
+    <TextView
+        android:id="@+id/lblNoBluetooth"
+        android:visibility="gone"
+        android:text="@string/sync_no_bluetooth"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/background"
+        android:textColor="#fff"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:gravity="center"/>
+
+    <ListView
+        android:id="@+id/lvBluetoothDevices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8"/>
+
+    <ImageButton
+        android:id="@+id/cmdBluetoothSync"
+        android:layout_width="match_parent"
+        android:contentDescription="@string/sync"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_sync_black_24dp"
+        app:srcCompat="@drawable/ic_sync_black_24dp"
+        tools:ignore="VectorDrawableCompat" />
+</LinearLayout>

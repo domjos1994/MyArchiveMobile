@@ -89,6 +89,11 @@
     <string name="settings_services_ean_data">EANData-Key</string>
     <string name="settings_services_ean_data_summary">Set EANData-Key!</string>
 
+    <string name="sync">Synchronisation</string>
+    <string name="sync_no_bluetooth">No Bluetooth available!</string>
+    <string name="sync_device_bonded">Bonded</string>
+    <string name="sync_device_not_bonded">Not Bonded</string>
+
     <string name="sys_password" translatable="false">T9yYQsFHzr9DTNNGonIT</string>
     <string name="sys_add">Add</string>
     <string name="sys_edit">Edit</string>

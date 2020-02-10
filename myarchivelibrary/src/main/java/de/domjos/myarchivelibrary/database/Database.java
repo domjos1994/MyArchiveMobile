@@ -10,6 +10,7 @@ import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,6 +88,11 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
         }
+    }
+
+    public byte[] getBytes() throws Exception {
+        String currentDBPath = "/data/de.domjos.myarchivemobile/databases/"+ this.context.getString(R.string.sqLite_name);
+        return Converter.convertStringToByteArray(new File(currentDBPath).toURI().toURL().toString());
     }
 
     public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content) {

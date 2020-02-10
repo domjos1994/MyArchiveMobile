@@ -48,6 +48,12 @@
         tools:layout="@layout/main_fragment_lists" />
 
     <fragment
+        android:id="@+id/navMainSync"
+        android:name="de.domjos.myarchivemobile.fragments.MainSyncFragment"
+        android:label="@string/sync"
+        tools:layout="@layout/main_fragment_sync" />
+
+    <fragment
         android:id="@+id/navMainExport"
         android:name="de.domjos.myarchivemobile.fragments.MainExportFragment"
         android:label="@string/export"

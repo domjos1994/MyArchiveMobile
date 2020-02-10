@@ -88,6 +88,11 @@
     <string name="settings_services_ean_data">EANData-Schlüssel</string>
     <string name="settings_services_ean_data_summary">EANData Schlüssel setzen!</string>
 
+    <string name="sync">Synchronisation</string>
+    <string name="sync_no_bluetooth">Kein Bluetooth vorhanden!</string>
+    <string name="sync_device_bonded">Gekoppelt</string>
+    <string name="sync_device_not_bonded">Nicht gekoppelt</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_cancel">Abbrehen</string>
     <string name="sys_date_format">dd.MM.yyyy</string>
