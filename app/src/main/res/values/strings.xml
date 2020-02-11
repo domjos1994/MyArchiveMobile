@@ -86,6 +86,8 @@
     <string name="settings_services_audio_db_summary">Set the Audio-DB-Key!</string>
     <string name="settings_services_movie_db">Movie-DB-Key</string>
     <string name="settings_services_movie_db_summary">Set the Movie-DB-Key!</string>
+    <string name="settings_services_igdb">IGDB-Key</string>
+    <string name="settings_services_igdb_summary">Set the IGDB-Key!</string>
     <string name="settings_services_ean_data">EANData-Key</string>
     <string name="settings_services_ean_data_summary">Set EANData-Key!</string>
 

@@ -17,6 +17,13 @@
     <string name="service_movie_db_key" translatable="false">cf20ff3c013ba0c8f8c2f05158a07316</string>
     <string name="service_movie_db_search_content">Search in TheMovieDB…</string>
 
+    <string name="service_audio_db_search" translatable="false">TheAudioDB</string>
+    <string name="service_audio_db_search_content">Search in TheAudioDB…</string>
+
+    <string name="service_igdb_search" translatable="false">IGDB</string>
+    <string name="service_igdb_key" translatable="false">4a53e72aa5d2e25e620bb1cbb77a15f0</string>
+    <string name="service_igdb_search_content">Search in IGDB…</string>
+
     <string name="sqLite_name" translatable="false">MyArchiveMobile.db</string>
     <string name="sqLite_version" translatable="false">2</string>
 

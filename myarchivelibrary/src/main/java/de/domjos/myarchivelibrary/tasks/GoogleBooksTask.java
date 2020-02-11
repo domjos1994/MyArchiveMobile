@@ -31,9 +31,9 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
             try {
                 GoogleBooksService googleBooksService;
                 if(this.id.isEmpty()) {
-                    googleBooksService = new GoogleBooksService(code, "", this.key);
+                    googleBooksService = new GoogleBooksService(super.getContext(), code, "", this.key);
                 } else {
-                    googleBooksService = new GoogleBooksService("", this.id, this.key);
+                    googleBooksService = new GoogleBooksService(super.getContext(), "", this.id, this.key);
                 }
                 Book book = googleBooksService.execute();
                 if(book != null) {

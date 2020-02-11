@@ -9,12 +9,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 abstract class JSONService {
 
     static String readUrl(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setUseCaches(false);
+        connection.connect();
+        String error = read(connection.getErrorStream());
+        if(!error.isEmpty()) {
+            return error;
+        }
+        return read(connection.getInputStream());
+    }
+
+    static String readUrl(URL url, List<String> params) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setUseCaches(false);
+        connection.setRequestProperty("Accept", "application/json");
+        for(String param : params) {
+            connection.setRequestProperty(param.split(":")[0], param.replace(param.split(":")[0], "").trim().replace(":", "").trim());
+        }
         connection.connect();
         String error = read(connection.getErrorStream());
         if(!error.isEmpty()) {

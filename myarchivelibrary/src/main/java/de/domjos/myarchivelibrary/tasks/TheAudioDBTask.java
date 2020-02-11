@@ -12,7 +12,7 @@ import de.domjos.myarchivelibrary.services.AudioDBWebservice;
 public class TheAudioDBTask extends AbstractTask<Long, Void, List<Album>> {
 
     public TheAudioDBTask(Activity activity, boolean showNotifications, int icon) {
-        super(activity, R.string.service_movie_db_search, R.string.service_movie_db_search_content, showNotifications, icon);
+        super(activity, R.string.service_audio_db_search, R.string.service_audio_db_search_content, showNotifications, icon);
     }
 
 

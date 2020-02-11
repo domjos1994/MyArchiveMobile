@@ -10,6 +10,10 @@
 
     <string name="service_movie_db_search_content">In TheMovieDB suchen…</string>
 
+    <string name="service_audio_db_search_content">In TheAudioDB suchen…</string>
+
+    <string name="service_igdb_search_content">In IGDB suchen…</string>
+
     <string name="scanner_save">Übernehmen</string>
     <string name="scanner_cancel">Abbrechen</string>
 </resources>

@@ -1,5 +1,7 @@
 package de.domjos.myarchivelibrary.services;
 
+import android.content.Context;
+
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.books.Books;
@@ -11,18 +13,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
-public class GoogleBooksService extends JSONService {
+public class GoogleBooksService extends TitleWebservice<Book> {
     private String code;
     private String id;
     private String key;
 
-    public GoogleBooksService(String code, String id, String key) {
+    public GoogleBooksService(Context context, String code, String id, String key) {
+        super(context, 0L);
         this.code = code;
         this.id = id;
         this.key = key;
@@ -50,12 +54,12 @@ public class GoogleBooksService extends JSONService {
         return null;
     }
 
-    public static List<BaseMediaObject> getMedia(String search, String key) throws IOException {
+    public List<BaseMediaObject> getMedia(String search) throws IOException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
         Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
         Books.Volumes.List list = books.volumes().list("intitle:" + search).setProjection("full");
-        if(!key.isEmpty()) {
-            list.setKey(key);
+        if(!this.key.isEmpty()) {
+            list.setKey(this.key);
         }
         if(list != null) {
             List<Volume> volumes = list.execute().getItems();
@@ -75,6 +79,16 @@ public class GoogleBooksService extends JSONService {
             }
         }
         return baseMediaObjects;
+    }
+
+    @Override
+    public String getTitle() {
+        return super.CONTEXT.getString(R.string.service_google_search);
+    }
+
+    @Override
+    public String getUrl() {
+        return "https://books.google.com";
     }
 
     private Book getBookFromList(Volume volume) {

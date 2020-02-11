@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -47,7 +48,7 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         return album;
     }
 
-    public static List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
+    public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
         JSONObject jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8"))));
         if(!jsonObject.isNull("album")) {
@@ -63,6 +64,16 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
             }
         }
         return baseMediaObjects;
+    }
+
+    @Override
+    public String getTitle() {
+        return super.CONTEXT.getString(R.string.service_audio_db_search);
+    }
+
+    @Override
+    public String getUrl() {
+        return "https://theaudiodb.com";
     }
 
     private String getDescription(JSONObject albumObject, String key) {

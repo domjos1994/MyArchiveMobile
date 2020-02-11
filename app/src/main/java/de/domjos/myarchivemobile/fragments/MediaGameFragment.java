@@ -12,9 +12,9 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.DecimalFormat;
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -52,7 +52,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         if(baseMediaObject instanceof Game) {
             this.game = (Game) baseMediaObject;
-            this.txtMediaGameLength.setText(new DecimalFormat("0.00").format(this.game.getLength()));
+            this.txtMediaGameLength.setText(Converter.convertDoubleToString(this.game.getLength()));
 
             if(this.game.getType() != null) {
                 this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
@@ -62,9 +62,11 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     public BaseMediaObject getMediaObject() {
-        if(!this.txtMediaGameLength.getText().toString().isEmpty()) {
-            this.game.setLength(Double.parseDouble(this.txtMediaGameLength.getText().toString()));
-        }
+        try {
+            if(!this.txtMediaGameLength.getText().toString().isEmpty()) {
+                this.game.setLength(Converter.convertStringToDouble(this.txtMediaGameLength.getText().toString()));
+            }
+        } catch (Exception ignored) {}
         this.game.setType(Game.Type.valueOf(this.spMediaGameType.getSelectedItem().toString()));
         return this.game;
     }

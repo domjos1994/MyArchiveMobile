@@ -59,6 +59,15 @@
             app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
         <androidx.preference.EditTextPreference
+            app:key="txtIGDBKey"
+            app:title="@string/settings_services_igdb"
+            app:summary="@string/settings_services_igdb_summary"
+            app:dialogTitle="@string/settings_services_igdb"
+            app:dialogMessage="@string/settings_services_igdb_summary"
+            app:dialogIcon="@drawable/ic_cloud_black_24dp"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+
+        <androidx.preference.EditTextPreference
             app:key="txtEANDataKey"
             app:title="@string/settings_services_ean_data"
             app:summary="@string/settings_services_ean_data_summary"

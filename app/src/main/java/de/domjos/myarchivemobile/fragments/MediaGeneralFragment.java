@@ -1,6 +1,7 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,7 +18,6 @@ import android.widget.MultiAutoCompleteTextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,10 +33,16 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.services.AudioDBWebservice;
+import de.domjos.myarchivelibrary.services.GoogleBooksService;
+import de.domjos.myarchivelibrary.services.IGDBWebservice;
+import de.domjos.myarchivelibrary.services.MovieDBWebService;
+import de.domjos.myarchivelibrary.services.TitleWebservice;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
+import de.domjos.myarchivelibrary.tasks.IGDBTask;
 import de.domjos.myarchivelibrary.tasks.TheAudioDBTask;
 import de.domjos.myarchivelibrary.tasks.TheMovieDBTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
@@ -44,6 +50,7 @@ import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
+import de.domjos.myarchivemobile.settings.Settings;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -78,7 +85,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.txtMediaGeneralTitle.getLayoutParams();
         if(this.abstractPagerAdapter != null) {
-            if(!(this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment) && MainActivity.GLOBALS.isNetwork()) {
+            if(MainActivity.GLOBALS.isNetwork()) {
                 layoutParams.weight = 9;
                 this.cmdMediaGeneralTitleSearch.setVisibility(View.VISIBLE);
             } else {
@@ -116,16 +123,26 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
             try {
-                String type = null;
+                String type;
                 String search = this.txtMediaGeneralTitle.getText().toString();
+                TitleWebservice<? extends BaseMediaObject> titleWebservice;
+                Context ctx = this.getContext();
+                Settings settings = MainActivity.GLOBALS.getSettings();
+
                 if(this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
                     type = this.getString(R.string.movie);
+                    titleWebservice = new MovieDBWebService(ctx, 0L, "", settings.getMovieDBKey());
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
                     type = this.getString(R.string.album);
+                    titleWebservice = new AudioDBWebservice(ctx, 0L);
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment) {
                     type = this.getString(R.string.book);
+                    titleWebservice = new GoogleBooksService(ctx, "", "", settings.getGoogleBooksKey());
+                } else {
+                    type = this.getString(R.string.game);
+                    titleWebservice = new IGDBWebservice(ctx, 0, settings.getIGDBKey());
                 }
-                MediaDialog mediaDialog = MediaDialog.newInstance(search, type);
+                MediaDialog mediaDialog = MediaDialog.newInstance(search, type, titleWebservice);
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
                 mediaDialog.show(this.getParentFragmentManager(), "dialog");
             } catch (Exception ex) {
@@ -232,7 +249,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
             this.txtMediaGeneralReleaseDate.setText("");
         }
         this.txtMediaGeneralCode.setText(this.baseMediaObject.getCode());
-        this.txtMediaGeneralPrice.setText(new DecimalFormat("0.00").format(this.baseMediaObject.getPrice()));
+        this.txtMediaGeneralPrice.setText(Converter.convertDoubleToString(this.baseMediaObject.getPrice()));
         if(this.baseMediaObject.getCategory() != null) {
             this.txtMediaGeneralCategory.setText(this.baseMediaObject.getCategory().getTitle());
         } else {
@@ -254,7 +271,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
             this.baseMediaObject.setOriginalTitle(this.txtMediaGeneralOriginalTitle.getText().toString());
             this.baseMediaObject.setReleaseDate(Converter.convertStringToDate(this.txtMediaGeneralReleaseDate.getText().toString(), this.getString(R.string.sys_date_format)));
             this.baseMediaObject.setCode(this.txtMediaGeneralCode.getText().toString());
-            this.baseMediaObject.setPrice(Double.parseDouble(this.txtMediaGeneralPrice.getText().toString()));
+            this.baseMediaObject.setPrice(Converter.convertStringToDouble(this.txtMediaGeneralPrice.getText().toString()));
             this.baseMediaObject.setDescription(this.txtMediaGeneralDescription.getText().toString());
 
             if(!this.txtMediaGeneralCategory.getText().toString().isEmpty()) {
@@ -337,6 +354,14 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     if(books != null) {
                         if(!books.isEmpty()) {
                             this.abstractPagerAdapter.setMediaObject(books.get(0));
+                        }
+                    }
+                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.game))) {
+                    IGDBTask igdbTask = new IGDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getIGDBKey());
+                    List<Game> games = igdbTask.execute(id).get();
+                    if(games != null) {
+                        if(!games.isEmpty()) {
+                            this.abstractPagerAdapter.setMediaObject(games.get(0));
                         }
                     }
                 }

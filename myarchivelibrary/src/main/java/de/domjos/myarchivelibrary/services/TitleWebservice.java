@@ -5,6 +5,7 @@ import android.content.Context;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
@@ -19,4 +20,10 @@ public abstract class TitleWebservice<T extends BaseMediaObject> extends JSONSer
     }
 
     public abstract T execute() throws JSONException, IOException;
+
+    public abstract List<BaseMediaObject> getMedia(String search) throws IOException, JSONException;
+
+    public abstract String getTitle();
+
+    public abstract String getUrl();
 }

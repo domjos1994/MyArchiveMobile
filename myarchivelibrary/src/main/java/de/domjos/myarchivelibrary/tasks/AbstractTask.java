@@ -43,6 +43,15 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         this.showNotifications = showNotifications;
     }
 
+    public AbstractTask(Activity activity, String title, int content, boolean showNotifications, int icon) {
+        super();
+        this.weakReference = new WeakReference<>(activity);
+        this.icon = icon;
+        this.title = title;
+        this.content = activity.getString(content);
+        this.showNotifications = showNotifications;
+    }
+
 
     @Override
     protected void onPreExecute() {
@@ -65,7 +74,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         }
     }
 
-    void printException(Exception ex) {
+    public void printException(Exception ex) {
         ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, this.icon, this.getContext()));
     }
 

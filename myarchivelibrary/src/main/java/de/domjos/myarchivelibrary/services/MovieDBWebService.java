@@ -32,6 +32,9 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
         super(context, id);
         this.type = type;
         this.key = key;
+        if(this.key.isEmpty()) {
+            this.key = this.CONTEXT.getString(R.string.service_movie_db_key);
+        }
     }
 
     @Override
@@ -40,10 +43,6 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
     }
 
     private Movie getMovieFromJson() throws JSONException, IOException {
-        if(this.key.isEmpty()) {
-            this.key = this.CONTEXT.getString(R.string.service_movie_db_key);
-        }
-
         JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type +"/" + this.SEARCH + "?api_key=" + this.key + "&language=" + Locale.getDefault().getLanguage())));
 
         Movie movie = new Movie();
@@ -72,11 +71,8 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
         return "";
     }
 
-    public static List<BaseMediaObject> getMedia(Context context, String search, String key) throws IOException, JSONException {
+    public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> movies = new LinkedList<>();
-        if(key.isEmpty()) {
-            key = context.getString(R.string.service_movie_db_key);
-        }
         String url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebService.BASE_URL, key, Locale.getDefault().getLanguage(), URLEncoder.encode(search, "UTF-8"));
         JSONObject jsonObject = new JSONObject(readUrl(new URL(url)));
         if(!jsonObject.isNull("results")) {
@@ -99,6 +95,16 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
             }
         }
         return movies;
+    }
+
+    @Override
+    public String getTitle() {
+        return super.CONTEXT.getString(R.string.service_movie_db_search);
+    }
+
+    @Override
+    public String getUrl() {
+        return "https://imdb.org";
     }
 
     private void getLength(JSONObject resultObject, Movie movie) {
@@ -169,9 +175,6 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
 
     private void getPersons(long id, Movie movie) {
         try {
-            if(this.key.isEmpty()) {
-                this.key = this.CONTEXT.getString(R.string.service_movie_db_key);
-            }
             JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type + "/" + id + "/credits?api_key=" + this.key)));
             if(!resultObject.isNull("cast")) {
                 JSONArray jsonArray = resultObject.getJSONArray("cast");

@@ -111,6 +111,10 @@ public final class Settings {
         return this.userPreferences.getString("txtGoogleBooksKey", "");
     }
 
+    public String getIGDBKey() {
+        return this.userPreferences.getString("txtIGDBKey", "");
+    }
+
     public String getMovieDBKey() {
         return this.userPreferences.getString("txtMovieDBKey", "");
     }
