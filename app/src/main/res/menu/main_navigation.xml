@@ -42,6 +42,7 @@
             <item
                 android:id="@+id/navMainSync"
                 android:icon="@drawable/ic_sync_black_24dp"
+                android:visible="false"
                 android:title="@string/sync" />
             <item
                 android:id="@+id/navMainExport"
