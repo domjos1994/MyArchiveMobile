@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="10">
         <TextView
             android:text="@string/media_rating_web"
             android:layout_width="match_parent"
@@ -17,11 +18,27 @@
             android:padding="2dp"
             android:textStyle="bold"
             android:textSize="14sp"/>
-        <RatingBar
-            android:id="@+id/rbRatingWeb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"/>
+
+        <TableRow
+            android:layout_margin="2dp"
+            android:padding="2dp">
+            <RatingBar
+                android:id="@+id/rbRatingWeb"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:numStars="10"
+                android:stepSize="0.01"/>
+            <TextView
+                android:id="@+id/lblRatingWeb"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="2dp"
+                android:text="@string/media_rating_web"/>
+        </TableRow>
 
         <TextView
             android:text="@string/media_rating_own"
@@ -31,11 +48,27 @@
             android:padding="2dp"
             android:textStyle="bold"
             android:textSize="14sp"/>
-        <RatingBar
-            android:id="@+id/rbRatingOwn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"/>
+
+        <TableRow
+            android:layout_margin="2dp"
+            android:padding="2dp">
+            <RatingBar
+                android:id="@+id/rbRatingOwn"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:numStars="10"
+                android:stepSize="0.01"/>
+            <TextView
+                android:id="@+id/lblRatingOwn"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="2dp"
+                android:text="@string/media_rating_own"/>
+        </TableRow>
 
         <EditText
             android:id="@+id/txtRatingNote"
@@ -46,6 +79,6 @@
             android:inputType="textMultiLine"
             android:autofillHints="@string/media_rating_note"
             tools:targetApi="o" />
-    </LinearLayout>
+    </TableLayout>
 
 </ScrollView>
