@@ -34,7 +34,8 @@
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_search_black_24dp"
                 android:src="@drawable/ic_search_black_24dp"
-                tools:ignore="VectorDrawableCompat" />
+                tools:ignore="VectorDrawableCompat"
+                android:contentDescription="@string/sys_search" />
         </LinearLayout>
 
         <EditText
@@ -93,7 +94,8 @@
             android:id="@+id/txtMediaGeneralPrice"
             android:hint="@string/media_general_price"
             android:autofillHints="@string/media_general_price"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
+            android:digits="0123456789.,"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:targetApi="o" />
