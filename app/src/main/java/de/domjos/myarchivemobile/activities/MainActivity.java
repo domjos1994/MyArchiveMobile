@@ -364,7 +364,7 @@ public final class MainActivity extends AbstractActivity {
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
         checkNetwork.registerNetworkCallback();
 
-        SQLiteDatabase.loadLibs(this.getApplicationContext());
+        SQLiteDatabase.loadLibs(MainActivity.this);
         Database database = new Database(this.getApplicationContext(), pwd);
         MainActivity.GLOBALS.setDatabase(database);
 

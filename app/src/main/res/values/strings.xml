@@ -83,6 +83,10 @@
     <string name="settings_general_notifications_summary">Enable Notifications!</string>
     <string name="settings_general_debug">Debug-Mode</string>
     <string name="settings_general_debug_summary">Enable Debug-Mode</string>
+    <string name="settings_general_database_export">Export Database</string>
+    <string name="settings_general_database_export_summary">Export Database to Download-Folder</string>
+    <string name="settings_general_database_import">Import Database</string>
+    <string name="settings_general_database_import_summary">Import Database from Download-Folder</string>
     <string name="settings_services">Webservices</string>
     <string name="settings_services_google_books">Google-Books-Key</string>
     <string name="settings_services_google_books_summary">Set Google-Books-Key!</string>

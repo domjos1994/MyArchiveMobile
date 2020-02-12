@@ -2,6 +2,7 @@ package de.domjos.myarchivelibrary.database;
 
 
 import android.content.Context;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import net.sqlcipher.Cursor;
@@ -11,9 +12,12 @@ import net.sqlcipher.database.SQLiteStatement;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -82,11 +86,6 @@ public class Database extends SQLiteOpenHelper {
 
         String content = Database.readRawTextFile(this.context, R.raw.update);
         this.updateDatabase(content, oldVersion, newVersion, db);
-    }
-
-    public byte[] getBytes() throws Exception {
-        String currentDBPath = "/data/de.domjos.myarchivemobile/databases/"+ this.context.getString(R.string.sqLite_name);
-        return Converter.convertStringToByteArray(new File(currentDBPath).toURI().toURL().toString());
     }
 
     public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content) {
@@ -1019,20 +1018,68 @@ public class Database extends SQLiteOpenHelper {
     private SQLiteDatabase getWritableDatabase() {
         if(this.database == null)  {
             this.database = this.getWritableDatabase(this.password);
+        } else {
+            if(this.database.isReadOnly()) {
+                this.database.close();
+                this.database = this.getWritableDatabase(this.password);
+            }
+            if(!this.database.isOpen()) {
+                this.database = this.getReadableDatabase(this.password);
+            }
         }
         return this.database;
     }
 
     private SQLiteDatabase getReadableDatabase() {
         if(this.database != null) {
-            if(this.database.isReadOnly()) {
-                this.database.close();
+            if(!this.database.isOpen()) {
                 this.database = this.getReadableDatabase(this.password);
             }
         } else {
             this.database = this.getReadableDatabase(this.password);
         }
         return this.database;
+    }
+
+    public String copyDatabase() throws IOException {
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+        if (sd.canWrite()) {
+            String currentDBPath = this.getWritableDatabase().getPath();
+            String backupDBPath = new File(currentDBPath).getName();
+            File currentDB = new File(currentDBPath);
+            File backupDB = new File(sd, backupDBPath);
+
+            if (currentDB.exists()) {
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+            }
+        }
+        return this.password;
+    }
+
+    public void copyDatabaseFromDownload() throws IOException {
+        this.close();
+
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+        if (sd.canWrite()) {
+            String currentDBPath = this.getWritableDatabase().getPath();
+            String backupDBPath = new File(currentDBPath).getName();
+            File currentDB = new File(currentDBPath);
+            File backupDB = new File(sd, backupDBPath);
+
+            if (currentDB.exists()) {
+                FileChannel src = new FileOutputStream(currentDB).getChannel();
+                FileChannel dst = new FileInputStream(backupDB).getChannel();
+                src.transferFrom(dst, 0, dst.size());
+                src.close();
+                dst.close();
+            }
+        }
     }
 
     private void updateDatabase(String content, int oldVersion, int newVersion, SQLiteDatabase database) {

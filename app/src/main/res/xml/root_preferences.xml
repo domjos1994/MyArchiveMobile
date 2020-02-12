@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<androidx.preference.PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.preference.PreferenceCategory
         app:title="@string/settings_general"
@@ -34,6 +34,17 @@
             app:summary="@string/settings_general_debug_summary"
             app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
+        <androidx.preference.EditTextPreference
+            app:key="swtImportDatabase"
+            app:title="@string/settings_general_database_import"
+            app:summary="@string/settings_general_database_import_summary"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+
+        <androidx.preference.EditTextPreference
+            app:key="swtExportDatabase"
+            app:title="@string/settings_general_database_export"
+            app:summary="@string/settings_general_database_export_summary"
+            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

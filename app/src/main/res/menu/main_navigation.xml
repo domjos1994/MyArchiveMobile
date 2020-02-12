@@ -40,11 +40,6 @@
                 android:icon="@drawable/ic_format_list_bulleted_black_24dp"
                 android:title="@string/lists" />
             <item
-                android:id="@+id/navMainSync"
-                android:icon="@drawable/ic_sync_black_24dp"
-                android:visible="false"
-                android:title="@string/sync" />
-            <item
                 android:id="@+id/navMainExport"
                 android:icon="@drawable/ic_import_export_black_24dp"
                 android:title="@string/export" />
