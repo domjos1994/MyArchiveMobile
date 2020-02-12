@@ -271,9 +271,11 @@ public class MainHomeFragment extends ParentFragment {
         });
         this.cmdFilterSave.setOnClickListener(view -> {
             this.getObject(this.tempFilter);
-            MainActivity.GLOBALS.getDatabase().insertOrUpdateFilter(this.tempFilter);
-            this.reloadFilter();
-            this.setObject(this.tempFilter);
+            if(!this.tempFilter.getTitle().equals(this.getString(R.string.filter_temp)) && !this.tempFilter.getTitle().equals(this.getString(R.string.filter_no_filter))) {
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateFilter(this.tempFilter);
+                this.reloadFilter();
+                this.setObject(this.tempFilter);
+            }
         });
         this.spFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
