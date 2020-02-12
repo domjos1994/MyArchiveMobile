@@ -14,6 +14,8 @@ public class BaseMediaObject extends BaseDescriptionObject {
     private Date releaseDate;
     private String code;
     private double price;
+    private double ratingOwn;
+    private double ratingWeb;
     private boolean lendOut;
     private BaseDescriptionObject category;
     private List<Person> persons;
@@ -21,6 +23,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
     private List<BaseDescriptionObject> tags;
     private List<LibraryObject> libraryObjects;
     private byte[] cover;
+    private String ratingNote;
 
     public BaseMediaObject() {
         super();
@@ -34,6 +37,10 @@ public class BaseMediaObject extends BaseDescriptionObject {
         this.companies = new LinkedList<>();
         this.tags = new LinkedList<>();
         this.libraryObjects = new LinkedList<>();
+
+        this.ratingOwn = 0.0;
+        this.ratingWeb = 0.0;
+        this.ratingNote = "";
     }
 
     public String getOriginalTitle() {
@@ -126,5 +133,29 @@ public class BaseMediaObject extends BaseDescriptionObject {
 
     public void setLendOut(boolean lendOut) {
         this.lendOut = lendOut;
+    }
+
+    public double getRatingOwn() {
+        return this.ratingOwn;
+    }
+
+    public void setRatingOwn(double ratingOwn) {
+        this.ratingOwn = ratingOwn;
+    }
+
+    public double getRatingWeb() {
+        return this.ratingWeb;
+    }
+
+    public void setRatingWeb(double ratingWeb) {
+        this.ratingWeb = ratingWeb;
+    }
+
+    public String getRatingNote() {
+        return this.ratingNote;
+    }
+
+    public void setRatingNote(String ratingNote) {
+        this.ratingNote = ratingNote;
     }
 }

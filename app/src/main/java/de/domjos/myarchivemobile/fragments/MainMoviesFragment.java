@@ -136,6 +136,7 @@ public class MainMoviesFragment extends ParentFragment {
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.ic_local_movies_black_24dp);
+        Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.ic_stars_black_24dp);
 
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);

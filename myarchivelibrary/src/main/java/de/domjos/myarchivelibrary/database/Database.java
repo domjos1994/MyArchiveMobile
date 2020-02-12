@@ -81,13 +81,7 @@ public class Database extends SQLiteOpenHelper {
         this.onCreate(db);
 
         String content = Database.readRawTextFile(this.context, R.raw.update);
-        if(content != null) {
-            for(String query : content.split(";")) {
-                if(!query.trim().isEmpty()) {
-                    db.execSQL(query.trim());
-                }
-            }
-        }
+        this.updateDatabase(content, oldVersion, newVersion, db);
     }
 
     public byte[] getBytes() throws Exception {
@@ -130,13 +124,13 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateAlbum(Album album) {
         SQLiteStatement statement = this.getStatement(album, Arrays.asList(Database.TYPE, "numberOfDisks"));
-        this.insertOrUpdateBaseMediaObject(statement, album);
+        int position = this.insertOrUpdateBaseMediaObject(statement, album);
         if(album.getType() != null) {
-            statement.bindString(9, album.getType().name());
+            statement.bindString(++position, album.getType().name());
         } else {
-            statement.bindNull(9);
+            statement.bindNull(++position);
         }
-        statement.bindLong(10, album.getNumberOfDisks());
+        statement.bindLong(++position, album.getNumberOfDisks());
 
         if(album.getId() == 0) {
             album.setId(statement.executeInsert());
@@ -171,14 +165,14 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateMovie(Movie movie) {
         SQLiteStatement statement = this.getStatement(movie, Arrays.asList(Database.TYPE, Database.LENGTH, Database.PATH));
-        this.insertOrUpdateBaseMediaObject(statement, movie);
+        int position = this.insertOrUpdateBaseMediaObject(statement, movie);
         if(movie.getType() != null) {
-            statement.bindString(9, movie.getType().name());
+            statement.bindString(++position, movie.getType().name());
         } else {
-            statement.bindNull(9);
+            statement.bindNull(++position);
         }
-        statement.bindDouble(10, movie.getLength());
-        statement.bindString(11, movie.getPath());
+        statement.bindDouble(++position, movie.getLength());
+        statement.bindString(++position, movie.getPath());
 
         if(movie.getId()==0) {
             movie.setId(statement.executeInsert());
@@ -210,16 +204,16 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateBook(Book book) {
         SQLiteStatement statement = this.getStatement(book, Arrays.asList(Database.TYPE, "numberOfPages", Database.PATH, "edition", "topics"));
-        this.insertOrUpdateBaseMediaObject(statement, book);
+        int position = this.insertOrUpdateBaseMediaObject(statement, book);
         if(book.getType()!=null) {
-            statement.bindString(9, book.getType().name());
+            statement.bindString(++position, book.getType().name());
         } else {
-            statement.bindNull(9);
+            statement.bindNull(++position);
         }
-        statement.bindDouble(10, book.getNumberOfPages());
-        statement.bindString(11, book.getPath());
-        statement.bindString(12, book.getEdition());
-        statement.bindString(13, TextUtils.join("\n", book.getTopics()));
+        statement.bindDouble(++position, book.getNumberOfPages());
+        statement.bindString(++position, book.getPath());
+        statement.bindString(++position, book.getEdition());
+        statement.bindString(++position, TextUtils.join("\n", book.getTopics()));
 
         if(book.getId() == 0) {
             book.setId(statement.executeInsert());
@@ -253,13 +247,13 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateGame(Game game) {
         SQLiteStatement statement = this.getStatement(game, Arrays.asList(Database.TYPE, Database.LENGTH));
-        this.insertOrUpdateBaseMediaObject(statement, game);
+        int position = this.insertOrUpdateBaseMediaObject(statement, game);
         if(game.getType() != null) {
-            statement.bindString(9, game.getType().name());
+            statement.bindString(++position, game.getType().name());
         } else {
-            statement.bindNull(9);
+            statement.bindNull(++position);
         }
-        statement.bindDouble(10, game.getLength());
+        statement.bindDouble(++position, game.getLength());
 
         if(game.getId() == 0) {
             game.setId(statement.executeInsert());
@@ -847,10 +841,10 @@ public class Database extends SQLiteOpenHelper {
 
     private void insertOrUpdateSong(Song song, long id) {
         SQLiteStatement statement = this.getStatement(song, Arrays.asList(Database.LENGTH, Database.PATH, "album"));
-        this.insertOrUpdateBaseMediaObject(statement, song);
-        statement.bindDouble(9, song.getLength());
-        statement.bindString(10, song.getPath());
-        statement.bindLong(11, id);
+        int position = this.insertOrUpdateBaseMediaObject(statement, song);
+        statement.bindDouble(++position, song.getLength());
+        statement.bindString(++position, song.getPath());
+        statement.bindLong(++position, id);
 
         if(song.getId() == 0) {
             song.setId(statement.executeInsert());
@@ -877,7 +871,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private SQLiteStatement getStatement(DatabaseObject databaseObject, List<String> columns) {
-        List<String> baseColumns = Arrays.asList(Database.TITLE, "originalTitle", "releaseDate", "code", "price", "category", Database.COVER, Database.DESCRIPTION);
+        List<String> baseColumns = Arrays.asList(Database.TITLE, "originalTitle", "releaseDate", "code", "price", "category", Database.COVER, Database.DESCRIPTION, "rating_web", "rating_own", "rating_note");
         String[] allColumns = new String[baseColumns.size() + columns.size()];
 
         int i = 0;
@@ -915,7 +909,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    private void insertOrUpdateBaseMediaObject(SQLiteStatement sqLiteStatement, BaseMediaObject baseMediaObject) {
+    private int insertOrUpdateBaseMediaObject(SQLiteStatement sqLiteStatement, BaseMediaObject baseMediaObject) {
         sqLiteStatement.bindString(1, baseMediaObject.getTitle());
         sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
         if(baseMediaObject.getReleaseDate()!=null) {
@@ -936,6 +930,10 @@ public class Database extends SQLiteOpenHelper {
             sqLiteStatement.bindNull(7);
         }
         sqLiteStatement.bindString(8, baseMediaObject.getDescription());
+        sqLiteStatement.bindDouble(9, baseMediaObject.getRatingWeb());
+        sqLiteStatement.bindDouble(10, baseMediaObject.getRatingOwn());
+        sqLiteStatement.bindString(11, baseMediaObject.getRatingNote());
+        return 11;
     }
 
     private void saveForeignTables(BaseMediaObject baseMediaObject, String table) {
@@ -969,6 +967,10 @@ public class Database extends SQLiteOpenHelper {
         }
         baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex(Database.COVER)));
         baseMediaObject.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+        baseMediaObject.setRatingOwn(cursor.getDouble(cursor.getColumnIndex("rating_own")));
+        baseMediaObject.setRatingWeb(cursor.getDouble(cursor.getColumnIndex("rating_web")));
+        baseMediaObject.setRatingNote(cursor.getString(cursor.getColumnIndex("rating_note")));
+
         baseMediaObject.setTags(this.getBaseObjects("tags", table, baseMediaObject.getId(), ""));
         baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
         baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
@@ -1031,6 +1033,42 @@ public class Database extends SQLiteOpenHelper {
             this.database = this.getReadableDatabase(this.password);
         }
         return this.database;
+    }
+
+    private void updateDatabase(String content, int oldVersion, int newVersion, SQLiteDatabase database) {
+        Map<Integer, String> queries = new LinkedHashMap<>();
+        oldVersion++;
+        for(int i = oldVersion; i<=newVersion; i++) {
+            boolean start = false;
+            StringBuilder versionQueries = new StringBuilder();
+            for(String line : content.split("\n")) {
+                if(!start) {
+                    if(line.trim().equals("-- Version " + oldVersion)) {
+                        start = true;
+                        continue;
+                    }
+                }
+                if(start) {
+                    if(!line.startsWith("--")) {
+                        versionQueries.append(line);
+                    } else {
+                        break;
+                    }
+                }
+            }
+            queries.put(i, versionQueries.toString().trim());
+        }
+
+        for(int i = oldVersion; i<=newVersion; i++) {
+            String updateString = queries.get(i);
+            if(updateString != null) {
+                for(String updateQuery : updateString.split(";")) {
+                    try {
+                        database.execSQL(updateQuery);
+                    } catch (Exception ignored) {}
+                }
+            }
+        }
     }
 
     private static String readRawTextFile(Context ctx, int resId) {

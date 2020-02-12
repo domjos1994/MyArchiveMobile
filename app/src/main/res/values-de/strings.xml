@@ -56,6 +56,10 @@
     <string name="media_general_price">Preis</string>
     <string name="media_general_releaseDate">Erscheinungs-Datum</string>
     <string name="media_general_tags">Tags</string>
+    
+    <string name="media_rating_web">Internetbewertung</string>
+    <string name="media_rating_own">Eigene Bewertung</string>
+    <string name="media_rating_note">Kommentar</string>
 
     <string name="media_persons">Personen</string>
     <string name="media_persons_birthDate">Geburtsdatum</string>

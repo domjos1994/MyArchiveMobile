@@ -19,6 +19,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaBookFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private Runnable runnable;
     private boolean first = true;
 
@@ -31,11 +32,13 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaBookFragment = new MediaBookFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();
+        this.mediaRatingFragment = new MediaRatingFragment();
 
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaBookFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
+        this.mediaRatingFragment.setAbstractPagerAdapter(this);
     }
 
     @Override
@@ -65,6 +68,9 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
             case 3:
                 this.mediaBookFragment = (MediaBookFragment) super.getFragment(position, this.mediaBookFragment);
                 return this.mediaBookFragment;
+            case 4:
+                this.mediaRatingFragment = (MediaRatingFragment) super.getFragment(position, this.mediaRatingFragment);
+                return this.mediaRatingFragment;
             default:
                 return new Fragment();
         }
@@ -76,6 +82,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.changeMode(editMode);
         this.mediaBookFragment.changeMode(editMode);
         this.mediaPersonsCompaniesFragment.changeMode(editMode);
+        this.mediaRatingFragment.changeMode(editMode);
     }
 
     @Override
@@ -84,6 +91,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.setMediaObject(book);
         this.mediaPersonsCompaniesFragment.setMediaObject(book);
         this.mediaBookFragment.setMediaObject(book);
+        this.mediaRatingFragment.setMediaObject(book);
     }
 
     @Override
@@ -93,6 +101,9 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         BaseMediaObject tmp = this.mediaPersonsCompaniesFragment.getMediaObject();
         baseMediaObject.setCompanies(tmp.getCompanies());
         baseMediaObject.setPersons(tmp.getPersons());
+        baseMediaObject.setRatingOwn(this.mediaRatingFragment.getMediaObject().getRatingOwn());
+        baseMediaObject.setRatingWeb(this.mediaRatingFragment.getMediaObject().getRatingWeb());
+        baseMediaObject.setRatingNote(this.mediaRatingFragment.getMediaObject().getRatingNote());
         Book book = (Book) baseMediaObject;
         Book tmpBook = (Book) this.mediaBookFragment.getMediaObject();
         book.setType(tmpBook.getType());
@@ -107,6 +118,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaBookFragment.onActivityResult(requestCode, resultCode, data);
+        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -116,7 +128,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -125,6 +137,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         validator = this.mediaGeneralFragment.initValidation(validator);
         validator = this.mediaCoverFragment.initValidation(validator);
         validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
+        validator = this.mediaRatingFragment.initValidation(validator);
         return this.mediaBookFragment.initValidation(validator);
     }
 }

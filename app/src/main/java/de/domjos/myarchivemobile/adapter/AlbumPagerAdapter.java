@@ -17,12 +17,14 @@ import de.domjos.myarchivemobile.fragments.MediaAlbumFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
+import de.domjos.myarchivemobile.fragments.MediaRatingFragment;
 
 public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaAlbumFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private Runnable runnable;
     private boolean first = true;
 
@@ -35,11 +37,13 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaAlbumFragment = new MediaAlbumFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();
+        this.mediaRatingFragment = new MediaRatingFragment();
 
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaAlbumFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
+        this.mediaRatingFragment.setAbstractPagerAdapter(this);
     }
 
     @Override
@@ -69,6 +73,9 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
             case 3:
                 this.mediaAlbumFragment = (MediaAlbumFragment) super.getFragment(position, this.mediaAlbumFragment);
                 return this.mediaAlbumFragment;
+            case 4:
+                this.mediaRatingFragment = (MediaRatingFragment) super.getFragment(position, this.mediaRatingFragment);
+                return this.mediaRatingFragment;
             default:
                 return new Fragment();
         }
@@ -80,6 +87,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         this.mediaCoverFragment.changeMode(editMode);
         this.mediaAlbumFragment.changeMode(editMode);
         this.mediaPersonsCompaniesFragment.changeMode(editMode);
+        this.mediaRatingFragment.changeMode(editMode);
     }
 
     @Override
@@ -88,6 +96,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         this.mediaCoverFragment.setMediaObject(album);
         this.mediaPersonsCompaniesFragment.setMediaObject(album);
         this.mediaAlbumFragment.setMediaObject(album);
+        this.mediaRatingFragment.setMediaObject(album);
     }
 
     @Override
@@ -97,6 +106,9 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         BaseMediaObject tmp = this.mediaPersonsCompaniesFragment.getMediaObject();
         baseMediaObject.setCompanies(tmp.getCompanies());
         baseMediaObject.setPersons(tmp.getPersons());
+        baseMediaObject.setRatingOwn(this.mediaRatingFragment.getMediaObject().getRatingOwn());
+        baseMediaObject.setRatingWeb(this.mediaRatingFragment.getMediaObject().getRatingWeb());
+        baseMediaObject.setRatingNote(this.mediaRatingFragment.getMediaObject().getRatingNote());
         Album album = (Album) baseMediaObject;
         Album tmpAlbum = (Album) this.mediaAlbumFragment.getMediaObject();
         album.setType(tmpAlbum.getType());
@@ -110,6 +122,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaAlbumFragment.onActivityResult(requestCode, resultCode, data);
+        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -119,7 +132,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -128,6 +141,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         validator = this.mediaGeneralFragment.initValidation(validator);
         validator = this.mediaCoverFragment.initValidation(validator);
         validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
+        validator = this.mediaRatingFragment.initValidation(validator);
         return this.mediaAlbumFragment.initValidation(validator);
     }
 }

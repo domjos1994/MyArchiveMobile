@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:text="@string/media_rating_web"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:padding="2dp"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+        <RatingBar
+            android:id="@+id/rbRatingWeb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"/>
+
+        <TextView
+            android:text="@string/media_rating_own"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:padding="2dp"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+        <RatingBar
+            android:id="@+id/rbRatingOwn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"/>
+
+        <EditText
+            android:id="@+id/txtRatingNote"
+            android:hint="@string/media_rating_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:inputType="textMultiLine"
+            android:autofillHints="@string/media_rating_note"
+            tools:targetApi="o" />
+    </LinearLayout>
+
+</ScrollView>
