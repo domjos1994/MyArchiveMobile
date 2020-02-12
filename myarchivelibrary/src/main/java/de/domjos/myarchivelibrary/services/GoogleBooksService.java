@@ -102,6 +102,15 @@ public class GoogleBooksService extends TitleWebservice<Book> {
             }
             book.setDescription(info.getDescription());
             book.setReleaseDate(getReleaseDate(info.getPublishedDate()));
+            if(info.getAverageRating() != null) {
+                if(info.getAverageRating() != 0) {
+                    book.setRatingWeb(info.getAverageRating() * 2);
+                } else {
+                    book.setRatingWeb(0.0);
+                }
+            } else {
+                book.setRatingWeb(0.0);
+            }
 
             if (info.getAuthors() != null) {
                 if (!info.getAuthors().isEmpty()) {

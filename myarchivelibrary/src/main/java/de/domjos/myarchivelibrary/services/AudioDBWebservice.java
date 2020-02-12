@@ -41,6 +41,11 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         album.setOriginalTitle(albumObject.getString("strAlbumStripped"));
         album.setDescription(this.getDescription(albumObject, "strDescription"));
         album.setReleaseDate(setReleaseYear(albumObject, "intYearReleased"));
+        if(albumObject.has("intScore")) {
+            if(!albumObject.isNull("intScore")) {
+                album.setRatingWeb(albumObject.getDouble("intScore"));
+            }
+        }
         this.setCategory(albumObject, album);
         album.setCover(setCover(albumObject, "strAlbumThumb"));
         this.setArtist(albumObject, album);

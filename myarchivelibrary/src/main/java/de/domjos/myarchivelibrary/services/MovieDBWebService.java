@@ -49,6 +49,7 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
         movie.setTitle(setString(resultObject, Arrays.asList("name", "title")));
         movie.setOriginalTitle(setString(resultObject, Arrays.asList("original_name", "original_title")));
         movie.setDescription(resultObject.getString("overview"));
+        movie.setRatingWeb(this.getRating(resultObject));
 
         this.getLength(resultObject, movie);
         getReleaseDate(resultObject, movie);
@@ -69,6 +70,17 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
             }
         } catch (Exception ignored) {}
         return "";
+    }
+
+    private double getRating(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("vote_average")) {
+                if(!jsonObject.isNull("vote_average")) {
+                    return jsonObject.getDouble("vote_average");
+                }
+            }
+        } catch (Exception ignored) {}
+        return 0.0;
     }
 
     public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {

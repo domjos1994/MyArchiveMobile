@@ -36,7 +36,7 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
     @Override
     public Game execute() throws JSONException, IOException {
         Game game = new Game();
-        String content = JSONService.readUrl(new URL(IGDBWebservice.BASE_URL + "/games/" + super.SEARCH + "?fields=name,alternative_names,cover,genres,first_release_date,keywords,summary,involved_companies"), Collections.singletonList("user-key:" + this.key));
+        String content = JSONService.readUrl(new URL(IGDBWebservice.BASE_URL + "/games/" + super.SEARCH + "?fields=name,alternative_names,cover,genres,rating,first_release_date,keywords,summary,involved_companies"), Collections.singletonList("user-key:" + this.key));
         JSONObject jsonObject = new JSONArray(content).getJSONObject(0);
 
         game.setTitle(jsonObject.getString("name"));
@@ -47,6 +47,7 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
         game.setTags(this.getTags(jsonObject));
         game.setDescription(jsonObject.getString("summary"));
         game.setCompanies(this.getCompanies(jsonObject));
+        game.setRatingWeb(this.getRating(jsonObject));
 
         return game;
     }
@@ -77,6 +78,18 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
     @Override
     public String getUrl() {
         return "https://www.igdb.com";
+    }
+
+    private double getRating(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("rating")) {
+                if(!jsonObject.isNull("rating")) {
+                    double rating = jsonObject.getDouble("rating");
+                    return rating / 10;
+                }
+            }
+        } catch (Exception ignored) {}
+        return 0.0;
     }
 
     private Date getDate(JSONObject jsonObject, String key) {
