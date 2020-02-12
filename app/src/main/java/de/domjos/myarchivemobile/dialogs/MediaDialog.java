@@ -82,11 +82,13 @@ public class MediaDialog extends DialogFragment {
 
         cmdSave.setOnClickListener(view -> {
             Intent intent = new Intent();
-            intent.putExtra("id", ((BaseMediaObject)this.currentObject.getObject()).getId());
-            intent.putExtra("type", type);
-            intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
-            Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
-            this.dismiss();
+            if(this.currentObject.getObject() != null) {
+                intent.putExtra("id", ((BaseMediaObject) this.currentObject.getObject()).getId());
+                intent.putExtra("type", type);
+                intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
+                Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
+                this.dismiss();
+            }
         });
 
         return v;
