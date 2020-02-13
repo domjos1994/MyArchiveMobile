@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -57,6 +58,7 @@ public class MainHomeFragment extends ParentFragment {
     private EditText txtFilterName, txtFilterSearch, txtFilterCategories, txtFilterTags;
     private ImageButton cmdFilterExpand, cmdFilterSave, cmdFilterDelete;
     private CheckBox chkFilterBooks, chkFilterMovies, chkFilterMusic, chkFilterGames;
+    private TableRow rowName, rowMedia1, rowMedia2;
 
     private SwipeRefreshDeleteList lvMedia;
     private String search;
@@ -199,6 +201,10 @@ public class MainHomeFragment extends ParentFragment {
         this.txtFilterCategories = view.findViewById(R.id.txtFilterCategory);
         this.txtFilterTags = view.findViewById(R.id.txtFilterTags);
 
+        this.rowName = view.findViewById(R.id.rowName);
+        this.rowMedia1 = view.findViewById(R.id.rowMedia1);
+        this.rowMedia2 = view.findViewById(R.id.rowMedia2);
+
         this.arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
         this.spFilter.setAdapter(this.arrayAdapter);
         this.arrayAdapter.notifyDataSetChanged();
@@ -259,14 +265,35 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         this.cmdFilterExpand.setOnClickListener(view -> {
-            int px48 = Converter.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
-            if(this.filter.getLayoutParams().height == px48) {
-                this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
-                this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
+            if(this.rowName != null) {
+                if (this.rowName.getVisibility() == View.GONE) {
+                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                    this.rowName.setVisibility(View.VISIBLE);
+                    this.rowMedia1.setVisibility(View.VISIBLE);
+                    this.rowMedia2.setVisibility(View.VISIBLE);
+                    this.txtFilterSearch.setVisibility(View.VISIBLE);
+                    this.txtFilterCategories.setVisibility(View.VISIBLE);
+                    this.txtFilterTags.setVisibility(View.VISIBLE);
+                } else {
+                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.rowName.setVisibility(View.GONE);
+                    this.rowMedia1.setVisibility(View.GONE);
+                    this.rowMedia2.setVisibility(View.GONE);
+                    this.txtFilterSearch.setVisibility(View.GONE);
+                    this.txtFilterCategories.setVisibility(View.GONE);
+                    this.txtFilterTags.setVisibility(View.GONE);
+                }
             } else {
-                this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
-                this.filter.getLayoutParams().height = px48;
+                int px48 = Converter.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
+                if(this.filter.getLayoutParams().height == px48) {
+                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                    this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
+                } else {
+                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.filter.getLayoutParams().height = px48;
+                }
             }
+
             this.filter.requestLayout();
         });
         this.cmdFilterDelete.setOnClickListener(view -> {

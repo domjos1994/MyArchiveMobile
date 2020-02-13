@@ -5,151 +5,168 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <TableLayout
-        android:id="@+id/filter"
+    <ScrollView
+        android:id="@+id/filterScrollView"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:weightSum="10"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/background">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+        <TableLayout
+            android:id="@+id/filter"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:weightSum="10"
+            android:background="@drawable/background">
 
-        <TableRow
-            android:layout_height="48dp">
-            <Spinner
-                android:id="@+id/spFilter"
-                android:textColorHint="#fff"
-                android:textColor="#fff"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="9"/>
-            <ImageButton
-                android:id="@+id/cmdFilterExpand"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_expand_more_black_24dp"
-                android:src="@drawable/ic_expand_more_black_24dp"
-                android:background="@null"
-                android:contentDescription="@string/sys_save"
-                tools:ignore="VectorDrawableCompat" />
-        </TableRow>
-        <TableRow>
+            <TableRow
+                android:layout_height="48dp">
+                <Spinner
+                    android:id="@+id/spFilter"
+                    android:textColorHint="#fff"
+                    android:textColor="#fff"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="9"/>
+                <ImageButton
+                    android:id="@+id/cmdFilterExpand"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_expand_more_black_24dp"
+                    android:src="@drawable/ic_expand_more_black_24dp"
+                    android:background="@null"
+                    android:contentDescription="@string/sys_save"
+                    tools:ignore="VectorDrawableCompat" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/rowName"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/txtFilterName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:autofillHints="@string/sys_title"
+                    android:hint="@string/sys_title"
+                    android:inputType="text"
+                    android:textColor="#fff"
+                    android:textColorHint="#fff"
+                    tools:targetApi="o" />
+
+                <ImageButton
+                    android:id="@+id/cmdFilterSave"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:contentDescription="@string/sys_save"
+                    android:src="@drawable/ic_save_black_24dp"
+                    app:srcCompat="@drawable/ic_save_black_24dp"
+                    tools:ignore="VectorDrawableCompat" />
+
+                <ImageButton
+                    android:id="@+id/cmdFilterDelete"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:contentDescription="@string/sys_cancel"
+                    android:src="@drawable/ic_delete_black_24dp"
+                    app:srcCompat="@drawable/ic_delete_black_24dp"
+                    tools:ignore="VectorDrawableCompat" />
+            </TableRow>
+            <TableRow
+                android:id="@+id/rowMedia1"
+                android:visibility="gone">
+                <CheckBox
+                    android:id="@+id/chkFilterBooks"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:buttonTint="#fff"
+                    android:textColor="#fff"
+                    android:layout_weight="5"
+                    android:text="@string/main_navigation_media_books"
+                    tools:targetApi="lollipop" />
+                <CheckBox
+                    android:id="@+id/chkFilterMovies"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:buttonTint="#fff"
+                    android:textColor="#fff"
+                    android:layout_weight="5"
+                    android:text="@string/main_navigation_media_movies"
+                    tools:targetApi="lollipop" />
+            </TableRow>
+            <TableRow
+                android:id="@+id/rowMedia2"
+                android:visibility="gone">
+                <CheckBox
+                    android:id="@+id/chkFilterMusic"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:buttonTint="#fff"
+                    android:textColor="#fff"
+                    android:layout_weight="5"
+                    android:text="@string/main_navigation_media_music"
+                    tools:targetApi="lollipop" />
+                <CheckBox
+                    android:id="@+id/chkFilterGames"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:buttonTint="#fff"
+                    android:textColor="#fff"
+                    android:layout_weight="5"
+                    android:text="@string/main_navigation_media_games"
+                    tools:targetApi="lollipop" />
+            </TableRow>
             <EditText
-                android:id="@+id/txtFilterName"
-                android:layout_width="0dp"
+                android:id="@+id/txtFilterSearch"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
-                android:inputType="text"
                 android:textColorHint="#fff"
                 android:textColor="#fff"
-                android:hint="@string/sys_title"
-                android:autofillHints="@string/sys_title"
-                tools:targetApi="o" />
-            <ImageButton
-                android:id="@+id/cmdFilterSave"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_save_black_24dp"
-                android:src="@drawable/ic_save_black_24dp"
-                android:background="@null"
-                android:contentDescription="@string/sys_save"
-                tools:ignore="VectorDrawableCompat" />
-            <ImageButton
-                android:id="@+id/cmdFilterDelete"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_delete_black_24dp"
-                android:src="@drawable/ic_delete_black_24dp"
-                android:background="@null"
-                android:contentDescription="@string/sys_cancel"
-                tools:ignore="VectorDrawableCompat" />
-        </TableRow>
-        <TableRow>
-            <CheckBox
-                android:id="@+id/chkFilterBooks"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:buttonTint="#fff"
+                android:inputType="text"
+                android:hint="@string/sys_search"
+                android:autofillHints="@string/sys_search"
+                tools:targetApi="o"
+                android:visibility="gone"/>
+            <EditText
+                android:id="@+id/txtFilterCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="#fff"
                 android:textColor="#fff"
-                android:layout_weight="5"
-                android:text="@string/main_navigation_media_books"
-                tools:targetApi="lollipop" />
-            <CheckBox
-                android:id="@+id/chkFilterMovies"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:buttonTint="#fff"
+                android:inputType="text"
+                android:hint="@string/media_general_category"
+                android:autofillHints="@string/media_general_category"
+                tools:targetApi="o"
+                android:visibility="gone"/>
+            <EditText
+                android:id="@+id/txtFilterTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="#fff"
                 android:textColor="#fff"
-                android:layout_weight="5"
-                android:text="@string/main_navigation_media_movies"
-                tools:targetApi="lollipop" />
-        </TableRow>
-        <TableRow>
-            <CheckBox
-                android:id="@+id/chkFilterMusic"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:buttonTint="#fff"
-                android:textColor="#fff"
-                android:layout_weight="5"
-                android:text="@string/main_navigation_media_music"
-                tools:targetApi="lollipop" />
-            <CheckBox
-                android:id="@+id/chkFilterGames"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:buttonTint="#fff"
-                android:textColor="#fff"
-                android:layout_weight="5"
-                android:text="@string/main_navigation_media_games"
-                tools:targetApi="lollipop" />
-        </TableRow>
-        <EditText
-            android:id="@+id/txtFilterSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#fff"
-            android:textColor="#fff"
-            android:inputType="text"
-            android:hint="@string/sys_search"
-            android:autofillHints="@string/sys_search"
-            tools:targetApi="o" />
-        <EditText
-            android:id="@+id/txtFilterCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#fff"
-            android:textColor="#fff"
-            android:inputType="text"
-            android:hint="@string/media_general_category"
-            android:autofillHints="@string/media_general_category"
-            tools:targetApi="o" />
-        <EditText
-            android:id="@+id/txtFilterTags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="#fff"
-            android:textColor="#fff"
-            android:inputType="text"
-            android:hint="@string/media_general_tags"
-            android:autofillHints="@string/media_general_tags"
-            tools:targetApi="o" />
-    </TableLayout>
+                android:inputType="text"
+                android:hint="@string/media_general_tags"
+                android:autofillHints="@string/media_general_tags"
+                tools:targetApi="o"
+                android:visibility="gone"/>
+        </TableLayout>
+    </ScrollView>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMedia"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"
         android:layout_above="@+id/footer"
-        android:layout_below="@+id/filter"/>
+        android:layout_below="@+id/filterScrollView"/>
 
     <LinearLayout
         android:id="@+id/footer"
@@ -269,6 +286,7 @@
         android:elevation="16dp"
         android:focusable="true"
         android:visibility="visible"
+        android:layout_alignEnd="@+id/lvMedia"
         app:pressedTranslationZ="12dp"
         android:contentDescription="@string/add_media"
         app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
