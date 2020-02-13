@@ -31,6 +31,11 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import de.domjos.myarchivelibrary.services.AudioDBWebservice;
+import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
+import de.domjos.myarchivelibrary.services.IGDBWebservice;
+import de.domjos.myarchivelibrary.services.MovieDBWebservice;
+import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.security.InvalidAlgorithmParameterException;
@@ -268,6 +273,15 @@ public final class MainActivity extends AbstractActivity {
             case R.id.menMainCategoriesAndTags:
                 intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
                 requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainSearch:
+                GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(MainActivity.this, "", "", "");
+                MovieDBWebservice movieDBWebservice = new MovieDBWebservice(MainActivity.this, 0L, "", "");
+                AudioDBWebservice audioDBWebservice = new AudioDBWebservice(MainActivity.this, 0L);
+                IGDBWebservice igdbWebservice = new IGDBWebservice(MainActivity.this, 0L, "");
+
+                MediaDialog mediaDialog = MediaDialog.newInstance("", this.getString(R.string.book), Arrays.asList(googleBooksWebservice, movieDBWebservice, audioDBWebservice, igdbWebservice));
+                mediaDialog.show(this.getSupportFragmentManager(), "dialog");
                 break;
             case R.id.menMainSettings:
                 intent = new Intent(MainActivity.this, SettingsActivity.class);

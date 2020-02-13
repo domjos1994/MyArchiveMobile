@@ -9,9 +9,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.fragment.app.DialogFragment;
 
@@ -34,11 +32,13 @@ import static android.app.Activity.RESULT_OK;
 public class MediaDialog extends DialogFragment {
     private BaseDescriptionObject currentObject;
     private TextView lblTitle;
-    private TitleWebservice<? extends BaseMediaObject> titleWebservice;
+    private Spinner spWebservices;
+    private ArrayAdapter<? extends TitleWebservice<? extends BaseMediaObject>> webServiceAdapter;
+    private List<TitleWebservice<? extends BaseMediaObject>> titleWebservices;
 
-    public static MediaDialog newInstance(String search, String type, TitleWebservice<? extends BaseMediaObject> titleWebservice) {
+    public static MediaDialog newInstance(String search, String type, List<TitleWebservice<? extends BaseMediaObject>> titleWebservices) {
         MediaDialog mediaDialog = new MediaDialog();
-        mediaDialog.setTitleWebservice(titleWebservice);
+        mediaDialog.setTitleWebservices(titleWebservices);
         Bundle args = new Bundle();
         args.putString("search", search);
         args.putString("type", type);
@@ -47,8 +47,8 @@ public class MediaDialog extends DialogFragment {
         return mediaDialog;
     }
 
-    private void setTitleWebservice(TitleWebservice<? extends BaseMediaObject> titleWebservice) {
-        this.titleWebservice = titleWebservice;
+    private void setTitleWebservices(List<TitleWebservice<? extends BaseMediaObject>> titleWebservices) {
+        this.titleWebservices = titleWebservices;
     }
 
     @Override
@@ -72,13 +72,47 @@ public class MediaDialog extends DialogFragment {
         this.lblTitle = v.findViewById(R.id.lblTitle);
         this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
 
+        this.spWebservices = v.findViewById(R.id.spWebServices);
+        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item, this.titleWebservices);
+        this.spWebservices.setAdapter(this.webServiceAdapter);
+        this.webServiceAdapter.notifyDataSetChanged();
+
+        SwipeRefreshDeleteList lvSelected = v.findViewById(R.id.lvSelectedMedia);
+
+        if(this.titleWebservices != null) {
+            if(this.titleWebservices.size() != 1) {
+                this.spWebservices.setVisibility(View.VISIBLE);
+                lvSelected.setVisibility(View.VISIBLE);
+                ((LinearLayout.LayoutParams) lvMedia.getLayoutParams()).weight = 10;
+            } else {
+                this.spWebservices.setVisibility(View.GONE);
+                lvSelected.setVisibility(View.GONE);
+                ((LinearLayout.LayoutParams) lvMedia.getLayoutParams()).weight = 16;
+            }
+        }
+
         txtSearch.setText(search);
 
-        this.reload(activity, type, search, lvMedia);
+        this.reload(activity, type, search, lvMedia, 0);
 
-        cmdSearch.setOnClickListener(view -> this.reload(activity, type, txtSearch.getText().toString(), lvMedia));
+        cmdSearch.setOnClickListener(view -> this.reload(activity, type, txtSearch.getText().toString(), lvMedia, this.spWebservices.getSelectedItemPosition()));
 
-        lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> this.currentObject = listObject);
+        this.spWebservices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                reload(getActivity(), type, txtSearch.getText().toString(), lvMedia, position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.currentObject = listObject;
+            if(lvSelected.getVisibility() != View.GONE) {
+                lvSelected.getAdapter().add(this.currentObject);
+            }
+        });
 
         cmdSave.setOnClickListener(view -> {
             Intent intent = new Intent();
@@ -94,23 +128,29 @@ public class MediaDialog extends DialogFragment {
         return v;
     }
 
-    private void reload(Activity activity, String type, String search, SwipeRefreshDeleteList lvMedia) {
+    @SuppressWarnings({"deprecation", "rawtypes", "unchecked"})
+    private void reload(Activity activity, String type, String search, SwipeRefreshDeleteList lvMedia, int position) {
         try {
             if(type != null) {
-                if(this.titleWebservice != null) {
-                    Spanned text;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        text = Html.fromHtml("<a href='" + this.titleWebservice.getUrl() + "'>" +this. titleWebservice.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
-                    } else {
-                        text = Html.fromHtml("<a href='" + this.titleWebservice.getUrl() + "'>" +this. titleWebservice.getTitle() + "</a>");
-                    }
-                    this.lblTitle.setText(text);
+                if(this.titleWebservices != null) {
+                    TitleWebservice currentService = this.webServiceAdapter.getItem(position);
 
-                    SearchTask searchTask = new SearchTask(activity, MainActivity.GLOBALS.getSettings().isNotifications(), this.titleWebservice);
-                    List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(search).get();
-                    lvMedia.getAdapter().clear();
-                    for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                        lvMedia.getAdapter().add(baseDescriptionObject);
+                    if(currentService != null) {
+                        Spanned text;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            text = Html.fromHtml("<a href='" + this.titleWebservices.get(0).getUrl() + "'>" + currentService.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
+                        } else {
+                            text = Html.fromHtml("<a href='" + this.titleWebservices.get(0).getUrl() + "'>" + currentService.getTitle() + "</a>");
+                        }
+                        this.lblTitle.setText(text);
+
+
+                        SearchTask searchTask = new SearchTask(activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
+                        List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(search).get();
+                        lvMedia.getAdapter().clear();
+                        for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                            lvMedia.getAdapter().add(baseDescriptionObject);
+                        }
                     }
                 }
             }

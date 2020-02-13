@@ -18,6 +18,12 @@
         android:layout_gravity="center"
         android:gravity="center"/>
 
+    <Spinner
+        android:id="@+id/spWebServices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,6 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/ic_search_black_24dp"
             android:src="@drawable/ic_search_black_24dp"
             tools:ignore="VectorDrawableCompat" />
@@ -47,13 +54,25 @@
         android:id="@+id/lvSuggestions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="17"
+        android:layout_weight="10"
         android:layout_margin="2dp"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemBackground="@drawable/background"
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
         app:itemIcon="@mipmap/ic_launcher_round"/>
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            android:id="@+id/lvSelectedMedia"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:layout_margin="2dp"
+            app:selectedListItemBackground="@drawable/selected_background"
+            app:listItemBackground="@drawable/background"
+            app:listItemDivider="@drawable/divider"
+            app:readOnly="true"
+            app:itemIcon="@mipmap/ic_launcher_round"/>
 
     <ImageButton
         android:id="@+id/cmdSave"
@@ -63,6 +82,7 @@
         android:layout_margin="2dp"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
+        android:contentDescription="@string/sys_save"
         app:srcCompat="@drawable/ic_save_black_24dp"
         android:src="@drawable/ic_save_black_24dp"
         tools:ignore="VectorDrawableCompat" />

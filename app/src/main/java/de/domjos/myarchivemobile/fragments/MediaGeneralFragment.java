@@ -18,8 +18,7 @@ import android.widget.MultiAutoCompleteTextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -142,7 +141,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                     type = this.getString(R.string.game);
                     titleWebservice = new IGDBWebservice(ctx, 0, settings.getIGDBKey());
                 }
-                MediaDialog mediaDialog = MediaDialog.newInstance(search, type, titleWebservice);
+                MediaDialog mediaDialog = MediaDialog.newInstance(search, type, Collections.singletonList(titleWebservice));
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
                 mediaDialog.show(this.getParentFragmentManager(), "dialog");
             } catch (Exception ex) {
