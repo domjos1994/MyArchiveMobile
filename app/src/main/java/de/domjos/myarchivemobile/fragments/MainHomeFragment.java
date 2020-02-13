@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -18,6 +19,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -175,6 +177,12 @@ public class MainHomeFragment extends ParentFragment {
 
         this.reload(null);
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ControlsHelper.hideKeyboard(Objects.requireNonNull(this.getActivity()));
+        Objects.requireNonNull(this.getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     private void initFilter(View view) {

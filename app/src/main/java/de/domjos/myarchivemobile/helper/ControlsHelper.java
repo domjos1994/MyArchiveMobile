@@ -6,6 +6,8 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -17,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -362,5 +365,13 @@ public class ControlsHelper {
         dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
         dialogProperties.extensions = extensions.toArray(new String[]{});
         return new FilePickerDialog(activity, dialogProperties);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }
