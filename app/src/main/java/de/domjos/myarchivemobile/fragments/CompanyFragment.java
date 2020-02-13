@@ -31,6 +31,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtCompanyTitle = view.findViewById(R.id.txtCompanyTitle);
         this.txtCompanyFoundation = view.findViewById(R.id.txtCompanyFoundation);

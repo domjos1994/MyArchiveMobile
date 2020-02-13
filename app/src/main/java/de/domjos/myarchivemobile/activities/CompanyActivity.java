@@ -16,9 +16,11 @@ import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDelete
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
+    private ViewPager viewPager;
     private CompanyPagerAdapter companyPagerAdapter;
     private BottomNavigationView bottomNavigationView;
 
@@ -91,20 +93,20 @@ public final class CompanyActivity extends AbstractActivity {
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
 
         TabLayout tabLayout = this.findViewById(R.id.tabLayout);
-        ViewPager viewPager = this.findViewById(R.id.viewPager);
-        viewPager.setOffscreenPageLimit(4);
-        tabLayout.setupWithViewPager(viewPager);
+        this.viewPager = this.findViewById(R.id.viewPager);
+        this.viewPager.setOffscreenPageLimit(4);
+        tabLayout.setupWithViewPager(this.viewPager);
 
         this.companyPagerAdapter = new CompanyPagerAdapter(this.getSupportFragmentManager(), getApplicationContext());
         this.validator = this.companyPagerAdapter.initValidator();
-        viewPager.setAdapter(this.companyPagerAdapter);
+        this.viewPager.setAdapter(this.companyPagerAdapter);
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
-            viewPager.setCurrentItem(i);
+            this.viewPager.setCurrentItem(i);
         }
         tabLayout.setScrollPosition(0, 0f, true);
-        viewPager.setCurrentItem(0);
+        this.viewPager.setCurrentItem(0);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_people_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
@@ -139,6 +141,7 @@ public final class CompanyActivity extends AbstractActivity {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.changeScreenIfEditMode(this.lvCompanies, this.viewPager, CompanyActivity.this, editMode);
 
         this.companyPagerAdapter.changeMode(editMode);
     }

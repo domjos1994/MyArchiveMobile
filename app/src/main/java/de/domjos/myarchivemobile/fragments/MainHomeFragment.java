@@ -181,7 +181,6 @@ public class MainHomeFragment extends ParentFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        ControlsHelper.hideKeyboard(Objects.requireNonNull(this.getActivity()));
         Objects.requireNonNull(this.getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 

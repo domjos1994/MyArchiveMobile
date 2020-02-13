@@ -31,6 +31,7 @@ public class PersonFragment extends AbstractFragment<Person> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtPersonFirstName = view.findViewById(R.id.txtPersonFirstName);
         this.txtPersonLastName = view.findViewById(R.id.txtPersonLastName);

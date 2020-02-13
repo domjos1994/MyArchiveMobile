@@ -6,8 +6,13 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.opengl.Visibility;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
+
+import androidx.viewpager.widget.ViewPager;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -35,6 +40,9 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ControlsHelper {
 
@@ -367,11 +375,14 @@ public class ControlsHelper {
         return new FilePickerDialog(activity, dialogProperties);
     }
 
-    public static void hideKeyboard(Activity activity) {
-        View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+    public static void changeScreenIfEditMode(SwipeRefreshDeleteList lv, ViewPager pager, Activity activity, boolean editMode) {
+        int orientation = activity.getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if(lv.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+                ((LinearLayout.LayoutParams) pager.getLayoutParams()).weight = editMode ? 10 : 6;
+                ((LinearLayout.LayoutParams) lv.getLayoutParams()).weight = editMode ? 0 : 4;
+                lv.setVisibility(editMode ? GONE : VISIBLE);
+            }
         }
     }
 }
