@@ -5,17 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 
 public class PersonFragment extends AbstractFragment<Person> {
     private EditText txtPersonFirstName, txtPersonLastName, txtPersonBirthDate, txtPersonDescription;
+    private ImageButton cmdPersonSearch;
     private Person person;
     private Validator validator;
 
@@ -31,6 +36,17 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.txtPersonLastName = view.findViewById(R.id.txtPersonLastName);
         this.txtPersonBirthDate = view.findViewById(R.id.txtPersonBirthDate);
         this.txtPersonDescription = view.findViewById(R.id.txtPersonDescription);
+        this.cmdPersonSearch = view.findViewById(R.id.cmdPersonSearch);
+
+        this.cmdPersonSearch.setOnClickListener(event -> {
+            try {
+                this.person = this.getMediaObject();
+                WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                this.abstractPagerAdapter.setMediaObject(wikiDataPersonTask.execute(this.person).get().get(0));
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+            }
+        });
 
         this.validator = this.initValidation(this.validator);
         this.changeMode(false);
@@ -70,6 +86,7 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.txtPersonLastName.setEnabled(editMode);
         this.txtPersonBirthDate.setEnabled(editMode);
         this.txtPersonDescription.setEnabled(editMode);
+        this.cmdPersonSearch.setEnabled(editMode);
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,14 +11,29 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/txtCompanyTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/sys_title"
-            android:autofillHints="@string/sys_title"
-            tools:targetApi="o" />
+            android:weightSum="10"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/txtCompanyTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:inputType="text"
+                android:hint="@string/sys_title"
+                android:autofillHints="@string/sys_title"
+                tools:targetApi="o" />
+
+            <ImageButton
+                android:id="@+id/cmdCompanySearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/sys_search"
+                app:srcCompat="@drawable/ic_search_black_24dp"/>
+        </LinearLayout>
 
         <EditText
             android:id="@+id/txtCompanyFoundation"

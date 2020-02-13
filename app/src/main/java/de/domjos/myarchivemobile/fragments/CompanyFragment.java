@@ -5,17 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 
 public class CompanyFragment extends AbstractFragment<Company> {
     private EditText txtCompanyTitle, txtCompanyFoundation, txtCompanyDescription;
+    private ImageButton cmdCompanySearch;
     private Company company;
     private Validator validator;
 
@@ -30,6 +35,17 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.txtCompanyTitle = view.findViewById(R.id.txtCompanyTitle);
         this.txtCompanyFoundation = view.findViewById(R.id.txtCompanyFoundation);
         this.txtCompanyDescription = view.findViewById(R.id.txtCompanyDescription);
+        this.cmdCompanySearch = view.findViewById(R.id.cmdCompanySearch);
+
+        this.cmdCompanySearch.setOnClickListener(event -> {
+            try {
+                this.company = this.getMediaObject();
+                WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                this.abstractPagerAdapter.setMediaObject(wikiDataCompanyTask.execute(this.company).get().get(0));
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+            }
+        });
 
         this.validator = this.initValidation(this.validator);
         this.changeMode(false);
@@ -66,6 +82,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.txtCompanyTitle.setEnabled(editMode);
         this.txtCompanyFoundation.setEnabled(editMode);
         this.txtCompanyDescription.setEnabled(editMode);
+        this.cmdCompanySearch.setEnabled(editMode);
     }
 
     @Override

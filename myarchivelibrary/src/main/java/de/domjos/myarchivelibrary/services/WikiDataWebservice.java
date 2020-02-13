@@ -19,12 +19,13 @@ public class WikiDataWebservice extends JSONService {
     private String claimURL = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=%s&format=json&language=%s";
     private List personProps = Arrays.asList("P569", "P19", "P1477", "P570", "P551", "P734", "P735", "P1340", "P18");
     private List companyProps = Arrays.asList("P154", "P159", "P571", "P169");
+    private final String LANGUAGE = Locale.getDefault().getLanguage().toLowerCase();
 
     public WikiDataWebservice(String companyName) throws JSONException, IOException {
         this.companyName = companyName;
         String searchURL = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=%s&format=json&language=%s";
 
-        String url = String.format(searchURL, companyName.replace(" ", "%20"), Locale.getDefault().getLanguage().toLowerCase());
+        String url = String.format(searchURL, companyName.replace(" ", "%20"), LANGUAGE);
         String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONArray jsonArray = obj.getJSONArray("search");
@@ -44,7 +45,7 @@ public class WikiDataWebservice extends JSONService {
         person.setFirstName(this.firstName);
         person.setLastName(this.lastName);
         if(!this.id.isEmpty()) {
-            String url = String.format(this.claimURL, this.id, Locale.getDefault().getCountry().toLowerCase());
+            String url = String.format(this.claimURL, this.id, LANGUAGE);
             String dataText = readUrl(new URL(url));
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
@@ -93,7 +94,7 @@ public class WikiDataWebservice extends JSONService {
         Company company = new Company();
         company.setTitle(this.companyName);
         if(!this.id.isEmpty()) {
-            String url = String.format(this.claimURL, this.id, Locale.getDefault().getCountry().toLowerCase());
+            String url = String.format(this.claimURL, this.id, LANGUAGE);
             String dataText = readUrl(new URL(url));
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
@@ -134,10 +135,10 @@ public class WikiDataWebservice extends JSONService {
     }
 
     private String getValue(String id) throws Exception {
-        String url = String.format("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=%s&languages=%s&format=json", id, Locale.getDefault().getCountry().toLowerCase());
+        String url = String.format("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=%s&languages=%s&format=json", id, LANGUAGE);
         String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONObject idObj = obj.getJSONObject("entities").getJSONObject(id);
-        return idObj.getJSONObject("labels").getJSONObject(Locale.getDefault().getCountry().toLowerCase()).getString("value");
+        return idObj.getJSONObject("labels").getJSONObject(LANGUAGE).getString("value");
     }
 }
