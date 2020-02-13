@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.services.EANDataService;
+import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
 public class EANDataGameTask extends AbstractTask<String, Void, List<Game>> {
     private String key;
@@ -29,7 +29,7 @@ public class EANDataGameTask extends AbstractTask<String, Void, List<Game>> {
 
         for(String code : strings) {
             try {
-                EANDataService eanDataService = new EANDataService(code, this.key, super.getContext());
+                EANDataWebservice eanDataService = new EANDataWebservice(code, this.key, super.getContext());
                 Game game = eanDataService.executeGame();
 
                 if(game != null) {

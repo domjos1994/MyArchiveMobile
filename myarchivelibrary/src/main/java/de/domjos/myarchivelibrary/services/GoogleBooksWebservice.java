@@ -20,12 +20,12 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
-public class GoogleBooksService extends TitleWebservice<Book> {
+public class GoogleBooksWebservice extends TitleWebservice<Book> {
     private String code;
     private String id;
     private String key;
 
-    public GoogleBooksService(Context context, String code, String id, String key) {
+    public GoogleBooksWebservice(Context context, String code, String id, String key) {
         super(context, 0L);
         this.code = code;
         this.id = id;

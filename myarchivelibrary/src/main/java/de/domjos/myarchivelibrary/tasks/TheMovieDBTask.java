@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.services.MovieDBWebService;
+import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 
 public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
     private String type, key;
@@ -30,7 +30,7 @@ public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
 
         for(Long id : ids) {
             try {
-                MovieDBWebService movieDBWebService = new MovieDBWebService(super.getContext(), id, this.type, this.key);
+                MovieDBWebservice movieDBWebService = new MovieDBWebservice(super.getContext(), id, this.type, this.key);
                 Movie movie = movieDBWebService.execute();
 
                 if(movie != null) {

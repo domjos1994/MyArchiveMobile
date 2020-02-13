@@ -20,7 +20,7 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 
-public class EANDataService extends JSONService {
+public class EANDataWebservice extends JSONService {
     private final static String BASE_URL = "https://eandata.com/feed/?v=3&keycode=%s&mode=json&find=%s";
     private final static String KEY_CODE = "code";
     private final static String PRODUCT = "product";
@@ -28,7 +28,7 @@ public class EANDataService extends JSONService {
     private String key;
     private String code;
 
-    public EANDataService(String code, String key, Context context) {
+    public EANDataWebservice(String code, String key, Context context) {
         this.code = code;
 
         if(!key.isEmpty()) {
@@ -39,17 +39,17 @@ public class EANDataService extends JSONService {
     }
 
     public Movie executeMovie() throws JSONException, IOException, ParseException {
-        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataWebservice.BASE_URL, this.key, this.code.trim())));
         return this.getMovieFromJsonString(content);
     }
 
     public Album executeAlbum() throws JSONException, IOException, ParseException {
-        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataWebservice.BASE_URL, this.key, this.code.trim())));
         return this.getAlbumFromJsonString(content);
     }
 
     public Game executeGame() throws JSONException, IOException, ParseException {
-        String content = readUrl(new URL(String.format(EANDataService.BASE_URL, this.key, this.code.trim())));
+        String content = readUrl(new URL(String.format(EANDataWebservice.BASE_URL, this.key, this.code.trim())));
         return this.getGameFromJsonString(content);
     }
 
@@ -57,11 +57,11 @@ public class EANDataService extends JSONService {
         JSONObject jsonObject = new JSONObject(content);
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
-        if(statusObject.has(EANDataService.KEY_CODE) && statusObject.getString(EANDataService.KEY_CODE).startsWith("4")) {
+        if(statusObject.has(EANDataWebservice.KEY_CODE) && statusObject.getString(EANDataWebservice.KEY_CODE).startsWith("4")) {
             return null;
         }
 
-        JSONObject productObject = jsonObject.getJSONObject(EANDataService.PRODUCT);
+        JSONObject productObject = jsonObject.getJSONObject(EANDataWebservice.PRODUCT);
         JSONObject attributesObject = productObject.getJSONObject("attributes");
         Movie movieObject = new Movie();
         this.setBaseParams(movieObject, productObject);
@@ -89,11 +89,11 @@ public class EANDataService extends JSONService {
         JSONObject jsonObject = new JSONObject(content);
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
-        if(statusObject.has(EANDataService.KEY_CODE) && statusObject.getString(EANDataService.KEY_CODE).startsWith("4")) {
+        if(statusObject.has(EANDataWebservice.KEY_CODE) && statusObject.getString(EANDataWebservice.KEY_CODE).startsWith("4")) {
             return null;
         }
 
-        JSONObject productObject = jsonObject.getJSONObject(EANDataService.PRODUCT);
+        JSONObject productObject = jsonObject.getJSONObject(EANDataWebservice.PRODUCT);
         Album albumObject = new Album();
         this.setBaseParams(albumObject, productObject);
         this.setCompany(albumObject, jsonObject);
@@ -104,11 +104,11 @@ public class EANDataService extends JSONService {
         JSONObject jsonObject = new JSONObject(content);
 
         JSONObject statusObject = jsonObject.getJSONObject("status");
-        if(statusObject.has(EANDataService.KEY_CODE) && statusObject.getString(EANDataService.KEY_CODE).startsWith("4")) {
+        if(statusObject.has(EANDataWebservice.KEY_CODE) && statusObject.getString(EANDataWebservice.KEY_CODE).startsWith("4")) {
             return null;
         }
 
-        JSONObject productObject = jsonObject.getJSONObject(EANDataService.PRODUCT);
+        JSONObject productObject = jsonObject.getJSONObject(EANDataWebservice.PRODUCT);
         Game gameObject = new Game();
         this.setBaseParams(gameObject, productObject);
         this.setCompany(gameObject, jsonObject);
@@ -118,7 +118,7 @@ public class EANDataService extends JSONService {
 
     private void setBaseParams(BaseMediaObject baseMediaObject, JSONObject productObject) throws JSONException, ParseException {
         JSONObject attributesObject = productObject.getJSONObject("attributes");
-        baseMediaObject.setTitle(this.getString(attributesObject, EANDataService.PRODUCT));
+        baseMediaObject.setTitle(this.getString(attributesObject, EANDataWebservice.PRODUCT));
         baseMediaObject.setPrice(this.getDouble(attributesObject, "price_new"));
         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
         baseDescriptionObject.setTitle(this.getString(attributesObject, "category_text"));

@@ -98,7 +98,7 @@ public class MediaDialog extends DialogFragment {
         try {
             if(type != null) {
                 if(this.titleWebservice != null) {
-                    Spanned text = Html.fromHtml("<a href='" + this.titleWebservice.getUrl() + "'>" +this. titleWebservice.getTitle() + "</a>");
+                    Spanned text = Html.fromHtml("<a href='" + this.titleWebservice.getUrl() + "'>" +this. titleWebservice.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
                     this.lblTitle.setText(text);
 
                     SearchTask searchTask = new SearchTask(activity, MainActivity.GLOBALS.getSettings().isNotifications(), this.titleWebservice);

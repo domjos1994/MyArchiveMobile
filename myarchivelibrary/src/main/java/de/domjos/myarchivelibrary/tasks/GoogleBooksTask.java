@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.services.GoogleBooksService;
+import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 
 public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
     private String id, key;
@@ -29,13 +29,13 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
 
         for(String code : strings) {
             try {
-                GoogleBooksService googleBooksService;
+                GoogleBooksWebservice googleBooksWebservice;
                 if(this.id.isEmpty()) {
-                    googleBooksService = new GoogleBooksService(super.getContext(), code, "", this.key);
+                    googleBooksWebservice = new GoogleBooksWebservice(super.getContext(), code, "", this.key);
                 } else {
-                    googleBooksService = new GoogleBooksService(super.getContext(), "", this.id, this.key);
+                    googleBooksWebservice = new GoogleBooksWebservice(super.getContext(), "", this.id, this.key);
                 }
-                Book book = googleBooksService.execute();
+                Book book = googleBooksWebservice.execute();
                 if(book != null) {
                     book.setCode(code.trim());
                     books.add(book);

@@ -1042,20 +1042,22 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public String copyDatabase() throws IOException {
-        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
 
-        if (sd.canWrite()) {
-            String currentDBPath = this.getWritableDatabase().getPath();
-            String backupDBPath = new File(currentDBPath).getName();
-            File currentDB = new File(currentDBPath);
-            File backupDB = new File(sd, backupDBPath);
+        if(sd != null) {
+            if (sd.canWrite()) {
+                String currentDBPath = this.getWritableDatabase().getPath();
+                String backupDBPath = new File(currentDBPath).getName();
+                File currentDB = new File(currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
 
-            if (currentDB.exists()) {
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
+                if (currentDB.exists()) {
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
             }
         }
         return this.password;
@@ -1064,20 +1066,22 @@ public class Database extends SQLiteOpenHelper {
     public void copyDatabaseFromDownload() throws IOException {
         this.close();
 
-        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
 
-        if (sd.canWrite()) {
-            String currentDBPath = this.getWritableDatabase().getPath();
-            String backupDBPath = new File(currentDBPath).getName();
-            File currentDB = new File(currentDBPath);
-            File backupDB = new File(sd, backupDBPath);
+        if(sd != null) {
+            if (sd.canWrite()) {
+                String currentDBPath = this.getWritableDatabase().getPath();
+                String backupDBPath = new File(currentDBPath).getName();
+                File currentDB = new File(currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
 
-            if (currentDB.exists()) {
-                FileChannel src = new FileOutputStream(currentDB).getChannel();
-                FileChannel dst = new FileInputStream(backupDB).getChannel();
-                src.transferFrom(dst, 0, dst.size());
-                src.close();
-                dst.close();
+                if (currentDB.exists()) {
+                    FileChannel src = new FileOutputStream(currentDB).getChannel();
+                    FileChannel dst = new FileInputStream(backupDB).getChannel();
+                    src.transferFrom(dst, 0, dst.size());
+                    src.close();
+                    dst.close();
+                }
             }
         }
     }

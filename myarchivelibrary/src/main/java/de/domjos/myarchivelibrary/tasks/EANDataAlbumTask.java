@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.music.Album;
-import de.domjos.myarchivelibrary.services.EANDataService;
+import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
 public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
     private String key;
@@ -29,7 +29,7 @@ public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
 
         for(String code : strings) {
             try {
-                EANDataService eanDataService = new EANDataService(code, this.key, super.getContext());
+                EANDataWebservice eanDataService = new EANDataWebservice(code, this.key, super.getContext());
                 Album album = eanDataService.executeAlbum();
 
                 if(album != null) {

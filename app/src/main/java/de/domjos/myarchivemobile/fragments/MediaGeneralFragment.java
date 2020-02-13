@@ -34,9 +34,9 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
-import de.domjos.myarchivelibrary.services.GoogleBooksService;
+import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
-import de.domjos.myarchivelibrary.services.MovieDBWebService;
+import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivelibrary.services.TitleWebservice;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
@@ -131,13 +131,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
                 if(this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
                     type = this.getString(R.string.movie);
-                    titleWebservice = new MovieDBWebService(ctx, 0L, "", settings.getMovieDBKey());
+                    titleWebservice = new MovieDBWebservice(ctx, 0L, "", settings.getMovieDBKey());
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment) {
                     type = this.getString(R.string.album);
                     titleWebservice = new AudioDBWebservice(ctx, 0L);
                 } else if(this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment) {
                     type = this.getString(R.string.book);
-                    titleWebservice = new GoogleBooksService(ctx, "", "", settings.getGoogleBooksKey());
+                    titleWebservice = new GoogleBooksWebservice(ctx, "", "", settings.getGoogleBooksKey());
                 } else {
                     type = this.getString(R.string.game);
                     titleWebservice = new IGDBWebservice(ctx, 0, settings.getIGDBKey());

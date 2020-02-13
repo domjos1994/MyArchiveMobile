@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.services.WikiDataWebService;
+import de.domjos.myarchivelibrary.services.WikiDataWebservice;
 
 public class WikiDataCompanyTask extends AbstractTask<Company, Void, List<Company>> {
 
@@ -26,7 +26,7 @@ public class WikiDataCompanyTask extends AbstractTask<Company, Void, List<Compan
 
         try {
             for(Company company : companies) {
-                WikiDataWebService wikiDataWebService = new WikiDataWebService(company.getTitle());
+                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(company.getTitle());
                 companyList.add(wikiDataWebService.getCompany());
             }
         } catch (Exception ex) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.services.WikiDataWebService;
+import de.domjos.myarchivelibrary.services.WikiDataWebservice;
 
 public class WikiDataPersonTask extends AbstractTask<Person, Void, List<Person>> {
 
@@ -26,7 +26,7 @@ public class WikiDataPersonTask extends AbstractTask<Person, Void, List<Person>>
 
         try {
             for(Person person : people) {
-                WikiDataWebService wikiDataWebService = new WikiDataWebService(person.getFirstName(), person.getLastName());
+                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(person.getFirstName(), person.getLastName());
                 persons.add(wikiDataWebService.getPerson());
             }
         } catch (Exception ex) {

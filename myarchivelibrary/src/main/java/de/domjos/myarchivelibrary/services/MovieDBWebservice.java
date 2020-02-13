@@ -22,13 +22,13 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 
-public class MovieDBWebService extends TitleWebservice<Movie> {
+public class MovieDBWebservice extends TitleWebservice<Movie> {
     private final static String BASE_URL = "https://api.themoviedb.org/3";
     private final static String IMAGE_URL = "https://image.tmdb.org/t/p/w500";
     private String type;
     private String key;
 
-    public MovieDBWebService(Context context, long id, String type, String key) {
+    public MovieDBWebservice(Context context, long id, String type, String key) {
         super(context, id);
         this.type = type;
         this.key = key;
@@ -43,7 +43,7 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
     }
 
     private Movie getMovieFromJson() throws JSONException, IOException {
-        JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type +"/" + this.SEARCH + "?api_key=" + this.key + "&language=" + Locale.getDefault().getLanguage())));
+        JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebservice.BASE_URL + "/" + this.type +"/" + this.SEARCH + "?api_key=" + this.key + "&language=" + Locale.getDefault().getLanguage())));
 
         Movie movie = new Movie();
         movie.setTitle(setString(resultObject, Arrays.asList("name", "title")));
@@ -85,7 +85,7 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
 
     public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> movies = new LinkedList<>();
-        String url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebService.BASE_URL, key, Locale.getDefault().getLanguage(), URLEncoder.encode(search, "UTF-8"));
+        String url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebservice.BASE_URL, key, Locale.getDefault().getLanguage(), URLEncoder.encode(search, "UTF-8"));
         JSONObject jsonObject = new JSONObject(readUrl(new URL(url)));
         if(!jsonObject.isNull("results")) {
             JSONArray jsonArray = jsonObject.getJSONArray("results");
@@ -180,14 +180,14 @@ public class MovieDBWebService extends TitleWebservice<Movie> {
 
     private static byte[] getImage(String path) {
         try {
-            return Converter.convertStringToByteArray(MovieDBWebService.IMAGE_URL + path);
+            return Converter.convertStringToByteArray(MovieDBWebservice.IMAGE_URL + path);
         } catch (Exception ignored) {}
         return null;
     }
 
     private void getPersons(long id, Movie movie) {
         try {
-            JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebService.BASE_URL + "/" + this.type + "/" + id + "/credits?api_key=" + this.key)));
+            JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebservice.BASE_URL + "/" + this.type + "/" + id + "/credits?api_key=" + this.key)));
             if(!resultObject.isNull("cast")) {
                 JSONArray jsonArray = resultObject.getJSONArray("cast");
                 int max;
