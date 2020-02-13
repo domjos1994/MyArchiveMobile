@@ -135,17 +135,19 @@ public class MainHomeFragment extends ParentFragment {
                 for(Person person : people) {
                     personsString.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
                 }
-                String[] types = personsString.toArray(new String[0]);
-                b.setItems(types, (dialogInterface, i) -> {
-                    for(BaseDescriptionObject baseDescriptionObject : objectList) {
-                        LibraryObject libraryObject = new LibraryObject();
-                        libraryObject.setDeadLine(new Date());
-                        libraryObject.setNumberOfDays(7);
-                        libraryObject.setPerson(people.get(i));
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
-                    }
-                });
-                b.show();
+                if(!personsString.isEmpty()) {
+                    String[] types = personsString.toArray(new String[0]);
+                    b.setItems(types, (dialogInterface, i) -> {
+                        for(BaseDescriptionObject baseDescriptionObject : objectList) {
+                            LibraryObject libraryObject = new LibraryObject();
+                            libraryObject.setDeadLine(new Date());
+                            libraryObject.setNumberOfDays(7);
+                            libraryObject.setPerson(people.get(i));
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
+                        }
+                    });
+                    b.show();
+                }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext());
             }
