@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 
@@ -14,6 +15,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
@@ -32,6 +35,7 @@ public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
     private EditText txtLibraryDeadline, txtLibraryReturnedAt;
     private AutoCompleteTextView txtLibraryPerson;
+    private ScrollView scrollView;
 
     private SwipeRefreshDeleteList lvMediaLibrary, lvMediaHistory;
     private BottomNavigationView bottomNavigationView;
@@ -240,6 +244,7 @@ public class MainLibraryFragment extends ParentFragment {
     }
 
     private void initControls(View view) {
+        this.scrollView = view.findViewById(R.id.scrollView);
         this.lvMediaLibrary = view.findViewById(R.id.lvMediaLibrary);
         this.lvMediaHistory = view.findViewById(R.id.lvMediaHistory);
 
@@ -273,6 +278,11 @@ public class MainLibraryFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected && this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).isVisible());
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+
+        Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
+        mp.put(this.lvMediaLibrary, 4);
+        mp.put(this.lvMediaHistory, 3);
+        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, Objects.requireNonNull(this.getActivity()), editMode);
 
         this.lvMediaHistory.setReadOnly(editMode);
         this.txtLibraryPerson.setEnabled(editMode);

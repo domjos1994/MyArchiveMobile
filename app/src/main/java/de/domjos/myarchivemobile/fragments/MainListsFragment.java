@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 
@@ -31,6 +32,7 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainListsFragment extends ParentFragment {
+    private ScrollView scrollView;
     private EditText txtListTitle, txtListDescription, txtListDeadline;
 
     private SwipeRefreshDeleteList lvMediaLists, lvMediaObjects;
@@ -249,6 +251,7 @@ public class MainListsFragment extends ParentFragment {
     }
 
     private void initControls(View view) {
+        this.scrollView = view.findViewById(R.id.scrollView);
         this.lvMediaLists = view.findViewById(R.id.lvMediaLists);
         this.lvMediaObjects = view.findViewById(R.id.lvMediaObjects);
         this.lvMediaObjects.setContextMenu(R.menu.list_menu);
@@ -269,6 +272,11 @@ public class MainListsFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+
+        Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
+        mp.put(this.lvMediaLists, 4);
+        mp.put(this.lvMediaObjects, 4);
+        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, Objects.requireNonNull(this.getActivity()), editMode);
 
         this.txtListTitle.setEnabled(editMode);
         this.txtListDeadline.setEnabled(editMode);

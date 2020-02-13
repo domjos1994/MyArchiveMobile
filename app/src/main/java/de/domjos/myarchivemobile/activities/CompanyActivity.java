@@ -5,6 +5,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
@@ -141,7 +143,9 @@ public final class CompanyActivity extends AbstractActivity {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
-        ControlsHelper.changeScreenIfEditMode(this.lvCompanies, this.viewPager, CompanyActivity.this, editMode);
+        Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
+        mp.put(this.lvCompanies, 4);
+        ControlsHelper.changeScreenIfEditMode(mp, this.viewPager, CompanyActivity.this, editMode);
 
         this.companyPagerAdapter.changeMode(editMode);
     }

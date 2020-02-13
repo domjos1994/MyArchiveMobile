@@ -369,7 +369,9 @@ public final class MainActivity extends AbstractActivity {
         MainActivity.GLOBALS.setDatabase(database);
 
         if(!onlyOrientationChanged) {
-            ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
+            try {
+                ControlsHelper.scheduleJob(MainActivity.this, Arrays.asList(LibraryService.class, ListService.class));
+            } catch (Exception ignored) {}
         }
     }
 

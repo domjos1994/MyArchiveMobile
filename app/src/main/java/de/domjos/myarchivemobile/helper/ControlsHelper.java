@@ -375,13 +375,17 @@ public class ControlsHelper {
         return new FilePickerDialog(activity, dialogProperties);
     }
 
-    public static void changeScreenIfEditMode(SwipeRefreshDeleteList lv, ViewPager pager, Activity activity, boolean editMode) {
+    public static void changeScreenIfEditMode(Map<SwipeRefreshDeleteList, Integer> lists, View view, Activity activity, boolean editMode) {
         int orientation = activity.getResources().getConfiguration().orientation;
         if(orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if(lv.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                ((LinearLayout.LayoutParams) pager.getLayoutParams()).weight = editMode ? 10 : 6;
-                ((LinearLayout.LayoutParams) lv.getLayoutParams()).weight = editMode ? 0 : 4;
-                lv.setVisibility(editMode ? GONE : VISIBLE);
+            if(view.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+                int pagerWeight = 10;
+                for(Map.Entry<SwipeRefreshDeleteList, Integer> list : lists.entrySet()) {
+                    pagerWeight -= list.getValue();
+                    ((LinearLayout.LayoutParams) list.getKey().getLayoutParams()).weight = editMode ? 0 : list.getValue();
+                    list.getKey().setVisibility(editMode ? GONE : VISIBLE);
+                }
+                ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = editMode ? 10 : pagerWeight;
             }
         }
     }
