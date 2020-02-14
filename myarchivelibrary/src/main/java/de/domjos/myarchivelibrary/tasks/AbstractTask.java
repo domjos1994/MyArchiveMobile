@@ -1,19 +1,18 @@
 /*
- * Copyright (C)  2019 Domjos
- * This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
+ * This file is part of the MyArchiveMobile distribution (https://github.com/domjos1994/MyArchiveMobile).
+ * Copyright (c) 2020 Dominic Joas.
  *
- * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3.
  *
- * UniTrackerMobile is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.myarchivelibrary.tasks;
@@ -67,7 +66,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     protected void onPostExecute(Result result) {
         super.onPostExecute(result);
         if (this.showNotifications) {
-            MessageHelper.stopNotification((Activity) this.getContext(), this.id);
+            MessageHelper.stopNotification(this.getContext(), this.id);
         }
         if (this.postExecuteListener != null) {
             this.postExecuteListener.onPostExecute(result);
@@ -107,7 +106,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         return this.weakReference.get();
     }
 
-    public abstract static class PostExecuteListener<Result> {
-        public abstract void onPostExecute(Result result);
+    abstract static class PostExecuteListener<Result> {
+        abstract void onPostExecute(Result result);
     }
 }
