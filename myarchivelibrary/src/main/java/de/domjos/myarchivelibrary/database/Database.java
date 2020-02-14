@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
@@ -56,6 +56,9 @@ public class Database extends SQLiteOpenHelper {
     private final static String DESCRIPTION = "description";
     private final static String TITLE = "title";
     private final static String COVER = "cover";
+    private final static String TAGS = "tags";
+    private final static String CATEGORIES = "categories";
+    private final static String ID_FILTER = "id=";
 
     private SQLiteDatabase database;
     private Context context;
@@ -95,13 +98,13 @@ public class Database extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
                 BaseMediaObject baseMediaObject = null;
                 switch (entry.getKey().getTable()) {
-                    case "books":
+                    case Database.BOOKS:
                         baseMediaObject = new Book();
                         break;
-                    case "movies":
+                    case Database.MOVIES:
                         baseMediaObject = new Movie();
                         break;
-                    case "games":
+                    case Database.GAMES:
                         baseMediaObject = new Game();
                         break;
                     case "albums":
@@ -300,12 +303,12 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindLong(4, libraryObject.getNumberOfDays());
         sqLiteStatement.bindLong(5, libraryObject.getNumberOfWeeks());
         if(libraryObject.getDeadLine() != null) {
-            sqLiteStatement.bindString(6, Objects.requireNonNull(Converter.convertDateToString(libraryObject.getDeadLine(), Database.DATE_FORMAT)));
+            sqLiteStatement.bindString(6, Objects.requireNonNull(ConvertHelper.convertDateToString(libraryObject.getDeadLine(), Database.DATE_FORMAT)));
         } else {
             sqLiteStatement.bindNull(6);
         }
         if(libraryObject.getReturned() != null) {
-            sqLiteStatement.bindString(7, Objects.requireNonNull(Converter.convertDateToString(libraryObject.getReturned(), Database.DATE_FORMAT)));
+            sqLiteStatement.bindString(7, Objects.requireNonNull(ConvertHelper.convertDateToString(libraryObject.getReturned(), Database.DATE_FORMAT)));
         } else {
             sqLiteStatement.bindNull(7);
         }
@@ -330,11 +333,11 @@ public class Database extends SQLiteOpenHelper {
             libraryObject.setNumberOfWeeks(cursor.getInt(cursor.getColumnIndex("numberOfWeeks")));
             String deadline = cursor.getString(cursor.getColumnIndex(Database.DEAD_LINE));
             if(deadline!=null) {
-                libraryObject.setDeadLine(!deadline.isEmpty() ? Converter.convertStringToDate(deadline, Database.DATE_FORMAT) : null);
+                libraryObject.setDeadLine(!deadline.isEmpty() ? ConvertHelper.convertStringToDate(deadline, Database.DATE_FORMAT) : null);
             }
             String returnedAt = cursor.getString(cursor.getColumnIndex("returnedAt"));
             if(returnedAt!=null) {
-                libraryObject.setReturned(!returnedAt.isEmpty() ? Converter.convertStringToDate(returnedAt, Database.DATE_FORMAT) : null);
+                libraryObject.setReturned(!returnedAt.isEmpty() ? ConvertHelper.convertStringToDate(returnedAt, Database.DATE_FORMAT) : null);
             }
             libraryObjects.add(libraryObject);
         }
@@ -346,27 +349,23 @@ public class Database extends SQLiteOpenHelper {
         Map<BaseMediaObject, LibraryObject> mp = new LinkedHashMap<>();
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT media, type, id FROM library WHERE person=" + person.getId(), new String[]{});
         while (cursor.moveToNext()) {
-            LibraryObject libraryObject = this.getLibraryObjects("id=" + cursor.getLong(cursor.getColumnIndex("id"))).get(0);
+            LibraryObject libraryObject = this.getLibraryObjects(Database.ID_FILTER + cursor.getLong(cursor.getColumnIndex("id"))).get(0);
             BaseMediaObject baseMediaObject = null;
-            try {
-                long id = cursor.getLong(cursor.getColumnIndex("media"));
-                String type = cursor.getString(cursor.getColumnIndex("type"));
-                switch (type.trim().toLowerCase()) {
-                    case "books":
-                        baseMediaObject = this.getBooks("id=" + id).get(0);
-                        break;
-                    case "movies":
-                        baseMediaObject = this.getMovies("id=" + id).get(0);
-                        break;
-                    case "albums":
-                        baseMediaObject = this.getAlbums("id=" + id).get(0);
-                        break;
-                    case "games":
-                        baseMediaObject = this.getGames("id=" + id).get(0);
-                        break;
-                }
-            } catch (Exception ex) {
-                continue;
+            long id = cursor.getLong(cursor.getColumnIndex("media"));
+            String type = cursor.getString(cursor.getColumnIndex("type"));
+            switch (type.trim().toLowerCase()) {
+                case Database.BOOKS:
+                    baseMediaObject = this.getBooks(Database.ID_FILTER + id).get(0);
+                    break;
+                case Database.MOVIES:
+                    baseMediaObject = this.getMovies(Database.ID_FILTER + id).get(0);
+                    break;
+                case "albums":
+                    baseMediaObject = this.getAlbums(Database.ID_FILTER + id).get(0);
+                    break;
+                case Database.GAMES:
+                    baseMediaObject = this.getGames(Database.ID_FILTER + id).get(0);
+                    break;
             }
             mp.put(baseMediaObject, libraryObject);
         }
@@ -378,7 +377,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaList, Arrays.asList(Database.TITLE, Database.DEAD_LINE, Database.DESCRIPTION));
         sqLiteStatement.bindString(1, mediaList.getTitle());
         if(mediaList.getDeadLine() != null) {
-            String content = Converter.convertDateToString(mediaList.getDeadLine(), Database.DATE_FORMAT);
+            String content = ConvertHelper.convertDateToString(mediaList.getDeadLine(), Database.DATE_FORMAT);
             if(content == null) {
                 sqLiteStatement.bindNull(2);
             } else {
@@ -429,7 +428,7 @@ public class Database extends SQLiteOpenHelper {
             mediaList.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
             String deadLine = cursor.getString(cursor.getColumnIndex(Database.DEAD_LINE));
             if(deadLine != null) {
-                mediaList.setDeadLine(!deadLine.isEmpty() ? Converter.convertStringToDate(deadLine, Database.DATE_FORMAT) : null);
+                mediaList.setDeadLine(!deadLine.isEmpty() ? ConvertHelper.convertStringToDate(deadLine, Database.DATE_FORMAT) : null);
             }
             mediaList.setBaseMediaObjects(this.getObjects("lists", mediaList.getId()));
             mediaLists.add(mediaList);
@@ -440,12 +439,10 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateFilter(MediaFilter mediaFilter) {
         List<MediaFilter> mediaFilters = this.getFilters("title='" + mediaFilter.getTitle() + "'");
-        if(mediaFilters!=null) {
-            if(!mediaFilters.isEmpty()) {
-                mediaFilter.setId(mediaFilters.get(0).getId());
-            }
+        if(mediaFilters!=null && !mediaFilters.isEmpty()) {
+            mediaFilter.setId(mediaFilters.get(0).getId());
         }
-        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", "categories", "tags", "books", "movies", "music", "games"));
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", Database.CATEGORIES, Database.TAGS, Database.BOOKS, Database.MOVIES, "music", Database.GAMES));
         sqLiteStatement.bindString(1, mediaFilter.getTitle());
         sqLiteStatement.bindString(2, mediaFilter.getSearch());
         sqLiteStatement.bindString(3, mediaFilter.getCategories());
@@ -465,12 +462,12 @@ public class Database extends SQLiteOpenHelper {
             mediaFilter.setId(cursor.getLong(cursor.getColumnIndex("id")));
             mediaFilter.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
             mediaFilter.setSearch(cursor.getString(cursor.getColumnIndex("search")));
-            mediaFilter.setCategories(cursor.getString(cursor.getColumnIndex("categories")));
-            mediaFilter.setTags(cursor.getString(cursor.getColumnIndex("tags")));
-            mediaFilter.setBooks(cursor.getInt(cursor.getColumnIndex("books")) == 1);
-            mediaFilter.setMovies(cursor.getInt(cursor.getColumnIndex("movies")) == 1);
+            mediaFilter.setCategories(cursor.getString(cursor.getColumnIndex(Database.CATEGORIES)));
+            mediaFilter.setTags(cursor.getString(cursor.getColumnIndex(Database.TAGS)));
+            mediaFilter.setBooks(cursor.getInt(cursor.getColumnIndex(Database.BOOKS)) == 1);
+            mediaFilter.setMovies(cursor.getInt(cursor.getColumnIndex(Database.MOVIES)) == 1);
             mediaFilter.setMusic(cursor.getInt(cursor.getColumnIndex("music")) == 1);
-            mediaFilter.setGames(cursor.getInt(cursor.getColumnIndex("games")) == 1);
+            mediaFilter.setGames(cursor.getInt(cursor.getColumnIndex(Database.GAMES)) == 1);
             mediaFilters.add(mediaFilter);
         }
         cursor.close();
@@ -482,7 +479,7 @@ public class Database extends SQLiteOpenHelper {
         String booksWhere = start, moviesWhere = start, gamesWhere = start, albumsWhere = start;
 
         switch (table) {
-            case "tags":
+            case Database.TAGS:
             case "persons":
             case "companies":
                 booksWhere += this.getWhere(Database.BOOKS, table, id);
@@ -490,7 +487,7 @@ public class Database extends SQLiteOpenHelper {
                 gamesWhere += this.getWhere(Database.GAMES, table, id);
                 albumsWhere += this.getWhere(Database.ALBUMS, table, id);
                 break;
-            case "categories":
+            case Database.CATEGORIES:
                 booksWhere += this.getCategoryWhere(Database.BOOKS, id);
                 moviesWhere += this.getCategoryWhere(Database.MOVIES, id);
                 gamesWhere += this.getCategoryWhere(Database.GAMES, id);
@@ -613,7 +610,7 @@ public class Database extends SQLiteOpenHelper {
         statement.bindString(1, person.getFirstName());
         statement.bindString(2, person.getLastName());
         if(person.getBirthDate() != null) {
-            String dt = Converter.convertDateToString(person.getBirthDate(), Database.DATE_FORMAT);
+            String dt = ConvertHelper.convertDateToString(person.getBirthDate(), Database.DATE_FORMAT);
             if(dt != null) {
                 statement.bindString(3, dt);
             } else {
@@ -659,7 +656,7 @@ public class Database extends SQLiteOpenHelper {
                 int index = cursor.getColumnIndex("birthDate");
                 String dt = cursor.getString(index);
                 if(dt!=null) {
-                    person.setBirthDate(!dt.isEmpty() ? Converter.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+                    person.setBirthDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                 }
                 person.setImage(cursor.getBlob(cursor.getColumnIndex("image")));
                 person.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
@@ -677,7 +674,7 @@ public class Database extends SQLiteOpenHelper {
                     person.setLastName(tmp.getString(tmp.getColumnIndex("lastName")));
                     String dt = tmp.getString(tmp.getColumnIndex("birthDate"));
                     if(dt!=null) {
-                        person.setBirthDate(!dt.isEmpty() ? Converter.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+                        person.setBirthDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                     }
                     person.setImage(tmp.getBlob(tmp.getColumnIndex("image")));
                     person.setDescription(tmp.getString(tmp.getColumnIndex(Database.DESCRIPTION)));
@@ -714,7 +711,7 @@ public class Database extends SQLiteOpenHelper {
         }
         statement.bindString(1, company.getTitle());
         if(company.getFoundation() != null) {
-            statement.bindString(2, Objects.requireNonNull(Converter.convertDateToString(company.getFoundation(), Database.DATE_FORMAT)));
+            statement.bindString(2, Objects.requireNonNull(ConvertHelper.convertDateToString(company.getFoundation(), Database.DATE_FORMAT)));
         } else {
             statement.bindNull(2);
         }
@@ -752,7 +749,7 @@ public class Database extends SQLiteOpenHelper {
                 company.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
                 String dt = cursor.getString(cursor.getColumnIndex("foundation"));
                 if(dt!=null) {
-                    company.setFoundation(!dt.isEmpty() ? Converter.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+                    company.setFoundation(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                 }
                 company.setCover(cursor.getBlob(cursor.getColumnIndex(Database.COVER)));
                 company.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
@@ -769,7 +766,7 @@ public class Database extends SQLiteOpenHelper {
                     company.setTitle(tmp.getString(tmp.getColumnIndex(Database.TITLE)));
                     String dt = tmp.getString(tmp.getColumnIndex("foundation"));
                     if(dt!=null) {
-                        company.setFoundation(!dt.isEmpty() ? Converter.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+                        company.setFoundation(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                     }
                     company.setCover(tmp.getBlob(tmp.getColumnIndex(Database.COVER)));
                     company.setDescription(tmp.getString(tmp.getColumnIndex(Database.DESCRIPTION)));
@@ -807,10 +804,8 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void close() {
-        if(this.database != null) {
-            if(this.database.isOpen()) {
-                this.database.close();
-            }
+        if(this.database != null && this.database.isOpen()) {
+            this.database.close();
         }
     }
 
@@ -917,14 +912,14 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindString(1, baseMediaObject.getTitle());
         sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
         if(baseMediaObject.getReleaseDate()!=null) {
-            sqLiteStatement.bindString(3, Objects.requireNonNull(Converter.convertDateToString(baseMediaObject.getReleaseDate(), Database.DATE_FORMAT)));
+            sqLiteStatement.bindString(3, Objects.requireNonNull(ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), Database.DATE_FORMAT)));
         } else {
             sqLiteStatement.bindNull(3);
         }
         sqLiteStatement.bindString(4, baseMediaObject.getCode());
         sqLiteStatement.bindDouble(5, baseMediaObject.getPrice());
         if(baseMediaObject.getCategory()!=null) {
-            sqLiteStatement.bindLong(6, this.insertOrUpdateBaseObject(baseMediaObject.getCategory(), "categories", "", 0));
+            sqLiteStatement.bindLong(6, this.insertOrUpdateBaseObject(baseMediaObject.getCategory(), Database.CATEGORIES, "", 0));
         } else {
             sqLiteStatement.bindLong(6, 0);
         }
@@ -950,7 +945,7 @@ public class Database extends SQLiteOpenHelper {
 
     private void saveForeignTables(BaseMediaObject baseMediaObject, String table) {
         for(BaseDescriptionObject tag : baseMediaObject.getTags()) {
-            this.insertOrUpdateBaseObject(tag, "tags", table, baseMediaObject.getId());
+            this.insertOrUpdateBaseObject(tag, Database.TAGS, table, baseMediaObject.getId());
         }
         for(Person person : baseMediaObject.getPersons()) {
             this.insertOrUpdatePerson(person, table, baseMediaObject.getId());
@@ -969,13 +964,13 @@ public class Database extends SQLiteOpenHelper {
         baseMediaObject.setOriginalTitle(cursor.getString(cursor.getColumnIndex("originalTitle")));
         String dt = cursor.getString(cursor.getColumnIndex("releaseDate"));
         if(dt != null) {
-            baseMediaObject.setReleaseDate(!dt.isEmpty() ? Converter.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+            baseMediaObject.setReleaseDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
         }
         baseMediaObject.setCode(cursor.getString(cursor.getColumnIndex("code")));
         baseMediaObject.setPrice(cursor.getDouble(cursor.getColumnIndex("price")));
         int category = cursor.getInt(cursor.getColumnIndex("category"));
         if(category != 0) {
-            baseMediaObject.setCategory(this.getBaseObjects("categories", "", 0, "id=" + category).get(0));
+            baseMediaObject.setCategory(this.getBaseObjects(Database.CATEGORIES, "", 0, Database.ID_FILTER + category).get(0));
         }
         baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex(Database.COVER)));
         baseMediaObject.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
@@ -983,7 +978,7 @@ public class Database extends SQLiteOpenHelper {
         baseMediaObject.setRatingWeb(cursor.getDouble(cursor.getColumnIndex("rating_web")));
         baseMediaObject.setRatingNote(cursor.getString(cursor.getColumnIndex("rating_note")));
 
-        baseMediaObject.setTags(this.getBaseObjects("tags", table, baseMediaObject.getId(), ""));
+        baseMediaObject.setTags(this.getBaseObjects(Database.TAGS, table, baseMediaObject.getId(), ""));
         baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
         baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
 
@@ -1057,19 +1052,16 @@ public class Database extends SQLiteOpenHelper {
     public String copyDatabase() throws IOException {
         File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
 
-        if(sd != null) {
-            if (sd.canWrite()) {
-                String currentDBPath = this.getWritableDatabase().getPath();
-                String backupDBPath = new File(currentDBPath).getName();
-                File currentDB = new File(currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
+        if(sd != null && sd.canWrite()) {
+            String currentDBPath = this.getWritableDatabase().getPath();
+            String backupDBPath = new File(currentDBPath).getName();
+            File currentDB = new File(currentDBPath);
+            File backupDB = new File(sd, backupDBPath);
 
-                if (currentDB.exists()) {
-                    FileChannel src = new FileInputStream(currentDB).getChannel();
-                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+            if (currentDB.exists()) {
+                try (FileChannel src = new FileInputStream(currentDB).getChannel();
+                     FileChannel dst = new FileOutputStream(backupDB).getChannel()) {
                     dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    dst.close();
                 }
             }
         }
@@ -1081,19 +1073,17 @@ public class Database extends SQLiteOpenHelper {
 
         File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
 
-        if(sd != null) {
-            if (sd.canWrite()) {
-                String currentDBPath = this.getWritableDatabase().getPath();
-                String backupDBPath = new File(currentDBPath).getName();
-                File currentDB = new File(currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
+        if(sd != null && sd.canWrite()) {
+            String currentDBPath = this.getWritableDatabase().getPath();
+            String backupDBPath = new File(currentDBPath).getName();
+            File currentDB = new File(currentDBPath);
+            File backupDB = new File(sd, backupDBPath);
 
-                if (currentDB.exists()) {
-                    FileChannel src = new FileOutputStream(currentDB).getChannel();
-                    FileChannel dst = new FileInputStream(backupDB).getChannel();
+            if (currentDB.exists()) {
+                try (FileChannel src = new FileOutputStream(currentDB).getChannel();
+                     FileChannel dst = new FileInputStream(backupDB).getChannel()) {
+
                     src.transferFrom(dst, 0, dst.size());
-                    src.close();
-                    dst.close();
                 }
             }
         }
@@ -1106,11 +1096,9 @@ public class Database extends SQLiteOpenHelper {
             boolean start = false;
             StringBuilder versionQueries = new StringBuilder();
             for(String line : content.split("\n")) {
-                if(!start) {
-                    if(line.trim().equals("-- Version " + oldVersion)) {
-                        start = true;
-                        continue;
-                    }
+                if(!start && line.trim().equals("-- Version " + oldVersion)) {
+                    start = true;
+                    continue;
                 }
                 if(start) {
                     if(!line.startsWith("--")) {

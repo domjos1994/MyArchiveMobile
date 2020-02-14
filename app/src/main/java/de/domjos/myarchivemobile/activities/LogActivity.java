@@ -11,6 +11,7 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
@@ -40,14 +41,12 @@ public final class LogActivity extends AbstractActivity {
         this.cmdSaveLogFile.setOnClickListener(view -> {
             FilePickerDialog dialog = ControlsHelper.openFilePicker(false, true, new LinkedList<>(), LogActivity.this);
             dialog.setDialogSelectionListener(files -> {
-                if(files != null) {
-                    if(files.length != 0) {
-                        try {
-                            String content = this.getContent();
-                            this.writeToFile(files[0], content);
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
-                        }
+                if(files != null && files.length != 0) {
+                    try {
+                        String content = this.getContent();
+                        this.writeToFile(files[0], content);
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
                     }
                 }
             });
@@ -77,13 +76,13 @@ public final class LogActivity extends AbstractActivity {
             List<String> content = new LinkedList<>();
             try {
                 Process process = Runtime.getRuntime().exec("logcat -d");
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    content.add(line);
+                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        content.add(line);
+                    }
                 }
-                bufferedReader.close();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 this.cancel(true);
             }
             return content;
@@ -104,11 +103,11 @@ public final class LogActivity extends AbstractActivity {
 
     private void writeToFile(String folder, String data) {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(folder + File.separatorChar + "log.txt");
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-            fileOutputStream.close();
+            try (FileOutputStream fileOutputStream = new FileOutputStream(folder + File.separatorChar + "log.txt");
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream)) {
+
+                outputStreamWriter.write(data);
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
         }

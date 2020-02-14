@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -53,7 +53,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         if(baseMediaObject instanceof Movie) {
             this.movie = (Movie) baseMediaObject;
-            this.txtMediaMovieLength.setText(Converter.convertDoubleToString(this.movie.getLength()));
+            this.txtMediaMovieLength.setText(ConvertHelper.convertDoubleToString(this.movie.getLength()));
             this.txtMediaMoviePath.setText(this.movie.getPath());
 
             if(this.movie.getType() != null) {
@@ -65,7 +65,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     @Override
     public BaseMediaObject getMediaObject() {
         if(!this.txtMediaMovieLength.getText().toString().isEmpty()) {
-            this.movie.setLength(Converter.convertStringToDouble(this.txtMediaMovieLength.getText().toString()));
+            this.movie.setLength(ConvertHelper.convertStringToDouble(this.txtMediaMovieLength.getText().toString()));
         }
         this.movie.setPath(this.txtMediaMoviePath.getText().toString());
         this.movie.setType(Movie.Type.valueOf(this.spMediaMovieType.getSelectedItem().toString()));

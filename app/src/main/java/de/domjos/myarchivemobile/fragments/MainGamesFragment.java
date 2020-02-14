@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -157,7 +157,7 @@ public class MainGamesFragment extends ParentFragment {
             for(Game game : MainActivity.GLOBALS.getDatabase().getGames(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(game.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(game.getCover());
                 baseDescriptionObject.setId(game.getId());
                 baseDescriptionObject.setObject(game);

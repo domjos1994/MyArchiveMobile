@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -269,7 +269,7 @@ public class MainHomeFragment extends ParentFragment {
         this.cmdFilterExpand.setOnClickListener(view -> {
             if(this.rowName != null) {
                 if (this.rowName.getVisibility() == View.GONE) {
-                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
                     this.rowName.setVisibility(View.VISIBLE);
                     this.rowMedia1.setVisibility(View.VISIBLE);
                     this.rowMedia2.setVisibility(View.VISIBLE);
@@ -277,7 +277,7 @@ public class MainHomeFragment extends ParentFragment {
                     this.txtFilterCategories.setVisibility(View.VISIBLE);
                     this.txtFilterTags.setVisibility(View.VISIBLE);
                 } else {
-                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
                     this.rowName.setVisibility(View.GONE);
                     this.rowMedia1.setVisibility(View.GONE);
                     this.rowMedia2.setVisibility(View.GONE);
@@ -286,12 +286,12 @@ public class MainHomeFragment extends ParentFragment {
                     this.txtFilterTags.setVisibility(View.GONE);
                 }
             } else {
-                int px48 = Converter.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
+                int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
                 if(this.filter.getLayoutParams().height == px48) {
-                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
                     this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
                 } else {
-                    this.cmdFilterExpand.setImageDrawable(Converter.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
                     this.filter.getLayoutParams().height = px48;
                 }
             }
@@ -365,10 +365,8 @@ public class MainHomeFragment extends ParentFragment {
     }
 
     private void getObject(MediaFilter mediaFilter) {
-        if(!mediaFilter.getTitle().equals(this.getString(R.string.filter_no_filter))) {
-            if(!txtFilterName.getText().toString().trim().isEmpty()) {
-                mediaFilter.setTitle(txtFilterName.getText().toString());
-            }
+        if(!mediaFilter.getTitle().equals(this.getString(R.string.filter_no_filter)) && !txtFilterName.getText().toString().trim().isEmpty()) {
+            mediaFilter.setTitle(txtFilterName.getText().toString());
         }
         mediaFilter.setSearch(txtFilterSearch.getText().toString());
         mediaFilter.setCategories(txtFilterCategories.getText().toString());

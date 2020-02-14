@@ -161,10 +161,10 @@ public class PDFService {
         @Override
         public void onEndPage(PdfWriter writer, Document document) {
             Rectangle rect = writer.getPageSize();
-            try {
-                ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("(c) 2020 MyArchiveMobile", fonts.get(this.font)), 10, 18, 0);
-                ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_RIGHT, new Phrase(String.valueOf(writer.getPageNumber()), fonts.get(this.font)), rect.getWidth() - 10, 18, 0);
-            } catch (Exception ignored) {}
+
+            int width = Math.round(rect.getWidth());
+            ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("(c) 2020 MyArchiveMobile", fonts.get(this.font)), 10, 18, 0);
+            ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_RIGHT, new Phrase(String.valueOf(writer.getPageNumber()), fonts.get(this.font)), width - 10, 18, 0);
         }
     }
 }

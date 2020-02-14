@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -52,7 +52,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         if(baseMediaObject instanceof Game) {
             this.game = (Game) baseMediaObject;
-            this.txtMediaGameLength.setText(Converter.convertDoubleToString(this.game.getLength()));
+            this.txtMediaGameLength.setText(ConvertHelper.convertDoubleToString(this.game.getLength()));
 
             if(this.game.getType() != null) {
                 this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
@@ -64,7 +64,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public BaseMediaObject getMediaObject() {
         try {
             if(!this.txtMediaGameLength.getText().toString().isEmpty()) {
-                this.game.setLength(Converter.convertStringToDouble(this.txtMediaGameLength.getText().toString()));
+                this.game.setLength(ConvertHelper.convertStringToDouble(this.txtMediaGameLength.getText().toString()));
             }
         } catch (Exception ignored) {}
         this.game.setType(Game.Type.valueOf(this.spMediaGameType.getSelectedItem().toString()));

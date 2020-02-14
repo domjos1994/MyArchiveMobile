@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -58,7 +58,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
 
         this.txtCompanyTitle.setText(this.company.getTitle());
         if(this.company.getFoundation() != null) {
-            this.txtCompanyFoundation.setText(Converter.convertDateToString(this.company.getFoundation(), this.getString(R.string.sys_date_format)));
+            this.txtCompanyFoundation.setText(ConvertHelper.convertDateToString(this.company.getFoundation(), this.getString(R.string.sys_date_format)));
         } else {
             this.txtCompanyFoundation.setText("");
         }
@@ -71,7 +71,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
             this.company.setTitle(this.txtCompanyTitle.getText().toString());
             this.company.setDescription(this.txtCompanyDescription.getText().toString());
             if(!this.txtCompanyFoundation.getText().toString().isEmpty()) {
-                this.company.setFoundation(Converter.convertStringToDate(this.txtCompanyFoundation.getText().toString(), this.getString(R.string.sys_date_format)));
+                this.company.setFoundation(ConvertHelper.convertStringToDate(this.txtCompanyFoundation.getText().toString(), this.getString(R.string.sys_date_format)));
             }
         } catch (Exception ignored) {}
 

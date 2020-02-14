@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -41,7 +41,7 @@ public class PDFHelper {
 
         this.pdfService = new PDFService(file, R.mipmap.ic_launcher_round, context);
 
-        byte[] icon = Converter.convertDrawableToByteArray(this.context, R.mipmap.ic_launcher);
+        byte[] icon = ConvertHelper.convertDrawableToByteArray(this.context, R.mipmap.ic_launcher);
         this.pdfService.addHeadPage(icon, this.context.getString(R.string.main_navigation_media), this.context.getString(R.string.app_name));
     }
 
@@ -79,19 +79,17 @@ public class PDFHelper {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.context.getString(R.string.media_general_originalTitle)).append(": ").append(baseMediaObject.getOriginalTitle()).append("\n");
         if(baseMediaObject.getReleaseDate() != null) {
-            stringBuilder.append(this.context.getString(R.string.media_general_releaseDate)).append(": ").append(Converter.convertDateToString(baseMediaObject.getReleaseDate(), this.context.getString(R.string.sys_date_format))).append("\n");
+            stringBuilder.append(this.context.getString(R.string.media_general_releaseDate)).append(": ").append(ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), this.context.getString(R.string.sys_date_format))).append("\n");
         }
         stringBuilder.append(this.context.getString(R.string.media_general_price)).append(": ").append(baseMediaObject.getPrice()).append("\n");
         stringBuilder.append(this.context.getString(R.string.media_general_code)).append(": ").append(baseMediaObject.getCode()).append("\n");
         if(baseMediaObject.getCategory() != null) {
             stringBuilder.append(this.context.getString(R.string.media_general_category)).append(": ").append(baseMediaObject.getCategory().getTitle()).append("\n");
         }
-        if(baseMediaObject.getTags() != null) {
-            if(!baseMediaObject.getTags().isEmpty()) {
-                stringBuilder.append(this.context.getString(R.string.media_general_tags)).append(": ");
-                for(BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
-                    stringBuilder.append(baseDescriptionObject.getTitle()).append(", ");
-                }
+        if(baseMediaObject.getTags() != null && !baseMediaObject.getTags().isEmpty()) {
+            stringBuilder.append(this.context.getString(R.string.media_general_tags)).append(": ");
+            for(BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
+                stringBuilder.append(baseDescriptionObject.getTitle()).append(", ");
             }
         }
         this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
@@ -148,7 +146,7 @@ public class PDFHelper {
             for(Person person : people) {
                 String birthDate = "";
                 if(person.getBirthDate() != null) {
-                    birthDate = Converter.convertDateToString(person.getBirthDate(), this.context.getString(R.string.sys_date_format));
+                    birthDate = ConvertHelper.convertDateToString(person.getBirthDate(), this.context.getString(R.string.sys_date_format));
                 }
 
                 rows.add(Arrays.asList(person.getFirstName(), person.getLastName(), birthDate));
@@ -168,7 +166,7 @@ public class PDFHelper {
             for(Company company : companies) {
                 String foundation = "";
                 if(company.getFoundation() != null) {
-                    foundation = Converter.convertDateToString(company.getFoundation(), this.context.getString(R.string.sys_date_format));
+                    foundation = ConvertHelper.convertDateToString(company.getFoundation(), this.context.getString(R.string.sys_date_format));
                 }
 
                 rows.add(Arrays.asList(company.getTitle(), foundation));

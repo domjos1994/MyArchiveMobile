@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -163,7 +163,7 @@ public class MainListsFragment extends ParentFragment {
     private void setObject(MediaList mediaList) {
         this.txtListTitle.setText(mediaList.getTitle());
         if(mediaList.getDeadLine() != null) {
-            this.txtListDeadline.setText(Converter.convertDateToString(mediaList.getDeadLine(), this.getString(R.string.sys_date_format)));
+            this.txtListDeadline.setText(ConvertHelper.convertDateToString(mediaList.getDeadLine(), this.getString(R.string.sys_date_format)));
         } else  {
             this.txtListDeadline.setText("");
         }
@@ -176,7 +176,7 @@ public class MainListsFragment extends ParentFragment {
         MediaList mediaList = new MediaList();
         mediaList.setTitle(this.txtListTitle.getText().toString());
         if(!this.txtListDeadline.getText().toString().isEmpty()) {
-            mediaList.setDeadLine(Converter.convertStringToDate(this.txtListDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
+            mediaList.setDeadLine(ConvertHelper.convertStringToDate(this.txtListDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
         } else {
             mediaList.setDeadLine(null);
         }

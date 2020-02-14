@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -81,26 +81,20 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
 
     @Override
     public T getMediaObject() {
-        if(this.object instanceof BaseMediaObject) {
-            if(this.ivMediaCover.getDrawable()!=null) {
-                try {
-                    ((BaseMediaObject) this.object).setCover(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
-                } catch (Exception ignored) {}
-            }
+        if(this.object instanceof BaseMediaObject && this.ivMediaCover.getDrawable()!=null) {
+            try {
+                ((BaseMediaObject) this.object).setCover(ConvertHelper.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+            } catch (Exception ignored) {}
         }
-        if(this.object instanceof Person) {
-            if(this.ivMediaCover.getDrawable() != null) {
-                try {
-                    ((Person) this.object).setImage(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
-                } catch (Exception ignored) {}
-            }
+        if(this.object instanceof Person && this.ivMediaCover.getDrawable() != null) {
+            try {
+                ((Person) this.object).setImage(ConvertHelper.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+            } catch (Exception ignored) {}
         }
-        if(this.object instanceof Company) {
-            if(this.ivMediaCover.getDrawable() != null) {
-                try {
-                    ((Company) this.object).setCover(Converter.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
-                } catch (Exception ignored) {}
-            }
+        if(this.object instanceof Company && this.ivMediaCover.getDrawable() != null) {
+            try {
+                ((Company) this.object).setCover(ConvertHelper.convertDrawableToByteArray(this.ivMediaCover.getDrawable()));
+            } catch (Exception ignored) {}
         }
 
         return this.object;

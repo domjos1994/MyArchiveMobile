@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -60,7 +60,7 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.txtPersonFirstName.setText(this.person.getFirstName());
         this.txtPersonLastName.setText(this.person.getLastName());
         if(this.person.getBirthDate() != null) {
-            this.txtPersonBirthDate.setText(Converter.convertDateToString(this.person.getBirthDate(), this.getString(R.string.sys_date_format)));
+            this.txtPersonBirthDate.setText(ConvertHelper.convertDateToString(this.person.getBirthDate(), this.getString(R.string.sys_date_format)));
         } else {
             this.txtPersonBirthDate.setText("");
         }
@@ -74,7 +74,7 @@ public class PersonFragment extends AbstractFragment<Person> {
             this.person.setLastName(this.txtPersonLastName.getText().toString());
             this.person.setDescription(this.txtPersonDescription.getText().toString());
             if(!this.txtPersonBirthDate.getText().toString().isEmpty()) {
-                this.person.setBirthDate(Converter.convertStringToDate(this.txtPersonBirthDate.getText().toString(), this.getString(R.string.sys_date_format)));
+                this.person.setBirthDate(ConvertHelper.convertStringToDate(this.txtPersonBirthDate.getText().toString(), this.getString(R.string.sys_date_format)));
             }
         } catch (Exception ignored) {}
 

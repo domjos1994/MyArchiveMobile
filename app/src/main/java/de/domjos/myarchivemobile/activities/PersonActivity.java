@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -126,7 +126,7 @@ public final class PersonActivity extends AbstractActivity {
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(person.getImage());
                 baseDescriptionObject.setId(person.getId());
                 baseDescriptionObject.setObject(person);

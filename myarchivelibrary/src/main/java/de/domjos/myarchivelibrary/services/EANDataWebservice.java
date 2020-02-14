@@ -10,7 +10,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -127,7 +127,7 @@ public class EANDataWebservice extends JSONService {
 
         String published = this.getString(attributesObject, "published");
         if(!published.isEmpty()) {
-            baseMediaObject.setReleaseDate(Converter.convertStringToDate(published, "yyyy-MM-dd"));
+            baseMediaObject.setReleaseDate(ConvertHelper.convertStringToDate(published, "yyyy-MM-dd"));
         } else {
             String releaseYear = this.getString(attributesObject, "release_year");
             if(!releaseYear.isEmpty()) {
@@ -141,7 +141,7 @@ public class EANDataWebservice extends JSONService {
 
         String img = this.getString(productObject, "image");
         if(!img.isEmpty()) {
-            baseMediaObject.setCover(Converter.convertStringToByteArray(img));
+            baseMediaObject.setCover(ConvertHelper.convertStringToByteArray(img));
         }
     }
 
@@ -152,7 +152,7 @@ public class EANDataWebservice extends JSONService {
             company.setTitle(this.getString(companyObject, "name"));
             String url = this.getString(companyObject, "url");
             if(!url.isEmpty()) {
-                company.setCover(Converter.convertStringToByteArray(url));
+                company.setCover(ConvertHelper.convertStringToByteArray(url));
             }
             baseMediaObject.getCompanies().add(company);
         }

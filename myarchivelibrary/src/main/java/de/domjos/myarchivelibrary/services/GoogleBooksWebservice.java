@@ -1,18 +1,20 @@
 package de.domjos.myarchivelibrary.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.books.Books;
 import com.google.api.services.books.model.Volume;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -21,6 +23,8 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 
 public class GoogleBooksWebservice extends TitleWebservice<Book> {
+    private final static String HTTP = "http://", HTTPS = "https://";
+
     private String code;
     private String id;
     private String key;
@@ -42,10 +46,8 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
             }
             if(list != null) {
                 List<Volume> volumes = list.execute().getItems();
-                if(volumes != null) {
-                    if(!volumes.isEmpty()) {
-                        return this.getBookFromList(volumes.get(0));
-                    }
+                if(volumes != null && !volumes.isEmpty()) {
+                    return this.getBookFromList(volumes.get(0));
                 }
             }
         } else {
@@ -63,18 +65,20 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         }
         if(list != null) {
             List<Volume> volumes = list.execute().getItems();
-            if(volumes != null) {
-                if(!volumes.isEmpty()) {
-                    for(Volume volume : volumes) {
-                        Book book = new Book();
-                        book.setDescription(volume.getId());
-                        if(volume.getVolumeInfo() != null) {
-                            book.setTitle(volume.getVolumeInfo().getTitle());
+            if(volumes != null && !volumes.isEmpty()) {
+                for(Volume volume : volumes) {
+                    Book book = new Book();
+                    book.setDescription(volume.getId());
+                    if(volume.getVolumeInfo() != null) {
+                        book.setTitle(volume.getVolumeInfo().getTitle());
+                        try {
                             book.setReleaseDate(getReleaseDate(volume.getVolumeInfo().getPublishedDate()));
-                            setCover(volume.getVolumeInfo(), book);
+                        } catch (ParseException e) {
+                            Log.e("Error", e.toString());
                         }
-                        baseMediaObjects.add(book);
+                        setCover(volume.getVolumeInfo(), book);
                     }
+                    baseMediaObjects.add(book);
                 }
             }
         }
@@ -101,7 +105,11 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
                 book.setNumberOfPages(info.getPageCount());
             }
             book.setDescription(info.getDescription());
-            book.setReleaseDate(getReleaseDate(info.getPublishedDate()));
+            try {
+                book.setReleaseDate(getReleaseDate(info.getPublishedDate()));
+            } catch (ParseException ex) {
+                Log.e("Error", ex.toString());
+            }
             if(info.getAverageRating() != null) {
                 if(info.getAverageRating() != 0) {
                     book.setRatingWeb(info.getAverageRating() * 2);
@@ -112,33 +120,27 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
                 book.setRatingWeb(0.0);
             }
 
-            if (info.getAuthors() != null) {
-                if (!info.getAuthors().isEmpty()) {
-                    for (String author : info.getAuthors()) {
-                        Person person = new Person();
-                        String firstName = author.split(" ")[0];
-                        person.setFirstName(firstName);
-                        person.setLastName(author.replace(firstName, "").trim());
-                        book.getPersons().add(person);
-                    }
+            if (info.getAuthors() != null && !info.getAuthors().isEmpty()) {
+                for (String author : info.getAuthors()) {
+                    Person person = new Person();
+                    String firstName = author.split(" ")[0];
+                    person.setFirstName(firstName);
+                    person.setLastName(author.replace(firstName, "").trim());
+                    book.getPersons().add(person);
                 }
             }
 
-            if (info.getPublisher() != null) {
-                if (!info.getPublisher().isEmpty()) {
-                    Company company = new Company();
-                    company.setTitle(info.getPublisher());
-                    book.getCompanies().add(company);
-                }
+            if (info.getPublisher() != null && !info.getPublisher().isEmpty()) {
+                Company company = new Company();
+                company.setTitle(info.getPublisher());
+                book.getCompanies().add(company);
             }
 
-            if (info.getCategories() != null) {
-                if (!info.getCategories().isEmpty()) {
-                    for (String category : info.getCategories()) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(category);
-                        book.getTags().add(baseDescriptionObject);
-                    }
+            if (info.getCategories() != null && !info.getCategories().isEmpty()) {
+                for (String category : info.getCategories()) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(category);
+                    book.getTags().add(baseDescriptionObject);
                 }
             }
             setCover(info, book);
@@ -150,57 +152,41 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         if(info.getImageLinks() != null) {
             Volume.VolumeInfo.ImageLinks imageLinks = info.getImageLinks();
 
-            if(imageLinks.getLarge() != null) {
-                if(!imageLinks.getLarge().isEmpty()) {
-                    book.setCover(Converter.convertStringToByteArray(imageLinks.getLarge().replace("http://", "https://")));
-                }
+            if(imageLinks.getLarge() != null && !imageLinks.getLarge().isEmpty()) {
+                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getLarge().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
             }
 
-            if(book.getCover() == null) {
-                if(imageLinks.getMedium() != null) {
-                    if(!imageLinks.getMedium().isEmpty()) {
-                        book.setCover(Converter.convertStringToByteArray(imageLinks.getMedium().replace("http://", "https://")));
-                    }
-                }
+            if(book.getCover() == null && imageLinks.getMedium() != null && !imageLinks.getMedium().isEmpty()) {
+                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getMedium().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
             }
 
-            if(book.getCover() == null) {
-                if(imageLinks.getSmall() != null) {
-                    if(!imageLinks.getSmall().isEmpty()) {
-                        book.setCover(Converter.convertStringToByteArray(imageLinks.getSmall().replace("http://", "https://")));
-                    }
-                }
+            if(book.getCover() == null && imageLinks.getSmall() != null && !imageLinks.getSmall().isEmpty()) {
+                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getSmall().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
             }
 
-            if(book.getCover() == null) {
-                if(imageLinks.getThumbnail() != null) {
-                    if(!imageLinks.getThumbnail().isEmpty()) {
-                        book.setCover(Converter.convertStringToByteArray(imageLinks.getThumbnail().replace("http://", "https://")));
-                    }
-                }
+            if(book.getCover() == null && imageLinks.getThumbnail() != null && !imageLinks.getThumbnail().isEmpty()) {
+                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getThumbnail().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
             }
         }
     }
 
-    private static Date getReleaseDate(String date) {
+    private static Date getReleaseDate(String date) throws ParseException {
         Date dt = null;
-        try {
-            if(!date.isEmpty()) {
-                if(date.contains("-")) {
-                    String[] spl = date.split("-");
-                    if(spl.length == 2) {
-                        dt = Converter.convertStringToDate(date + "-01", "yyyy-MM-dd");
-                    } else {
-                        dt = Converter.convertStringToDate(date, "yyyy-MM-dd");
-                    }
+        if(!date.isEmpty()) {
+            if(date.contains("-")) {
+                String[] spl = date.split("-");
+                if(spl.length == 2) {
+                    dt = ConvertHelper.convertStringToDate(date + "-01", "yyyy-MM-dd");
                 } else {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date());
-                    calendar.set(Calendar.YEAR, Integer.parseInt(date));
-                    dt = calendar.getTime();
+                    dt = ConvertHelper.convertStringToDate(date, "yyyy-MM-dd");
                 }
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.set(Calendar.YEAR, Integer.parseInt(date));
+                dt = calendar.getTime();
             }
-        } catch (Exception ignored) {}
+        }
         return dt;
     }
 }

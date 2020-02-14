@@ -131,7 +131,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     @Override
     protected void reload() {
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
-            table = "tags";
+            table = this.getString(R.string.media_general_tags).toLowerCase();
         } else {
             table = "categories";
         }
@@ -140,7 +140,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
         this.lvItems.getAdapter().clear();
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
-            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("tags", "", 0, "")) {
+            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects(table, "", 0, "")) {
                 de.domjos.customwidgets.model.objects.BaseDescriptionObject current = new de.domjos.customwidgets.model.objects.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
@@ -193,7 +193,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         try {
             this.lvMedia.getAdapter().clear();
             if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
-                table = "tags";
+                table = this.getString(R.string.media_general_tags).toLowerCase();
             } else {
                 table = "categories";
             }

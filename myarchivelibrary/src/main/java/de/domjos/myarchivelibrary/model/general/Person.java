@@ -40,15 +40,27 @@ public final class Person extends BaseObject implements DatabaseObject {
     }
 
     public Date getBirthDate() {
-        return this.birthDate;
+        if(this.birthDate != null) {
+            return (Date) this.birthDate.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+        if(birthDate != null) {
+            this.birthDate = (Date) birthDate.clone();
+        } else {
+            this.birthDate = null;
+        }
     }
 
     public byte[] getImage() {
-        return this.image;
+        if(this.image != null) {
+            return this.image.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setImage(byte[] image) {

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -62,10 +62,10 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
 
             String deadLine = "", broughtBackAt = "";
             if(libraryObject.getValue().getDeadLine() != null) {
-                deadLine = Converter.convertDateToString(libraryObject.getValue().getDeadLine(), this.getString(R.string.sys_date_format));
+                deadLine = ConvertHelper.convertDateToString(libraryObject.getValue().getDeadLine(), this.getString(R.string.sys_date_format));
             }
             if(libraryObject.getValue().getReturned() != null) {
-                broughtBackAt = Converter.convertDateToString(libraryObject.getValue().getDeadLine(), this.getString(R.string.sys_date_format));
+                broughtBackAt = ConvertHelper.convertDateToString(libraryObject.getValue().getDeadLine(), this.getString(R.string.sys_date_format));
             }
 
             baseDescriptionObject.setDescription(String.format("%s - %s", deadLine, broughtBackAt).trim());

@@ -18,15 +18,27 @@ public final class Company extends BaseDescriptionObject implements DatabaseObje
     }
 
     public Date getFoundation() {
-        return this.foundation;
+        if(this.foundation != null) {
+            return (Date) this.foundation.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setFoundation(Date foundation) {
-        this.foundation = foundation;
+        if(foundation != null) {
+            this.foundation = (Date) foundation.clone();
+        } else {
+            this.foundation = null;
+        }
     }
 
     public byte[] getCover() {
-        return this.cover;
+        if(this.cover != null) {
+            return this.cover.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setCover(byte[] cover) {

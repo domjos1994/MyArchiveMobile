@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -76,11 +76,6 @@ public class MediaDialog extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.media_dialog, container, true);
         Objects.requireNonNull(this.getDialog()).requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -126,43 +121,33 @@ public class MediaDialog extends DialogFragment {
                         Validator validator = new Validator(this.activity, icon);
                         List<BaseDescriptionObject> baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.activity, "");
 
-                        if(validator.checkDuplicatedEntry(this.currentObject.getTitle(), 0, baseDescriptionObjects)) {
-                            if(currentWebService != null) {
-                                if(currentWebService instanceof MovieDBWebservice) {
-                                    String key = MainActivity.GLOBALS.getSettings().getMovieDBKey();
-                                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.activity, notification, icon, description, key);
-                                    List<Movie> movies = theMovieDBTask.execute(id).get();
-                                    if(movies != null) {
-                                        if(!movies.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movies.get(0));
-                                        }
-                                    }
-                                } else if(currentWebService instanceof AudioDBWebservice) {
-                                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.activity, notification, icon);
-                                    List<Album> albums = theMovieDBTask.execute(id).get();
-                                    if(albums != null) {
-                                        if(!albums.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(albums.get(0));
-                                        }
-                                    }
-                                } else if(currentWebService instanceof GoogleBooksWebservice) {
-                                    String key = MainActivity.GLOBALS.getSettings().getGoogleBooksKey();
-                                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
-                                    List<Book> books = googleBooksTask.execute("").get();
-                                    if(books != null) {
-                                        if(!books.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(books.get(0));
-                                        }
-                                    }
-                                } else if(currentWebService instanceof IGDBWebservice) {
-                                    String key = MainActivity.GLOBALS.getSettings().getIGDBKey();
-                                    IGDBTask igdbTask = new IGDBTask(this.activity, notification, icon, key);
-                                    List<Game> games = igdbTask.execute(id).get();
-                                    if(games != null) {
-                                        if(!games.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(games.get(0));
-                                        }
-                                    }
+                        if(validator.checkDuplicatedEntry(this.currentObject.getTitle(), 0, baseDescriptionObjects) && currentWebService != null) {
+                            if(currentWebService instanceof MovieDBWebservice) {
+                                String key = MainActivity.GLOBALS.getSettings().getMovieDBKey();
+                                TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.activity, notification, icon, description, key);
+                                List<Movie> movies = theMovieDBTask.execute(id).get();
+                                if(movies != null && !movies.isEmpty()) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movies.get(0));
+                                }
+                            } else if(currentWebService instanceof AudioDBWebservice) {
+                                TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.activity, notification, icon);
+                                List<Album> albums = theMovieDBTask.execute(id).get();
+                                if(albums != null && !albums.isEmpty()) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(albums.get(0));
+                                }
+                            } else if(currentWebService instanceof GoogleBooksWebservice) {
+                                String key = MainActivity.GLOBALS.getSettings().getGoogleBooksKey();
+                                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
+                                List<Book> books = googleBooksTask.execute("").get();
+                                if(books != null && !books.isEmpty()) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(books.get(0));
+                                }
+                            } else if(currentWebService instanceof IGDBWebservice) {
+                                String key = MainActivity.GLOBALS.getSettings().getIGDBKey();
+                                IGDBTask igdbTask = new IGDBTask(this.activity, notification, icon, key);
+                                List<Game> games = igdbTask.execute(id).get();
+                                if(games != null && !games.isEmpty()) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(games.get(0));
                                 }
                             }
                         }
@@ -200,17 +185,15 @@ public class MediaDialog extends DialogFragment {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void reload(int position) {
         try {
-            if(this.type != null) {
-                if(this.titleWebservices != null) {
-                    TitleWebservice currentService = this.webServiceAdapter.getItem(position);
+            if(this.type != null && this.titleWebservices != null) {
+                TitleWebservice currentService = this.webServiceAdapter.getItem(position);
 
-                    if(currentService != null) {
-                        SearchTask searchTask = new SearchTask(this.activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
-                        List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(this.search).get();
-                        this.lvMedia.getAdapter().clear();
-                        for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                            this.lvMedia.getAdapter().add(baseDescriptionObject);
-                        }
+                if(currentService != null) {
+                    SearchTask searchTask = new SearchTask(this.activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
+                    List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(this.search).get();
+                    this.lvMedia.getAdapter().clear();
+                    for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                        this.lvMedia.getAdapter().add(baseDescriptionObject);
                     }
                 }
             }
@@ -250,6 +233,7 @@ public class MediaDialog extends DialogFragment {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setLabel(int position) {
         TitleWebservice<? extends BaseMediaObject> currentService = this.webServiceAdapter.getItem(position);
 
@@ -288,7 +272,7 @@ public class MediaDialog extends DialogFragment {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setTitle(baseMediaObject.getTitle());
                         baseDescriptionObject.setCover(baseMediaObject.getCover());
-                        baseDescriptionObject.setDescription(Converter.convertDateToString(baseMediaObject.getReleaseDate(), super.getContext().getString(R.string.sys_date_format)));
+                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), super.getContext().getString(R.string.sys_date_format)));
                         baseDescriptionObject.setObject(baseMediaObject);
                         baseDescriptionObjects.add(baseDescriptionObject);
                     }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -157,7 +157,7 @@ public class MainMoviesFragment extends ParentFragment {
             for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies(this.search)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(movie.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(movie.getCover());
                 baseDescriptionObject.setId(movie.getId());
                 baseDescriptionObject.setObject(movie);

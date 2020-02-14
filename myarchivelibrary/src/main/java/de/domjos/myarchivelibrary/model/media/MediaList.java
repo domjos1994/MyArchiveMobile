@@ -19,11 +19,19 @@ public class MediaList extends BaseDescriptionObject implements DatabaseObject {
     }
 
     public Date getDeadLine() {
-        return this.deadLine;
+        if(this.deadLine != null) {
+            return (Date) this.deadLine.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setDeadLine(Date deadLine) {
-        this.deadLine = deadLine;
+        if(deadLine != null) {
+            this.deadLine = (Date) deadLine.clone();
+        } else {
+            this.deadLine = null;
+        }
     }
 
     public List<BaseMediaObject> getBaseMediaObjects() {

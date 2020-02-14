@@ -6,13 +6,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.*;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 
 public class WikiDataWebservice extends JSONService {
+    private final static String DATA_TYPE = "datatype", VALUE = "value", DATA_VALUE = "datavalue", TIME = "TIME";
+
     private String id = "";
     private String companyName, firstName, lastName;
     private final static String DATE_FORMAT = "+yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -40,7 +43,7 @@ public class WikiDataWebservice extends JSONService {
         this.lastName = lastName;
     }
 
-    public Person getPerson() throws Exception {
+    public Person getPerson() throws IOException, JSONException, ParseException {
         Person person = new Person();
         person.setFirstName(this.firstName);
         person.setLastName(this.lastName);
@@ -55,8 +58,8 @@ public class WikiDataWebservice extends JSONService {
                 if(claims.has(param)) {
                     JSONObject paramObj = claims.getJSONArray(param).getJSONObject(0);
                     JSONObject mainSnak = paramObj.getJSONObject("mainsnak");
-                    if(mainSnak.getString("datatype").equals("wikibase-item")) {
-                        JSONObject valueObj = mainSnak.getJSONObject("datavalue").getJSONObject("value");
+                    if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("wikibase-item")) {
+                        JSONObject valueObj = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getJSONObject(WikiDataWebservice.VALUE);
                         String valID = valueObj.getString("id");
                         switch (param) {
                             case "P734":
@@ -68,19 +71,21 @@ public class WikiDataWebservice extends JSONService {
                             default:
                                 // nothing to do here
                         }
-                    } else if(mainSnak.getString("datatype").equals("time")) {
-                        JSONObject valueObj = mainSnak.getJSONObject("datavalue").getJSONObject("value");
-                        String valID = valueObj.getString("time");
-                        person.setBirthDate(Converter.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
-                    } else if(mainSnak.getString("datatype").equals("commonsMedia")) {
-                        String image = mainSnak.getJSONObject("datavalue").getString("value");
+                    } else if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals(WikiDataWebservice.TIME)) {
+                        JSONObject valueObj = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getJSONObject(WikiDataWebservice.VALUE);
+                        String valID = valueObj.getString(WikiDataWebservice.TIME);
+                        person.setBirthDate(ConvertHelper.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
+                    } else if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("commonsMedia")) {
+                        String image = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getString(WikiDataWebservice.VALUE);
                         person.setImage(this.getImage(image));
                     }
                 }
-                if(person.getLastName().isEmpty())
+                if(person.getLastName().isEmpty()) {
                     person.setLastName(this.lastName);
-                if(person.getFirstName().isEmpty())
+                }
+                if(person.getFirstName().isEmpty()) {
                     person.setFirstName(this.firstName);
+                }
 
                 if(!person.getFirstName().trim().equals(this.firstName)) {
                     person.setFirstName(this.firstName);
@@ -90,7 +95,7 @@ public class WikiDataWebservice extends JSONService {
         return person;
     }
 
-    public Company getCompany() throws Exception {
+    public Company getCompany() throws IOException, JSONException, ParseException {
         Company company = new Company();
         company.setTitle(this.companyName);
         if(!this.id.isEmpty()) {
@@ -104,12 +109,12 @@ public class WikiDataWebservice extends JSONService {
                 if(claims.has(param)) {
                     JSONObject paramObj = claims.getJSONArray(param).getJSONObject(0);
                     JSONObject mainSnak = paramObj.getJSONObject("mainsnak");
-                    if(mainSnak.getString("datatype").equals("time")) {
-                        JSONObject valueObj = mainSnak.getJSONObject("datavalue").getJSONObject("value");
-                        String valID = valueObj.getString("time");
-                        company.setFoundation(Converter.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
-                    } else if(mainSnak.getString("datatype").equals("commonsMedia")) {
-                        String image = mainSnak.getJSONObject("datavalue").getString("value");
+                    if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals(WikiDataWebservice.TIME)) {
+                        JSONObject valueObj = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getJSONObject(WikiDataWebservice.VALUE);
+                        String valID = valueObj.getString(WikiDataWebservice.TIME);
+                        company.setFoundation(ConvertHelper.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
+                    } else if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("commonsMedia")) {
+                        String image = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getString(WikiDataWebservice.VALUE);
                         company.setCover(this.getImage(image));
                     }
                 }
@@ -118,7 +123,7 @@ public class WikiDataWebservice extends JSONService {
         return company;
     }
 
-    private byte[] getImage(String name) throws Exception {
+    private byte[] getImage(String name) throws IOException, JSONException {
         String url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&format=json&titles=File:" + name.replace(" ", "_");
         String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
@@ -128,17 +133,17 @@ public class WikiDataWebservice extends JSONService {
             JSONObject info = pages.getJSONObject(iterator.next()).getJSONArray("imageinfo").getJSONObject(0);
             String imgURL = info.getString("url");
             if(!imgURL.endsWith(".svg"))  {
-                return Converter.convertStringToByteArray(imgURL);
+                return ConvertHelper.convertStringToByteArray(imgURL);
             }
         }
         return null;
     }
 
-    private String getValue(String id) throws Exception {
+    private String getValue(String id) throws IOException, JSONException {
         String url = String.format("https://www.wikidata.org/w/api.php?action=wbgetentities&ids=%s&languages=%s&format=json", id, LANGUAGE);
         String dataText = readUrl(new URL(url));
         JSONObject obj = new JSONObject(dataText);
         JSONObject idObj = obj.getJSONObject("entities").getJSONObject(id);
-        return idObj.getJSONObject("labels").getJSONObject(LANGUAGE).getString("value");
+        return idObj.getJSONObject("labels").getJSONObject(LANGUAGE).getString(WikiDataWebservice.VALUE);
     }
 }

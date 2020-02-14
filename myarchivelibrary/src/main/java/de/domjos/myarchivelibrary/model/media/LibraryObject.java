@@ -48,19 +48,35 @@ public class LibraryObject extends BaseObject implements DatabaseObject {
     }
 
     public Date getDeadLine() {
-        return this.deadLine;
+        if(this.deadLine != null) {
+            return (Date) this.deadLine.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setDeadLine(Date deadLine) {
-        this.deadLine = deadLine;
+        if(deadLine != null) {
+            this.deadLine = (Date) deadLine.clone();
+        } else {
+            this.deadLine = null;
+        }
     }
 
     public Date getReturned() {
-        return this.returned;
+        if(this.returned != null) {
+            return (Date) this.returned.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setReturned(Date returned) {
-        this.returned = returned;
+        if(returned != null) {
+            this.returned = (Date) returned.clone();
+        } else {
+            this.returned = null;
+        }
     }
 
     @Override

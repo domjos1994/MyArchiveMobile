@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
@@ -38,8 +38,8 @@ public class MediaRatingFragment extends AbstractFragment<BaseMediaObject> {
         this.lblRatingWeb = view.findViewById(R.id.lblRatingWeb);
         this.txtRatingNote = view.findViewById(R.id.txtRatingNote);
 
-        this.rbRatingOwn.setOnRatingBarChangeListener((ratingBar, v, b) -> this.lblRatingOwn.setText(Converter.convertDoubleToString(v * 10.0)));
-        this.rbRatingWeb.setOnRatingBarChangeListener((ratingBar, v, b) -> this.lblRatingWeb.setText(Converter.convertDoubleToString(v * 10.0)));
+        this.rbRatingOwn.setOnRatingBarChangeListener((ratingBar, v, b) -> this.lblRatingOwn.setText(ConvertHelper.convertDoubleToString(v * 10.0)));
+        this.rbRatingWeb.setOnRatingBarChangeListener((ratingBar, v, b) -> this.lblRatingWeb.setText(ConvertHelper.convertDoubleToString(v * 10.0)));
 
         this.changeMode(false);
     }

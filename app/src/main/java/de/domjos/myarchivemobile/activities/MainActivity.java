@@ -124,59 +124,56 @@ public final class MainActivity extends AbstractActivity {
         });
 
         ConnectivityManager manager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
-        if(manager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(manager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    if(menu != null && label != null) {
+                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
-                    @Override
-                    public void onAvailable(@NonNull Network network) {
-                        if(menu != null && label != null) {
-                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
-
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                        }
+                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                     }
+                }
 
-                    @Override
-                    public void onLosing(@NonNull Network network, int maxMsToLive) {
-                        if(menu != null && label != null) {
-                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+                @Override
+                public void onLosing(@NonNull Network network, int maxMsToLive) {
+                    if(menu != null && label != null) {
+                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                        }
+                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                     }
+                }
 
-                    @Override
-                    public void onLost(@NonNull Network network) {
-                        if(menu != null && label != null) {
-                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+                @Override
+                public void onLost(@NonNull Network network) {
+                    if(menu != null && label != null) {
+                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                        }
+                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                     }
+                }
 
-                    @Override
-                    public void onUnavailable() {
-                        if(menu != null && label != null) {
-                            boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                            boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                            boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                            boolean game = label.equals(getString(R.string.main_navigation_media_games));
+                @Override
+                public void onUnavailable() {
+                    if(menu != null && label != null) {
+                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
 
-                            runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                        }
+                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
                     }
-                });
-            }
+                }
+            });
         }
     }
 
@@ -323,12 +320,10 @@ public final class MainActivity extends AbstractActivity {
             if(requestCode == MainActivity.SETTINGS_REQUEST) {
                 this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
             }
-            if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST) {
-                if(data.hasExtra("type") && data.hasExtra("id")) {
-                    String type = data.getStringExtra("type");
-                    if(type != null) {
-                        this.selectTab(type, data.getLongExtra("id", 0));
-                    }
+            if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST && data.hasExtra("type") && data.hasExtra("id")) {
+                String type = data.getStringExtra("type");
+                if(type != null) {
+                    this.selectTab(type, data.getLongExtra("id", 0));
                 }
             }
 

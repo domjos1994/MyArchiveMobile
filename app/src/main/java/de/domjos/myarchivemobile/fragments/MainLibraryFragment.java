@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
@@ -173,12 +173,12 @@ public class MainLibraryFragment extends ParentFragment {
             this.txtLibraryPerson.setText("");
         }
         if(libraryObject.getDeadLine() != null) {
-            this.txtLibraryDeadline.setText(Converter.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format)));
+            this.txtLibraryDeadline.setText(ConvertHelper.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format)));
         } else {
             this.txtLibraryDeadline.setText("");
         }
         if(libraryObject.getReturned() != null) {
-            this.txtLibraryReturnedAt.setText(Converter.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format)));
+            this.txtLibraryReturnedAt.setText(ConvertHelper.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format)));
         } else {
             this.txtLibraryReturnedAt.setText("");
         }
@@ -196,10 +196,10 @@ public class MainLibraryFragment extends ParentFragment {
             libraryObject.setPerson(person);
         }
         if(!this.txtLibraryDeadline.getText().toString().isEmpty()) {
-            libraryObject.setDeadLine(Converter.convertStringToDate(this.txtLibraryDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
+            libraryObject.setDeadLine(ConvertHelper.convertStringToDate(this.txtLibraryDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
         }
         if(!this.txtLibraryReturnedAt.getText().toString().isEmpty()) {
-            libraryObject.setReturned(Converter.convertStringToDate(this.txtLibraryReturnedAt.getText().toString(), this.getString(R.string.sys_date_format)));
+            libraryObject.setReturned(ConvertHelper.convertStringToDate(this.txtLibraryReturnedAt.getText().toString(), this.getString(R.string.sys_date_format)));
         }
         return libraryObject;
     }
@@ -214,10 +214,10 @@ public class MainLibraryFragment extends ParentFragment {
                     baseDescriptionObject.setTitle(String.format("%s %s", libraryObject.getPerson().getFirstName(), libraryObject.getPerson().getLastName()).trim());
                     String description = "";
                     if(libraryObject.getDeadLine() != null) {
-                        description = Converter.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format));
+                        description = ConvertHelper.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format));
                     }
                     if(libraryObject.getReturned() != null) {
-                        description += " - " + Converter.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format));
+                        description += " - " + ConvertHelper.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format));
                     }
                     baseDescriptionObject.setDescription(description);
                     baseDescriptionObject.setObject(libraryObject);

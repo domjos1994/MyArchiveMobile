@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -41,10 +41,8 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         album.setOriginalTitle(albumObject.getString("strAlbumStripped"));
         album.setDescription(this.getDescription(albumObject, "strDescription"));
         album.setReleaseDate(setReleaseYear(albumObject, "intYearReleased"));
-        if(albumObject.has("intScore")) {
-            if(!albumObject.isNull("intScore")) {
-                album.setRatingWeb(albumObject.getDouble("intScore"));
-            }
+        if(albumObject.has("intScore") && !albumObject.isNull("intScore")) {
+            album.setRatingWeb(albumObject.getDouble("intScore"));
         }
         this.setCategory(albumObject, album);
         album.setCover(setCover(albumObject, "strAlbumThumb"));
@@ -84,17 +82,11 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
     private String getDescription(JSONObject albumObject, String key) {
         String description = "";
         try {
-            if(albumObject.has(key + "DE")) {
-                if(!albumObject.isNull(key + "DE")) {
-                    description = albumObject.getString(key + "DE");
-                }
+            if(albumObject.has(key + "DE") && !albumObject.isNull(key + "DE")) {
+                description = albumObject.getString(key + "DE");
             }
-            if(description.isEmpty()) {
-                if(albumObject.has(key + "EN")) {
-                    if(!albumObject.isNull(key + "EN")) {
-                        description = albumObject.getString(key + "EN");
-                    }
-                }
+            if(description.isEmpty() && albumObject.has(key + "EN") && !albumObject.isNull(key + "EN")) {
+                description = albumObject.getString(key + "EN");
             }
         } catch (Exception ignored) {}
         return description;
@@ -116,42 +108,34 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
 
     private void setCategory(JSONObject albumObject, Album album) {
         try {
-            if(albumObject.has("strGenre")) {
-                if(!albumObject.isNull("strGenre")) {
-                    String genre = albumObject.getString("strGenre");
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(genre);
-                    album.setCategory(baseDescriptionObject);
-                }
+            if(albumObject.has("strGenre") && !albumObject.isNull("strGenre")) {
+                String genre = albumObject.getString("strGenre");
+                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                baseDescriptionObject.setTitle(genre);
+                album.setCategory(baseDescriptionObject);
             }
         } catch (Exception ignored) {}
     }
 
     private static byte[] setCover(JSONObject albumObject, String key) {
         try {
-            if(albumObject.has(key)) {
-                if(!albumObject.isNull(key)) {
-                    return Converter.convertStringToByteArray(albumObject.getString(key));
-                }
+            if(albumObject.has(key) && !albumObject.isNull(key)) {
+                return ConvertHelper.convertStringToByteArray(albumObject.getString(key));
             }
         } catch (Exception ignored) {}
         return null;
     }
 
-    private void setArtist(JSONObject albumObject, Album album) {
-        try {
-            if(albumObject.has("idArtist")) {
-                if(!albumObject.isNull("idArtist")) {
-                    JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/artist.php?i=" + albumObject.getLong("idArtist"))));
-                    JSONObject artistObject = jsonObject.getJSONArray("artists").getJSONObject(0);
-                    Company company = new Company();
-                    company.setTitle(artistObject.getString("strArtist"));
-                    company.setFoundation(setReleaseYear(artistObject, "intFormedYear"));
-                    company.setDescription(this.getDescription(artistObject, "strBiography"));
-                    company.setCover(setCover(artistObject, "strArtistThumb"));
-                    album.getCompanies().add(company);
-                }
-            }
-        } catch (Exception ignored) {}
+    private void setArtist(JSONObject albumObject, Album album) throws JSONException, IOException {
+        if(albumObject.has("idArtist") && !albumObject.isNull("idArtist")) {
+            JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/artist.php?i=" + albumObject.getLong("idArtist"))));
+            JSONObject artistObject = jsonObject.getJSONArray("artists").getJSONObject(0);
+            Company company = new Company();
+            company.setTitle(artistObject.getString("strArtist"));
+            company.setFoundation(setReleaseYear(artistObject, "intFormedYear"));
+            company.setDescription(this.getDescription(artistObject, "strBiography"));
+            company.setCover(setCover(artistObject, "strArtistThumb"));
+            album.getCompanies().add(company);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package de.domjos.myarchivelibrary.services;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -23,6 +24,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 
 public class MovieDBWebservice extends TitleWebservice<Movie> {
+    private final static String NAME = "name";
     private final static String BASE_URL = "https://api.themoviedb.org/3";
     private final static String IMAGE_URL = "https://image.tmdb.org/t/p/w500";
     private String type;
@@ -46,7 +48,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         JSONObject resultObject = new JSONObject(readUrl(new URL(MovieDBWebservice.BASE_URL + "/" + this.type +"/" + this.SEARCH + "?api_key=" + this.key + "&language=" + Locale.getDefault().getLanguage())));
 
         Movie movie = new Movie();
-        movie.setTitle(setString(resultObject, Arrays.asList("name", "title")));
+        movie.setTitle(setString(resultObject, Arrays.asList(MovieDBWebservice.NAME, "title")));
         movie.setOriginalTitle(setString(resultObject, Arrays.asList("original_name", "original_title")));
         movie.setDescription(resultObject.getString("overview"));
         movie.setRatingWeb(this.getRating(resultObject));
@@ -74,10 +76,8 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
 
     private double getRating(JSONObject jsonObject) {
         try {
-            if(jsonObject.has("vote_average")) {
-                if(!jsonObject.isNull("vote_average")) {
-                    return jsonObject.getDouble("vote_average");
-                }
+            if(jsonObject.has("vote_average") && !jsonObject.isNull("vote_average")) {
+                return jsonObject.getDouble("vote_average");
             }
         } catch (Exception ignored) {}
         return 0.0;
@@ -93,8 +93,8 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                 if(!jsonArray.isNull(i)) {
                     JSONObject resultObject = jsonArray.getJSONObject(i);
                     Movie movie = new Movie();
-                    if(resultObject.has("name")) {
-                        movie.setTitle(resultObject.getString("name"));
+                    if(resultObject.has(MovieDBWebservice.NAME)) {
+                        movie.setTitle(resultObject.getString(MovieDBWebservice.NAME));
                     } else if(resultObject.has("title")) {
                         movie.setTitle(resultObject.getString("title"));
                     }
@@ -136,7 +136,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         try {
             String date = setString(resultObject, Arrays.asList("last_air_date", "release_date"));
             if(!date.trim().isEmpty()) {
-                movie.setReleaseDate(Converter.convertStringToDate(date, "yyyy-MM-dd"));
+                movie.setReleaseDate(ConvertHelper.convertStringToDate(date, "yyyy-MM-dd"));
             }
         } catch (Exception ignored) {}
     }
@@ -156,7 +156,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                 for(int i = 0; i<=genreArray.length()-1; i++) {
                     JSONObject genreObject = genreArray.getJSONObject(i);
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(genreObject.getString("name"));
+                    baseDescriptionObject.setTitle(genreObject.getString(MovieDBWebservice.NAME));
                     movie.getTags().add(baseDescriptionObject);
                 }
             }
@@ -170,7 +170,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                 for(int i = 0; i<=companyArray.length()-1; i++) {
                     JSONObject companyObject = companyArray.getJSONObject(i);
                     Company company = new Company();
-                    company.setTitle(companyObject.getString("name"));
+                    company.setTitle(companyObject.getString(MovieDBWebservice.NAME));
                     company.setCover(getImage(companyObject.getString("logo_path")));
                     movie.getCompanies().add(company);
                 }
@@ -180,7 +180,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
 
     private static byte[] getImage(String path) {
         try {
-            return Converter.convertStringToByteArray(MovieDBWebservice.IMAGE_URL + path);
+            return ConvertHelper.convertStringToByteArray(MovieDBWebservice.IMAGE_URL + path);
         } catch (Exception ignored) {}
         return null;
     }
@@ -200,7 +200,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                 for(int i = 0; i<=max; i++) {
                     JSONObject castObject = jsonArray.getJSONObject(i);
                     Person person = new Person();
-                    String name = castObject.getString("name");
+                    String name = castObject.getString(MovieDBWebservice.NAME);
                     String[] spl = name.split(" ");
                     String firstName = spl[0].trim();
                     String lastName = name.replace(spl[0].trim(), "").trim();
@@ -214,6 +214,8 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                     movie.getPersons().add(person);
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (JSONException | IOException ex) {
+            Log.e("Error", ex.toString());
+        }
     }
 }

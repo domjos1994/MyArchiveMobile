@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -126,7 +126,7 @@ public final class CompanyActivity extends AbstractActivity {
             for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("", 0)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(company.getTitle());
-                baseDescriptionObject.setDescription(Converter.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(company.getCover());
                 baseDescriptionObject.setId(company.getId());
                 baseDescriptionObject.setObject(company);

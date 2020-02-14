@@ -37,10 +37,8 @@ public class MainExportFragment extends ParentFragment {
         cmdExportPath.setOnClickListener(event -> {
             FilePickerDialog dialog = ControlsHelper.openFilePicker(false, true, Arrays.asList("pdf", "PDF"), MainExportFragment.this.getActivity());
             dialog.setDialogSelectionListener(files -> {
-                if(files != null) {
-                    if(files.length != 0) {
-                        txtExportPath.setText(files[0]);
-                    }
+                if(files != null && files.length != 0) {
+                    txtExportPath.setText(files[0]);
                 }
             });
             dialog.show();

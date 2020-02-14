@@ -52,11 +52,19 @@ public class BaseMediaObject extends BaseDescriptionObject {
     }
 
     public Date getReleaseDate() {
-        return this.releaseDate;
+        if(this.releaseDate != null) {
+            return (Date) this.releaseDate.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+        if(releaseDate != null) {
+            this.releaseDate = (Date) releaseDate.clone();
+        } else {
+            this.releaseDate = null;
+        }
     }
 
     public String getCode() {
@@ -108,7 +116,11 @@ public class BaseMediaObject extends BaseDescriptionObject {
     }
 
     public byte[] getCover() {
-        return this.cover;
+        if(this.cover != null) {
+            return this.cover.clone();
+        } else {
+            return null;
+        }
     }
 
     public void setCover(byte[] cover) {
