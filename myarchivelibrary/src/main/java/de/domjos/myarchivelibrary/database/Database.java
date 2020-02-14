@@ -452,6 +452,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindLong(7, mediaFilter.isMusic() ? 1 : 0);
         sqLiteStatement.bindLong(8, mediaFilter.isGames() ? 1 : 0);
         sqLiteStatement.execute();
+        sqLiteStatement.close();
     }
 
     public List<MediaFilter> getFilters(String where) {
@@ -910,7 +911,11 @@ public class Database extends SQLiteOpenHelper {
 
     private int insertOrUpdateBaseMediaObject(SQLiteStatement sqLiteStatement, BaseMediaObject baseMediaObject) {
         sqLiteStatement.bindString(1, baseMediaObject.getTitle());
-        sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
+        if(baseMediaObject.getOriginalTitle() != null) {
+            sqLiteStatement.bindString(2, baseMediaObject.getOriginalTitle());
+        } else {
+            sqLiteStatement.bindString(2, "");
+        }
         if(baseMediaObject.getReleaseDate()!=null) {
             sqLiteStatement.bindString(3, Objects.requireNonNull(ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), Database.DATE_FORMAT)));
         } else {

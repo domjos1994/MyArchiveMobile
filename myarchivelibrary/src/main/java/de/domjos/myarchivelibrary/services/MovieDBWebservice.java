@@ -50,7 +50,9 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         Movie movie = new Movie();
         movie.setTitle(setString(resultObject, Arrays.asList(MovieDBWebservice.NAME, "title")));
         movie.setOriginalTitle(setString(resultObject, Arrays.asList("original_name", "original_title")));
-        movie.setDescription(resultObject.getString("overview"));
+        if(resultObject.has("overview") && !resultObject.isNull("overview")) {
+            movie.setDescription(resultObject.getString("overview"));
+        }
         movie.setRatingWeb(this.getRating(resultObject));
 
         this.getLength(resultObject, movie);
