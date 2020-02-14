@@ -335,12 +335,46 @@ public class MainHomeFragment extends ParentFragment {
 
     private void reloadFilter() {
         this.arrayAdapter.clear();
+
         MediaFilter mediaFilter = new MediaFilter();
         mediaFilter.setTitle(this.getString(R.string.filter_no_filter));
         this.arrayAdapter.add(mediaFilter);
+
         this.tempFilter = new MediaFilter();
         this.tempFilter.setTitle(this.getString(R.string.filter_temp));
         this.arrayAdapter.add(this.tempFilter);
+
+        MediaFilter bookFilter = new MediaFilter();
+        bookFilter.setTitle("[" + this.getString(R.string.main_navigation_media_books) + "]");
+        bookFilter.setBooks(true);
+        bookFilter.setMusic(false);
+        bookFilter.setGames(false);
+        bookFilter.setMovies(false);
+        this.arrayAdapter.add(bookFilter);
+
+        MediaFilter movieFilter = new MediaFilter();
+        movieFilter.setTitle("[" + this.getString(R.string.main_navigation_media_movies) + "]");
+        movieFilter.setBooks(false);
+        movieFilter.setMusic(false);
+        movieFilter.setGames(false);
+        movieFilter.setMovies(true);
+        this.arrayAdapter.add(movieFilter);
+
+        MediaFilter musicFilter = new MediaFilter();
+        musicFilter.setTitle("[" + this.getString(R.string.main_navigation_media_music) + "]");
+        musicFilter.setBooks(false);
+        musicFilter.setMusic(true);
+        musicFilter.setGames(false);
+        musicFilter.setMovies(false);
+        this.arrayAdapter.add(musicFilter);
+
+        MediaFilter gamesFilter = new MediaFilter();
+        gamesFilter.setTitle("[" + this.getString(R.string.main_navigation_media_games) + "]");
+        gamesFilter.setBooks(false);
+        gamesFilter.setMusic(false);
+        gamesFilter.setGames(true);
+        gamesFilter.setMovies(false);
+        this.arrayAdapter.add(gamesFilter);
 
         for(MediaFilter filter : MainActivity.GLOBALS.getDatabase().getFilters("")) {
             this.arrayAdapter.add(filter);
