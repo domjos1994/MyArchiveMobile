@@ -3,12 +3,15 @@ package de.domjos.myarchivemobile.dialogs;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.*;
 
 import androidx.fragment.app.DialogFragment;
@@ -20,21 +23,42 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.Converter;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivelibrary.model.media.games.Game;
+import de.domjos.myarchivelibrary.model.media.movies.Movie;
+import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.services.AudioDBWebservice;
+import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
+import de.domjos.myarchivelibrary.services.IGDBWebservice;
+import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivelibrary.services.TitleWebservice;
 import de.domjos.myarchivelibrary.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
+import de.domjos.myarchivelibrary.tasks.IGDBTask;
+import de.domjos.myarchivelibrary.tasks.TheAudioDBTask;
+import de.domjos.myarchivelibrary.tasks.TheMovieDBTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
 
 public class MediaDialog extends DialogFragment {
+    private Activity activity;
     private BaseDescriptionObject currentObject;
     private TextView lblTitle;
+    private String type, search;
+    private boolean multiple = false;
+    private List<TitleWebservice<? extends BaseMediaObject>> titleWebservices;
+
+    private SwipeRefreshDeleteList lvMedia;
+    private EditText txtSearch;
+    private ImageButton cmdSearch, cmdSave;
     private Spinner spWebservices;
     private ArrayAdapter<? extends TitleWebservice<? extends BaseMediaObject>> webServiceAdapter;
-    private List<TitleWebservice<? extends BaseMediaObject>> titleWebservices;
 
     public static MediaDialog newInstance(String search, String type, List<TitleWebservice<? extends BaseMediaObject>> titleWebservices) {
         MediaDialog mediaDialog = new MediaDialog();
@@ -59,103 +83,184 @@ public class MediaDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.media_dialog, container, true);
+        Objects.requireNonNull(this.getDialog()).requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.initControls(v);
+        this.changeView();
+        this.setLabel(0);
 
-        Activity activity = Objects.requireNonNull(this.getActivity());
-        Bundle arguments = Objects.requireNonNull(this.getArguments());
-        String type = arguments.getString("type");
-        String search = arguments.getString("search");
+        this.txtSearch.setText(this.search);
 
-        EditText txtSearch = v.findViewById(R.id.txtSearch);
-        ImageButton cmdSearch = v.findViewById(R.id.cmdSearch);
-        SwipeRefreshDeleteList lvMedia = v.findViewById(R.id.lvSuggestions);
-        ImageButton cmdSave = v.findViewById(R.id.cmdSave);
-        this.lblTitle = v.findViewById(R.id.lblTitle);
-        this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
-
-        this.spWebservices = v.findViewById(R.id.spWebServices);
-        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item, this.titleWebservices);
-        this.spWebservices.setAdapter(this.webServiceAdapter);
-        this.webServiceAdapter.notifyDataSetChanged();
-
-        SwipeRefreshDeleteList lvSelected = v.findViewById(R.id.lvSelectedMedia);
-
-        if(this.titleWebservices != null) {
-            if(this.titleWebservices.size() != 1) {
-                this.spWebservices.setVisibility(View.VISIBLE);
-                lvSelected.setVisibility(View.VISIBLE);
-                ((LinearLayout.LayoutParams) lvMedia.getLayoutParams()).weight = 10;
-            } else {
-                this.spWebservices.setVisibility(View.GONE);
-                lvSelected.setVisibility(View.GONE);
-                ((LinearLayout.LayoutParams) lvMedia.getLayoutParams()).weight = 16;
-            }
+        if(!this.search.trim().isEmpty()) {
+            this.reload(0);
         }
 
-        txtSearch.setText(search);
-
-        this.reload(activity, type, search, lvMedia, 0);
-
-        cmdSearch.setOnClickListener(view -> this.reload(activity, type, txtSearch.getText().toString(), lvMedia, this.spWebservices.getSelectedItemPosition()));
+        this.cmdSearch.setOnClickListener(view -> {
+            this.reload(this.spWebservices.getSelectedItemPosition());
+            currentObject = null;
+        });
 
         this.spWebservices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                reload(getActivity(), type, txtSearch.getText().toString(), lvMedia, position);
+                setLabel(position);
+                lvMedia.getAdapter().clear();
+                currentObject = null;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
-            this.currentObject = listObject;
-            if(lvSelected.getVisibility() != View.GONE) {
-                lvSelected.getAdapter().add(this.currentObject);
+        this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> this.currentObject = listObject);
+
+        this.cmdSave.setOnClickListener(view -> {
+            if(this.currentObject != null) {
+                if(this.multiple) {
+                    int icon = R.mipmap.ic_launcher_round;
+                    boolean notification = MainActivity.GLOBALS.getSettings().isNotifications();
+
+                    try {
+                        TitleWebservice<? extends BaseMediaObject> currentWebService = this.webServiceAdapter.getItem(this.spWebservices.getSelectedItemPosition());
+                        long id = ((BaseMediaObject) this.currentObject.getObject()).getId();
+                        String description = ((BaseMediaObject) this.currentObject.getObject()).getDescription();
+                        Validator validator = new Validator(this.activity, icon);
+                        List<BaseDescriptionObject> baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.activity, "");
+
+                        if(validator.checkDuplicatedEntry(this.currentObject.getTitle(), 0, baseDescriptionObjects)) {
+                            if(currentWebService != null) {
+                                if(currentWebService instanceof MovieDBWebservice) {
+                                    String key = MainActivity.GLOBALS.getSettings().getMovieDBKey();
+                                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.activity, notification, icon, description, key);
+                                    List<Movie> movies = theMovieDBTask.execute(id).get();
+                                    if(movies != null) {
+                                        if(!movies.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movies.get(0));
+                                        }
+                                    }
+                                } else if(currentWebService instanceof AudioDBWebservice) {
+                                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.activity, notification, icon);
+                                    List<Album> albums = theMovieDBTask.execute(id).get();
+                                    if(albums != null) {
+                                        if(!albums.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(albums.get(0));
+                                        }
+                                    }
+                                } else if(currentWebService instanceof GoogleBooksWebservice) {
+                                    String key = MainActivity.GLOBALS.getSettings().getGoogleBooksKey();
+                                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
+                                    List<Book> books = googleBooksTask.execute("").get();
+                                    if(books != null) {
+                                        if(!books.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(books.get(0));
+                                        }
+                                    }
+                                } else if(currentWebService instanceof IGDBWebservice) {
+                                    String key = MainActivity.GLOBALS.getSettings().getIGDBKey();
+                                    IGDBTask igdbTask = new IGDBTask(this.activity, notification, icon, key);
+                                    List<Game> games = igdbTask.execute(id).get();
+                                    if(games != null) {
+                                        if(!games.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(games.get(0));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, icon, this.activity);
+                    }
+                } else {
+                    Intent intent = new Intent();
+                    if(this.currentObject.getObject() != null) {
+                        intent.putExtra("id", ((BaseMediaObject) this.currentObject.getObject()).getId());
+                        intent.putExtra("type", this.type);
+                        intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
+                        Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
+                        this.dismiss();
+                    }
+                }
             }
         });
 
-        cmdSave.setOnClickListener(view -> {
-            Intent intent = new Intent();
-            if(this.currentObject.getObject() != null) {
-                intent.putExtra("id", ((BaseMediaObject) this.currentObject.getObject()).getId());
-                intent.putExtra("type", type);
-                intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
-                Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
-                this.dismiss();
+        this.txtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                search = editable.toString();
             }
         });
 
         return v;
     }
 
-    @SuppressWarnings({"deprecation", "rawtypes", "unchecked"})
-    private void reload(Activity activity, String type, String search, SwipeRefreshDeleteList lvMedia, int position) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void reload(int position) {
         try {
-            if(type != null) {
+            if(this.type != null) {
                 if(this.titleWebservices != null) {
                     TitleWebservice currentService = this.webServiceAdapter.getItem(position);
 
                     if(currentService != null) {
-                        Spanned text;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                            text = Html.fromHtml("<a href='" + this.titleWebservices.get(0).getUrl() + "'>" + currentService.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
-                        } else {
-                            text = Html.fromHtml("<a href='" + this.titleWebservices.get(0).getUrl() + "'>" + currentService.getTitle() + "</a>");
-                        }
-                        this.lblTitle.setText(text);
-
-
-                        SearchTask searchTask = new SearchTask(activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
-                        List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(search).get();
-                        lvMedia.getAdapter().clear();
+                        SearchTask searchTask = new SearchTask(this.activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
+                        List<BaseDescriptionObject> baseDescriptionObjects = searchTask.execute(this.search).get();
+                        this.lvMedia.getAdapter().clear();
                         for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                            lvMedia.getAdapter().add(baseDescriptionObject);
+                            this.lvMedia.getAdapter().add(baseDescriptionObject);
                         }
                     }
                 }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+        }
+    }
+
+    private void initControls(View view) {
+        this.activity = Objects.requireNonNull(this.getActivity());
+        Bundle arguments = Objects.requireNonNull(this.getArguments());
+        this.type = arguments.getString("type");
+        this.search = arguments.getString("search");
+
+        this.txtSearch = view.findViewById(R.id.txtSearch);
+        this.cmdSearch = view.findViewById(R.id.cmdSearch);
+        this.lvMedia = view.findViewById(R.id.lvSuggestions);
+        this.cmdSave = view.findViewById(R.id.cmdSave);
+        this.lblTitle = view.findViewById(R.id.lblTitle);
+        this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
+
+        this.spWebservices = view.findViewById(R.id.spWebServices);
+        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item, this.titleWebservices);
+        this.spWebservices.setAdapter(this.webServiceAdapter);
+        this.webServiceAdapter.notifyDataSetChanged();
+    }
+
+    private void changeView() {
+        if(this.titleWebservices != null) {
+            if(this.titleWebservices.size() != 1) {
+                this.multiple = true;
+                this.spWebservices.setVisibility(View.VISIBLE);
+            } else {
+                this.multiple = false;
+                this.spWebservices.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void setLabel(int position) {
+        TitleWebservice<? extends BaseMediaObject> currentService = this.webServiceAdapter.getItem(position);
+
+        if(currentService != null) {
+            Spanned text;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                text = Html.fromHtml("<a href='" + currentService.getUrl() + "'>" + currentService.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
+            } else {
+                text = Html.fromHtml("<a href='" + currentService.getUrl() + "'>" + currentService.getTitle() + "</a>");
+            }
+            this.lblTitle.setText(text);
         }
     }
 

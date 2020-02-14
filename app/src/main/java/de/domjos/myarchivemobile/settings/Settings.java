@@ -96,7 +96,7 @@ public final class Settings {
     }
 
     public boolean isNotifications() {
-        return this.userPreferences.getBoolean("swtNotifications", false);
+        return this.userPreferences.getBoolean("swtNotifications", true);
     }
 
     public boolean isDebugMode() {

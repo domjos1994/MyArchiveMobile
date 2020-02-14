@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:weightSum="20"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/lblTitle"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_gravity="center"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_alignParentTop="true"/>
 
     <Spinner
         android:id="@+id/spWebServices"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lblTitle"/>
 
     <LinearLayout
+        android:id="@+id/searchControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:weightSum="10"
-        android:layout_margin="2dp">
+        android:orientation="horizontal"
+        android:layout_below="@+id/spWebServices">
         <EditText
             android:id="@+id/txtSearch"
             android:layout_width="0dp"
-            android:layout_weight="9"
+            android:layout_weight="8"
             android:layout_height="wrap_content"
             android:hint="@string/sys_search"
             android:inputType="text"
@@ -43,7 +42,7 @@
             android:id="@+id/cmdSearch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/ic_search_black_24dp"
             android:src="@drawable/ic_search_black_24dp"
@@ -53,37 +52,26 @@
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvSuggestions"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"
+        android:layout_height="200dp"
         android:layout_margin="2dp"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemBackground="@drawable/background"
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
-        app:itemIcon="@mipmap/ic_launcher_round"/>
-
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-            android:id="@+id/lvSelectedMedia"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="6"
-            android:layout_margin="2dp"
-            app:selectedListItemBackground="@drawable/selected_background"
-            app:listItemBackground="@drawable/background"
-            app:listItemDivider="@drawable/divider"
-            app:readOnly="true"
-            app:itemIcon="@mipmap/ic_launcher_round"/>
+        app:itemIcon="@mipmap/ic_launcher_round"
+        android:layout_below="@+id/searchControls"
+        android:layout_above="@+id/cmdSave"/>
 
     <ImageButton
         android:id="@+id/cmdSave"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="wrap_content"
         android:layout_margin="2dp"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
         android:contentDescription="@string/sys_save"
         app:srcCompat="@drawable/ic_save_black_24dp"
         android:src="@drawable/ic_save_black_24dp"
-        tools:ignore="VectorDrawableCompat" />
-</LinearLayout>
+        tools:ignore="VectorDrawableCompat"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

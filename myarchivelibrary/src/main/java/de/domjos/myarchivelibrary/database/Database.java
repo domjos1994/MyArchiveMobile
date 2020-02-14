@@ -378,7 +378,12 @@ public class Database extends SQLiteOpenHelper {
         SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaList, Arrays.asList(Database.TITLE, Database.DEAD_LINE, Database.DESCRIPTION));
         sqLiteStatement.bindString(1, mediaList.getTitle());
         if(mediaList.getDeadLine() != null) {
-            sqLiteStatement.bindString(2, Converter.convertDateToString(mediaList.getDeadLine(), Database.DATE_FORMAT));
+            String content = Converter.convertDateToString(mediaList.getDeadLine(), Database.DATE_FORMAT);
+            if(content == null) {
+                sqLiteStatement.bindNull(2);
+            } else {
+                sqLiteStatement.bindString(2, content);
+            }
         } else {
             sqLiteStatement.bindNull(2);
         }
@@ -928,10 +933,18 @@ public class Database extends SQLiteOpenHelper {
         } else {
             sqLiteStatement.bindNull(7);
         }
-        sqLiteStatement.bindString(8, baseMediaObject.getDescription());
+        if(baseMediaObject.getDescription() != null) {
+            sqLiteStatement.bindString(8, baseMediaObject.getDescription());
+        } else {
+            sqLiteStatement.bindNull(8);
+        }
         sqLiteStatement.bindDouble(9, baseMediaObject.getRatingWeb());
         sqLiteStatement.bindDouble(10, baseMediaObject.getRatingOwn());
-        sqLiteStatement.bindString(11, baseMediaObject.getRatingNote());
+        if(baseMediaObject.getRatingNote() != null) {
+            sqLiteStatement.bindString(11, baseMediaObject.getRatingNote());
+        } else {
+            sqLiteStatement.bindNull(11);
+        }
         return 11;
     }
 
