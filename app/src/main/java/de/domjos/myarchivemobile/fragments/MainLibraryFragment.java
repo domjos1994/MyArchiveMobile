@@ -121,16 +121,22 @@ public class MainLibraryFragment extends ParentFragment {
                 case R.id.cmdSave:
                     try {
                         libraryObject = this.getObject();
-                        libraryObject.setId(this.libraryObject.getId());
+                        if(this.libraryObject != null) {
+                            libraryObject.setId(this.libraryObject.getId());
+                        }
                         MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
 
-                        if(this.libraryObject.getId() != 0) {
-                            BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                            for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
-                                    baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
-                                    break;
+                        if(this.libraryObject != null) {
+                            if(this.libraryObject.getId() != 0) {
+                                BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
+                                for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                                    if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                        baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
+                                        break;
+                                    }
                                 }
+                            } else {
+                                ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                             }
                         } else {
                             ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
