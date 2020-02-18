@@ -100,6 +100,7 @@ public final class MainActivity extends AbstractActivity {
     private Menu menu;
     private String label;
     private boolean onlyOrientationChanged = false;
+    public static String query = "";
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -195,8 +196,8 @@ public final class MainActivity extends AbstractActivity {
     }
 
     private void initSearch(String query) {
-
-        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments();
+        MainActivity.query = query;
+        List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
         if(fragments.size() == 1) {
             ParentFragment parentFragment = ((ParentFragment) fragments.get(0));
             parentFragment.reload(query, true);
@@ -365,6 +366,7 @@ public final class MainActivity extends AbstractActivity {
     public void selectTab(String title, long id) {
         Bundle args = new Bundle();
         args.putLong("id", id);
+        args.putString("search", MainActivity.query);
         if(title.trim().equals(this.getString(R.string.book))) {
             this.navController.navigate(R.id.navMainMediaBooks, args);
         }

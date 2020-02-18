@@ -162,16 +162,21 @@ public class MainGamesFragment extends ParentFragment {
 
     private void reload() {
         try {
+            String searchQuery = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                if(!MainActivity.query.isEmpty()) {
+                    searchQuery = "title like '%" + MainActivity.query + "%' or originalTitle like '%" + MainActivity.query + "%'";
+                } else {
+                    searchQuery = "";
+                }
             }
 
             this.lvGames.getAdapter().clear();
-            for(Game game : MainActivity.GLOBALS.getDatabase().getGames(this.search)) {
+            for(Game game : MainActivity.GLOBALS.getDatabase().getGames(searchQuery)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(game.getTitle());
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));

@@ -163,16 +163,21 @@ public class MainBooksFragment extends ParentFragment {
 
     private void reload() {
         try {
+            String searchQuery = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                if(!MainActivity.query.isEmpty()) {
+                    searchQuery = "title like '%" + MainActivity.query + "%' or originalTitle like '%" + MainActivity.query + "%'";
+                } else {
+                    searchQuery = "";
+                }
             }
 
             this.lvBooks.getAdapter().clear();
-            for(Book book : MainActivity.GLOBALS.getDatabase().getBooks(this.search)) {
+            for(Book book : MainActivity.GLOBALS.getDatabase().getBooks(searchQuery)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(book.getTitle());
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), this.getString(R.string.sys_date_format)));

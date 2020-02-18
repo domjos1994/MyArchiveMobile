@@ -164,16 +164,21 @@ public class MainMusicFragment extends ParentFragment {
 
     private void reload() {
         try {
+            String searchQuery = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                if(!MainActivity.query.isEmpty()) {
+                    searchQuery = "title like '%" + MainActivity.query + "%' or originalTitle like '%" + MainActivity.query + "%'";
+                } else {
+                    searchQuery = "";
+                }
             }
 
             this.lvAlbums.getAdapter().clear();
-            for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums(this.search)) {
+            for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums(searchQuery)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(album.getTitle());
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), this.getString(R.string.sys_date_format)));

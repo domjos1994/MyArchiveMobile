@@ -162,16 +162,21 @@ public class MainMoviesFragment extends ParentFragment {
 
     private void reload() {
         try {
+            String searchQuery = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                if(!MainActivity.query.isEmpty()) {
+                    searchQuery = "title like '%" + MainActivity.query + "%' or originalTitle like '%" + MainActivity.query + "%'";
+                } else {
+                    searchQuery = "";
+                }
             }
 
             this.lvMovies.getAdapter().clear();
-            for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies(this.search)) {
+            for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies(searchQuery)) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(movie.getTitle());
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));

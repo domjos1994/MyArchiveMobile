@@ -441,22 +441,23 @@ public class MainHomeFragment extends ParentFragment {
 
     private void reload(MediaFilter mediaFilter) {
         try {
+            String searchString = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchString = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                searchString = "";
             }
 
             int counter = 0;
             this.lvMedia.getAdapter().clear();
             List<BaseDescriptionObject> baseDescriptionObjects;
             if(mediaFilter==null) {
-                baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), this.search);
+                baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), searchString);
             } else {
                 if(mediaFilter.getTitle().trim().equals(this.getString(R.string.filter_no_filter))) {
-                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), this.search);
+                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), searchString);
                 } else {
                     baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), mediaFilter);
                 }

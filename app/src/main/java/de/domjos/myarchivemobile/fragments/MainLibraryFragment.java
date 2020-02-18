@@ -155,16 +155,17 @@ public class MainLibraryFragment extends ParentFragment {
 
     private void reload() {
         try {
+            String searchString = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    this.search = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchString = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                this.search = "";
+                searchString = "";
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), this.search)) {
+            for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), searchString)) {
                 baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
                 baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());
                 baseDescriptionObject.setId(baseDescriptionObject.getId());

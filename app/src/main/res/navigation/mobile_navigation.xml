@@ -26,19 +26,25 @@
         android:id="@+id/navMainHome"
         android:name="de.domjos.myarchivemobile.fragments.MainHomeFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/main_fragment_home" />
+        tools:layout="@layout/main_fragment_home">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainMediaMusic"
         android:name="de.domjos.myarchivemobile.fragments.MainMusicFragment"
         android:label="@string/main_navigation_media_music"
-        tools:layout="@layout/main_fragment_music" />
+        tools:layout="@layout/main_fragment_music">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainMediaMovies"
         android:name="de.domjos.myarchivemobile.fragments.MainMoviesFragment"
         android:label="@string/main_navigation_media_movies"
-        tools:layout="@layout/main_fragment_movies" />
+        tools:layout="@layout/main_fragment_movies">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainMediaBooks"
@@ -50,23 +56,31 @@
         android:id="@+id/navMainMediaGames"
         android:name="de.domjos.myarchivemobile.fragments.MainGamesFragment"
         android:label="@string/main_navigation_media_games"
-        tools:layout="@layout/main_fragment_games" />
+        tools:layout="@layout/main_fragment_games">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainLibrary"
         android:name="de.domjos.myarchivemobile.fragments.MainLibraryFragment"
         android:label="@string/library"
-        tools:layout="@layout/main_fragment_library" />
+        tools:layout="@layout/main_fragment_library">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainLists"
         android:name="de.domjos.myarchivemobile.fragments.MainListsFragment"
         android:label="@string/lists"
-        tools:layout="@layout/main_fragment_lists" />
+        tools:layout="@layout/main_fragment_lists">
+        <argument android:name="search" />
+    </fragment>
 
     <fragment
         android:id="@+id/navMainExport"
         android:name="de.domjos.myarchivemobile.fragments.MainExportFragment"
         android:label="@string/export"
-        tools:layout="@layout/main_fragment_export" />
+        tools:layout="@layout/main_fragment_export">
+        <argument android:name="search" />
+    </fragment>
 </navigation>
