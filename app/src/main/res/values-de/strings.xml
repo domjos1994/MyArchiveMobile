@@ -130,4 +130,5 @@
     <string name="export_search">…</string>
     <string name="sys_search">Suche</string>
     <string name="sys_empty" formatted="false"> (Leer)</string>
+    <string name="sys_success" formatted="false">%s erfolgreich!</string>
 </resources>

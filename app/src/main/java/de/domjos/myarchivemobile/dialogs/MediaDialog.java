@@ -167,6 +167,7 @@ public class MediaDialog extends DialogFragment {
                                     MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(games.get(0));
                                 }
                             }
+                            MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_save)), icon, this.activity);
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, icon, this.activity);
