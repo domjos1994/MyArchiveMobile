@@ -31,13 +31,13 @@ import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 
 public class WikiDataWebservice extends JSONService {
-    private final static String DATA_TYPE = "datatype", VALUE = "value", DATA_VALUE = "datavalue", TIME = "TIME";
+    private final static String DATA_TYPE = "datatype", VALUE = "value", DATA_VALUE = "datavalue", TIME = "time";
 
     private String id = "";
     private String companyName, firstName, lastName;
     private final static String DATE_FORMAT = "+yyyy-MM-dd'T'HH:mm:ss'Z'";
     private String claimURL = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=%s&format=json&language=%s";
-    private List personProps = Arrays.asList("P569", "P19", "P1477", "P570", "P551", "P734", "P735", "P1340", "P18");
+    private List personProps = Arrays.asList("P569", "P734", "P735", "P18");
     private List companyProps = Arrays.asList("P154", "P159", "P571", "P169");
     private final String LANGUAGE = Locale.getDefault().getLanguage().toLowerCase();
 
