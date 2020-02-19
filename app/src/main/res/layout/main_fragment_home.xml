@@ -41,7 +41,7 @@
                     android:textColorHint="#fff"
                     android:textColor="#fff"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="@dimen/spinner_height"
                     android:layout_weight="9"/>
                 <ImageButton
                     android:id="@+id/cmdFilterExpand"

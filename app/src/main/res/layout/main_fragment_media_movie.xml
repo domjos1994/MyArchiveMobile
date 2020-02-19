@@ -38,10 +38,10 @@
 
         <Spinner
             android:id="@+id/spMediaMovieType"
-            android:hint="@string/movie_type"
-            android:autofillHints="@string/movie_type"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/spinner_height"
+            android:autofillHints="@string/movie_type"
+            android:hint="@string/movie_type"
             tools:targetApi="o" />
 
         <EditText

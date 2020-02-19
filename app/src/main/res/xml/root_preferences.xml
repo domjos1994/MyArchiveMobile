@@ -38,12 +38,18 @@
             app:key="swtImportDatabase"
             app:title="@string/settings_general_database_import"
             app:summary="@string/settings_general_database_import_summary"
+            app:dialogTitle="@string/settings_general_database_import"
+            app:dialogMessage="@string/settings_general_database_import_summary"
+            app:dialogIcon="@mipmap/ic_launcher_round"
             app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
 
         <androidx.preference.EditTextPreference
             app:key="swtExportDatabase"
             app:title="@string/settings_general_database_export"
             app:summary="@string/settings_general_database_export_summary"
+            app:dialogTitle="@string/settings_general_database_export"
+            app:dialogMessage="@string/settings_general_database_export_summary"
+            app:dialogIcon="@mipmap/ic_launcher_round"
             app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
     </androidx.preference.PreferenceCategory>
 

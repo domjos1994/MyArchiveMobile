@@ -37,10 +37,10 @@
 
         <Spinner
             android:id="@+id/spMediaBookType"
-            android:hint="@string/book_type"
-            android:autofillHints="@string/book_type"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/spinner_height"
+            android:autofillHints="@string/book_type"
+            android:hint="@string/book_type"
             tools:targetApi="o" />
 
         <EditText

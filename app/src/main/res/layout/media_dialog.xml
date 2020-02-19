@@ -36,8 +36,9 @@
     <Spinner
         android:id="@+id/spWebServices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/lblTitle"/>
+        android:layout_height="@dimen/spinner_height"
+        android:layout_below="@+id/lblTitle"
+        android:gravity="center" />
 
     <LinearLayout
         android:id="@+id/searchControls"

@@ -38,10 +38,10 @@
 
         <Spinner
             android:id="@+id/spMediaGameType"
-            android:hint="@string/game_type"
-            android:autofillHints="@string/game_type"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/spinner_height"
+            android:autofillHints="@string/game_type"
+            android:hint="@string/game_type"
             tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>
