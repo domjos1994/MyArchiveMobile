@@ -31,6 +31,7 @@
     <string name="book_topics">Topics</string>
     <string name="book_last_read">Last Read</string>
 
+    <string name="customFields">Custom Fields</string>
     <string name="customFields_type">Field-Type</string>
     <string-array name="customFields_type_values">
         <item>@string/customFields_type_values_text</item>

@@ -57,6 +57,10 @@
                 android:icon="@drawable/ic_format_list_bulleted_black_24dp"
                 android:title="@string/lists" />
             <item
+                android:id="@+id/navMainCustomFields"
+                android:icon="@drawable/ic_text_fields_black_24dp"
+                android:title="@string/customFields" />
+            <item
                 android:id="@+id/navMainExport"
                 android:icon="@drawable/ic_import_export_black_24dp"
                 android:title="@string/export" />

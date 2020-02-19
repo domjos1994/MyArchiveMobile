@@ -17,11 +17,8 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -33,20 +30,15 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.ParseException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.CustomField;
-import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -54,7 +46,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 public class MainCustomFieldsFragment extends ParentFragment {
     private ScrollView scrollView;
 
-    private EditText txtCustomFieldTitle, txtCustomFieldDescription;
+    private EditText txtCustomFieldTitle, txtCustomFieldDescription, txtCustomFieldAllowed;
     private Spinner spCustomFieldType;
     private CheckBox chkCustomFieldBooks, chkCustomFieldGames, chkCustomFieldMovies, chkCustomFieldAlbums;
     private SwipeRefreshDeleteList lvCustomFields;
@@ -71,38 +63,25 @@ public class MainCustomFieldsFragment extends ParentFragment {
         this.lvCustomFields.setOnReloadListener(MainCustomFieldsFragment.this::reload);
 
         this.lvCustomFields.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
-            this.customField = (MediaList) listObject.getObject();
+            this.customField = (CustomField) listObject.getObject();
             this.setObject(this.customField);
             this.changeMode(false, true);
         });
 
         this.lvCustomFields.setOnDeleteListener(listObject -> {
-            this.customField = (MediaList) listObject.getObject();
+            this.customField = (CustomField) listObject.getObject();
             MainActivity.GLOBALS.getDatabase().deleteItem(this.customField);
             this.customField = null;
-            this.setObject(new MediaList());
+            this.setObject(new CustomField());
             this.changeMode(false, false);
             this.reload();
-        });
-
-        this.lvMediaObjects.setOnReloadListener(MainCustomFieldsFragment.this::reloadMediaObjects);
-
-        this.lvMediaObjects.setOnDeleteListener(listObject -> {
-            if(this.customField !=null) {
-                for(int i = 0; i<=this.customField.getBaseMediaObjects().size()-1; i++) {
-                    if(((BaseMediaObject) listObject.getObject()).getId()==this.customField.getBaseMediaObjects().get(i).getId()) {
-                        this.customField.getBaseMediaObjects().remove(i);
-                        break;
-                    }
-                }
-            }
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
                     this.changeMode(true, false);
-                    setObject(new MediaList());
+                    setObject(new CustomField());
                     this.customField = null;
                     break;
                 case R.id.cmdEdit:
@@ -113,21 +92,21 @@ public class MainCustomFieldsFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     changeMode(false, false);
-                    setObject(new MediaList());
+                    setObject(new CustomField());
                     this.customField = null;
                     break;
                 case R.id.cmdSave:
                     try {
                         if(this.validator.getState()) {
-                            MediaList mediaList = this.getObject();
+                            CustomField customField = this.getObject();
                             if(this.customField != null) {
-                                mediaList.setId(this.customField.getId());
+                                customField.setId(this.customField.getId());
                             }
-                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvCustomFields.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                            if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
                                 this.changeMode(false, false);
                                 this.customField = null;
-                                this.setObject(new MediaList());
+                                this.setObject(new CustomField());
                                 this.reload();
                             }
                         }
@@ -155,25 +134,16 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("")) {
+            for(CustomField customField : MainActivity.GLOBALS.getDatabase().getCustomFields("")) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(mediaList.getTitle());
-                baseDescriptionObject.setDescription(mediaList.getDescription());
-                baseDescriptionObject.setObject(mediaList);
-                baseDescriptionObject.setId(mediaList.getId());
+                baseDescriptionObject.setTitle(customField.getTitle());
+                baseDescriptionObject.setDescription(customField.getDescription());
+                baseDescriptionObject.setObject(customField);
+                baseDescriptionObject.setId(customField.getId());
                 this.lvCustomFields.getAdapter().add(baseDescriptionObject);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
-        }
-    }
-
-    private void reloadMediaObjects() {
-        if(customField != null) {
-            this.lvMediaObjects.getAdapter().clear();
-            for(BaseMediaObject baseMediaObject : customField.getBaseMediaObjects()) {
-                this.lvMediaObjects.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getContext()));
-            }
         }
     }
 
@@ -182,23 +152,33 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
     }
 
-    private void setObject(MediaList mediaList) {
-        this.txtCustomFieldTitle.setText(mediaList.getTitle());
-        this.txtCustomFieldDescription.setText(mediaList.getDescription());
-
-        this.reloadMediaObjects();
+    private void setObject(CustomField customField) {
+        this.txtCustomFieldTitle.setText(customField.getTitle());
+        this.txtCustomFieldDescription.setText(customField.getDescription());
+        this.txtCustomFieldAllowed.setText(customField.getAllowedValues());
+        this.chkCustomFieldAlbums.setChecked(customField.isAlbums());
+        this.chkCustomFieldMovies.setChecked(customField.isMovies());
+        this.chkCustomFieldGames.setChecked(customField.isGames());
+        this.chkCustomFieldBooks.setChecked(customField.isBooks());
+        for(int i = 0; i<=this.spCustomFieldType.getChildCount()-1; i++) {
+            String item = this.spCustomFieldType.getItemAtPosition(i).toString();
+            if(item.equals(customField.getType())) {
+                this.spCustomFieldType.setSelection(i);
+                break;
+            }
+        }
     }
 
-    private CustomField getObject() throws ParseException {
+    private CustomField getObject() {
         CustomField customField = new CustomField();
         customField.setTitle(this.txtCustomFieldTitle.getText().toString());
         customField.setDescription(this.txtCustomFieldDescription.getText().toString());
         customField.setType(this.spCustomFieldType.getSelectedItem().toString());
+        customField.setAllowedValues(this.txtCustomFieldAllowed.getText().toString());
         customField.setAlbums(this.chkCustomFieldAlbums.isChecked());
         customField.setBooks(this.chkCustomFieldBooks.isChecked());
         customField.setGames(this.chkCustomFieldGames.isChecked());
         customField.setMovies(this.chkCustomFieldMovies.isChecked());
-
         return customField;
     }
 
@@ -227,6 +207,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
         this.txtCustomFieldTitle = view.findViewById(R.id.txtCustomFieldTitle);
         this.txtCustomFieldDescription = view.findViewById(R.id.txtCustomFieldDescriptions);
+        this.txtCustomFieldAllowed = view.findViewById(R.id.txtCustomFieldAllowedValues);
         this.spCustomFieldType = view.findViewById(R.id.spCustomFieldType);
         this.chkCustomFieldAlbums = view.findViewById(R.id.chkCustomFieldAlbums);
         this.chkCustomFieldMovies = view.findViewById(R.id.chkCustomFieldMovies);
@@ -252,6 +233,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
         this.txtCustomFieldTitle.setEnabled(editMode);
         this.txtCustomFieldDescription.setEnabled(editMode);
+        this.txtCustomFieldAllowed.setEnabled(editMode);
         this.spCustomFieldType.setEnabled(editMode);
         this.chkCustomFieldAlbums.setEnabled(editMode);
         this.chkCustomFieldGames.setEnabled(editMode);

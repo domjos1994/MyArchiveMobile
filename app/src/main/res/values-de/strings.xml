@@ -32,6 +32,7 @@
     <string name="book_type">Typ</string>
     <string name="book_last_read">Zuletzt gelesen</string>
 
+    <string name="customFields">Eigene Felder</string>
     <string name="customFields_type">Feld-Typ</string>
     <string-array name="customFields_type_values">
         <item>@string/customFields_type_values_text</item>

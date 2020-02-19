@@ -65,6 +65,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:entries="@array/customFields_type_values"/>
+            <EditText
+                android:id="@+id/txtCustomFieldAllowedValues"
+                android:hint="@string/customFields_allowed"
+                android:inputType="text"
+                android:autofillHints="@string/customFields_allowed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
             <CheckBox
                 android:id="@+id/chkCustomFieldBooks"
                 android:text="@string/main_navigation_media_books"

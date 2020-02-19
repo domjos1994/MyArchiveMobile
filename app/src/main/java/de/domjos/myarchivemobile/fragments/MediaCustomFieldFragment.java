@@ -116,6 +116,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
 
     private void reload(String table) {
         this.views = new LinkedList<>();
+        this.container.removeAllViews();
         this.customFields = MainActivity.GLOBALS.getDatabase().getCustomFields(String.format("%s=1", table));
         for(CustomField customField : this.customFields) {
             if(customField.getType().equals(this.getString(R.string.customFields_type_values_text))) {

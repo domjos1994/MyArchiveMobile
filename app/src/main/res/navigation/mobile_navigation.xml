@@ -69,6 +69,14 @@
     </fragment>
 
     <fragment
+            android:id="@+id/navMainCustomFields"
+            android:name="de.domjos.myarchivemobile.fragments.MainCustomFieldsFragment"
+            android:label="@string/customFields"
+            tools:layout="@layout/main_fragment_custom_fields">
+        <argument android:name="search" />
+    </fragment>
+
+    <fragment
         android:id="@+id/navMainLists"
         android:name="de.domjos.myarchivemobile.fragments.MainListsFragment"
         android:label="@string/lists"
