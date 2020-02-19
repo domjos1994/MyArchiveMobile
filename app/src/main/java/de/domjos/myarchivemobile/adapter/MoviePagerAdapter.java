@@ -37,6 +37,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
     private AbstractFragment<BaseMediaObject> mediaMovieFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
+    private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
     private Runnable runnable;
     private boolean first = true;
 
@@ -50,12 +51,14 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaMovieFragment = new MediaMovieFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();
         this.mediaRatingFragment = new MediaRatingFragment();
+        this.mediaCustomFieldFragment = new MediaCustomFieldFragment();
 
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaMovieFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
         this.mediaRatingFragment.setAbstractPagerAdapter(this);
+        this.mediaCustomFieldFragment.setAbstractPagerAdapter(this);
     }
 
     @Override
@@ -88,6 +91,9 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
             case 4:
                 this.mediaRatingFragment = (MediaRatingFragment) super.getFragment(position, this.mediaRatingFragment);
                 return this.mediaRatingFragment;
+            case 5:
+                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) super.getFragment(position, this.mediaCustomFieldFragment);
+                return this.mediaCustomFieldFragment;
             default:
                 return new Fragment();
         }
@@ -100,6 +106,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaMovieFragment.changeMode(editMode);
         this.mediaPersonsCompaniesFragment.changeMode(editMode);
         this.mediaRatingFragment.changeMode(editMode);
+        this.mediaCustomFieldFragment.changeMode(editMode);
     }
 
     @Override
@@ -109,6 +116,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaPersonsCompaniesFragment.setMediaObject(movie);
         this.mediaMovieFragment.setMediaObject(movie);
         this.mediaRatingFragment.setMediaObject(movie);
+        this.mediaCustomFieldFragment.setMediaObject(movie);
     }
 
     @Override
@@ -121,6 +129,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         baseMediaObject.setRatingOwn(this.mediaRatingFragment.getMediaObject().getRatingOwn());
         baseMediaObject.setRatingWeb(this.mediaRatingFragment.getMediaObject().getRatingWeb());
         baseMediaObject.setRatingNote(this.mediaRatingFragment.getMediaObject().getRatingNote());
+        baseMediaObject.setCustomFieldValues(this.mediaCustomFieldFragment.getMediaObject().getCustomFieldValues());
         Movie movie = (Movie) baseMediaObject;
         Movie tmpMovie = (Movie) this.mediaMovieFragment.getMediaObject();
         movie.setType(tmpMovie.getType());
@@ -137,6 +146,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaMovieFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
+        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -146,7 +156,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
 
     @Override
     public int getCount() {
-        return 5;
+        return 6;
     }
 
     @Override
@@ -156,6 +166,7 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         validator = this.mediaCoverFragment.initValidation(validator);
         validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
         validator = this.mediaRatingFragment.initValidation(validator);
+        validator = this.mediaCustomFieldFragment.initValidation(validator);
         return this.mediaMovieFragment.initValidation(validator);
     }
 }

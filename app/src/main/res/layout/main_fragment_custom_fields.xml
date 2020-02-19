@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of the MyArchiveMobile distribution (https://github.com/domjos1994/MyArchiveMobile).
+  ~ Copyright (c) 2020 Dominic Joas.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, version 3.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but
+  ~ WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10">
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvCustomFields"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        app:itemIcon="@drawable/ic_text_fields_black_24dp"
+        app:listItemBackground="@drawable/background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/divider"
+        app:readOnly="true"
+        android:padding="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:padding="4dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/txtCustomFieldTitle"
+                android:hint="@string/sys_title"
+                android:inputType="text"
+                android:autofillHints="@string/sys_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+            <Spinner
+                android:id="@+id/spCustomFieldType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/customFields_type_values"/>
+            <CheckBox
+                android:id="@+id/chkCustomFieldBooks"
+                android:text="@string/main_navigation_media_books"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <CheckBox
+                android:id="@+id/chkCustomFieldMovies"
+                android:text="@string/main_navigation_media_movies"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <CheckBox
+                android:id="@+id/chkCustomFieldAlbums"
+                android:text="@string/main_navigation_media_music"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <CheckBox
+                android:id="@+id/chkCustomFieldGames"
+                android:text="@string/main_navigation_media_games"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/txtCustomFieldDescriptions"
+                android:hint="@string/sys_description"
+                android:inputType="textMultiLine"
+                android:autofillHints="@string/sys_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:targetApi="o" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="#fff"
+        app:itemTextColor="#fff"
+        app:menu="@menu/controls"/>
+</LinearLayout>

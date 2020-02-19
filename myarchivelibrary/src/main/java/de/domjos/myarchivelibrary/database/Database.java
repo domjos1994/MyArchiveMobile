@@ -51,6 +51,7 @@ import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.MediaList;
@@ -526,6 +527,40 @@ public class Database extends SQLiteOpenHelper {
         }
         cursor.close();
         return mediaFilters;
+    }
+
+    public void insertOrUpdateCustomField(CustomField customField) {
+        SQLiteStatement statement = this.getBaseStatement(customField, Arrays.asList(Database.TITLE, Database.DESCRIPTION, Database.TYPE, "allowedValues", Database.BOOKS, Database.MOVIES, Database.ALBUMS, Database.GAMES));
+        statement.bindString(1, customField.getTitle());
+        statement.bindString(2, customField.getDescription());
+        statement.bindString(3, customField.getType());
+        statement.bindString(4, customField.getAllowedValues());
+        statement.bindLong(5, customField.isBooks() ? 1 : 0);
+        statement.bindLong(6, customField.isMovies() ? 1 : 0);
+        statement.bindLong(7, customField.isAlbums() ? 1 : 0);
+        statement.bindLong(8, customField.isGames() ? 1 : 0);
+        statement.execute();
+        statement.close();
+    }
+
+    public List<CustomField> getCustomFields(String where) {
+        List<CustomField> customFields = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM customFields" + this.where(where), null);
+        while (cursor.moveToNext()) {
+            CustomField customField = new CustomField();
+            customField.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            customField.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+            customField.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+            customField.setType(cursor.getString(cursor.getColumnIndex(Database.TYPE)));
+            customField.setAllowedValues(cursor.getString(cursor.getColumnIndex("allowedValues")));
+            customField.setBooks(cursor.getInt(cursor.getColumnIndex(Database.BOOKS)) == 1);
+            customField.setMovies(cursor.getInt(cursor.getColumnIndex(Database.MOVIES)) == 1);
+            customField.setAlbums(cursor.getInt(cursor.getColumnIndex(Database.ALBUMS)) == 1);
+            customField.setGames(cursor.getInt(cursor.getColumnIndex(Database.GAMES)) == 1);
+            customFields.add(customField);
+        }
+        cursor.close();
+        return customFields;
     }
 
     public List<BaseMediaObject> getObjects(String table, long id) {
@@ -1014,6 +1049,11 @@ public class Database extends SQLiteOpenHelper {
         for(LibraryObject libraryObject : baseMediaObject.getLibraryObjects()) {
             this.insertOrUpdateLibraryObject(libraryObject, baseMediaObject);
         }
+        if(baseMediaObject.getCustomFieldValues() != null) {
+            for(Map.Entry<CustomField, String> entry : baseMediaObject.getCustomFieldValues().entrySet()) {
+                this.insertCustomFieldValues(baseMediaObject, entry.getKey(), entry.getValue(), table);
+            }
+        }
     }
 
     private void getMediaObjectFromCursor(Cursor cursor, BaseMediaObject baseMediaObject, String table) throws ParseException {
@@ -1039,6 +1079,7 @@ public class Database extends SQLiteOpenHelper {
         baseMediaObject.setTags(this.getBaseObjects(Database.TAGS, table, baseMediaObject.getId(), ""));
         baseMediaObject.setPersons(this.getPersons(table, baseMediaObject.getId()));
         baseMediaObject.setCompanies(this.getCompanies(table, baseMediaObject.getId()));
+        baseMediaObject.setCustomFieldValues(this.getCustomFieldValues(baseMediaObject, table));
 
         baseMediaObject.setLendOut(false);
         List<LibraryObject> libraryObjects = this.getLibraryObjects("media=" + baseMediaObject.getId() + " AND type='" + table + "'");
@@ -1049,6 +1090,33 @@ public class Database extends SQLiteOpenHelper {
             }
         }
         baseMediaObject.setLibraryObjects(libraryObjects);
+    }
+
+    private void insertCustomFieldValues(BaseMediaObject baseMediaObject, CustomField customField, String value, String table) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(String.format("DELETE FROM %s_customFields WHERE %s=? AND customFields=?", table, table), new String[]{String.valueOf(baseMediaObject.getId()), String.valueOf(customField.getId())});
+        SQLiteStatement statement = db.compileStatement(String.format("INSERT INTO %s_customFields(%s, customFields, value) VALUES(?, ?, ?);", table, table));
+        statement.bindLong(1, baseMediaObject.getId());
+        statement.bindLong(2, customField.getId());
+        statement.bindString(3, value);
+        statement.execute();
+        statement.close();
+    }
+
+    private Map<CustomField, String> getCustomFieldValues(BaseMediaObject baseMediaObject, String table) {
+        Map<CustomField, String> customFieldValues = new LinkedHashMap<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM %s_customFields WHERE %s=?", table, table), new String[]{String.valueOf(baseMediaObject.getId())});
+        while (cursor.moveToNext()) {
+            long customFieldId = cursor.getLong(cursor.getColumnIndex("customFields"));
+            String value = cursor.getString(cursor.getColumnIndex("value"));
+            List<CustomField> customFields = this.getCustomFields("id=" + customFieldId);
+            if(customFields!=null && !customFields.isEmpty()) {
+                customFieldValues.put(customFields.get(0), value);
+            }
+        }
+        cursor.close();
+        return customFieldValues;
     }
 
     private String getListWhere(String table, long id) {

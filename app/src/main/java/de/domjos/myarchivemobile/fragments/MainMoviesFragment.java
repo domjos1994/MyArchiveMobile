@@ -142,7 +142,7 @@ public class MainMoviesFragment extends ParentFragment {
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         this.viewPager = view.findViewById(R.id.viewPager);
-        this.viewPager.setOffscreenPageLimit(4);
+        this.viewPager.setOffscreenPageLimit(5);
         tabLayout.setupWithViewPager(this.viewPager);
 
         this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
@@ -154,6 +154,7 @@ public class MainMoviesFragment extends ParentFragment {
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.ic_local_movies_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.ic_stars_black_24dp);
+        Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.ic_text_fields_black_24dp);
 
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);

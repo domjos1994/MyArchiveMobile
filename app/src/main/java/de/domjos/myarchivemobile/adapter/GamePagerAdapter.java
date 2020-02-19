@@ -37,6 +37,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     private AbstractFragment<BaseMediaObject> mediaGameFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
+    private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
     private Runnable runnable;
     private boolean first = true;
 
@@ -50,12 +51,14 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         this.mediaGameFragment = new MediaGameFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();
         this.mediaRatingFragment = new MediaRatingFragment();
+        this.mediaCustomFieldFragment = new MediaCustomFieldFragment();
 
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaGameFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
         this.mediaRatingFragment.setAbstractPagerAdapter(this);
+        this.mediaCustomFieldFragment.setAbstractPagerAdapter(this);
     }
 
     @Override
@@ -88,6 +91,9 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
             case 4:
                 this.mediaRatingFragment = (MediaRatingFragment) super.getFragment(position, this.mediaRatingFragment);
                 return this.mediaRatingFragment;
+            case 5:
+                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) super.getFragment(position, this.mediaCustomFieldFragment);
+                return this.mediaCustomFieldFragment;
             default:
                 return new Fragment();
         }
@@ -100,6 +106,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         this.mediaGameFragment.changeMode(editMode);
         this.mediaPersonsCompaniesFragment.changeMode(editMode);
         this.mediaRatingFragment.changeMode(editMode);
+        this.mediaCustomFieldFragment.changeMode(editMode);
     }
 
     @Override
@@ -109,6 +116,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         this.mediaPersonsCompaniesFragment.setMediaObject(game);
         this.mediaGameFragment.setMediaObject(game);
         this.mediaRatingFragment.setMediaObject(game);
+        this.mediaCustomFieldFragment.setMediaObject(game);
     }
 
     @Override
@@ -121,6 +129,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         baseMediaObject.setRatingOwn(this.mediaRatingFragment.getMediaObject().getRatingOwn());
         baseMediaObject.setRatingWeb(this.mediaRatingFragment.getMediaObject().getRatingWeb());
         baseMediaObject.setRatingNote(this.mediaRatingFragment.getMediaObject().getRatingNote());
+        baseMediaObject.setCustomFieldValues(this.mediaCustomFieldFragment.getMediaObject().getCustomFieldValues());
         Game game = (Game) baseMediaObject;
         Game tmpGame = (Game) this.mediaGameFragment.getMediaObject();
         game.setType(tmpGame.getType());
@@ -136,6 +145,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaGameFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
+        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -145,7 +155,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
 
     @Override
     public int getCount() {
-        return 5;
+        return 6;
     }
 
     @Override
@@ -155,6 +165,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         validator = this.mediaCoverFragment.initValidation(validator);
         validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
         validator = this.mediaRatingFragment.initValidation(validator);
+        validator = this.mediaCustomFieldFragment.initValidation(validator);
         return this.mediaGameFragment.initValidation(validator);
     }
 }

@@ -32,6 +32,19 @@
     <string name="book_type">Typ</string>
     <string name="book_last_read">Zuletzt gelesen</string>
 
+    <string name="customFields_type">Feld-Typ</string>
+    <string-array name="customFields_type_values">
+        <item>@string/customFields_type_values_text</item>
+        <item>@string/customFields_type_values_number</item>
+        <item>@string/customFields_type_values_date</item>
+        <item>@string/customFields_type_values_selection</item>
+    </string-array>
+    <string name="customFields_type_values_text">Text-Feld</string>
+    <string name="customFields_type_values_number">Nummer-Feld</string>
+    <string name="customFields_type_values_date">Datums-Feld</string>
+    <string name="customFields_type_values_selection">Auswahl</string>
+    <string name="customFields_allowed">Arlaubte Werte (Separiert durch ;)</string>
+
     <string name="export">Export</string>
     <string name="export_name">Datei-Name</string>
     <string name="export_name_default">export</string>

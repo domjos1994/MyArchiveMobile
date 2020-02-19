@@ -19,8 +19,10 @@ package de.domjos.myarchivelibrary.model.media;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -39,6 +41,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
     private List<Company> companies;
     private List<BaseDescriptionObject> tags;
     private List<LibraryObject> libraryObjects;
+    private Map<CustomField, String> customFieldValues;
     private byte[] cover;
     private String ratingNote;
 
@@ -54,6 +57,7 @@ public class BaseMediaObject extends BaseDescriptionObject {
         this.companies = new LinkedList<>();
         this.tags = new LinkedList<>();
         this.libraryObjects = new LinkedList<>();
+        this.customFieldValues = new LinkedHashMap<>();
 
         this.ratingOwn = 0.0;
         this.ratingWeb = 0.0;
@@ -186,5 +190,13 @@ public class BaseMediaObject extends BaseDescriptionObject {
 
     public void setRatingNote(String ratingNote) {
         this.ratingNote = ratingNote;
+    }
+
+    public Map<CustomField, String> getCustomFieldValues() {
+        return this.customFieldValues;
+    }
+
+    public void setCustomFieldValues(Map<CustomField, String> customFieldValues) {
+        this.customFieldValues = customFieldValues;
     }
 }
