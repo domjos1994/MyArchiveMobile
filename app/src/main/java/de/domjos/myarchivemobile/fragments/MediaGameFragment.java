@@ -38,7 +38,7 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivemobile.R;
 
 public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaGameLength;
+    private EditText txtMediaGameLength, txtMediaGameLastPlayed;
     private Spinner spMediaGameType;
     private ArrayAdapter<String> typeAdapter;
 
@@ -54,6 +54,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaGameLength = view.findViewById(R.id.txtMediaGameLength);
         this.spMediaGameType = view.findViewById(R.id.spMediaGameType);
+        this.txtMediaGameLastPlayed = view.findViewById(R.id.txtMediaGameLastPlayed);
 
         this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
         for(Game.Type type : Game.Type.values()) {
@@ -74,6 +75,11 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
             if(this.game.getType() != null) {
                 this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
             }
+            if(this.game.getLastPlayed() != null) {
+                this.txtMediaGameLastPlayed.setText(ConvertHelper.convertDateToString(this.game.getLastPlayed(), this.getString(R.string.sys_date_format)));
+            } else {
+                this.txtMediaGameLastPlayed.setText("");
+            }
         }
     }
 
@@ -85,6 +91,13 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
             }
         } catch (Exception ignored) {}
         this.game.setType(Game.Type.valueOf(this.spMediaGameType.getSelectedItem().toString()));
+        try {
+            if(!this.txtMediaGameLastPlayed.getText().toString().isEmpty()) {
+                this.game.setLastPlayed(ConvertHelper.convertStringToDate(this.txtMediaGameLastPlayed.getText().toString(), this.getString(R.string.sys_date_format)));
+            }
+        } catch (Exception ex) {
+            this.game.setLastPlayed(null);
+        }
         return this.game;
     }
 
@@ -92,6 +105,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     public void changeMode(boolean editMode) {
         this.txtMediaGameLength.setEnabled(editMode);
         this.spMediaGameType.setEnabled(editMode);
+        this.txtMediaGameLastPlayed.setEnabled(editMode);
     }
 
     @Override

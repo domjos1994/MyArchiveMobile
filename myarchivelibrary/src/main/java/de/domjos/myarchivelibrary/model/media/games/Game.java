@@ -17,18 +17,22 @@
 
 package de.domjos.myarchivelibrary.model.media.games;
 
+import java.util.Date;
+
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
 public class Game extends BaseMediaObject implements DatabaseObject {
     private Type type;
     private double length;
+    private Date lastPlayed;
 
     public Game() {
         super();
 
         this.type = null;
         this.length = 0.0;
+        this.lastPlayed = null;
     }
 
     public Type getType() {
@@ -45,6 +49,14 @@ public class Game extends BaseMediaObject implements DatabaseObject {
 
     public void setLength(double length) {
         this.length = length;
+    }
+
+    public Date getLastPlayed() {
+        return this.lastPlayed;
+    }
+
+    public void setLastPlayed(Date lastPlayed) {
+        this.lastPlayed = lastPlayed;
     }
 
     @Override

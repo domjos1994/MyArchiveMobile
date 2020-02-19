@@ -125,7 +125,8 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         Movie tmpMovie = (Movie) this.mediaMovieFragment.getMediaObject();
         movie.setType(tmpMovie.getType());
         movie.setLength(tmpMovie.getLength());
-        movie.setPath(movie.getPath());
+        movie.setPath(tmpMovie.getPath());
+        movie.setLastSeen(tmpMovie.getLastSeen());
         return movie;
     }
 

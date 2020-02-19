@@ -17,6 +17,8 @@
 
 package de.domjos.myarchivelibrary.model.media.movies;
 
+import java.util.Date;
+
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 
@@ -24,6 +26,7 @@ public final class Movie extends BaseMediaObject implements DatabaseObject {
     private Type type;
     private double length;
     private String path;
+    private Date lastSeen;
 
     public Movie() {
         super();
@@ -31,6 +34,7 @@ public final class Movie extends BaseMediaObject implements DatabaseObject {
         this.type = null;
         this.length = 0.0;
         this.path = "";
+        this.lastSeen = null;
     }
 
     public Type getType() {
@@ -55,6 +59,14 @@ public final class Movie extends BaseMediaObject implements DatabaseObject {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Date getLastSeen() {
+        return this.lastSeen;
+    }
+
+    public void setLastSeen(Date lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     @Override

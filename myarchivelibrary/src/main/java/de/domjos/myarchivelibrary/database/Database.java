@@ -142,7 +142,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void insertOrUpdateAlbum(Album album) {
-        SQLiteStatement statement = this.getStatement(album, Arrays.asList(Database.TYPE, "numberOfDisks"));
+        SQLiteStatement statement = this.getStatement(album, Arrays.asList(Database.TYPE, "numberOfDisks", "last_heard"));
         int position = this.insertOrUpdateBaseMediaObject(statement, album);
         if(album.getType() != null) {
             statement.bindString(++position, album.getType().name());
@@ -150,6 +150,11 @@ public class Database extends SQLiteOpenHelper {
             statement.bindNull(++position);
         }
         statement.bindLong(++position, album.getNumberOfDisks());
+        if(album.getLastHeard() != null) {
+            statement.bindString(++position, Objects.requireNonNull(ConvertHelper.convertDateToString(album.getLastHeard(), Database.DATE_FORMAT)));
+        } else {
+            statement.bindNull(++position);
+        }
 
         if(album.getId() == 0) {
             album.setId(statement.executeInsert());
@@ -175,6 +180,10 @@ public class Database extends SQLiteOpenHelper {
                 album.setType(!type.trim().isEmpty() ? Album.Type.valueOf(type) : Album.Type.AudioCD);
             }
             album.setNumberOfDisks(cursor.getInt(cursor.getColumnIndex("numberOfDisks")));
+            String dt = cursor.getString(cursor.getColumnIndex("last_heard"));
+            if(dt != null && !dt.isEmpty()) {
+                album.setLastHeard(ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT));
+            }
             album.setSongs(this.getSongs("album=" + album.getId()));
             albums.add(album);
         }
@@ -183,7 +192,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void insertOrUpdateMovie(Movie movie) {
-        SQLiteStatement statement = this.getStatement(movie, Arrays.asList(Database.TYPE, Database.LENGTH, Database.PATH));
+        SQLiteStatement statement = this.getStatement(movie, Arrays.asList(Database.TYPE, Database.LENGTH, Database.PATH, "last_seen"));
         int position = this.insertOrUpdateBaseMediaObject(statement, movie);
         if(movie.getType() != null) {
             statement.bindString(++position, movie.getType().name());
@@ -192,6 +201,11 @@ public class Database extends SQLiteOpenHelper {
         }
         statement.bindDouble(++position, movie.getLength());
         statement.bindString(++position, movie.getPath());
+        if(movie.getLastSeen() != null) {
+            statement.bindString(++position, Objects.requireNonNull(ConvertHelper.convertDateToString(movie.getLastSeen(), Database.DATE_FORMAT)));
+        } else {
+            statement.bindNull(++position);
+        }
 
         if(movie.getId()==0) {
             movie.setId(statement.executeInsert());
@@ -215,6 +229,10 @@ public class Database extends SQLiteOpenHelper {
             }
             movie.setLength(cursor.getDouble(cursor.getColumnIndex(Database.LENGTH)));
             movie.setPath(cursor.getString(cursor.getColumnIndex(Database.PATH)));
+            String dt = cursor.getString(cursor.getColumnIndex("last_seen"));
+            if(dt != null && !dt.isEmpty()) {
+                movie.setLastSeen(ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT));
+            }
             movies.add(movie);
         }
         cursor.close();
@@ -222,7 +240,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void insertOrUpdateBook(Book book) {
-        SQLiteStatement statement = this.getStatement(book, Arrays.asList(Database.TYPE, "numberOfPages", Database.PATH, "edition", "topics"));
+        SQLiteStatement statement = this.getStatement(book, Arrays.asList(Database.TYPE, "numberOfPages", Database.PATH, "edition", "topics", "last_read"));
         int position = this.insertOrUpdateBaseMediaObject(statement, book);
         if(book.getType()!=null) {
             statement.bindString(++position, book.getType().name());
@@ -233,6 +251,11 @@ public class Database extends SQLiteOpenHelper {
         statement.bindString(++position, book.getPath());
         statement.bindString(++position, book.getEdition());
         statement.bindString(++position, TextUtils.join("\n", book.getTopics()));
+        if(book.getLastRead() != null) {
+            statement.bindString(++position, Objects.requireNonNull(ConvertHelper.convertDateToString(book.getLastRead(), Database.DATE_FORMAT)));
+        } else {
+            statement.bindNull(++position);
+        }
 
         if(book.getId() == 0) {
             book.setId(statement.executeInsert());
@@ -258,6 +281,10 @@ public class Database extends SQLiteOpenHelper {
             book.setPath(cursor.getString(cursor.getColumnIndex(Database.PATH)));
             book.setEdition(cursor.getString(cursor.getColumnIndex("edition")));
             book.setTopics(Arrays.asList(cursor.getString(cursor.getColumnIndex("topics")).split("\n")));
+            String dt = cursor.getString(cursor.getColumnIndex("last_read"));
+            if(dt != null && !dt.isEmpty()) {
+                book.setLastRead(ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT));
+            }
             books.add(book);
         }
         cursor.close();
@@ -265,7 +292,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void insertOrUpdateGame(Game game) {
-        SQLiteStatement statement = this.getStatement(game, Arrays.asList(Database.TYPE, Database.LENGTH));
+        SQLiteStatement statement = this.getStatement(game, Arrays.asList(Database.TYPE, Database.LENGTH, "last_played"));
         int position = this.insertOrUpdateBaseMediaObject(statement, game);
         if(game.getType() != null) {
             statement.bindString(++position, game.getType().name());
@@ -273,6 +300,11 @@ public class Database extends SQLiteOpenHelper {
             statement.bindNull(++position);
         }
         statement.bindDouble(++position, game.getLength());
+        if(game.getLastPlayed() != null) {
+            statement.bindString(++position, Objects.requireNonNull(ConvertHelper.convertDateToString(game.getLastPlayed(), Database.DATE_FORMAT)));
+        } else {
+            statement.bindNull(++position);
+        }
 
         if(game.getId() == 0) {
             game.setId(statement.executeInsert());
@@ -295,6 +327,10 @@ public class Database extends SQLiteOpenHelper {
                 game.setType(!type.trim().isEmpty() ? Game.Type.valueOf(type) : Game.Type.computer);
             }
             game.setLength(cursor.getDouble(cursor.getColumnIndex(Database.LENGTH)));
+            String dt = cursor.getString(cursor.getColumnIndex("last_played"));
+            if(dt != null && !dt.isEmpty()) {
+                game.setLastPlayed(ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT));
+            }
             games.add(game);
         }
         cursor.close();

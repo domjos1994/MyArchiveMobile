@@ -31,13 +31,14 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 
 public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaAlbumNumberOfDisks;
+    private EditText txtMediaAlbumNumberOfDisks, txtMediaAlbumLastHeard;
     private Spinner spMediaAlbumType;
     private ArrayAdapter<String> typeAdapter;
 
@@ -53,6 +54,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaAlbumNumberOfDisks = view.findViewById(R.id.txtMediaAlbumNumberOfDisks);
         this.spMediaAlbumType = view.findViewById(R.id.spMediaAlbumType);
+        this.txtMediaAlbumLastHeard = view.findViewById(R.id.txtMediaAlbumLastHeard);
 
         this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
         for(Album.Type type : Album.Type.values()) {
@@ -73,6 +75,11 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
             if(this.album.getType() != null) {
                 this.spMediaAlbumType.setSelection(this.typeAdapter.getPosition(this.album.getType().name()));
             }
+            if(this.album.getLastHeard() != null) {
+                this.txtMediaAlbumLastHeard.setText(ConvertHelper.convertDateToString(this.album.getLastHeard(), this.getString(R.string.sys_date_format)));
+            } else {
+                this.txtMediaAlbumLastHeard.setText("");
+            }
         }
     }
 
@@ -82,6 +89,13 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
             this.album.setNumberOfDisks(Integer.parseInt(this.txtMediaAlbumNumberOfDisks.getText().toString()));
         }
         this.album.setType(Album.Type.valueOf(this.spMediaAlbumType.getSelectedItem().toString()));
+        try {
+            if(!this.txtMediaAlbumLastHeard.getText().toString().isEmpty()) {
+                this.album.setLastHeard(ConvertHelper.convertStringToDate(this.txtMediaAlbumLastHeard.getText().toString(), this.getString(R.string.sys_date_format)));
+            }
+        } catch (Exception ex) {
+            this.album.setLastHeard(null);
+        }
         return this.album;
     }
 
@@ -89,6 +103,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
     public void changeMode(boolean editMode) {
         this.txtMediaAlbumNumberOfDisks.setEnabled(editMode);
         this.spMediaAlbumType.setEnabled(editMode);
+        this.txtMediaAlbumLastHeard.setEnabled(editMode);
     }
 
     @Override

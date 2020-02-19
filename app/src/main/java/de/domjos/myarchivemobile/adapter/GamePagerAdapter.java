@@ -125,6 +125,7 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
         Game tmpGame = (Game) this.mediaGameFragment.getMediaObject();
         game.setType(tmpGame.getType());
         game.setLength(tmpGame.getLength());
+        game.setLastPlayed(tmpGame.getLastPlayed());
         return game;
     }
 

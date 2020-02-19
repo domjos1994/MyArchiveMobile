@@ -126,6 +126,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         book.setType(tmpBook.getType());
         book.setNumberOfPages(tmpBook.getNumberOfPages());
         book.setPath(tmpBook.getPath());
+        book.setLastRead(tmpBook.getLastRead());
         return book;
     }
 

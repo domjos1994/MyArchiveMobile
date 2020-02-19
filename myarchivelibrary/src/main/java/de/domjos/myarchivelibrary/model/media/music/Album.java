@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivelibrary.model.media.music;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public final class Album extends BaseMediaObject implements DatabaseObject {
     private int numberOfDisks;
     private double length;
     private List<Song> songs;
+    private Date lastHeard;
 
     public Album() {
         super();
@@ -36,6 +38,7 @@ public final class Album extends BaseMediaObject implements DatabaseObject {
         this.numberOfDisks = 0;
         this.length = 0.0;
         this.songs = new LinkedList<>();
+        this.lastHeard = null;
     }
 
     public Type getType() {
@@ -68,6 +71,14 @@ public final class Album extends BaseMediaObject implements DatabaseObject {
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
+    }
+
+    public Date getLastHeard() {
+        return this.lastHeard;
+    }
+
+    public void setLastHeard(Date lastHeard) {
+        this.lastHeard = lastHeard;
     }
 
     @Override

@@ -33,13 +33,14 @@ import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
 
 public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaBookNumberOfPages, txtMediaBookPath;
+    private EditText txtMediaBookNumberOfPages, txtMediaBookPath, txtMediaBookLastRead;
     private EditText txtMediaBookEdition, txtMediaBookTopics;
     private Spinner spMediaBookType;
     private ArrayAdapter<String> typeAdapter;
@@ -59,6 +60,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
 
         this.txtMediaBookEdition = view.findViewById(R.id.txtMediaBookEdition);
         this.txtMediaBookTopics = view.findViewById(R.id.txtMediaBookTopics);
+        this.txtMediaBookLastRead = view.findViewById(R.id.txtMediaBookLastRead);
 
         this.spMediaBookType = view.findViewById(R.id.spMediaBookType);
         this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
@@ -83,6 +85,11 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
             if(this.book.getType() != null) {
                 this.spMediaBookType.setSelection(this.typeAdapter.getPosition(this.book.getType().name()));
             }
+            if(this.book.getLastRead() != null) {
+                this.txtMediaBookLastRead.setText(ConvertHelper.convertDateToString(this.book.getLastRead(), this.getString(R.string.sys_date_format)));
+            } else {
+                this.txtMediaBookLastRead.setText("");
+            }
         }
     }
 
@@ -95,6 +102,13 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.book.setEdition(this.txtMediaBookEdition.getText().toString());
         this.book.setTopics(Arrays.asList(this.txtMediaBookTopics.getText().toString().split("\n")));
         this.book.setType(Book.Type.valueOf(this.spMediaBookType.getSelectedItem().toString()));
+        try {
+            if(!this.txtMediaBookLastRead.getText().toString().isEmpty()) {
+                this.book.setLastRead(ConvertHelper.convertStringToDate(this.txtMediaBookLastRead.getText().toString(), this.getString(R.string.sys_date_format)));
+            }
+        } catch (Exception ex) {
+            this.book.setLastRead(null);
+        }
         return this.book;
     }
 
@@ -105,6 +119,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaBookType.setEnabled(editMode);
         this.txtMediaBookEdition.setEnabled(editMode);
         this.txtMediaBookTopics.setEnabled(editMode);
+        this.txtMediaBookLastRead.setEnabled(editMode);
     }
 
     @Override

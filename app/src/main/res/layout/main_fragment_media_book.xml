@@ -69,5 +69,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaBookLastRead"
+            android:hint="@string/book_last_read"
+            android:autofillHints="@string/book_last_read"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>

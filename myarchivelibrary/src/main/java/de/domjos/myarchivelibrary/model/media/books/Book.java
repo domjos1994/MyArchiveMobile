@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivelibrary.model.media.books;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public final class Book extends BaseMediaObject implements DatabaseObject {
     private String path;
     private String edition;
     private List<String> topics;
+    private Date lastRead;
 
     public Book() {
         super();
@@ -37,6 +39,7 @@ public final class Book extends BaseMediaObject implements DatabaseObject {
         this.numberOfPages = 0;
         this.path = "";
         this.edition = "";
+        this.lastRead = null;
         this.topics = new LinkedList<>();
     }
 
@@ -78,6 +81,14 @@ public final class Book extends BaseMediaObject implements DatabaseObject {
 
     public void setTopics(List<String> topics) {
         this.topics = topics;
+    }
+
+    public Date getLastRead() {
+        return this.lastRead;
+    }
+
+    public void setLastRead(Date lastRead) {
+        this.lastRead = lastRead;
     }
 
     @Override

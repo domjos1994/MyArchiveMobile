@@ -21,6 +21,7 @@
     <string name="album">Album</string>
     <string name="album_number">Number of Disks</string>
     <string name="album_type">Type</string>
+    <string name="album_last_heard">Last Heard</string>
 
     <string name="book">Book</string>
     <string name="book_numberOfPages">Number of pages</string>
@@ -28,6 +29,7 @@
     <string name="book_path">Path</string>
     <string name="book_edition">Edition</string>
     <string name="book_topics">Topics</string>
+    <string name="book_last_read">Last Read</string>
 
     <string name="export">Export</string>
     <string name="export_name">File-Name</string>
@@ -41,6 +43,7 @@
     <string name="game">Game</string>
     <string name="game_length">Length</string>
     <string name="game_type">Type</string>
+    <string name="game_last_played">Last Played</string>
 
     <string name="library">Library</string>
     <string name="library_numberOfDays">Number of Days</string>
@@ -89,6 +92,7 @@
     <string name="movie_length">Length</string>
     <string name="movie_type">Type</string>
     <string name="movie_path">Path</string>
+    <string name="movie_last_seen">Last Seen</string>
 
     <string name="scanner">Scanner</string>
 

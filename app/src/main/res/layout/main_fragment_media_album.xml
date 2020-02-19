@@ -42,5 +42,14 @@
             android:autofillHints="@string/album_type"
             android:hint="@string/album_type"
             tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaAlbumLastHeard"
+            android:hint="@string/album_last_heard"
+            android:autofillHints="@string/album_last_heard"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>

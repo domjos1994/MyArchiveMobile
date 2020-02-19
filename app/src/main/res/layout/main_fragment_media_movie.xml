@@ -52,5 +52,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaMovieLastSeen"
+            android:hint="@string/movie_last_seen"
+            android:autofillHints="@string/movie_last_seen"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>

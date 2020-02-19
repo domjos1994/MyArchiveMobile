@@ -43,5 +43,14 @@
             android:autofillHints="@string/game_type"
             android:hint="@string/game_type"
             tools:targetApi="o" />
+
+        <EditText
+            android:id="@+id/txtMediaGameLastPlayed"
+            android:hint="@string/game_last_played"
+            android:autofillHints="@string/game_last_played"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:targetApi="o" />
     </LinearLayout>
 </ScrollView>

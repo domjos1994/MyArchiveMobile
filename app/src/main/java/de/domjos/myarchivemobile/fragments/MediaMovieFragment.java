@@ -38,7 +38,7 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 
 public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaMovieLength, txtMediaMoviePath;
+    private EditText txtMediaMovieLength, txtMediaMoviePath, txtMediaMovieLastSeen;
     private Spinner spMediaMovieType;
     private ArrayAdapter<String> typeAdapter;
 
@@ -55,6 +55,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaMovieLength = view.findViewById(R.id.txtMediaMovieLength);
         this.txtMediaMoviePath = view.findViewById(R.id.txtMediaMoviePath);
         this.spMediaMovieType = view.findViewById(R.id.spMediaMovieType);
+        this.txtMediaMovieLastSeen = view.findViewById(R.id.txtMediaMovieLastSeen);
 
         this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
         for(Movie.Type type : Movie.Type.values()) {
@@ -76,6 +77,11 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
             if(this.movie.getType() != null) {
                 this.spMediaMovieType.setSelection(this.typeAdapter.getPosition(this.movie.getType().name()));
             }
+            if(this.movie.getLastSeen() != null) {
+                this.txtMediaMovieLastSeen.setText(ConvertHelper.convertDateToString(this.movie.getLastSeen(), this.getString(R.string.sys_date_format)));
+            } else {
+                this.txtMediaMovieLastSeen.setText("");
+            }
         }
     }
 
@@ -86,6 +92,13 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         }
         this.movie.setPath(this.txtMediaMoviePath.getText().toString());
         this.movie.setType(Movie.Type.valueOf(this.spMediaMovieType.getSelectedItem().toString()));
+        try {
+            if(!this.txtMediaMovieLastSeen.getText().toString().isEmpty()) {
+                this.movie.setLastSeen(ConvertHelper.convertStringToDate(this.txtMediaMovieLastSeen.getText().toString(), this.getString(R.string.sys_date_format)));
+            }
+        } catch (Exception ex) {
+            this.movie.setLastSeen(null);
+        }
         return this.movie;
     }
 
@@ -94,6 +107,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaMovieLength.setEnabled(editMode);
         this.txtMediaMoviePath.setEnabled(editMode);
         this.spMediaMovieType.setEnabled(editMode);
+        this.txtMediaMovieLastSeen.setEnabled(editMode);
     }
 
     @Override

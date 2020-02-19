@@ -22,6 +22,7 @@
     <string name="album">Album</string>
     <string name="album_number">Anzahl Tonträger</string>
     <string name="album_type">Typ</string>
+    <string name="album_last_heard">Zuletzt gehört</string>
 
     <string name="book">Buch</string>
     <string name="book_edition">Edition</string>
@@ -29,6 +30,7 @@
     <string name="book_path">Pfad</string>
     <string name="book_topics">Themen</string>
     <string name="book_type">Typ</string>
+    <string name="book_last_read">Zuletzt gelesen</string>
 
     <string name="export">Export</string>
     <string name="export_name">Datei-Name</string>
@@ -42,6 +44,7 @@
     <string name="game">Spiel</string>
     <string name="game_length">Länge</string>
     <string name="game_type">Typ</string>
+    <string name="game_last_played">Zuletzt gespielt</string>
 
     <string name="library">Bibliothek</string>
     <string name="library_deadline">Stichtag</string>
@@ -88,6 +91,7 @@
     <string name="movie_length">Länge</string>
     <string name="movie_path">Pfad</string>
     <string name="movie_type">Type</string>
+    <string name="movie_last_seen">Zuletzt gesehen</string>
 
     <string name="scanner">Scanner</string>
 

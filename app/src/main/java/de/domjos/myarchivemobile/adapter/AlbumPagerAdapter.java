@@ -130,6 +130,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         Album tmpAlbum = (Album) this.mediaAlbumFragment.getMediaObject();
         album.setType(tmpAlbum.getType());
         album.setNumberOfDisks(tmpAlbum.getNumberOfDisks());
+        album.setLastHeard(tmpAlbum.getLastHeard());
         return album;
     }
 
