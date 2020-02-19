@@ -184,6 +184,7 @@ public class MainMusicFragment extends ParentFragment {
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(album.getCover());
                 baseDescriptionObject.setId(album.getId());
+                baseDescriptionObject.setState(album.getLastHeard()!=null);
                 baseDescriptionObject.setObject(album);
                 this.lvAlbums.getAdapter().add(baseDescriptionObject);
             }

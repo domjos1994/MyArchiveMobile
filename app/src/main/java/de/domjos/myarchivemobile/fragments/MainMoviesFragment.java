@@ -182,6 +182,7 @@ public class MainMoviesFragment extends ParentFragment {
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(movie.getCover());
                 baseDescriptionObject.setId(movie.getId());
+                baseDescriptionObject.setState(movie.getLastSeen()!=null);
                 baseDescriptionObject.setObject(movie);
                 this.lvMovies.getAdapter().add(baseDescriptionObject);
             }

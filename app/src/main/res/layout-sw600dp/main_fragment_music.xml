@@ -28,6 +28,7 @@
         android:layout_height="0dp"
         app:itemIcon="@drawable/ic_music_note_black_24dp"
         app:listItemBackground="@drawable/background"
+        app:listItemBackgroundStatePositive="@drawable/background_positive"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"

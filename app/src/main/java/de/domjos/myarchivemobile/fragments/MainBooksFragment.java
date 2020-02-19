@@ -183,6 +183,7 @@ public class MainBooksFragment extends ParentFragment {
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(book.getCover());
                 baseDescriptionObject.setId(book.getId());
+                baseDescriptionObject.setState(book.getLastRead()!=null);
                 baseDescriptionObject.setObject(book);
                 this.lvBooks.getAdapter().add(baseDescriptionObject);
             }

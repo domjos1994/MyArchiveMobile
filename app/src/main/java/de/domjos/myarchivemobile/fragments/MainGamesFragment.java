@@ -182,6 +182,7 @@ public class MainGamesFragment extends ParentFragment {
                 baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
                 baseDescriptionObject.setCover(game.getCover());
                 baseDescriptionObject.setId(game.getId());
+                baseDescriptionObject.setState(game.getLastPlayed()!=null);
                 baseDescriptionObject.setObject(game);
                 this.lvGames.getAdapter().add(baseDescriptionObject);
             }

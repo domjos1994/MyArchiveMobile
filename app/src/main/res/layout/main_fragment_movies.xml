@@ -32,6 +32,7 @@
         app:itemIcon="@drawable/ic_local_movies_black_24dp"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemBackgroundStatePositive="@drawable/background_positive"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"/>
 
