@@ -34,6 +34,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.database.Database;
+import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
@@ -73,6 +74,8 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         });
 
         this.lvItems.setOnReloadListener(CategoriesTagsActivity.this::reload);
+
+        this.lvItems.setOnDeleteListener(listObject -> MainActivity.GLOBALS.getDatabase().deleteItem((BaseDescriptionObject) listObject.getObject(), this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags)) ? "tags" : "categories"));
 
         this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             Intent intent = new Intent();

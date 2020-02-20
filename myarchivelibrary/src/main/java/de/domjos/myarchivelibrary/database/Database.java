@@ -607,6 +607,10 @@ public class Database extends SQLiteOpenHelper {
         this.getWritableDatabase().execSQL(String.format("DELETE FROM %s WHERE id=%s", databaseObject.getTable(), databaseObject.getId()));
     }
 
+    public void deleteItem(BaseDescriptionObject baseDescriptionObject, String table) {
+        this.getWritableDatabase().execSQL(String.format("DELETE FROM %s WHERE id=%s", table, baseDescriptionObject.getId()));
+    }
+
     public long insertOrUpdateBaseObject(BaseDescriptionObject baseDescriptionObject, String table, String foreignTable, long id) {
         // return if object is empty
         if(baseDescriptionObject.getTitle().trim().isEmpty()) {
