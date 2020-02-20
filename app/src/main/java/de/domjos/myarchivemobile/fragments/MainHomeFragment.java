@@ -319,6 +319,7 @@ public class MainHomeFragment extends ParentFragment {
                     this.txtFilterSearch.setVisibility(View.VISIBLE);
                     this.txtFilterCategories.setVisibility(View.VISIBLE);
                     this.txtFilterTags.setVisibility(View.VISIBLE);
+                    this.txtFilterCustomFields.setVisibility(View.VISIBLE);
                 } else {
                     this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
                     this.rowName.setVisibility(View.GONE);
@@ -327,6 +328,7 @@ public class MainHomeFragment extends ParentFragment {
                     this.txtFilterSearch.setVisibility(View.GONE);
                     this.txtFilterCategories.setVisibility(View.GONE);
                     this.txtFilterTags.setVisibility(View.GONE);
+                    this.txtFilterCustomFields.setVisibility(View.GONE);
                 }
             } else {
                 int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
