@@ -48,6 +48,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -245,10 +246,28 @@ public class ControlsHelper {
                 tags.add(tmpTags);
             }
         }
+        Map<CustomField, String> customFields = new LinkedHashMap<>();
+        List<CustomField> customFieldList = MainActivity.GLOBALS.getDatabase().getCustomFields("");
+        for(String fieldValue : mediaFilter.getCustomFields().split(";")) {
+            String[] spl = fieldValue.split(":");
+            String field = spl[0].trim();
+            String value = "";
+            if(spl.length != 1) {
+                value = spl[1].trim();
+            }
+            if(!value.isEmpty()) {
+                for(CustomField customField : customFieldList) {
+                    if(customField.getTitle().equals(field)) {
+                        customFields.put(customField, value);
+                        break;
+                    }
+                }
+            }
+        }
 
         if(mediaFilter.isBooks()) {
             for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
                     BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                     baseDescriptionObject.setCover(baseMediaObject.getCover());
                     baseDescriptionObject.setDescription(context.getString(R.string.book));
@@ -259,7 +278,7 @@ public class ControlsHelper {
         }
         if(mediaFilter.isMovies()) {
             for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
                     BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                     baseDescriptionObject.setCover(baseMediaObject.getCover());
                     baseDescriptionObject.setDescription(context.getString(R.string.movie));
@@ -270,7 +289,7 @@ public class ControlsHelper {
         }
         if(mediaFilter.isMusic()) {
             for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
                     BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                     baseDescriptionObject.setCover(baseMediaObject.getCover());
                     baseDescriptionObject.setDescription(context.getString(R.string.album));
@@ -281,7 +300,7 @@ public class ControlsHelper {
         }
         if(mediaFilter.isGames()) {
             for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags)) {
+                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
                     BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                     baseDescriptionObject.setCover(baseMediaObject.getCover());
                     baseDescriptionObject.setDescription(context.getString(R.string.game));
@@ -295,7 +314,7 @@ public class ControlsHelper {
     }
 
 
-    private static boolean isValidItemForFilter(BaseMediaObject baseMediaObject, List<String> categories, List<List<String>> tags) {
+    private static boolean isValidItemForFilter(BaseMediaObject baseMediaObject, List<String> categories, List<List<String>> tags, Map<CustomField, String> customFields) {
         if(!categories.isEmpty()) {
             if(baseMediaObject.getCategory() == null) {
                 return false;
@@ -338,6 +357,18 @@ public class ControlsHelper {
                 }
 
                 return contains;
+            }
+        }
+
+        if(!customFields.isEmpty()) {
+            for(Map.Entry<CustomField, String> entry : customFields.entrySet()) {
+                for(Map.Entry<CustomField, String> fields : baseMediaObject.getCustomFieldValues().entrySet()) {
+                    if(fields.getKey().getTitle().equals(entry.getKey().getTitle())) {
+                        if(!entry.getValue().equals(fields.getValue())) {
+                            return false;
+                        }
+                    }
+                }
             }
         }
         return true;

@@ -501,7 +501,7 @@ public class Database extends SQLiteOpenHelper {
         if(mediaFilters!=null && !mediaFilters.isEmpty()) {
             mediaFilter.setId(mediaFilters.get(0).getId());
         }
-        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", Database.CATEGORIES, Database.TAGS, Database.BOOKS, Database.MOVIES, "music", Database.GAMES));
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", Database.CATEGORIES, Database.TAGS, Database.BOOKS, Database.MOVIES, "music", Database.GAMES, "customFields"));
         sqLiteStatement.bindString(1, mediaFilter.getTitle());
         sqLiteStatement.bindString(2, mediaFilter.getSearch());
         sqLiteStatement.bindString(3, mediaFilter.getCategories());
@@ -510,6 +510,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindLong(6, mediaFilter.isMovies() ? 1 : 0);
         sqLiteStatement.bindLong(7, mediaFilter.isMusic() ? 1 : 0);
         sqLiteStatement.bindLong(8, mediaFilter.isGames() ? 1 : 0);
+        sqLiteStatement.bindString(9, mediaFilter.getCustomFields());
         sqLiteStatement.execute();
         sqLiteStatement.close();
     }
@@ -528,6 +529,7 @@ public class Database extends SQLiteOpenHelper {
             mediaFilter.setMovies(cursor.getInt(cursor.getColumnIndex(Database.MOVIES)) == 1);
             mediaFilter.setMusic(cursor.getInt(cursor.getColumnIndex("music")) == 1);
             mediaFilter.setGames(cursor.getInt(cursor.getColumnIndex(Database.GAMES)) == 1);
+            mediaFilter.setCustomFields(cursor.getString(cursor.getColumnIndex("customFields")));
             mediaFilters.add(mediaFilter);
         }
         cursor.close();

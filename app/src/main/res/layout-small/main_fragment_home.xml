@@ -166,6 +166,17 @@
                 android:autofillHints="@string/media_general_tags"
                 tools:targetApi="o"
                 android:visibility="gone" />
+            <MultiAutoCompleteTextView
+                android:id="@+id/txtFilterCustomFields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="#fff"
+                android:textColor="#fff"
+                android:inputType="text"
+                android:hint="@string/customFields"
+                android:autofillHints="@string/customFields"
+                tools:targetApi="o"
+                android:visibility="gone"/>
         </TableLayout>
     </ScrollView>
 

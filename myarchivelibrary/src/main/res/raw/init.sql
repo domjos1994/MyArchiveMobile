@@ -328,7 +328,8 @@ CREATE TABLE IF NOT EXISTS filters(
     books INTEGER DEFAULT 1,
     movies INTEGER DEFAULT 1,
     music INTEGER DEFAULT 1,
-    games INTEGER DEFAULT 1
+    games INTEGER DEFAULT 1,
+    customFields VARCHAR(255) DEFAULT ''
 );
 
 

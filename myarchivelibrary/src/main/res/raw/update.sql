@@ -29,4 +29,7 @@ ALTER TABLE movies ADD COLUMN last_seen DATE DEFAULT NULL;
 ALTER TABLE games ADD COLUMN last_played DATE DEFAULT NULL;
 ALTER TABLE books ADD COLUMN last_read DATE DEFAULT NULL;
 
+-- Version 5
+ALTER TABLE filters ADD COLUMN customFields VARCHAR(255) DEFAULT '';
+
 -- End Update

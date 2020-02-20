@@ -42,7 +42,7 @@
     <string name="service_igdb_search_content">Search in IGDB…</string>
 
     <string name="sqLite_name" translatable="false">MyArchiveMobile.db</string>
-    <string name="sqLite_version" translatable="false">4</string>
+    <string name="sqLite_version" translatable="false">5</string>
 
     <string name="scanner_save">Accept</string>
     <string name="scanner_cancel">Cancel</string>

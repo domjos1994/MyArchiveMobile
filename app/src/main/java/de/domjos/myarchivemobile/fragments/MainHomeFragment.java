@@ -31,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -48,11 +49,13 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -73,6 +76,7 @@ public class MainHomeFragment extends ParentFragment {
     private Spinner spFilter;
     private ArrayAdapter<MediaFilter> arrayAdapter;
     private EditText txtFilterName, txtFilterSearch, txtFilterCategories, txtFilterTags;
+    private MultiAutoCompleteTextView txtFilterCustomFields;
     private ImageButton cmdFilterExpand, cmdFilterSave, cmdFilterDelete;
     private CheckBox chkFilterBooks, chkFilterMovies, chkFilterMusic, chkFilterGames;
     private TableRow rowName, rowMedia1, rowMedia2;
@@ -220,6 +224,16 @@ public class MainHomeFragment extends ParentFragment {
         this.txtFilterCategories = view.findViewById(R.id.txtFilterCategory);
         this.txtFilterTags = view.findViewById(R.id.txtFilterTags);
 
+        this.txtFilterCustomFields = view.findViewById(R.id.txtFilterCustomFields);
+        this.txtFilterCustomFields.setTokenizer(new CommaTokenizer());
+        List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_list_item_1);
+        for(CustomField customField : customFields) {
+            arrayAdapter.add(customField.getTitle());
+        }
+        this.txtFilterCustomFields.setAdapter(arrayAdapter);
+        arrayAdapter.notifyDataSetChanged();
+
         this.rowName = view.findViewById(R.id.rowName);
         this.rowMedia1 = view.findViewById(R.id.rowMedia1);
         this.rowMedia2 = view.findViewById(R.id.rowMedia2);
@@ -276,6 +290,18 @@ public class MainHomeFragment extends ParentFragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                setTempFilter();
+            }
+        });
+        this.txtFilterCustomFields.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -413,6 +439,7 @@ public class MainHomeFragment extends ParentFragment {
         this.chkFilterMovies.setChecked(mediaFilter.isMovies());
         this.chkFilterMusic.setChecked(mediaFilter.isMusic());
         this.chkFilterGames.setChecked(mediaFilter.isGames());
+        this.txtFilterCustomFields.setText(mediaFilter.getCustomFields());
     }
 
     private void getObject(MediaFilter mediaFilter) {
@@ -427,6 +454,7 @@ public class MainHomeFragment extends ParentFragment {
         mediaFilter.setMovies(chkFilterMovies.isChecked());
         mediaFilter.setMusic(chkFilterMusic.isChecked());
         mediaFilter.setGames(chkFilterGames.isChecked());
+        mediaFilter.setCustomFields(txtFilterCustomFields.getText().toString());
     }
 
     private void setTempFilter() {
