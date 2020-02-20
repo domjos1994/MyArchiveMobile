@@ -100,10 +100,14 @@ public final class MainActivity extends AbstractActivity {
     private Menu menu;
     private String label;
     private boolean onlyOrientationChanged = false;
-    public static String query = "";
+    private static String query = "";
 
     public MainActivity() {
         super(R.layout.main_activity);
+    }
+
+    public static String getQuery() {
+        return MainActivity.query;
     }
 
     @Override

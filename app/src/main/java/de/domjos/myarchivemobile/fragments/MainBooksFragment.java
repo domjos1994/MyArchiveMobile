@@ -170,8 +170,8 @@ public class MainBooksFragment extends ParentFragment {
                     searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
                 }
             } else {
-                if(!MainActivity.query.isEmpty()) {
-                    searchQuery = "title like '%" + MainActivity.query + "%' or originalTitle like '%" + MainActivity.query + "%'";
+                if(!MainActivity.getQuery().isEmpty()) {
+                    searchQuery = "title like '%" + MainActivity.getQuery() + "%' or originalTitle like '%" + MainActivity.getQuery() + "%'";
                 } else {
                     searchQuery = "";
                 }

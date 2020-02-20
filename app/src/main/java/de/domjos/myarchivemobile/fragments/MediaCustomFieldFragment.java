@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivemobile.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -118,85 +120,91 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         this.views = new LinkedList<>();
         this.container.removeAllViews();
         this.customFields = MainActivity.GLOBALS.getDatabase().getCustomFields(String.format("%s=1", table));
-        for(CustomField customField : this.customFields) {
-            if(customField.getType().equals(this.getString(R.string.customFields_type_values_text))) {
-                if(customField.getAllowedValues().isEmpty()) {
-                    EditText txt = new EditText(this.getContext());
-                    txt.setTag(customField.getId());
-                    txt.setInputType(InputType.TYPE_CLASS_TEXT);
-                    txt.setHint(customField.getTitle());
-                    this.views.add(txt);
-                    this.container.addView(txt);
-
-                    String value = this.getValue(txt);
-                    if(!value.isEmpty()) {
-                        txt.setText(value);
+        if(!this.customFields.isEmpty()) {
+            for(CustomField customField : this.customFields) {
+                if(customField.getType().equals(this.getString(R.string.customFields_type_values_text))) {
+                    if(customField.getAllowedValues().isEmpty()) {
+                        this.addTextField(customField, InputType.TYPE_CLASS_TEXT);
+                    } else {
+                        this.addAutoCompleteTextView(customField);
                     }
+                } else if(customField.getType().equals(this.getString(R.string.customFields_type_values_number))) {
+                    this.addTextField(customField, InputType.TYPE_CLASS_NUMBER);
+                } else if(customField.getType().equals(this.getString(R.string.customFields_type_values_date))) {
+                    this.addTextField(customField, InputType.TYPE_CLASS_DATETIME);
                 } else {
-                    AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
-                    ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_list_item_1);
-                    for(String item : customField.getAllowedValues().split(";")) {
-                        values.add(item.trim());
-                    }
-                    autoCompleteTextView.setAdapter(values);
-                    values.notifyDataSetChanged();
-                    autoCompleteTextView.setTag(customField.getId());
-                    autoCompleteTextView.setHint(customField.getTitle());
-                    autoCompleteTextView.setInputType(InputType.TYPE_CLASS_TEXT);
-                    this.views.add(autoCompleteTextView);
-                    this.container.addView(autoCompleteTextView);
-
-                    String value = this.getValue(autoCompleteTextView);
-                    if(!value.isEmpty()) {
-                        autoCompleteTextView.setText(value);
-                    }
-                }
-            } else if(customField.getType().equals(this.getString(R.string.customFields_type_values_number))) {
-                EditText txt = new EditText(this.getContext());
-                txt.setTag(customField.getId());
-                txt.setInputType(InputType.TYPE_CLASS_NUMBER);
-                txt.setHint(customField.getTitle());
-                this.views.add(txt);
-                this.container.addView(txt);
-
-                String value = this.getValue(txt);
-                if(!value.isEmpty()) {
-                    txt.setText(value);
-                }
-            } else if(customField.getType().equals(this.getString(R.string.customFields_type_values_date))) {
-                EditText txt = new EditText(this.getContext());
-                txt.setTag(customField.getId());
-                txt.setInputType(InputType.TYPE_CLASS_DATETIME);
-                txt.setHint(customField.getTitle());
-                this.views.add(txt);
-                this.container.addView(txt);
-
-                String value = this.getValue(txt);
-                if(!value.isEmpty()) {
-                    txt.setText(value);
-                }
-            } else {
-                TextView label = new TextView(this.getContext());
-                label.setText(customField.getTitle());
-                this.container.addView(label);
-
-                Spinner sp = new Spinner(this.getContext());
-                sp.setTag(customField.getId());
-                sp.setContentDescription(customField.getTitle());
-                ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
-                for(String item : customField.getAllowedValues().split(";")) {
-                    values.add(item.trim());
-                }
-                sp.setAdapter(values);
-                values.notifyDataSetChanged();
-                this.views.add(sp);
-                this.container.addView(sp);
-
-                String value = this.getValue(sp);
-                if(!value.isEmpty()) {
-                    sp.setSelection(values.getPosition(value));
+                    this.addSpinner(customField);
                 }
             }
+        } else {
+            this.addLabel(this.getString(de.domjos.customwidgets.R.string.main_noEntry));
+        }
+    }
+
+    private void addTextField(CustomField customField, int type) {
+        EditText txt = new EditText(this.getContext());
+        txt.setTag(customField.getId());
+        txt.setInputType(type);
+        txt.setHint(customField.getTitle());
+        this.views.add(txt);
+        this.container.addView(txt);
+
+        String value = this.getValue(txt);
+        if(!value.isEmpty()) {
+            txt.setText(value);
+        }
+    }
+
+    private void addAutoCompleteTextView(CustomField customField) {
+        AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
+        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_list_item_1);
+        for(String item : customField.getAllowedValues().split(";")) {
+            values.add(item.trim());
+        }
+        autoCompleteTextView.setAdapter(values);
+        values.notifyDataSetChanged();
+        autoCompleteTextView.setTag(customField.getId());
+        autoCompleteTextView.setHint(customField.getTitle());
+        autoCompleteTextView.setInputType(InputType.TYPE_CLASS_TEXT);
+        this.views.add(autoCompleteTextView);
+        this.container.addView(autoCompleteTextView);
+
+        String value = this.getValue(autoCompleteTextView);
+        if(!value.isEmpty()) {
+            autoCompleteTextView.setText(value);
+        }
+    }
+
+    private void addLabel(String text) {
+        TextView label = new TextView(this.getContext());
+        label.setTextSize(16f);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int px = ConvertHelper.convertDPToPixels(2, Objects.requireNonNull(this.getContext()));
+        layoutParams.setMargins(px, px, px, px);
+        label.setLayoutParams(layoutParams);
+        label.setTypeface(null, Typeface.BOLD);
+        label.setText(text);
+        this.container.addView(label);
+    }
+
+    private void addSpinner(CustomField customField) {
+        this.addLabel(customField.getTitle());
+
+        Spinner sp = new Spinner(this.getContext());
+        sp.setTag(customField.getId());
+        sp.setContentDescription(customField.getTitle());
+        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
+        for(String item : customField.getAllowedValues().split(";")) {
+            values.add(item.trim());
+        }
+        sp.setAdapter(values);
+        values.notifyDataSetChanged();
+        this.views.add(sp);
+        this.container.addView(sp);
+
+        String value = this.getValue(sp);
+        if(!value.isEmpty()) {
+            sp.setSelection(values.getPosition(value));
         }
     }
 
