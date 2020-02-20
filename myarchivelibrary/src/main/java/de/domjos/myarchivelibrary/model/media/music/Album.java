@@ -74,11 +74,19 @@ public final class Album extends BaseMediaObject implements DatabaseObject {
     }
 
     public Date getLastHeard() {
-        return this.lastHeard;
+        if(this.lastHeard == null) {
+            return null;
+        } else {
+            return (Date) this.lastHeard.clone();
+        }
     }
 
     public void setLastHeard(Date lastHeard) {
-        this.lastHeard = lastHeard;
+        if(lastHeard == null) {
+            this.lastHeard = null;
+        } else {
+            this.lastHeard = (Date) lastHeard.clone();
+        }
     }
 
     @Override

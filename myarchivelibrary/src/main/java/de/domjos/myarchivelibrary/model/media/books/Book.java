@@ -84,11 +84,19 @@ public final class Book extends BaseMediaObject implements DatabaseObject {
     }
 
     public Date getLastRead() {
-        return this.lastRead;
+        if(this.lastRead == null) {
+            return null;
+        } else {
+            return (Date) this.lastRead.clone();
+        }
     }
 
     public void setLastRead(Date lastRead) {
-        this.lastRead = lastRead;
+        if(lastRead == null) {
+            this.lastRead = null;
+        } else {
+            this.lastRead = (Date) lastRead.clone();
+        }
     }
 
     @Override

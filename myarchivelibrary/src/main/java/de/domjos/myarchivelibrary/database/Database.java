@@ -61,6 +61,11 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.model.media.music.Song;
 
+/**
+ * Class to connect App with SQLite-Database
+ * @author Dominic Joas
+ * @version 1.0
+ */
 public class Database extends SQLiteOpenHelper {
     private final static String TYPE = "type";
     private final static String ALBUMS = "albums";

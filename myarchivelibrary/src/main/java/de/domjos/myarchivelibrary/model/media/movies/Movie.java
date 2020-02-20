@@ -62,11 +62,19 @@ public final class Movie extends BaseMediaObject implements DatabaseObject {
     }
 
     public Date getLastSeen() {
-        return this.lastSeen;
+        if(this.lastSeen == null) {
+            return null;
+        } else {
+            return (Date) this.lastSeen.clone();
+        }
     }
 
     public void setLastSeen(Date lastSeen) {
-        this.lastSeen = lastSeen;
+        if(lastSeen == null) {
+            this.lastSeen = null;
+        } else {
+            this.lastSeen = (Date) lastSeen.clone();
+        }
     }
 
     @Override

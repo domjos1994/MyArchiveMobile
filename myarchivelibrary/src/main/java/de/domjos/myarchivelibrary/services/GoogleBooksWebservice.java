@@ -189,21 +189,19 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
 
     private static Date getReleaseDate(String date) throws ParseException {
         Date dt = null;
-        if(date != null) {
-            if(!date.isEmpty()) {
-                if(date.contains("-")) {
-                    String[] spl = date.split("-");
-                    if(spl.length == 2) {
-                        dt = ConvertHelper.convertStringToDate(date + "-01", "yyyy-MM-dd");
-                    } else {
-                        dt = ConvertHelper.convertStringToDate(date, "yyyy-MM-dd");
-                    }
+        if(date != null && !date.isEmpty()) {
+            if(date.contains("-")) {
+                String[] spl = date.split("-");
+                if(spl.length == 2) {
+                    dt = ConvertHelper.convertStringToDate(date + "-01", "yyyy-MM-dd");
                 } else {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date());
-                    calendar.set(Calendar.YEAR, Integer.parseInt(date));
-                    dt = calendar.getTime();
+                    dt = ConvertHelper.convertStringToDate(date, "yyyy-MM-dd");
                 }
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.set(Calendar.YEAR, Integer.parseInt(date));
+                dt = calendar.getTime();
             }
         }
         return dt;

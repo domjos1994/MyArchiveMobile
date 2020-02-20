@@ -52,11 +52,19 @@ public class Game extends BaseMediaObject implements DatabaseObject {
     }
 
     public Date getLastPlayed() {
-        return this.lastPlayed;
+        if(this.lastPlayed == null) {
+            return null;
+        } else {
+            return (Date) this.lastPlayed.clone();
+        }
     }
 
     public void setLastPlayed(Date lastPlayed) {
-        this.lastPlayed = lastPlayed;
+        if(lastPlayed == null) {
+            this.lastPlayed = null;
+        } else {
+            this.lastPlayed = (Date) lastPlayed.clone();
+        }
     }
 
     @Override
