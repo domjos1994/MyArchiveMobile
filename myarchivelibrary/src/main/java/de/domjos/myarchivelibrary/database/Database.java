@@ -1186,42 +1186,32 @@ public class Database extends SQLiteOpenHelper {
         return this.database;
     }
 
-    public String copyDatabase() throws IOException {
-        File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+    public String copyDatabase(String path) throws IOException {
+        String currentDBPath = this.getWritableDatabase().getPath();
+        File currentDB = new File(currentDBPath);
+        File backupDB = new File(path);
 
-        if(sd != null && sd.canWrite()) {
-            String currentDBPath = this.getWritableDatabase().getPath();
-            String backupDBPath = new File(currentDBPath).getName();
-            File currentDB = new File(currentDBPath);
-            File backupDB = new File(sd, backupDBPath);
-
-            if (currentDB.exists()) {
-                try (FileChannel src = new FileInputStream(currentDB).getChannel();
-                     FileChannel dst = new FileOutputStream(backupDB).getChannel()) {
-                    dst.transferFrom(src, 0, src.size());
-                }
+        if (currentDB.exists()) {
+            try (FileChannel src = new FileInputStream(currentDB).getChannel();
+                 FileChannel dst = new FileOutputStream(backupDB).getChannel()) {
+                dst.transferFrom(src, 0, src.size());
             }
         }
         return this.password;
     }
 
-    public void copyDatabaseFromDownload() throws IOException {
+    public void getDatabase(String path) throws IOException {
         this.close();
 
-        File sd = this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        String currentDBPath = this.getWritableDatabase().getPath();
+        File currentDB = new File(currentDBPath);
+        File backupDB = new File(path);
 
-        if(sd != null && sd.canWrite()) {
-            String currentDBPath = this.getWritableDatabase().getPath();
-            String backupDBPath = new File(currentDBPath).getName();
-            File currentDB = new File(currentDBPath);
-            File backupDB = new File(sd, backupDBPath);
+        if (currentDB.exists()) {
+            try (FileChannel src = new FileOutputStream(currentDB).getChannel();
+                 FileChannel dst = new FileInputStream(backupDB).getChannel()) {
 
-            if (currentDB.exists()) {
-                try (FileChannel src = new FileOutputStream(currentDB).getChannel();
-                     FileChannel dst = new FileInputStream(backupDB).getChannel()) {
-
-                    src.transferFrom(dst, 0, dst.size());
-                }
+                src.transferFrom(dst, 0, dst.size());
             }
         }
     }

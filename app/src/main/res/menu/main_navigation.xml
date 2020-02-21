@@ -63,7 +63,7 @@
             <item
                 android:id="@+id/navMainExport"
                 android:icon="@drawable/ic_import_export_black_24dp"
-                android:title="@string/export" />
+                android:title="@string/api" />
         </menu>
     </item>
 </menu>

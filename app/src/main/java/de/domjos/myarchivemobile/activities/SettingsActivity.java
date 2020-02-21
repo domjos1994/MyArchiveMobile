@@ -62,39 +62,8 @@ public final class SettingsActivity extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
-            EditTextPreference exportDatabase = this.getPreferenceManager().findPreference("swtExportDatabase");
-            EditTextPreference importDatabase = this.getPreferenceManager().findPreference("swtImportDatabase");
-
-            Objects.requireNonNull(exportDatabase).setOnPreferenceClickListener(preference -> {
-                try {
-                    String pwd = MainActivity.GLOBALS.getDatabase().copyDatabase();
-                    exportDatabase.setText(MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, pwd, true));
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                }
-                return true;
-            });
-
-            Objects.requireNonNull(importDatabase).setOnPreferenceChangeListener((obs, newVal) -> {
-                try {
-                    MainActivity.GLOBALS.getDatabase().copyDatabaseFromDownload();
-                    MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, newVal, true);
-                    SettingsActivity.triggerRebirth(Objects.requireNonNull(this.getContext()));
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                }
-                return true;
-            });
         }
     }
 
-    public static void triggerRebirth(Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
-        ComponentName componentName = Objects.requireNonNull(intent).getComponent();
-        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
-        context.startActivity(mainIntent);
-        Runtime.getRuntime().exit(0);
-    }
+
 }

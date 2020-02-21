@@ -45,9 +45,19 @@
     <string name="customFields_type_values_selection">Selection</string>
     <string name="customFields_allowed">Allowed Values (Separated by ;)</string>
 
-    <string name="export">Export</string>
-    <string name="export_name">File-Name</string>
-    <string name="export_name_default">export</string>
+    <string name="api">Export/Import</string>
+    <string-array name="api_type">
+        <item>Export</item>
+        <item>Import</item>
+    </string-array>
+    <string-array name="api_format">
+        <item>PDF</item>
+        <item>Whole Database</item>
+    </string-array>
+    <string name="api_file_name">File-Name</string>
+    <string name="api_file_name_default">export</string>
+    <string name="api_qr_code_save">Save as Image</string>
+    <string name="api_qr_code_open">Open from Image</string>
 
     <string name="filter_no_filter">No Filter</string>
     <string name="filter_temp">Temporary Settings</string>

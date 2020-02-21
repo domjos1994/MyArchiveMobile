@@ -86,9 +86,9 @@
 
     <fragment
         android:id="@+id/navMainExport"
-        android:name="de.domjos.myarchivemobile.fragments.MainExportFragment"
-        android:label="@string/export"
-        tools:layout="@layout/main_fragment_export">
+        android:name="de.domjos.myarchivemobile.fragments.MainApiFragment"
+        android:label="@string/api"
+        tools:layout="@layout/main_fragment_api">
         <argument android:name="search" />
     </fragment>
 </navigation>

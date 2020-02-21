@@ -34,7 +34,6 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
@@ -161,7 +160,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.lvItems.getAdapter().clear();
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
             for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects(table, "", 0, "")) {
-                de.domjos.customwidgets.model.objects.BaseDescriptionObject current = new de.domjos.customwidgets.model.objects.BaseDescriptionObject();
+                de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
@@ -172,7 +171,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         }
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_category))) {
             for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("categories", "", 0, "")) {
-                de.domjos.customwidgets.model.objects.BaseDescriptionObject current = new de.domjos.customwidgets.model.objects.BaseDescriptionObject();
+                de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());

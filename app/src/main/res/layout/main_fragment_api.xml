@@ -25,8 +25,31 @@
     android:weightSum="10">
 
     <TableRow>
+        <Spinner
+            android:id="@+id/spApiType"
+            android:contentDescription="@string/api"
+            android:autofillHints="@string/api"
+            android:entries="@array/api_type"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            tools:targetApi="o" />
+        <Spinner
+            android:id="@+id/spApiFormat"
+            android:contentDescription="@string/api"
+            android:autofillHints="@string/api"
+            android:entries="@array/api_format"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            tools:targetApi="o" />
+    </TableRow>
+
+    <TableRow>
         <EditText
-            android:id="@+id/txtExportPath"
+            android:id="@+id/txtApiPath"
             android:hint="@string/movie_path"
             android:autofillHints="@string/movie_path"
             android:inputType="text"
@@ -35,7 +58,7 @@
             android:layout_weight="8"
             tools:targetApi="o" />
         <Button
-            android:id="@+id/cmdExportPath"
+            android:id="@+id/cmdApiPath"
             android:text="@string/export_search"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
@@ -44,10 +67,10 @@
 
     <TableRow>
         <EditText
-            android:id="@+id/txtExportName"
-            android:hint="@string/export_name"
+            android:id="@+id/txtApiName"
+            android:hint="@string/api_file_name"
             android:autofillHints="@string/movie_path"
-            android:text="@string/export_name_default"
+            android:text="@string/api_file_name_default"
             android:inputType="text"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
@@ -57,13 +80,13 @@
 
     <TableRow>
         <CheckBox
-            android:id="@+id/chkExportBooks"
+            android:id="@+id/chkApiBooks"
             android:hint="@string/main_navigation_media_books"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="5"/>
         <CheckBox
-            android:id="@+id/chkExportMovies"
+            android:id="@+id/chkApiMovies"
             android:hint="@string/main_navigation_media_movies"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
@@ -72,27 +95,45 @@
 
     <TableRow>
         <CheckBox
-            android:id="@+id/chkExportMusic"
+            android:id="@+id/chkApiMusic"
             android:hint="@string/main_navigation_media_music"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="5"/>
         <CheckBox
-            android:id="@+id/chkExportGames"
+            android:id="@+id/chkApiGames"
             android:hint="@string/main_navigation_media_games"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="5"/>
     </TableRow>
     <TableRow>
-    <ImageButton
-        android:id="@+id/cmdExport"
-        android:src="@drawable/ic_import_export_black_24dp"
-        app:srcCompat="@drawable/ic_import_export_black_24dp"
-        android:contentDescription="@string/export"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="10"
-        tools:ignore="VectorDrawableCompat" />
+        <ImageButton
+            android:id="@+id/cmdApi"
+            android:src="@drawable/ic_import_export_black_24dp"
+            app:srcCompat="@drawable/ic_import_export_black_24dp"
+            android:contentDescription="@string/api"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="10"
+            tools:ignore="VectorDrawableCompat" />
+    </TableRow>
+    <TableRow>
+        <ImageView
+            android:id="@+id/ivApiQR"
+            android:contentDescription="@string/api"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="10"
+            tools:ignore="VectorDrawableCompat" />
+    </TableRow>
+    <TableRow>
+        <Button
+            android:id="@+id/cmdApiQR"
+            android:text="@string/api_qr_code_save"
+            android:contentDescription="@string/api_qr_code_save"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="10" />
     </TableRow>
 </TableLayout>
