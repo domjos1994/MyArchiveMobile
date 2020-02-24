@@ -16,8 +16,5 @@
  */
 
 include ':app', ':myarchivelibrary'
-include ':customwidgets'
 
 rootProject.name='MyArchiveMobile'
-
-project(':customwidgets').projectDir = new File(rootDir, '../Libraries/customwidgets')
