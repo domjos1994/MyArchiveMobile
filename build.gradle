@@ -33,6 +33,9 @@ ext.propEspressoVersion = "3.2.0"
 ext.propDatabaseVersion = "2.1.0"
 ext.propSQLiteCipherVersion = "4.3.0@aar"
 
+ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/github.properties"
+ext.propCustomWidgetsVersion = "2.1"
+
 buildscript {
     repositories {
         google()
@@ -45,7 +48,7 @@ buildscript {
 }
 
 def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(new File(projectDir, "../Libraries/customwidgets/github.properties")))
+githubProperties.load(new FileInputStream(new File(projectDir, ext.propCustomWidgetsPropertiesPath)))
 
 allprojects {
     repositories {
