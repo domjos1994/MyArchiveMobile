@@ -369,6 +369,8 @@ CREATE TABLE IF NOT EXISTS games_customFields(
     customFields INTEGER NOT NULL,
     value TEXT,
     FOREIGN KEY(games) REFERENCES games(id) ON DELETE CASCADE ON UPDATE CASCADE,
+
+
     FOREIGN KEY(customFields) REFERENCES customFields(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -380,3 +382,13 @@ CREATE TABLE IF NOT EXISTS albums_customFields(
     FOREIGN KEY(albums) REFERENCES albums(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(customFields) REFERENCES customFields(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE VIEW IF NOT EXISTS media AS
+    SELECT books.id as id, books.title as title, 'books' as type, cover, categories.title as category FROM books LEFT JOIN categories ON categories.ID=books.category
+	UNION
+	SELECT movies.id as id, movies.title as title, 'movies' as type, cover, categories.title as category FROM movies LEFT JOIN categories ON categories.ID=movies.category
+	UNION
+	SELECT albums.id as id, albums.title as title, 'albums' as type, cover, categories.title as category FROM albums LEFT JOIN categories ON categories.ID=albums.category
+	UNION
+	SELECT games.id as id, games.title as title, 'games' as type, cover, categories.title as category FROM games LEFT JOIN categories ON categories.ID=games.category
+;

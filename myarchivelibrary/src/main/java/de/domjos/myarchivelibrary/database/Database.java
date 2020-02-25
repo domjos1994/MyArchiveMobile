@@ -19,7 +19,6 @@ package de.domjos.myarchivelibrary.database;
 
 
 import android.content.Context;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import net.sqlcipher.Cursor;
@@ -114,9 +113,14 @@ public class Database extends SQLiteOpenHelper {
         this.updateDatabase(content, oldVersion, newVersion, db);
     }
 
+
     public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content) {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+
+        StringBuilder builder = new StringBuilder();
         for(Map.Entry<DatabaseObject, String> entry : content.entrySet()) {
+
+
             Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover FROM " + entry.getKey().getTable() + where(entry.getValue()), new String[]{});
             while (cursor.moveToNext()) {
                 BaseMediaObject baseMediaObject = null;
@@ -1176,12 +1180,16 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private SQLiteDatabase getReadableDatabase() {
-        if(this.database != null) {
-            if(!this.database.isOpen()) {
+        try {
+            if(this.database != null) {
+                if(!this.database.isOpen()) {
+                    this.database = this.getReadableDatabase(this.password);
+                }
+            } else {
                 this.database = this.getReadableDatabase(this.password);
             }
-        } else {
-            this.database = this.getReadableDatabase(this.password);
+        } catch (Exception ex) {
+            this.database = this.getWritableDatabase(this.password);
         }
         return this.database;
     }
