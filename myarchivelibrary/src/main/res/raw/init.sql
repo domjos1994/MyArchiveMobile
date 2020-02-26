@@ -384,11 +384,48 @@ CREATE TABLE IF NOT EXISTS albums_customFields(
 );
 
 CREATE VIEW IF NOT EXISTS media AS
-    SELECT books.id as id, books.title as title, 'books' as type, cover, categories.title as category FROM books LEFT JOIN categories ON categories.ID=books.category
+        SELECT books.id as id, books.title as title, originalTitle, books.description as description,
+            'books' as type, cover, categories.title as category, group_concat(tags.title) as tags,
+            group_concat(DISTINCT customFields.title || ':' || books_customFields.value) as customFields
+            FROM (((((books
+                LEFT JOIN categories ON categories.ID=books.category)
+                LEFT JOIN books_tags ON books_tags.books=books.id)
+                LEFT JOIN tags ON tags.id=books_tags.tags)
+                LEFT JOIN books_customFields ON books_customFields.books=books.id)
+                LEFT JOIN customFields ON customFields.id=books_customFields.customFields)
+            GROUP BY books.title
 	UNION
-	SELECT movies.id as id, movies.title as title, 'movies' as type, cover, categories.title as category FROM movies LEFT JOIN categories ON categories.ID=movies.category
+	    SELECT movies.id as id, movies.title as title, originalTitle, movies.description as description,
+	        'movies' as type, cover, categories.title as category, group_concat(tags.title) as tags,
+            group_concat(DISTINCT customFields.title || ':' || movies_customFields.value) as customFields
+	        FROM (((((movies
+	            LEFT JOIN categories ON categories.ID=movies.category)
+	            LEFT JOIN movies_tags ON movies_tags.movies=movies.id)
+	            LEFT JOIN tags ON tags.id=movies_tags.tags)
+                LEFT JOIN movies_customFields ON movies_customFields.movies=movies.id)
+                LEFT JOIN customFields ON customFields.id=movies_customFields.customFields)
+            GROUP BY movies.title
 	UNION
-	SELECT albums.id as id, albums.title as title, 'albums' as type, cover, categories.title as category FROM albums LEFT JOIN categories ON categories.ID=albums.category
+	    SELECT albums.id as id, albums.title as title, originalTitle, albums.description as description,
+	        'albums' as type, cover, categories.title as category, group_concat(tags.title) as tags,
+            group_concat(DISTINCT customFields.title || ':' || albums_customFields.value) as customFields
+	        FROM (((((albums
+	            LEFT JOIN categories ON categories.ID=albums.category)
+	            LEFT JOIN albums_tags ON albums_tags.albums=albums.id)
+	            LEFT JOIN tags ON tags.id=albums_tags.tags)
+                LEFT JOIN albums_customFields ON albums_customFields.albums=albums.id)
+                LEFT JOIN customFields ON customFields.id=albums_customFields.customFields)
+            GROUP BY albums.title
 	UNION
-	SELECT games.id as id, games.title as title, 'games' as type, cover, categories.title as category FROM games LEFT JOIN categories ON categories.ID=games.category
+	    SELECT games.id as id, games.title as title, originalTitle, games.description as description,
+	        'games' as type, cover, categories.title as category, group_concat(tags.title) as tags,
+            group_concat(DISTINCT customFields.title || ':' || games_customFields.value) as customFields
+	        FROM (((((games
+	            LEFT JOIN categories ON categories.ID=games.category)
+	            LEFT JOIN games_tags ON games_tags.games=games.id)
+	            LEFT JOIN tags ON tags.id=games_tags.tags)
+                LEFT JOIN games_customFields ON games_customFields.games=games.id)
+                LEFT JOIN customFields ON customFields.id=games_customFields.customFields)
+            GROUP BY games.title
+    ORDER BY title
 ;

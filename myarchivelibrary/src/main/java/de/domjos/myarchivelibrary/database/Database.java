@@ -119,35 +119,40 @@ public class Database extends SQLiteOpenHelper {
 
         StringBuilder builder = new StringBuilder();
         for(Map.Entry<DatabaseObject, String> entry : content.entrySet()) {
-
-
-            Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover FROM " + entry.getKey().getTable() + where(entry.getValue()), new String[]{});
-            while (cursor.moveToNext()) {
-                BaseMediaObject baseMediaObject = null;
-                switch (entry.getKey().getTable()) {
-                    case Database.BOOKS:
-                        baseMediaObject = new Book();
-                        break;
-                    case Database.MOVIES:
-                        baseMediaObject = new Movie();
-                        break;
-                    case Database.GAMES:
-                        baseMediaObject = new Game();
-                        break;
-                    case "albums":
-                        baseMediaObject = new Album();
-                        break;
-                }
-
-                if(baseMediaObject != null) {
-                    baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                    baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-                    baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
-                    baseMediaObjects.add(baseMediaObject);
-                }
+            builder.append("(type='").append(entry.getKey().getTable()).append("'");
+            if (!entry.getValue().trim().isEmpty()) {
+                builder.append(" AND ").append(entry.getValue());
             }
-            cursor.close();
+            builder.append(") OR ");
         }
+        builder.replace(builder.length() - 3, builder.length(), "");
+
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()), new String[]{});
+        while (cursor.moveToNext()) {
+            BaseMediaObject baseMediaObject = null;
+            switch (cursor.getString(cursor.getColumnIndex("type"))) {
+                case Database.BOOKS:
+                    baseMediaObject = new Book();
+                    break;
+                case Database.MOVIES:
+                    baseMediaObject = new Movie();
+                    break;
+                case Database.GAMES:
+                    baseMediaObject = new Game();
+                    break;
+                case Database.ALBUMS:
+                    baseMediaObject = new Album();
+                    break;
+            }
+
+            if(baseMediaObject != null) {
+                baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
+                baseMediaObject.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+                baseMediaObject.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
+                baseMediaObjects.add(baseMediaObject);
+            }
+        }
+        cursor.close();
         return baseMediaObjects;
     }
 

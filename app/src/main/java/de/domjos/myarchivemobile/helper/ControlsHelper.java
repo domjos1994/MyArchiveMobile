@@ -24,6 +24,7 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -31,7 +32,7 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
-import java.text.ParseException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +43,6 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
@@ -145,12 +145,60 @@ public class ControlsHelper {
     }
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) {
-        List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
         mp.put(new Book(), search);
         mp.put(new Movie(), search);
         mp.put(new Album(), search);
         mp.put(new Game(), search);
+        return ControlsHelper.getAllMediaItems(context, mp);
+    }
+
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) {
+        String where = "";
+        List<String> categories = Arrays.asList(mediaFilter.getCategories().split("\\|"));
+        String categoryWhere = "category like '%" + TextUtils.join("%' or category like '%", categories) + "%'";
+        if(!categories.isEmpty() && !categories.get(0).isEmpty()) {
+            where = categoryWhere;
+        }
+
+        List<String> tags = Arrays.asList(mediaFilter.getTags().split("\\|"));
+        String tagsWhere = "tags like '%" + TextUtils.join("%' or tags like '%", tags) + "%'";
+        if(!tags.isEmpty() && !tags.get(0).isEmpty()) {
+            if(where.isEmpty()) {
+                where = tagsWhere;
+            } else {
+                where += " AND " + tagsWhere;
+            }
+        }
+
+        List<String> customFields = Arrays.asList(mediaFilter.getCustomFields().split("\\|"));
+        String customFieldsWhere = "customFields like '%" + TextUtils.join("%' or customFields like '%", customFields) + "%'";
+        if(!customFields.isEmpty() && !customFields.get(0).isEmpty()) {
+            if(where.isEmpty()) {
+                where = customFieldsWhere;
+            } else {
+                where += " AND " + customFieldsWhere;
+            }
+        }
+
+        Map<DatabaseObject, String> mp = new LinkedHashMap<>();
+        if(mediaFilter.isBooks()) {
+            mp.put(new Book(), where);
+        }
+        if(mediaFilter.isMovies()) {
+            mp.put(new Movie(), where);
+        }
+        if(mediaFilter.isMusic()) {
+            mp.put(new Album(), where);
+        }
+        if(mediaFilter.isGames()) {
+            mp.put(new Game(), where);
+        }
+        return ControlsHelper.getAllMediaItems(context, mp);
+    }
+
+    private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp) {
+        List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp)) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
@@ -182,190 +230,7 @@ public class ControlsHelper {
             }
         }
 
-        /*for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(search)) {
-            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-            baseDescriptionObject.setCover(baseMediaObject.getCover());
-            baseDescriptionObject.setDescription(context.getString(R.string.book));
-            baseDescriptionObject.setObject(baseMediaObject);
-            baseDescriptionObjects.add(baseDescriptionObject);
-        }
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(search)) {
-            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-            baseDescriptionObject.setCover(baseMediaObject.getCover());
-            baseDescriptionObject.setDescription(context.getString(R.string.movie));
-            baseDescriptionObject.setObject(baseMediaObject);
-            baseDescriptionObjects.add(baseDescriptionObject);
-        }
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(search)) {
-            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-            baseDescriptionObject.setCover(baseMediaObject.getCover());
-            baseDescriptionObject.setDescription(context.getString(R.string.album));
-            baseDescriptionObject.setObject(baseMediaObject);
-            baseDescriptionObjects.add(baseDescriptionObject);
-        }
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(search)) {
-            BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-            baseDescriptionObject.setCover(baseMediaObject.getCover());
-            baseDescriptionObject.setDescription(context.getString(R.string.game));
-            baseDescriptionObject.setObject(baseMediaObject);
-            baseDescriptionObjects.add(baseDescriptionObject);
-        }*/
         return baseDescriptionObjects;
-    }
-
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) throws ParseException {
-        List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        StringBuilder where = new StringBuilder();
-        if(!mediaFilter.getSearch().trim().isEmpty()) {
-            String search = mediaFilter.getSearch();
-            where.append("title like '").append(search.replace("|", "' or title like '").replace("&", "' and title like '")).append("'");
-        }
-        List<String> categories = new LinkedList<>();
-        if(mediaFilter.getCategories().contains("|")) {
-            for(String category : mediaFilter.getCategories().split("\\|")) {
-                if(!category.trim().isEmpty()) {
-                    categories.add(category);
-                }
-            }
-        }
-        List<List<String>> tags = new LinkedList<>();
-        for(String orTags : mediaFilter.getTags().split("\\|")) {
-            if(!orTags.trim().isEmpty()) {
-                List<String> tmpTags = new LinkedList<>();
-                for(String andTags : orTags.split("&")) {
-                    if(!andTags.trim().isEmpty()) {
-                        tmpTags.add(andTags.trim());
-                    }
-                }
-                tags.add(tmpTags);
-            }
-        }
-        Map<CustomField, String> customFields = new LinkedHashMap<>();
-        List<CustomField> customFieldList = MainActivity.GLOBALS.getDatabase().getCustomFields("");
-        for(String fieldValue : mediaFilter.getCustomFields().split(";")) {
-            String[] spl = fieldValue.split(":");
-            String field = spl[0].trim();
-            String value = "";
-            if(spl.length != 1) {
-                value = spl[1].trim();
-            }
-            if(!value.isEmpty()) {
-                for(CustomField customField : customFieldList) {
-                    if(customField.getTitle().equals(field)) {
-                        customFields.put(customField, value);
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(mediaFilter.isBooks()) {
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getBooks(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
-                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                    baseDescriptionObject.setCover(baseMediaObject.getCover());
-                    baseDescriptionObject.setDescription(context.getString(R.string.book));
-                    baseDescriptionObject.setObject(baseMediaObject);
-                    baseDescriptionObjects.add(baseDescriptionObject);
-                }
-            }
-        }
-        if(mediaFilter.isMovies()) {
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getMovies(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
-                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                    baseDescriptionObject.setCover(baseMediaObject.getCover());
-                    baseDescriptionObject.setDescription(context.getString(R.string.movie));
-                    baseDescriptionObject.setObject(baseMediaObject);
-                    baseDescriptionObjects.add(baseDescriptionObject);
-                }
-            }
-        }
-        if(mediaFilter.isMusic()) {
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getAlbums(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
-                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                    baseDescriptionObject.setCover(baseMediaObject.getCover());
-                    baseDescriptionObject.setDescription(context.getString(R.string.album));
-                    baseDescriptionObject.setObject(baseMediaObject);
-                    baseDescriptionObjects.add(baseDescriptionObject);
-                }
-            }
-        }
-        if(mediaFilter.isGames()) {
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getGames(where.toString())) {
-                if(isValidItemForFilter(baseMediaObject, categories, tags, customFields)) {
-                    BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                    baseDescriptionObject.setCover(baseMediaObject.getCover());
-                    baseDescriptionObject.setDescription(context.getString(R.string.game));
-                    baseDescriptionObject.setObject(baseMediaObject);
-                    baseDescriptionObjects.add(baseDescriptionObject);
-                }
-            }
-        }
-
-        return baseDescriptionObjects;
-    }
-
-
-    private static boolean isValidItemForFilter(BaseMediaObject baseMediaObject, List<String> categories, List<List<String>> tags, Map<CustomField, String> customFields) {
-        if(!categories.isEmpty()) {
-            if(baseMediaObject.getCategory() == null) {
-                return false;
-            } else {
-                boolean contains = false;
-                for(String category : categories) {
-                    if(baseMediaObject.getCategory().getTitle().trim().equals(category)) {
-                        contains = true;
-                        break;
-                    }
-                }
-                if(!contains) {
-                    return false;
-                }
-            }
-        }
-
-        if(!tags.isEmpty()) {
-            if(baseMediaObject.getTags().isEmpty()) {
-                return false;
-            } else {
-                List<String> titles = new LinkedList<>();
-                for(de.domjos.myarchivelibrary.model.base.BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
-                    titles.add(baseDescriptionObject.getTitle().trim());
-                }
-
-                boolean contains = false;
-                for(List<String> andTags : tags) {
-                    boolean andContains = true;
-                    for(String tag : andTags) {
-                        if(!titles.contains(tag)) {
-                            andContains = false;
-                            break;
-                        }
-                    }
-                    if(andContains) {
-                        contains = true;
-                        break;
-                    }
-                }
-
-                return contains;
-            }
-        }
-
-        if(!customFields.isEmpty()) {
-            for(Map.Entry<CustomField, String> entry : customFields.entrySet()) {
-                for(Map.Entry<CustomField, String> fields : baseMediaObject.getCustomFieldValues().entrySet()) {
-                    if(fields.getKey().getTitle().equals(entry.getKey().getTitle())) {
-                        if(!entry.getValue().equals(fields.getValue())) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     private static BaseDescriptionObject setItem(Context context, BaseMediaObject baseMediaObject) {
