@@ -33,7 +33,7 @@ ext.propEspressoVersion = "3.2.0"
 ext.propDatabaseVersion = "2.1.0"
 ext.propSQLiteCipherVersion = "4.3.0@aar"
 
-ext.propMultiDex = false
+ext.propMultiDex = true
 ext.propMinify = false
 ext.propShrink = false
 
