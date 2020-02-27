@@ -26,8 +26,10 @@ android {
         targetSdkVersion propCompVersion
         versionCode propVersion
         versionName propVersionCode
-        multiDexEnabled true
+        multiDexEnabled propMultiDex
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary true
         }
@@ -35,8 +37,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled propMinify
+            shrinkResources propShrink
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
