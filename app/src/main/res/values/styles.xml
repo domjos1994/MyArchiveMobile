@@ -23,6 +23,33 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textColorHint">#999</item>
+        <item name="android:label">@color/textColorPrimary</item>
+        <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
+
+        <item name="android:popupBackground">@color/selected_colorPrimaryDark</item>
+        <item name="android:itemBackground">@color/selected_colorPrimaryDark</item>
+
+        <item name="android:windowBackground">@color/windowBackground</item>
+
+        <item name="android:buttonStyle">@style/button</item>
+    </style>
+
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/background_button</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <style name="imageButton" parent="@android:style/Widget.ImageButton">
+        <item name="android:background">@drawable/background_button</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -33,5 +60,4 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
 </resources>

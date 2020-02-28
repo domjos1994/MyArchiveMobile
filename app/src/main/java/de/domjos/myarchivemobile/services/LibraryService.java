@@ -107,7 +107,7 @@ public class LibraryService extends JobService {
             return;
         }
         if(lendOutDate.get(Calendar.YEAR)==today.get(Calendar.YEAR) && lendOutDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-            this.notifications.add(MessageHelper.showNotification(this.context, message, message, R.drawable.ic_local_library_black_24dp));
+            this.notifications.add(MessageHelper.showNotification(this.context, message, message, R.drawable.icon_library));
         }
     }
 }

@@ -35,20 +35,22 @@
             android:weightSum="10">
 
             <ImageButton
+    style="@style/imageButton"
                 android:id="@+id/cmdMediaCoverPhoto"
                 android:contentDescription="@string/media_cover"
-                app:srcCompat="@drawable/ic_photo_camera_black_24dp"
-                android:src="@drawable/ic_photo_camera_black_24dp"
+                app:srcCompat="@drawable/icon_camera"
+                android:src="@drawable/icon_camera"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 tools:ignore="VectorDrawableCompat" />
 
             <ImageButton
+    style="@style/imageButton"
                 android:id="@+id/cmdMediaCoverGallery"
                 android:contentDescription="@string/media_cover"
-                app:srcCompat="@drawable/ic_image_black_24dp"
-                android:src="@drawable/ic_image_black_24dp"
+                app:srcCompat="@drawable/icon_image"
+                android:src="@drawable/icon_image"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"

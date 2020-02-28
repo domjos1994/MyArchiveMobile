@@ -38,18 +38,17 @@
                 android:layout_height="48dp">
                 <Spinner
                     android:id="@+id/spFilter"
-                    android:textColorHint="#fff"
-                    android:textColor="#fff"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/spinner_height"
-                    android:layout_weight="9"/>
+                    android:layout_weight="9" />
                 <ImageButton
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterExpand"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_expand_more_black_24dp"
-                    android:src="@drawable/ic_expand_more_black_24dp"
+                    app:srcCompat="@drawable/icon_expand_more"
+                    android:src="@drawable/icon_expand_more"
                     android:background="@null"
                     android:contentDescription="@string/sys_save"
                     tools:ignore="VectorDrawableCompat" />
@@ -67,30 +66,30 @@
                     android:autofillHints="@string/sys_title"
                     android:hint="@string/sys_title"
                     android:inputType="text"
-                    android:textColor="#fff"
-                    android:textColorHint="#fff"
                     tools:targetApi="o" />
 
                 <ImageButton
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterSave"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
                     android:contentDescription="@string/sys_save"
-                    android:src="@drawable/ic_save_black_24dp"
-                    app:srcCompat="@drawable/ic_save_black_24dp"
+                    android:src="@drawable/icon_save"
+                    app:srcCompat="@drawable/icon_save"
                     tools:ignore="VectorDrawableCompat" />
 
                 <ImageButton
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterDelete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
                     android:contentDescription="@string/sys_cancel"
-                    android:src="@drawable/ic_delete_black_24dp"
-                    app:srcCompat="@drawable/ic_delete_black_24dp"
+                    android:src="@drawable/icon_delete"
+                    app:srcCompat="@drawable/icon_delete"
                     tools:ignore="VectorDrawableCompat" />
             </TableRow>
             <TableRow
@@ -100,19 +99,17 @@
                     android:id="@+id/chkFilterBooks"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:buttonTint="#fff"
-                    android:textColor="#fff"
                     android:layout_weight="5"
                     android:text="@string/main_navigation_media_books"
+                    android:textColor="@color/textColorPrimary"
                     tools:targetApi="lollipop" />
                 <CheckBox
                     android:id="@+id/chkFilterMovies"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:buttonTint="#fff"
-                    android:textColor="#fff"
                     android:layout_weight="5"
                     android:text="@string/main_navigation_media_movies"
+                    android:textColor="@color/textColorPrimary"
                     tools:targetApi="lollipop" />
             </TableRow>
             <TableRow
@@ -122,27 +119,23 @@
                     android:id="@+id/chkFilterMusic"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:buttonTint="#fff"
-                    android:textColor="#fff"
                     android:layout_weight="5"
                     android:text="@string/main_navigation_media_music"
+                    android:textColor="@color/textColorPrimary"
                     tools:targetApi="lollipop" />
                 <CheckBox
                     android:id="@+id/chkFilterGames"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:buttonTint="#fff"
-                    android:textColor="#fff"
                     android:layout_weight="5"
                     android:text="@string/main_navigation_media_games"
+                    android:textColor="@color/textColorPrimary"
                     tools:targetApi="lollipop" />
             </TableRow>
             <EditText
                 android:id="@+id/txtFilterSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="#fff"
-                android:textColor="#fff"
                 android:inputType="text"
                 android:hint="@string/sys_search"
                 android:autofillHints="@string/sys_search"
@@ -152,8 +145,6 @@
                 android:id="@+id/txtFilterCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="#fff"
-                android:textColor="#fff"
                 android:inputType="text"
                 android:hint="@string/media_general_category"
                 android:autofillHints="@string/media_general_category"
@@ -163,8 +154,6 @@
                 android:id="@+id/txtFilterTags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="#fff"
-                android:textColor="#fff"
                 android:inputType="text"
                 android:hint="@string/media_general_tags"
                 android:autofillHints="@string/media_general_tags"
@@ -174,8 +163,6 @@
                 android:id="@+id/txtFilterCustomFields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="#fff"
-                android:textColor="#fff"
                 android:inputType="text"
                 android:hint="@string/customFields"
                 android:autofillHints="@string/customFields"
@@ -186,13 +173,14 @@
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMedia"
+        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
-        android:padding="4dp"
+        android:layout_margin="4dp"
         android:layout_above="@+id/footer"
         android:layout_below="@+id/filterScrollView"/>
 
@@ -206,7 +194,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#fff"
             android:layout_gravity="center"
             android:gravity="center"/>
         <TextView
@@ -216,7 +203,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="2dp"
-            android:textColor="#fff"
             android:layout_gravity="center"
             android:gravity="center"/>
     </LinearLayout>
@@ -235,11 +221,12 @@
         android:focusable="true"
         android:visibility="invisible"
         app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_games_black_24dp"
-        android:src="@drawable/ic_games_black_24dp"
+        app:srcCompat="@drawable/icon_game"
+        android:src="@drawable/icon_game"
         tools:targetApi="lollipop"
         tools:ignore="VectorDrawableCompat"
-        app:fabSize="mini"/>
+        app:fabSize="mini"
+        app:backgroundTint="@color/selected_colorPrimaryDark"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppMovies"
@@ -255,11 +242,12 @@
         android:focusable="true"
         android:visibility="invisible"
         app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_local_movies_black_24dp"
-        android:src="@drawable/ic_local_movies_black_24dp"
+        app:srcCompat="@drawable/icon_movie"
+        android:src="@drawable/icon_movie"
         tools:targetApi="lollipop"
         tools:ignore="VectorDrawableCompat"
-        app:fabSize="mini"/>
+        app:fabSize="mini"
+        app:backgroundTint="@color/selected_colorPrimaryDark"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppMusic"
@@ -275,11 +263,12 @@
         android:focusable="true"
         android:visibility="invisible"
         app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_music_note_black_24dp"
-        android:src="@drawable/ic_music_note_black_24dp"
+        app:srcCompat="@drawable/icon_music"
+        android:src="@drawable/icon_music"
         tools:targetApi="lollipop"
         tools:ignore="VectorDrawableCompat"
-        app:fabSize="mini"/>
+        app:fabSize="mini"
+        app:backgroundTint="@color/selected_colorPrimaryDark"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppBook"
@@ -295,11 +284,12 @@
         android:focusable="true"
         android:visibility="invisible"
         app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_book_black_24dp"
-        android:src="@drawable/ic_book_black_24dp"
+        app:srcCompat="@drawable/icon_book"
+        android:src="@drawable/icon_book"
         tools:targetApi="lollipop"
         tools:ignore="VectorDrawableCompat"
-        app:fabSize="mini"/>
+        app:fabSize="mini"
+        app:backgroundTint="@color/selected_colorPrimaryDark"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppAdd"
@@ -317,8 +307,9 @@
         android:layout_alignEnd="@+id/lvMedia"
         app:pressedTranslationZ="12dp"
         android:contentDescription="@string/add_media"
-        app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
-        android:src="@drawable/ic_add_circle_outline_black_24dp"
+        app:srcCompat="@drawable/icon_add"
+        android:src="@drawable/icon_add"
         tools:ignore="VectorDrawableCompat"
-        tools:targetApi="lollipop" />
+        tools:targetApi="lollipop"
+        app:backgroundTint="@color/selected_colorPrimaryDark"/>
 </RelativeLayout>

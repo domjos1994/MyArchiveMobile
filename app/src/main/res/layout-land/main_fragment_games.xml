@@ -26,7 +26,7 @@
         android:id="@+id/lvMediaGames"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:itemIcon="@drawable/ic_games_black_24dp"
+        app:itemIcon="@drawable/icon_game"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemBackgroundStatePositive="@drawable/background_positive"

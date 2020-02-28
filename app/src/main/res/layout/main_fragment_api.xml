@@ -109,14 +109,15 @@
     </TableRow>
     <TableRow>
         <ImageButton
+            style="@style/imageButton"
             android:id="@+id/cmdApi"
-            android:src="@drawable/ic_import_export_black_24dp"
-            app:srcCompat="@drawable/ic_import_export_black_24dp"
+            android:src="@drawable/icon_api"
+            app:srcCompat="@drawable/icon_api"
             android:contentDescription="@string/api"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="10"
-            tools:ignore="VectorDrawableCompat" />
+            tools:ignore="VectorDrawableCompat"/>
     </TableRow>
     <TableRow>
         <ImageView
@@ -125,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="10"
-            tools:ignore="VectorDrawableCompat" />
+            tools:ignore="VectorDrawableCompat"/>
     </TableRow>
     <TableRow>
         <Button

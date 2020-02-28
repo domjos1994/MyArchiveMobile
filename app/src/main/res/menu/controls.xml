@@ -21,20 +21,20 @@
     <item
         android:id="@+id/cmdAdd"
         android:title="@string/sys_add"
-        android:icon="@drawable/ic_add_circle_outline_black_24dp"/>
+        android:icon="@drawable/icon_add"/>
 
     <item
         android:id="@+id/cmdEdit"
         android:title="@string/sys_edit"
-        android:icon="@drawable/ic_edit_black_24dp"/>
+        android:icon="@drawable/icon_edit"/>
 
     <item
         android:id="@+id/cmdCancel"
         android:title="@string/sys_cancel"
-        android:icon="@drawable/ic_cancel_black_24dp"/>
+        android:icon="@drawable/icon_cancel"/>
 
     <item
         android:id="@+id/cmdSave"
         android:title="@string/sys_save"
-        android:icon="@drawable/ic_save_black_24dp"/>
+        android:icon="@drawable/icon_save"/>
 </menu>

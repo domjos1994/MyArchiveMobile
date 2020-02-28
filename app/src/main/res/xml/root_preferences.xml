@@ -15,7 +15,9 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
         app:title="@string/settings_general"
@@ -26,27 +28,29 @@
             app:title="@string/settings_general_notifications"
             app:summary="@string/settings_general_notifications_summary"
             app:defaultValue="true"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:icon="@drawable/icon_arrow_right"/>
 
         <androidx.preference.SwitchPreference
             app:key="swtDebugMode"
             app:title="@string/settings_general_debug"
             app:summary="@string/settings_general_debug_summary"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:icon="@drawable/icon_arrow_right"/>
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
         app:title="@string/settings_services"
-        app:icon="@drawable/ic_cloud_black_24dp">
+        app:icon="@drawable/icon_cloud">
 
         <androidx.preference.EditTextPreference
-            app:key="txtGoogleBooksKey"
-            app:title="@string/settings_services_google_books"
-            app:summary="@string/settings_services_google_books_summary"
-            app:dialogTitle="@string/settings_services_google_books"
+            app:dialogIcon="@drawable/icon_cloud"
             app:dialogMessage="@string/settings_services_google_books_summary"
-            app:dialogIcon="@drawable/ic_cloud_black_24dp"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:dialogTitle="@string/settings_services_google_books"
+            app:icon="@drawable/icon_arrow_right"
+            app:key="txtGoogleBooksKey"
+            app:summary="@string/settings_services_google_books_summary"
+            app:title="@string/settings_services_google_books" 
+			android:contentDescription="@string/settings_services_google_books_summary"
+			android:hint="@string/settings_services_google_books"/>
 
         <androidx.preference.EditTextPreference
             app:key="txtMovieDBKey"
@@ -54,8 +58,10 @@
             app:summary="@string/settings_services_movie_db_summary"
             app:dialogTitle="@string/settings_services_movie_db"
             app:dialogMessage="@string/settings_services_movie_db_summary"
-            app:dialogIcon="@drawable/ic_cloud_black_24dp"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:dialogIcon="@drawable/icon_cloud"
+            app:icon="@drawable/icon_arrow_right"
+			android:contentDescription="@string/settings_services_movie_db_summary"
+			android:hint="@string/settings_services_movie_db"/>
 
         <androidx.preference.EditTextPreference
             app:key="txtIGDBKey"
@@ -63,8 +69,10 @@
             app:summary="@string/settings_services_igdb_summary"
             app:dialogTitle="@string/settings_services_igdb"
             app:dialogMessage="@string/settings_services_igdb_summary"
-            app:dialogIcon="@drawable/ic_cloud_black_24dp"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:dialogIcon="@drawable/icon_cloud"
+            app:icon="@drawable/icon_arrow_right"
+			android:contentDescription="@string/settings_services_igdb_summary"
+			android:hint="@string/settings_services_igdb"/>
 
         <androidx.preference.EditTextPreference
             app:key="txtEANDataKey"
@@ -72,8 +80,10 @@
             app:summary="@string/settings_services_ean_data_summary"
             app:dialogTitle="@string/settings_services_ean_data"
             app:dialogMessage="@string/settings_services_ean_data_summary"
-            app:dialogIcon="@drawable/ic_cloud_black_24dp"
-            app:icon="@drawable/ic_subdirectory_arrow_right_black_24dp"/>
+            app:dialogIcon="@drawable/icon_cloud"
+            app:icon="@drawable/icon_arrow_right"
+			android:contentDescription="@string/settings_services_ean_data_summary"
+			android:hint="@string/settings_services_ean_data"/>
 
     </androidx.preference.PreferenceCategory>
 

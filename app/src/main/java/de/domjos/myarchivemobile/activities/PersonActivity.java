@@ -127,9 +127,9 @@ public final class PersonActivity extends AbstractActivity {
         tabLayout.setScrollPosition(0, 0f, true);
         this.viewPager.setCurrentItem(0);
 
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_person_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_format_list_bulleted_black_24dp);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_person);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
+        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
 
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);

@@ -44,12 +44,14 @@
                 tools:targetApi="o" />
 
             <ImageButton
+    style="@style/imageButton"
+
                 android:id="@+id/cmdCompanySearch"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:contentDescription="@string/sys_search"
-                app:srcCompat="@drawable/ic_search_black_24dp"/>
+                app:srcCompat="@drawable/icon_search"/>
         </LinearLayout>
 
         <EditText

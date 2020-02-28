@@ -193,7 +193,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         Spinner sp = new Spinner(this.getContext());
         sp.setTag(customField.getId());
         sp.setContentDescription(customField.getTitle());
-        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item);
         for(String item : customField.getAllowedValues().split(";")) {
             values.add(item.trim());
         }

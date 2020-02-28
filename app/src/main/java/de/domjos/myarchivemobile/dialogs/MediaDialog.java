@@ -234,7 +234,7 @@ public class MediaDialog extends DialogFragment {
         this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
 
         this.spWebservices = view.findViewById(R.id.spWebServices);
-        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item, this.titleWebservices);
+        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item, this.titleWebservices);
         this.spWebservices.setAdapter(this.webServiceAdapter);
         this.webServiceAdapter.notifyDataSetChanged();
     }

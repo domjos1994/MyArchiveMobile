@@ -45,13 +45,14 @@
                 tools:targetApi="o" />
 
             <ImageButton
+    style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralTitleSearch"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_search_black_24dp"
-                android:src="@drawable/ic_search_black_24dp"
+                app:srcCompat="@drawable/icon_search"
+                android:src="@drawable/icon_search"
                 tools:ignore="VectorDrawableCompat"
                 android:contentDescription="@string/sys_search" />
         </LinearLayout>
@@ -89,19 +90,21 @@
                 android:layout_height="wrap_content"
                 tools:targetApi="o" />
             <ImageButton
+    style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralCodeSearch"
                 android:contentDescription="@string/media_general_code"
-                app:srcCompat="@drawable/ic_search_black_24dp"
-                android:src="@drawable/ic_search_black_24dp"
+                app:srcCompat="@drawable/icon_search"
+                android:src="@drawable/icon_search"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 tools:ignore="VectorDrawableCompat" />
             <ImageButton
+    style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralCodeScan"
                 android:contentDescription="@string/media_general_code"
-                app:srcCompat="@drawable/ic_scan_black_24dp"
-                android:src="@drawable/ic_scan_black_24dp"
+                app:srcCompat="@drawable/icon_scan"
+                android:src="@drawable/icon_scan"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

@@ -42,7 +42,7 @@
         android:id="@+id/lvCategoriesOrTags"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:itemIcon="@drawable/ic_tag_black_24dp"
+        app:itemIcon="@drawable/icon_tag"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"

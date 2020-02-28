@@ -127,7 +127,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.lvMedia = this.findViewById(R.id.lvMedia);
 
         this.spItems = this.findViewById(R.id.spItems);
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         itemsAdapter.add(this.getString(R.string.media_general_tags));
         itemsAdapter.add(this.getString(R.string.media_general_category));
         this.spItems.setAdapter(itemsAdapter);

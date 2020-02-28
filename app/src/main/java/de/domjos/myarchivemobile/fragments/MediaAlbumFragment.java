@@ -56,7 +56,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaAlbumType = view.findViewById(R.id.spMediaAlbumType);
         this.txtMediaAlbumLastHeard = view.findViewById(R.id.txtMediaAlbumLastHeard);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
+        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
         for(Album.Type type : Album.Type.values()) {
             this.typeAdapter.add(type.name());
         }

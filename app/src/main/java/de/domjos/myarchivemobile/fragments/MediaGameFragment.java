@@ -56,7 +56,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaGameType = view.findViewById(R.id.spMediaGameType);
         this.txtMediaGameLastPlayed = view.findViewById(R.id.txtMediaGameLastPlayed);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
+        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
         for(Game.Type type : Game.Type.values()) {
             this.typeAdapter.add(type.name());
         }

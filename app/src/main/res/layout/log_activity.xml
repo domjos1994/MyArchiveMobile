@@ -26,11 +26,12 @@
     android:orientation="vertical">
 
     <ImageButton
+    style="@style/imageButton"
         android:id="@+id/cmdSaveLogFile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_save_black_24dp"
-        android:src="@drawable/ic_save_black_24dp"
+        app:srcCompat="@drawable/icon_save"
+        android:src="@drawable/icon_save"
         tools:ignore="VectorDrawableCompat"
         android:contentDescription="@string/sys_save"/>
 

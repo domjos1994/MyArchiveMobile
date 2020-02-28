@@ -89,7 +89,7 @@ public class ListService extends JobService {
             return;
         }
         if(deadLineDate.get(Calendar.YEAR)==today.get(Calendar.YEAR) && deadLineDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-            this.notifications.add(MessageHelper.showNotification(this.context, message, message, R.drawable.ic_local_library_black_24dp));
+            this.notifications.add(MessageHelper.showNotification(this.context, message, message, R.drawable.icon_library));
         }
     }
 }

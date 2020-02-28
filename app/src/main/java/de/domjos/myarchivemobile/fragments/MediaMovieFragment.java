@@ -57,7 +57,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaMovieType = view.findViewById(R.id.spMediaMovieType);
         this.txtMediaMovieLastSeen = view.findViewById(R.id.txtMediaMovieLastSeen);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
+        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
         for(Movie.Type type : Movie.Type.values()) {
             this.typeAdapter.add(type.name());
         }

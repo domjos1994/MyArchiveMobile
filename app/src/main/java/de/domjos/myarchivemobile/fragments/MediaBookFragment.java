@@ -63,7 +63,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaBookLastRead = view.findViewById(R.id.txtMediaBookLastRead);
 
         this.spMediaBookType = view.findViewById(R.id.spMediaBookType);
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_spinner_item);
+        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
         for(Book.Type type : Book.Type.values()) {
             this.typeAdapter.add(type.name());
         }

@@ -26,7 +26,7 @@
         android:id="@+id/lvMediaAlbum"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:itemIcon="@drawable/ic_music_note_black_24dp"
+        app:itemIcon="@drawable/icon_music"
         app:listItemBackground="@drawable/background"
         app:listItemBackgroundStatePositive="@drawable/background_positive"
         app:selectedListItemBackground="@drawable/selected_background"

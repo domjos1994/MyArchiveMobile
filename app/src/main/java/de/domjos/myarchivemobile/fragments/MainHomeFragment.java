@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivemobile.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -147,7 +148,7 @@ public class MainHomeFragment extends ParentFragment {
             }
         });
 
-        this.lvMedia.addButtonClick(R.drawable.ic_local_library_black_24dp, this.getString(R.string.library), objectList -> {
+        this.lvMedia.addButtonClick(R.drawable.icon_library, this.getString(R.string.library), objectList -> {
             try {
                 AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                 b.setTitle(getString(R.string.media_persons));
@@ -238,7 +239,7 @@ public class MainHomeFragment extends ParentFragment {
         this.rowMedia1 = view.findViewById(R.id.rowMedia1);
         this.rowMedia2 = view.findViewById(R.id.rowMedia2);
 
-        this.arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_spinner_item);
+        this.arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item);
         this.spFilter.setAdapter(this.arrayAdapter);
         this.arrayAdapter.notifyDataSetChanged();
     }
@@ -310,9 +311,11 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         this.cmdFilterExpand.setOnClickListener(view -> {
+            Activity activity = Objects.requireNonNull(this.getActivity());
+            boolean noFilterSelected = this.spFilter.getSelectedItem().toString().equals(this.getString(R.string.filter_no_filter));
             if(this.rowName != null) {
-                if (this.rowName.getVisibility() == View.GONE) {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                if (this.rowName.getVisibility() == View.GONE && !noFilterSelected) {
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
                     this.rowName.setVisibility(View.VISIBLE);
                     this.rowMedia1.setVisibility(View.VISIBLE);
                     this.rowMedia2.setVisibility(View.VISIBLE);
@@ -321,7 +324,7 @@ public class MainHomeFragment extends ParentFragment {
                     this.txtFilterTags.setVisibility(View.VISIBLE);
                     this.txtFilterCustomFields.setVisibility(View.VISIBLE);
                 } else {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
                     this.rowName.setVisibility(View.GONE);
                     this.rowMedia1.setVisibility(View.GONE);
                     this.rowMedia2.setVisibility(View.GONE);
@@ -332,11 +335,11 @@ public class MainHomeFragment extends ParentFragment {
                 }
             } else {
                 int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
-                if(this.filter.getLayoutParams().height == px48) {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_less_black_24dp));
+                if(this.filter.getLayoutParams().height == px48 && !noFilterSelected) {
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
                     this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
                 } else {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.getActivity(), R.drawable.ic_expand_more_black_24dp));
+                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
                     this.filter.getLayoutParams().height = px48;
                 }
             }

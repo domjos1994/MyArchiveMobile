@@ -150,12 +150,12 @@ public class MainBooksFragment extends ParentFragment {
         this.validator = this.bookPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.bookPagerAdapter);
 
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_general_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_image_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_person_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.ic_book_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.ic_stars_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.ic_text_fields_black_24dp);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_general);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
+        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_person);
+        Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.icon_book);
+        Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.icon_stars);
+        Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.icon_field);
 
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
