@@ -20,19 +20,16 @@ package de.domjos.myarchivemobile.adapter;
 import android.content.Context;
 import android.content.Intent;
 
-import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.AbstractFragment;
-import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 
 public abstract class AbstractPagerAdapter<T> extends FragmentStatePagerAdapter {
     Context context;
