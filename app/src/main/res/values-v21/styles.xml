@@ -31,7 +31,7 @@
 
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:textColorHint">#999</item>
+        <item name="android:textColorHint">@color/hintColor</item>
         <item name="android:label">@color/textColorPrimary</item>
         <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
         <item name="android:buttonTint">@color/textColorPrimary</item>

@@ -20,6 +20,8 @@
     <color name="colorPrimary">#810000</color>
     <color name="colorPrimaryDark">#420E07</color>
     <color name="colorAccent">#620000</color>
+
+    <color name="hintColor">#999</color>
     <color name="textColorPrimary">#FFFFFF</color>
 
     <color name="selected_colorPrimary">#143416</color>
