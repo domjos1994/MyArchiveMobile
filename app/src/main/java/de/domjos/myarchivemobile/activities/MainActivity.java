@@ -17,6 +17,9 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -229,6 +232,8 @@ public final class MainActivity extends AbstractActivity {
         // init menu
         DrawerLayout drawerLayout = this.findViewById(R.id.drawer_layout);
         NavigationView navigationView = this.findViewById(R.id.nav_view);
+        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainMedia), R.color.textColorPrimary);
+        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainGeneral), R.color.textColorPrimary);
 
         this.appBarConfiguration = new AppBarConfiguration.Builder(
             R.id.navMainHome, R.id.navMainMediaMusic, R.id.navMainMediaMovies, R.id.navMainMediaBooks, R.id.navMainMediaGames
@@ -251,6 +256,12 @@ public final class MainActivity extends AbstractActivity {
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
+    }
+
+    private void setTextColorForMenuItem(MenuItem menuItem, @ColorRes int color) {
+        SpannableString spanString = new SpannableString(menuItem.getTitle().toString());
+        spanString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, color)), 0, spanString.length(), 0);
+        menuItem.setTitle(spanString);
     }
 
     @Override

@@ -26,7 +26,9 @@
         android:icon="@drawable/icon_home"
         android:title="@string/app_name" />
 
-    <item android:title="@string/main_navigation_media">
+    <item
+        android:id="@+id/navMainMedia"
+        android:title="@string/main_navigation_media">
         <menu>
             <item
                 android:id="@+id/navMainMediaMusic"
@@ -47,7 +49,9 @@
         </menu>
     </item>
 
-    <item android:title="@string/media_general" >
+    <item
+        android:id="@+id/navMainGeneral"
+        android:title="@string/media_general">
         <menu>
             <item
                 android:id="@+id/navMainLibrary"

@@ -34,6 +34,8 @@
         <item name="android:textColorHint">@color/hintColor</item>
         <item name="android:label">@color/textColorPrimary</item>
         <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
+        <item name="android:actionBarDivider">@color/textColorPrimary</item>
+        <item name="android:navigationBarColor">@color/textColorPrimary</item>
         <item name="android:buttonTint">@color/textColorPrimary</item>
         <item name="android:colorControlNormal">@color/textColorPrimary</item>
 
