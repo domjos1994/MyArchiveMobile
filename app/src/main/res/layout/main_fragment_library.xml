@@ -39,7 +39,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#000"/>
+        android:background="@color/separatorColor"/>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMediaHistory"
@@ -55,7 +55,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#000"/>
+        android:background="@color/separatorColor"/>
 
     <ScrollView
         android:id="@+id/scrollView"

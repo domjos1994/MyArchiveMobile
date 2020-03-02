@@ -23,6 +23,7 @@
 
     <color name="hintColor">#999</color>
     <color name="textColorPrimary">#FFFFFF</color>
+    <color name="separatorColor">@color/textColorPrimary</color>
 
     <color name="selected_colorPrimary">#143416</color>
     <color name="selected_colorPrimaryDark">#002907</color>
