@@ -21,8 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -251,18 +249,11 @@ public class MediaDialog extends DialogFragment {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void setLabel(int position) {
         TitleWebservice<? extends BaseMediaObject> currentService = this.webServiceAdapter.getItem(position);
 
         if(currentService != null) {
-            Spanned text;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                text = Html.fromHtml("<a href='" + currentService.getUrl() + "'>" + currentService.getTitle() + "</a>", Html.FROM_HTML_MODE_LEGACY);
-            } else {
-                text = Html.fromHtml("<a href='" + currentService.getUrl() + "'>" + currentService.getTitle() + "</a>");
-            }
-            this.lblTitle.setText(text);
+            this.lblTitle.setText(currentService.getTitle());
         }
     }
 
