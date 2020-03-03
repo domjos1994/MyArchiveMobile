@@ -19,6 +19,7 @@ package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -99,17 +100,33 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
 
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                this.companyFragment = (CompanyFragment) super.getFragment(position, this.companyFragment);
                 return this.companyFragment;
             case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                this.mediaListFragment = (MediaListFragment) super.getFragment(position, this.mediaListFragment);
+                return this.mediaListFragment;
+            default:
+                return new Fragment();
+        }
+    }
+
+    @NonNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+        switch (position) {
+            case 0:
+                this.companyFragment = (CompanyFragment) createdFragment;
+                return this.companyFragment;
+            case 1:
+                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+                return this.mediaCoverFragment;
+            case 2:
+                this.mediaListFragment = (MediaListFragment) createdFragment;
                 return this.mediaListFragment;
             default:
                 return new Fragment();

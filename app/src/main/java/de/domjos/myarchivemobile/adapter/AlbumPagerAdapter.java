@@ -79,26 +79,48 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
 
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                this.mediaGeneralFragment = (MediaGeneralFragment) super.getFragment(position, this.mediaGeneralFragment);
                 return this.mediaGeneralFragment;
             case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) super.getFragment(position, this.mediaPersonsCompaniesFragment);
                 return this.mediaPersonsCompaniesFragment;
             case 3:
-                this.mediaAlbumFragment = (MediaAlbumFragment) super.getFragment(position, this.mediaAlbumFragment);
                 return this.mediaAlbumFragment;
             case 4:
-                this.mediaRatingFragment = (MediaRatingFragment) super.getFragment(position, this.mediaRatingFragment);
                 return this.mediaRatingFragment;
             case 5:
-                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) super.getFragment(position, this.mediaCustomFieldFragment);
+                return this.mediaCustomFieldFragment;
+            default:
+                return new Fragment();
+        }
+    }
+
+    @NonNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+        switch (position) {
+            case 0:
+                this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
+                return this.mediaGeneralFragment;
+            case 1:
+                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+                return this.mediaCoverFragment;
+            case 2:
+                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
+                return this.mediaPersonsCompaniesFragment;
+            case 3:
+                this.mediaAlbumFragment = (MediaAlbumFragment) createdFragment;
+                return this.mediaAlbumFragment;
+            case 4:
+                this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
+                return this.mediaRatingFragment;
+            case 5:
+                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
                 return this.mediaCustomFieldFragment;
             default:
                 return new Fragment();

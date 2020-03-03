@@ -111,7 +111,7 @@ public class ControlsHelper {
                                 break;
                             }
                         }
-                        fragment.changeMode(false, true);
+                        //fragment.changeMode(false, true);
                         abstractPagerAdapter.setMediaObject(baseMediaObject);
                         lv.select(currentObject);
                     }

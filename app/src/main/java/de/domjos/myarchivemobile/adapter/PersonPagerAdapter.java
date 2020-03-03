@@ -19,6 +19,7 @@ package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -33,6 +34,7 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.fragments.CompanyFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.fragments.PersonFragment;
@@ -100,17 +102,33 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
 
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                this.personFragment = (PersonFragment) super.getFragment(position, this.personFragment);
                 return this.personFragment;
             case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) super.getFragment(position, this.mediaCoverFragment);
                 return this.mediaCoverFragment;
             case 2:
-                this.mediaListFragment = (MediaListFragment) super.getFragment(position, this.mediaListFragment);
+                return this.mediaListFragment;
+            default:
+                return new Fragment();
+        }
+    }
+
+    @NonNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+        switch (position) {
+            case 0:
+                this.personFragment = (PersonFragment) createdFragment;
+                return this.personFragment;
+            case 1:
+                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+                return this.mediaCoverFragment;
+            case 2:
+                this.mediaListFragment = (MediaListFragment) createdFragment;
                 return this.mediaListFragment;
             default:
                 return new Fragment();
