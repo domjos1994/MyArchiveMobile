@@ -19,12 +19,11 @@ package de.domjos.myarchivelibrary.database;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteOpenHelper;
-import net.sqlcipher.database.SQLiteStatement;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,15 +81,12 @@ public class Database extends SQLiteOpenHelper {
     private final static String CATEGORIES = "categories";
     private final static String ID_FILTER = "id=";
 
-    private SQLiteDatabase database;
     private Context context;
-    private String password;
 
-    public Database(Context context, String password) {
+    public Database(Context context) {
         super(context, context.getString(R.string.sqLite_name), null, Integer.parseInt(context.getString(R.string.sqLite_version)));
 
         this.context = context;
-        this.password = password;
     }
 
     @Override
@@ -912,12 +908,6 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public void close() {
-        if(this.database != null && this.database.isOpen()) {
-            this.database.close();
-        }
-    }
-
     private BaseMediaObject setFields(BaseMediaObject baseMediaObject) {
         for(int j = 0; j<=3; j++) {
             Random generator = new Random();
@@ -1169,37 +1159,7 @@ public class Database extends SQLiteOpenHelper {
         return TextUtils.join(", ", idList) + ")";
     }
 
-    private SQLiteDatabase getWritableDatabase() {
-        if(this.database == null)  {
-            this.database = this.getWritableDatabase(this.password);
-        } else {
-            if(this.database.isReadOnly()) {
-                this.database.close();
-                this.database = this.getWritableDatabase(this.password);
-            }
-            if(!this.database.isOpen()) {
-                this.database = this.getReadableDatabase(this.password);
-            }
-        }
-        return this.database;
-    }
-
-    private SQLiteDatabase getReadableDatabase() {
-        try {
-            if(this.database != null) {
-                if(!this.database.isOpen()) {
-                    this.database = this.getReadableDatabase(this.password);
-                }
-            } else {
-                this.database = this.getReadableDatabase(this.password);
-            }
-        } catch (Exception ex) {
-            this.database = this.getWritableDatabase(this.password);
-        }
-        return this.database;
-    }
-
-    public String copyDatabase(String path) throws IOException {
+    public void copyDatabase(String path) throws IOException {
         String currentDBPath = this.getWritableDatabase().getPath();
         File currentDB = new File(currentDBPath);
         File backupDB = new File(path);
@@ -1210,7 +1170,6 @@ public class Database extends SQLiteOpenHelper {
                 dst.transferFrom(src, 0, src.size());
             }
         }
-        return this.password;
     }
 
     public void getDatabase(String path) throws IOException {

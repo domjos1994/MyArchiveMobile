@@ -19,7 +19,7 @@ package de.domjos.myarchivemobile.activities;
 
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import androidx.annotation.ColorRes;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -56,21 +56,13 @@ import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
-import net.sqlcipher.database.SQLiteDatabase;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -232,8 +224,8 @@ public final class MainActivity extends AbstractActivity {
         // init menu
         DrawerLayout drawerLayout = this.findViewById(R.id.drawer_layout);
         NavigationView navigationView = this.findViewById(R.id.nav_view);
-        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainMedia), R.color.textColorPrimary);
-        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainGeneral), R.color.textColorPrimary);
+        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainMedia));
+        this.setTextColorForMenuItem(navigationView.getMenu().findItem(R.id.navMainGeneral));
 
         this.appBarConfiguration = new AppBarConfiguration.Builder(
             R.id.navMainHome, R.id.navMainMediaMusic, R.id.navMainMediaMovies, R.id.navMainMediaBooks, R.id.navMainMediaGames
@@ -258,9 +250,9 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
-    private void setTextColorForMenuItem(MenuItem menuItem, @ColorRes int color) {
+    private void setTextColorForMenuItem(MenuItem menuItem) {
         SpannableString spanString = new SpannableString(menuItem.getTitle().toString());
-        spanString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, color)), 0, spanString.length(), 0);
+        spanString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.textColorPrimary)), 0, spanString.length(), 0);
         menuItem.setTitle(spanString);
     }
 
@@ -396,19 +388,12 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
-    private void initGlobals() throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchPaddingException {
+    private void initGlobals() throws InvalidKeySpecException, NoSuchAlgorithmException {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
-        String pwd = MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, "", true);
-        if (pwd != null && pwd.trim().isEmpty()) {
-            pwd = UUID.randomUUID().toString();
-            MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, pwd, true);
-        }
-
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
         checkNetwork.registerNetworkCallback();
 
-        SQLiteDatabase.loadLibs(this.getApplicationContext());
-        Database database = new Database(this.getApplicationContext(), pwd);
+        Database database = new Database(this.getApplicationContext());
         MainActivity.GLOBALS.setDatabase(database);
 
         if(!onlyOrientationChanged) {

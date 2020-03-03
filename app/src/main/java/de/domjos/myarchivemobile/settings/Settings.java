@@ -39,9 +39,6 @@ public final class Settings {
     private SharedPreferences userPreferences;
     private Crypto crypto;
 
-    // keys
-    public final static String DB_PASSWORD = "DB_PASSWORD";
-
     public Settings(Context context) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
         this.sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);

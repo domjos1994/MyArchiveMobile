@@ -119,22 +119,4 @@
             android:layout_weight="10"
             tools:ignore="VectorDrawableCompat"/>
     </TableRow>
-    <TableRow>
-        <ImageView
-            android:id="@+id/ivApiQR"
-            android:contentDescription="@string/api"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="10"
-            tools:ignore="VectorDrawableCompat"/>
-    </TableRow>
-    <TableRow>
-        <Button
-            android:id="@+id/cmdApiQR"
-            android:text="@string/api_qr_code_save"
-            android:contentDescription="@string/api_qr_code_save"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="10" />
-    </TableRow>
 </TableLayout>

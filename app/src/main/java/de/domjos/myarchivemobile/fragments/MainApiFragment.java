@@ -22,7 +22,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,26 +32,19 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
@@ -66,9 +58,7 @@ public class MainApiFragment extends ParentFragment {
     private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies;
     private EditText txtApiName, txtApiPath;
     private String[] typeArray, formatArray;
-    private ImageView ivApiQr;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_api, container, false);
 
@@ -91,24 +81,19 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMusic = root.findViewById(R.id.chkApiMusic);
         this.chkApiGames = root.findViewById(R.id.chkApiGames);
 
-        this.ivApiQr = root.findViewById(R.id.ivApiQR);
 
         ImageButton cmdApi = root.findViewById(R.id.cmdApi);
-        Button cmdApiQRCode = root.findViewById(R.id.cmdApiQR);
 
         spApiType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ivApiQr.setImageBitmap(null);
                 if(spApiType.getSelectedItem().toString().equals(typeArray[1])) {
                     spApiFormat.setSelection(1);
                     spApiFormat.setVisibility(View.INVISIBLE);
                     txtApiName.setText(typeArray[1].toLowerCase());
-                    cmdApiQRCode.setText(R.string.api_qr_code_open);
                 } else {
                     spApiFormat.setVisibility(View.VISIBLE);
                     txtApiName.setText(typeArray[0].toLowerCase());
-                    cmdApiQRCode.setText(R.string.api_qr_code_save);
                 }
             }
 
@@ -119,14 +104,12 @@ public class MainApiFragment extends ParentFragment {
         spApiFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ivApiQr.setImageBitmap(null);
                 boolean first = spApiFormat.getSelectedItem().toString().equals(formatArray[0]);
 
                 chkApiBooks.setVisibility(first ? View.VISIBLE : View.GONE);
                 chkApiMovies.setVisibility(first ? View.VISIBLE : View.GONE);
                 chkApiMusic.setVisibility(first ? View.VISIBLE : View.GONE);
                 chkApiGames.setVisibility(first ? View.VISIBLE : View.GONE);
-                cmdApiQRCode.setVisibility(first ? View.GONE : View.VISIBLE);
             }
 
             @Override
@@ -135,7 +118,6 @@ public class MainApiFragment extends ParentFragment {
 
 
         cmdApiPath.setOnClickListener(event -> {
-            ivApiQr.setImageBitmap(null);
             List<String> filter = new LinkedList<>();
             if(spApiFormat.getSelectedItem().toString().equals(this.formatArray[0])) {
                 filter.add("pdf");
@@ -168,35 +150,6 @@ public class MainApiFragment extends ParentFragment {
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }
-        });
-
-        cmdApiQRCode.setOnClickListener(view -> {
-            boolean save = cmdApiQRCode.getText().toString().equals(this.getString(R.string.api_qr_code_save));
-            List<String> filter = Arrays.asList("jpg", "JPG");
-
-            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, save, filter, activity);
-            dialog.setDialogSelectionListener(files -> {
-                if(files != null && files.length != 0) {
-                    String path = files[0];
-                    if (save) {
-                        byte[] content = ConvertHelper.convertDrawableToByteArray(this.ivApiQr.getDrawable());
-                        try (FileOutputStream fOut = new FileOutputStream(path + File.separatorChar + "qr.jpg")) {
-                            fOut.write(content);
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                        }
-                    } else {
-                        byte[] content = new byte[(int) new File(path).length()];
-                        try (BufferedInputStream fIn = new BufferedInputStream(new FileInputStream(path))) {
-                            fIn.read(content, 0, content.length);
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                        }
-                        ivApiQr.setImageBitmap(ConvertHelper.convertByteArrayToBitmap(content));
-                    }
-                }
-            });
-            dialog.show();
         });
 
         return root;
@@ -238,25 +191,13 @@ public class MainApiFragment extends ParentFragment {
 
     private void exportToDatabase() throws Exception {
         String path = this.txtApiPath.getText().toString() + File.separatorChar  + this.txtApiName.getText().toString() + ".db";
-        String pwd = MainActivity.GLOBALS.getDatabase().copyDatabase(path);
-        this.ivApiQr.setImageBitmap(ScanActivity.generateQRCode(MainActivity.GLOBALS.getSettings().getSetting(Settings.DB_PASSWORD, pwd, true)));
+        MainActivity.GLOBALS.getDatabase().copyDatabase(path);
     }
 
     private void importToDatabase() throws Exception {
-        if(this.ivApiQr.getDrawable() != null) {
-            String path = this.txtApiPath.getText().toString();
-            byte[] bytes = ConvertHelper.convertDrawableToByteArray(this.ivApiQr.getDrawable());
-            String codes = ScanActivity.readQRCode(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-            MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, codes, true);
-            MainActivity.GLOBALS.getDatabase().getDatabase(path);
-            MainApiFragment.triggerRebirth(Objects.requireNonNull(this.getContext()));
-        } else {
-            Intent intent = new Intent(this.getContext(), ScanActivity.class);
-            intent.putExtra("parent", "");
-            intent.putExtra("single", true);
-            intent.putExtra("qr", true);
-            startActivityForResult(intent, 965);
-        }
+        String path = this.txtApiPath.getText().toString();
+        MainActivity.GLOBALS.getDatabase().getDatabase(path);
+        MainApiFragment.triggerRebirth(Objects.requireNonNull(this.getContext()));
     }
 
     @Override
@@ -264,8 +205,6 @@ public class MainApiFragment extends ParentFragment {
         try {
             String path = this.txtApiPath.getText().toString();
             if(resultCode == RESULT_OK && requestCode == 965) {
-                String codes = data.getStringExtra("codes");
-                MainActivity.GLOBALS.getSettings().setSetting(Settings.DB_PASSWORD, codes, true);
                 MainActivity.GLOBALS.getDatabase().getDatabase(path);
                 MainApiFragment.triggerRebirth(Objects.requireNonNull(this.getContext()));
             }

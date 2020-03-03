@@ -46,8 +46,7 @@ public class ListService extends JobService {
         this.context = this.getApplicationContext();
         try {
             Settings settings = new Settings(this.context);
-            String pwd = settings.getSetting(Settings.DB_PASSWORD, "", true);
-            this.database = new Database(this.context, pwd);
+            this.database = new Database(this.context);
             this.notifications = new LinkedList<>();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);

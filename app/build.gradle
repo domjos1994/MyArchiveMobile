@@ -68,7 +68,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // database
-    implementation "net.zetetic:android-database-sqlcipher:$propSQLiteCipherVersion"
     implementation "androidx.sqlite:sqlite:$propDatabaseVersion"
 
     // file-picker
