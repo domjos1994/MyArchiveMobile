@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -46,6 +45,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainLibraryFragment extends ParentFragment {
@@ -286,7 +286,7 @@ public class MainLibraryFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
 
         try {
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_expandable_list_item_1);
+            CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtLibraryPerson);
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
                 arrayAdapter.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
             }

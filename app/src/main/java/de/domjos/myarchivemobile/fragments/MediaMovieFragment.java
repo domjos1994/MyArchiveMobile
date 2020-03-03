@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -36,11 +35,12 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 
 public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaMovieLength, txtMediaMoviePath, txtMediaMovieLastSeen;
     private Spinner spMediaMovieType;
-    private ArrayAdapter<String> typeAdapter;
+    private CustomSpinnerAdapter<String> typeAdapter;
 
     private Movie movie;
 
@@ -57,7 +57,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaMovieType = view.findViewById(R.id.spMediaMovieType);
         this.txtMediaMovieLastSeen = view.findViewById(R.id.txtMediaMovieLastSeen);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
+        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
         for(Movie.Type type : Movie.Type.values()) {
             this.typeAdapter.add(type.name());
         }

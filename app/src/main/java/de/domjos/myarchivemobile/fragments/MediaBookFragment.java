@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -38,12 +37,13 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 
 public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaBookNumberOfPages, txtMediaBookPath, txtMediaBookLastRead;
     private EditText txtMediaBookEdition, txtMediaBookTopics;
     private Spinner spMediaBookType;
-    private ArrayAdapter<String> typeAdapter;
+    private CustomSpinnerAdapter<String> typeAdapter;
 
     private Book book;
 
@@ -63,7 +63,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaBookLastRead = view.findViewById(R.id.txtMediaBookLastRead);
 
         this.spMediaBookType = view.findViewById(R.id.spMediaBookType);
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
+        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
         for(Book.Type type : Book.Type.values()) {
             this.typeAdapter.add(type.name());
         }

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -36,11 +35,12 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 
 public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaGameLength, txtMediaGameLastPlayed;
     private Spinner spMediaGameType;
-    private ArrayAdapter<String> typeAdapter;
+    private CustomSpinnerAdapter<String> typeAdapter;
 
     private Game game;
 
@@ -56,7 +56,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaGameType = view.findViewById(R.id.spMediaGameType);
         this.txtMediaGameLastPlayed = view.findViewById(R.id.txtMediaGameLastPlayed);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
+        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
         for(Game.Type type : Game.Type.values()) {
             this.typeAdapter.add(type.name());
         }

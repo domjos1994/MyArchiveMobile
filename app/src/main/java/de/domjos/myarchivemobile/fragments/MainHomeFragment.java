@@ -28,7 +28,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,6 +64,8 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainHomeFragment extends ParentFragment {
@@ -75,7 +76,7 @@ public class MainHomeFragment extends ParentFragment {
     private TableLayout filter;
     private MediaFilter tempFilter;
     private Spinner spFilter;
-    private ArrayAdapter<MediaFilter> arrayAdapter;
+    private CustomSpinnerAdapter<MediaFilter> arrayAdapter;
     private EditText txtFilterName, txtFilterSearch, txtFilterCategories, txtFilterTags;
     private MultiAutoCompleteTextView txtFilterCustomFields;
     private ImageButton cmdFilterExpand, cmdFilterSave, cmdFilterDelete;
@@ -228,7 +229,7 @@ public class MainHomeFragment extends ParentFragment {
         this.txtFilterCustomFields = view.findViewById(R.id.txtFilterCustomFields);
         this.txtFilterCustomFields.setTokenizer(new CommaTokenizer());
         List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_list_item_1);
+        CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtFilterCustomFields);
         for(CustomField customField : customFields) {
             arrayAdapter.add(customField.getTitle());
         }
@@ -239,7 +240,7 @@ public class MainHomeFragment extends ParentFragment {
         this.rowMedia1 = view.findViewById(R.id.rowMedia1);
         this.rowMedia2 = view.findViewById(R.id.rowMedia2);
 
-        this.arrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item);
+        this.arrayAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()));
         this.spFilter.setAdapter(this.arrayAdapter);
         this.arrayAdapter.notifyDataSetChanged();
     }

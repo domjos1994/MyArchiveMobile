@@ -57,6 +57,7 @@ import de.domjos.myarchivelibrary.tasks.TheAudioDBTask;
 import de.domjos.myarchivelibrary.tasks.TheMovieDBTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 import static android.app.Activity.RESULT_OK;
@@ -73,7 +74,7 @@ public class MediaDialog extends DialogFragment {
     private EditText txtSearch;
     private ImageButton cmdSearch, cmdSave;
     private Spinner spWebservices;
-    private ArrayAdapter<? extends TitleWebservice<? extends BaseMediaObject>> webServiceAdapter;
+    private CustomSpinnerAdapter<? extends TitleWebservice<? extends BaseMediaObject>> webServiceAdapter;
 
     public static MediaDialog newInstance(String search, String type, List<TitleWebservice<? extends BaseMediaObject>> titleWebservices) {
         MediaDialog mediaDialog = new MediaDialog();
@@ -232,7 +233,7 @@ public class MediaDialog extends DialogFragment {
         this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
 
         this.spWebservices = view.findViewById(R.id.spWebServices);
-        this.webServiceAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item, this.titleWebservices);
+        this.webServiceAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()), this.titleWebservices);
         this.spWebservices.setAdapter(this.webServiceAdapter);
         this.webServiceAdapter.notifyDataSetChanged();
     }

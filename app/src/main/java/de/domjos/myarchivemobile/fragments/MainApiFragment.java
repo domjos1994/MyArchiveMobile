@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -48,9 +47,9 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.helper.PDFHelper;
-import de.domjos.myarchivemobile.settings.Settings;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -68,9 +67,9 @@ public class MainApiFragment extends ParentFragment {
         this.formatArray = activity.getResources().getStringArray(R.array.api_format);
 
         Spinner spApiType = root.findViewById(R.id.spApiType);
-        spApiType.setAdapter(new ArrayAdapter<>(this.getActivity(), R.layout.spinner_item, this.typeArray));
+        spApiType.setAdapter(new CustomSpinnerAdapter<>(this.getActivity(), this.typeArray));
         Spinner spApiFormat = root.findViewById(R.id.spApiFormat);
-        spApiFormat.setAdapter(new ArrayAdapter<>(this.getActivity(), R.layout.spinner_item, this.formatArray));
+        spApiFormat.setAdapter(new CustomSpinnerAdapter<>(this.getActivity(), this.formatArray));
 
         this.txtApiPath = root.findViewById(R.id.txtApiPath);
         this.txtApiName = root.findViewById(R.id.txtApiName);

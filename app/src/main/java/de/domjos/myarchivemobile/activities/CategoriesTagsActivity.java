@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -37,6 +36,7 @@ import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public final class CategoriesTagsActivity extends AbstractActivity {
@@ -127,7 +127,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.lvMedia = this.findViewById(R.id.lvMedia);
 
         this.spItems = this.findViewById(R.id.spItems);
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<>(this.getApplicationContext());
         itemsAdapter.add(this.getString(R.string.media_general_tags));
         itemsAdapter.add(this.getString(R.string.media_general_category));
         this.spItems.setAdapter(itemsAdapter);

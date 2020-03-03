@@ -41,6 +41,7 @@ import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDelete
 import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainCustomFieldsFragment extends ParentFragment {
@@ -208,7 +209,12 @@ public class MainCustomFieldsFragment extends ParentFragment {
         this.txtCustomFieldTitle = view.findViewById(R.id.txtCustomFieldTitle);
         this.txtCustomFieldDescription = view.findViewById(R.id.txtCustomFieldDescriptions);
         this.txtCustomFieldAllowed = view.findViewById(R.id.txtCustomFieldAllowedValues);
+
+        String[] typeArray = this.getResources().getStringArray(R.array.customFields_type_values);
         this.spCustomFieldType = view.findViewById(R.id.spCustomFieldType);
+        CustomSpinnerAdapter<String> adapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()), typeArray);
+        this.spCustomFieldType.setAdapter(adapter);
+
         this.chkCustomFieldAlbums = view.findViewById(R.id.chkCustomFieldAlbums);
         this.chkCustomFieldMovies = view.findViewById(R.id.chkCustomFieldMovies);
         this.chkCustomFieldBooks = view.findViewById(R.id.chkCustomFieldBooks);

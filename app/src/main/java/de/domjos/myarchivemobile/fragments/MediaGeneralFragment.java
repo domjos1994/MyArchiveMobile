@@ -25,7 +25,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,6 +64,7 @@ import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import de.domjos.myarchivemobile.settings.Settings;
 
@@ -111,7 +111,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         }
 
         this.txtMediaGeneralCategory = view.findViewById(R.id.txtMediaGeneralCategory);
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_expandable_list_item_1);
+        CustomAutoCompleteAdapter<String> categoryAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaGeneralCategory);
         for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "")) {
             categoryAdapter.add(baseDescriptionObject.getTitle());
         }
@@ -120,7 +120,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.txtMediaGeneralTags = view.findViewById(R.id.txtMediaGeneralTags);
         this.txtMediaGeneralTags.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_expandable_list_item_1);
+        CustomAutoCompleteAdapter<String> tagAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaGeneralTags);
         for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "")) {
             tagAdapter.add(baseDescriptionObject.getTitle());
         }

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +37,7 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 
 public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObject> {
     private MultiAutoCompleteTextView txtMediaPersons, txtMediaCompanies;
@@ -57,7 +57,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
 
         try {
             this.txtMediaPersons.setTokenizer(new CommaTokenizer());
-            ArrayAdapter<String> personsAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_expandable_list_item_1);
+            CustomAutoCompleteAdapter<String> personsAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaPersons);
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
                 personsAdapter.add(person.getFirstName() + " " + person.getLastName());
             }
@@ -69,7 +69,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
 
         try {
             this.txtMediaCompanies.setTokenizer(new CommaTokenizer());
-            ArrayAdapter<String> companiesAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), android.R.layout.simple_expandable_list_item_1);
+            CustomAutoCompleteAdapter<String> companiesAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaCompanies);
             for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("", 0)) {
                 companiesAdapter.add(company.getTitle());
             }

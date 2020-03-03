@@ -23,7 +23,6 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,6 +45,8 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 
 public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> {
     private LinearLayout container;
@@ -157,7 +158,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
 
     private void addAutoCompleteTextView(CustomField customField) {
         AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
-        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), android.R.layout.simple_list_item_1);
+        CustomAutoCompleteAdapter<String> values = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), autoCompleteTextView);
         for(String item : customField.getAllowedValues().split(";")) {
             values.add(item.trim());
         }
@@ -193,7 +194,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         Spinner sp = new Spinner(this.getContext());
         sp.setTag(customField.getId());
         sp.setContentDescription(customField.getTitle());
-        ArrayAdapter<String> values = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()), R.layout.spinner_item);
+        CustomSpinnerAdapter<String> values = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()));
         for(String item : customField.getAllowedValues().split(";")) {
             values.add(item.trim());
         }

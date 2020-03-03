@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -36,11 +35,12 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 
 public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaAlbumNumberOfDisks, txtMediaAlbumLastHeard;
     private Spinner spMediaAlbumType;
-    private ArrayAdapter<String> typeAdapter;
+    private CustomSpinnerAdapter<String> typeAdapter;
 
     private Album album;
 
@@ -56,7 +56,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaAlbumType = view.findViewById(R.id.spMediaAlbumType);
         this.txtMediaAlbumLastHeard = view.findViewById(R.id.txtMediaAlbumLastHeard);
 
-        this.typeAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getActivity()), R.layout.spinner_item);
+        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
         for(Album.Type type : Album.Type.values()) {
             this.typeAdapter.add(type.name());
         }
