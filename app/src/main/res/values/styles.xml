@@ -37,10 +37,10 @@
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <item name="android:buttonStyle">@style/button</item>
-        <item name="android:dialogPreferenceStyle">@style/appCompatAlert</item>
+        <item name="alertDialogTheme">@style/appCompatAlert</item>
     </style>
 
-    <style name="appCompatAlert" parent="@android:style/Theme.Dialog">
+    <style name="appCompatAlert" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:colorBackground">@color/windowBackground</item>
     </style>
 
