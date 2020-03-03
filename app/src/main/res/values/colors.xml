@@ -17,17 +17,17 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#810000</color>
-    <color name="colorPrimaryDark">#420E07</color>
-    <color name="colorAccent">#620000</color>
+    <color name="colorPrimary">#454545</color>
+    <color name="colorPrimaryDark">#272727</color>
+    <color name="colorAccent">#383838</color>
 
     <color name="hintColor">#999</color>
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="separatorColor">@color/textColorPrimary</color>
 
-    <color name="selected_colorPrimary">#143416</color>
-    <color name="selected_colorPrimaryDark">#002907</color>
-    <color name="selected_colorAccent">#143219</color>
+    <color name="selected_colorPrimary">#5b6696</color>
+    <color name="selected_colorPrimaryDark">#708090</color>
+    <color name="selected_colorAccent">#6873a3</color>
 
     <color name="windowBackground">#292929</color>
 </resources>
