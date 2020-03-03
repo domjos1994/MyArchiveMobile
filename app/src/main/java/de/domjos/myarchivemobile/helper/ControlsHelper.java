@@ -276,7 +276,8 @@ public class ControlsHelper {
             dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
         }
         dialogProperties.extensions = extensions.toArray(new String[]{});
-        return new FilePickerDialog(activity, dialogProperties);
+
+        return new FilePickerDialog(activity, dialogProperties, R.style.filePickerStyle);
     }
 
     public static void changeScreenIfEditMode(Map<SwipeRefreshDeleteList, Integer> lists, View view, Activity activity, boolean editMode) {
