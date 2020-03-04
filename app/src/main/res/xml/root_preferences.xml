@@ -23,14 +23,14 @@
         app:title="@string/settings_general"
         app:icon="@mipmap/ic_launcher_round">
 
-        <androidx.preference.SwitchPreference
+        <androidx.preference.CheckBoxPreference
             app:key="swtNotifications"
             app:title="@string/settings_general_notifications"
             app:summary="@string/settings_general_notifications_summary"
             app:defaultValue="true"
             app:icon="@drawable/icon_arrow_right"/>
 
-        <androidx.preference.SwitchPreference
+        <androidx.preference.CheckBoxPreference
             app:key="swtDebugMode"
             app:title="@string/settings_general_debug"
             app:summary="@string/settings_general_debug_summary"

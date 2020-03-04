@@ -47,7 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/navigationView"
-        app:layout_constraintTop_toBottomOf="@+id/separator">
+        app:layout_constraintTop_toBottomOf="@+id/separator"
+        android:contentDescription="@string/main_navigation_media_books">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"

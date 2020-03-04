@@ -44,7 +44,8 @@
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintHeight_percent="0.86"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lvPersons">
+        app:layout_constraintStart_toEndOf="@+id/lvPersons"
+        android:contentDescription="@string/media_persons">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"

@@ -38,6 +38,13 @@
 
         <item name="android:buttonStyle">@style/button</item>
         <item name="alertDialogTheme">@style/appCompatAlert</item>
+
+        <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
+        <item name="android:preferenceCategoryStyle">@style/AppTheme.PreferenceTheme</item>
+    </style>
+
+    <style name="AppTheme.PreferenceTheme" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="colorAccent">@color/textColorPrimary</item>
     </style>
 
     <style name="appCompatAlert" parent="Theme.AppCompat.Dialog.Alert">
