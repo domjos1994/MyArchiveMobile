@@ -41,6 +41,16 @@
                 android:layout_gravity="end"
                 android:layout_margin="3dp">
             </androidx.appcompat.widget.SearchView>
+            <ImageButton
+                android:id="@+id/cmdSearchWeb"
+                android:background="@null"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="3dp"
+                android:contentDescription="@string/sys_search"
+                app:srcCompat="@drawable/icon_web">
+            </ImageButton>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>

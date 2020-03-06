@@ -49,6 +49,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
@@ -90,6 +91,7 @@ public final class MainActivity extends AbstractActivity {
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private NavHostFragment navHostFragment;
+    private ImageButton cmdSearchWeb;
     public final static Globals GLOBALS = new Globals();
     private SearchView cmdSearch;
     private Menu menu;
@@ -124,6 +126,16 @@ public final class MainActivity extends AbstractActivity {
         this.cmdSearch.setOnCloseListener(() -> {
             initSearch("");
             return false;
+        });
+
+        this.cmdSearchWeb.setOnClickListener(view -> {
+            GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(MainActivity.this, "", "", "");
+            MovieDBWebservice movieDBWebservice = new MovieDBWebservice(MainActivity.this, 0L, "", "");
+            AudioDBWebservice audioDBWebservice = new AudioDBWebservice(MainActivity.this, 0L);
+            IGDBWebservice igdbWebservice = new IGDBWebservice(MainActivity.this, 0L, "");
+
+            MediaDialog mediaDialog = MediaDialog.newInstance("", this.getString(R.string.book), Arrays.asList(googleBooksWebservice, movieDBWebservice, audioDBWebservice, igdbWebservice));
+            mediaDialog.show(this.getSupportFragmentManager(), "dialog");
         });
 
         this.navHostFragment.getNavController().addOnDestinationChangedListener((controller, destination, arguments) -> {
@@ -220,6 +232,7 @@ public final class MainActivity extends AbstractActivity {
         this.setSupportActionBar(toolbar);
 
         this.cmdSearch = this.findViewById(R.id.cmdSearch);
+        this.cmdSearchWeb = this.findViewById(R.id.cmdSearchWeb);
 
         // init menu
         DrawerLayout drawerLayout = this.findViewById(R.id.drawer_layout);
@@ -295,15 +308,6 @@ public final class MainActivity extends AbstractActivity {
             case R.id.menMainCategoriesAndTags:
                 intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
                 requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSearch:
-                GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(MainActivity.this, "", "", "");
-                MovieDBWebservice movieDBWebservice = new MovieDBWebservice(MainActivity.this, 0L, "", "");
-                AudioDBWebservice audioDBWebservice = new AudioDBWebservice(MainActivity.this, 0L);
-                IGDBWebservice igdbWebservice = new IGDBWebservice(MainActivity.this, 0L, "");
-
-                MediaDialog mediaDialog = MediaDialog.newInstance("", this.getString(R.string.book), Arrays.asList(googleBooksWebservice, movieDBWebservice, audioDBWebservice, igdbWebservice));
-                mediaDialog.show(this.getSupportFragmentManager(), "dialog");
                 break;
             case R.id.menMainSettings:
                 intent = new Intent(MainActivity.this, SettingsActivity.class);

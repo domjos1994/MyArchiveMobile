@@ -40,11 +40,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/menMainSearch"
-        android:title="@string/sys_search"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/menMainSettings"
         android:title="@string/settings"
         app:showAsAction="never"/>
