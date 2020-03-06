@@ -52,6 +52,7 @@ public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
     private EditText txtLibraryDeadline, txtLibraryReturnedAt;
     private AutoCompleteTextView txtLibraryPerson;
+    private CustomAutoCompleteAdapter<Person> arrayAdapter;
     private ScrollView scrollView;
 
     private SwipeRefreshDeleteList lvMediaLibrary, lvMediaHistory;
@@ -213,11 +214,12 @@ public class MainLibraryFragment extends ParentFragment {
         libraryObject.setNumberOfDays(Integer.parseInt(this.txtLibraryNumberOfDays.getText().toString()));
         libraryObject.setNumberOfWeeks(Integer.parseInt(this.txtMediaLibraryNumberOfWeeks.getText().toString()));
         if(!this.txtLibraryPerson.getText().toString().isEmpty()) {
-            Person person = new Person();
-            String[] spl = this.txtLibraryPerson.getText().toString().split(" ");
-            person.setFirstName(spl[0]);
-            person.setLastName(this.txtLibraryPerson.getText().toString().replace(spl[0], "").trim());
-            libraryObject.setPerson(person);
+            for(int i = 0; i<=this.arrayAdapter.getCount() - 1; i++) {
+                if(this.txtLibraryPerson.getText().toString().trim().equals(Objects.requireNonNull(this.arrayAdapter.getItem(i)).toString().trim())) {
+                    libraryObject.setPerson(this.arrayAdapter.getItem(i));
+                    break;
+                }
+            }
         }
         if(!this.txtLibraryDeadline.getText().toString().isEmpty()) {
             libraryObject.setDeadLine(ConvertHelper.convertStringToDate(this.txtLibraryDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
@@ -286,9 +288,9 @@ public class MainLibraryFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
 
         try {
-            CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtLibraryPerson);
+            this.arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtLibraryPerson);
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
-                arrayAdapter.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
+                arrayAdapter.add(person);
             }
             this.txtLibraryPerson.setAdapter(arrayAdapter);
         } catch (Exception ex) {

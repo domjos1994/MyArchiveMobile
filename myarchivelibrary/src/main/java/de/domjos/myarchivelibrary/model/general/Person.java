@@ -17,6 +17,8 @@
 
 package de.domjos.myarchivelibrary.model.general;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.Date;
 
@@ -99,5 +101,11 @@ public final class Person extends BaseObject implements DatabaseObject {
     @Override
     public String getTable() {
         return "persons";
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return (this.getFirstName() + " " + this.getLastName()).trim();
     }
 }
