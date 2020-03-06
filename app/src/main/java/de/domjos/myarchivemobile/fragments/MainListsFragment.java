@@ -94,6 +94,13 @@ public class MainListsFragment extends ParentFragment {
             }
         });
 
+        this.lvMediaObjects.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            MainActivity mainActivity = ((MainActivity) MainListsFragment.this.getActivity());
+            if(mainActivity != null) {
+                mainActivity.selectTab(listObject.getDescription(), ((BaseMediaObject) listObject.getObject()).getId());
+            }
+        });
+
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
