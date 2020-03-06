@@ -155,29 +155,54 @@ public class ControlsHelper {
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) {
         String where = "";
-        List<String> categories = Arrays.asList(mediaFilter.getCategories().split("\\|"));
-        String categoryWhere = "category like '%" + TextUtils.join("%' or category like '%", categories) + "%'";
-        if(!categories.isEmpty() && !categories.get(0).isEmpty()) {
-            where = categoryWhere;
-        }
 
-        List<String> tags = Arrays.asList(mediaFilter.getTags().split("\\|"));
-        String tagsWhere = "tags like '%" + TextUtils.join("%' or tags like '%", tags) + "%'";
-        if(!tags.isEmpty() && !tags.get(0).isEmpty()) {
-            if(where.isEmpty()) {
-                where = tagsWhere;
-            } else {
-                where += " AND " + tagsWhere;
+        if(mediaFilter.isList()) {
+            if(mediaFilter.getMediaList() != null) {
+                List<Long> bookIds = new LinkedList<>(), movieIds = new LinkedList<>(), musicIds = new LinkedList<>(), gameIds = new LinkedList<>();
+                for(BaseMediaObject baseMediaObject : mediaFilter.getMediaList().getBaseMediaObjects()) {
+                    if(baseMediaObject instanceof Book) {
+                        bookIds.add(baseMediaObject.getId());
+                    } else if(baseMediaObject instanceof Movie) {
+                        movieIds.add(baseMediaObject.getId());
+                    } else if(baseMediaObject instanceof Album) {
+                        musicIds.add(baseMediaObject.getId());
+                    } else {
+                        gameIds.add(baseMediaObject.getId());
+                    }
+                }
+
+                Map<DatabaseObject, String> mp = new LinkedHashMap<>();
+                mp.put(new Book(), "id in (" + TextUtils.join(", ", bookIds) + ")");
+                mp.put(new Movie(), "id in (" + TextUtils.join(", ", movieIds) + ")");
+                mp.put(new Album(), "id in (" + TextUtils.join(", ", musicIds) + ")");
+                mp.put(new Game(), "id in (" + TextUtils.join(", ", gameIds) + ")");
+                return ControlsHelper.getAllMediaItems(context, mp);
             }
-        }
+        } else {
+            List<String> categories = Arrays.asList(mediaFilter.getCategories().split("\\|"));
+            String categoryWhere = "category like '%" + TextUtils.join("%' or category like '%", categories) + "%'";
+            if(!categories.isEmpty() && !categories.get(0).isEmpty()) {
+                where = categoryWhere;
+            }
 
-        List<String> customFields = Arrays.asList(mediaFilter.getCustomFields().split("\\|"));
-        String customFieldsWhere = "customFields like '%" + TextUtils.join("%' or customFields like '%", customFields) + "%'";
-        if(!customFields.isEmpty() && !customFields.get(0).isEmpty()) {
-            if(where.isEmpty()) {
-                where = customFieldsWhere;
-            } else {
-                where += " AND " + customFieldsWhere;
+            List<String> tags = Arrays.asList(mediaFilter.getTags().split("\\|"));
+            String tagsWhere = "tags like '%" + TextUtils.join("%' or tags like '%", tags) + "%'";
+            if(!tags.isEmpty() && !tags.get(0).isEmpty()) {
+                if(where.isEmpty()) {
+                    where = tagsWhere;
+                } else {
+                    where += " AND " + tagsWhere;
+                }
+            }
+
+            List<String> customFields = Arrays.asList(mediaFilter.getCustomFields().split("\\|"));
+            String customFieldsWhere = "customFields like '%" + TextUtils.join("%' or customFields like '%", customFields) + "%'";
+            if(!customFields.isEmpty() && !customFields.get(0).isEmpty()) {
+                if(where.isEmpty()) {
+                    where = customFieldsWhere;
+                } else {
+                    where += " AND " + customFieldsWhere;
+                }
             }
         }
 

@@ -30,6 +30,8 @@ public class MediaFilter extends BaseTitleObject implements DatabaseObject {
     private boolean movies;
     private boolean games;
     private boolean music;
+    private boolean list;
+    private MediaList mediaList;
     private String customFields;
 
     public MediaFilter() {
@@ -43,6 +45,8 @@ public class MediaFilter extends BaseTitleObject implements DatabaseObject {
         this.games = true;
         this.music = true;
         this.customFields = "";
+        this.list = false;
+        this.mediaList = null;
     }
 
     public String getSearch() {
@@ -107,6 +111,22 @@ public class MediaFilter extends BaseTitleObject implements DatabaseObject {
 
     public void setCustomFields(String customFields) {
         this.customFields = customFields;
+    }
+
+    public boolean isList() {
+        return this.list;
+    }
+
+    public void setList(boolean list) {
+        this.list = list;
+    }
+
+    public MediaList getMediaList() {
+        return this.mediaList;
+    }
+
+    public void setMediaList(MediaList mediaList) {
+        this.mediaList = mediaList;
     }
 
     @NonNull

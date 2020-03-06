@@ -196,6 +196,7 @@ public class MainHomeFragment extends ParentFragment {
                         }
                         MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
                         MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_add)), R.mipmap.ic_launcher_round, this.getActivity());
+                        reloadFilter();
                     }));
                     b.show();
                 }
@@ -342,8 +343,9 @@ public class MainHomeFragment extends ParentFragment {
         this.cmdFilterExpand.setOnClickListener(view -> {
             Activity activity = Objects.requireNonNull(this.getActivity());
             boolean noFilterSelected = this.spFilter.getSelectedItem().toString().equals(this.getString(R.string.filter_no_filter));
+            boolean isList = Objects.requireNonNull(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition())).isList();
             if(this.rowName != null) {
-                if (this.rowName.getVisibility() == View.GONE && !noFilterSelected) {
+                if (this.rowName.getVisibility() == View.GONE && !noFilterSelected && !isList) {
                     this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
                     this.rowName.setVisibility(View.VISIBLE);
                     this.rowMedia1.setVisibility(View.VISIBLE);
@@ -452,6 +454,18 @@ public class MainHomeFragment extends ParentFragment {
         gamesFilter.setGames(true);
         gamesFilter.setMovies(false);
         this.arrayAdapter.add(gamesFilter);
+
+        try {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("")) {
+                MediaFilter listFilter = new MediaFilter();
+                listFilter.setTitle("[" + mediaList.getTitle() + "]");
+                listFilter.setMediaList(mediaList);
+                listFilter.setList(true);
+                this.arrayAdapter.add(listFilter);
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
 
         for(MediaFilter filter : MainActivity.GLOBALS.getDatabase().getFilters("")) {
             this.arrayAdapter.add(filter);
