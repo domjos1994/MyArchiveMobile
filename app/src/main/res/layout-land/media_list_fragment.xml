@@ -16,57 +16,63 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10">
-
+    android:orientation="vertical">
+    
     <TextView
         android:id="@+id/lblMedia"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:background="@drawable/background_label"
         android:padding="1dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:textSize="16sp"
-        android:text="@string/main_navigation_media" />
-
+        android:text="@string/main_navigation_media"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMedia"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="9"
         android:contentDescription="@string/main_navigation_media"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:readOnly="true"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/lblLibrary"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:background="@drawable/background_label"
         android:padding="1dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:textSize="16sp"
         android:text="@string/library"
-        android:visibility="gone"/>
-
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvLibrary"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="4"
         android:contentDescription="@string/library"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:readOnly="true"
@@ -74,5 +80,8 @@
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         android:padding="4dp"
-        android:visibility="gone"/>
-</LinearLayout>
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
