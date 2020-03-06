@@ -49,6 +49,7 @@
 
     <style name="appCompatAlert" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:colorBackground">@color/windowBackground</item>
+        <item name="android:background">@color/windowBackground</item>
     </style>
 
     <style name="filePickerStyle" parent="Theme.AppCompat.Light.Dialog">

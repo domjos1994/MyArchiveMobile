@@ -87,6 +87,7 @@ public class MainListsFragment extends ParentFragment {
                 for(int i = 0; i<=this.mediaList.getBaseMediaObjects().size()-1; i++) {
                     if(((BaseMediaObject) listObject.getObject()).getId()==this.mediaList.getBaseMediaObjects().get(i).getId()) {
                         this.mediaList.getBaseMediaObjects().remove(i);
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(this.mediaList);
                         break;
                     }
                 }
@@ -232,7 +233,7 @@ public class MainListsFragment extends ParentFragment {
                         checkedItems[i] = false;
                     }
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(), R.style.appCompatAlert);
                     builder.setTitle(R.string.lists_dialog_title);
                     builder.setMultiChoiceItems(arrayList.keySet().toArray(new CharSequence[]{}), checkedItems, (dialogInterface, i1, b) -> checkedItems[i1] = b);
                     builder.setPositiveButton(R.string.sys_add, (dialogInterface, i12) -> {
