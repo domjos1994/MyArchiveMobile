@@ -45,6 +45,7 @@ public final class CompanyActivity extends AbstractActivity {
 
     private Company company = null;
     private Validator validator;
+    private boolean firstReload = true;
 
     public CompanyActivity() {
         super(R.layout.company_activity);
@@ -136,6 +137,22 @@ public final class CompanyActivity extends AbstractActivity {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
+    private void select() {
+        if(this.firstReload) {
+            long id = this.getIntent().getLongExtra("id", 0L);
+
+            if(id != 0) {
+                for(int i = 0; i<=this.lvCompanies.getAdapter().getItemCount() - 1; i++) {
+                    if(this.lvCompanies.getAdapter().getItem(i).getId() == id) {
+                        this.lvCompanies.select(this.lvCompanies.getAdapter().getItem(i));
+                        break;
+                    }
+                }
+            }
+            this.firstReload = false;
+        }
+    }
+
     @Override
     protected void reload() {
         try {
@@ -149,6 +166,7 @@ public final class CompanyActivity extends AbstractActivity {
                 baseDescriptionObject.setObject(company);
                 this.lvCompanies.getAdapter().add(baseDescriptionObject);
             }
+            this.select();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CompanyActivity.this);
         }

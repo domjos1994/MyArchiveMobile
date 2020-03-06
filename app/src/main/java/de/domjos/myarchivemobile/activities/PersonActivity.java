@@ -45,6 +45,7 @@ public final class PersonActivity extends AbstractActivity {
 
     private Person person = null;
     private Validator validator;
+    private boolean firstReload = true;
 
     public PersonActivity() {
         super(R.layout.person_activity);
@@ -136,6 +137,22 @@ public final class PersonActivity extends AbstractActivity {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
+    private void select() {
+        if(this.firstReload) {
+            long id = this.getIntent().getLongExtra("id", 0L);
+
+            if(id != 0) {
+                for(int i = 0; i<=this.lvPersons.getAdapter().getItemCount() - 1; i++) {
+                    if(this.lvPersons.getAdapter().getItem(i).getId() == id) {
+                        this.lvPersons.select(this.lvPersons.getAdapter().getItem(i));
+                        break;
+                    }
+                }
+            }
+            this.firstReload = false;
+        }
+    }
+
     @Override
     protected void reload() {
         try {
@@ -149,6 +166,7 @@ public final class PersonActivity extends AbstractActivity {
                 baseDescriptionObject.setObject(person);
                 this.lvPersons.getAdapter().add(baseDescriptionObject);
             }
+            this.select();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, PersonActivity.this);
         }

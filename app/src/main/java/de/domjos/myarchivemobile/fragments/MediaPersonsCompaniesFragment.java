@@ -30,17 +30,23 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.CompanyActivity;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.activities.PersonActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 
 public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObject> {
     private MultiAutoCompleteTextView txtMediaPersons, txtMediaCompanies;
+    private SwipeRefreshDeleteList lvMediaPersons, lvMediaCompanies;
 
     private BaseMediaObject baseMediaObject;
 
@@ -53,7 +59,9 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaPersons = view.findViewById(R.id.txtMediaPersons);
+        this.lvMediaPersons = view.findViewById(R.id.lvMediaPersons);
         this.txtMediaCompanies = view.findViewById(R.id.txtMediaCompanies);
+        this.lvMediaCompanies = view.findViewById(R.id.lvMediaCompanies);
 
         try {
             this.txtMediaPersons.setTokenizer(new CommaTokenizer());
@@ -79,6 +87,18 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
 
+        this.lvMediaPersons.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) baseDescriptionObject -> {
+            Intent intent = new Intent(this.getActivity(), PersonActivity.class);
+            intent.putExtra("id", baseDescriptionObject.getId());
+            startActivity(intent);
+        });
+
+        this.lvMediaCompanies.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) baseDescriptionObject -> {
+            Intent intent = new Intent(this.getActivity(), CompanyActivity.class);
+            intent.putExtra("id", baseDescriptionObject.getId());
+            startActivity(intent);
+        });
+
         this.changeMode(false);
     }
 
@@ -86,14 +106,35 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
     public void setMediaObject(BaseMediaObject baseMediaObject) {
         this.baseMediaObject = baseMediaObject;
 
+        this.lvMediaPersons.getAdapter().clear();
+        this.lvMediaCompanies.getAdapter().clear();
+
         StringBuilder persons = new StringBuilder();
         for(Person person : this.baseMediaObject.getPersons()) {
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+            baseDescriptionObject.setTitle(person.toString());
+            baseDescriptionObject.setCover(person.getImage());
+            baseDescriptionObject.setId(person.getId());
+            if(person.getBirthDate() != null) {
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
+            }
+            this.lvMediaPersons.getAdapter().add(baseDescriptionObject);
+
             persons.append(person.getFirstName()).append(" ").append(person.getLastName()).append(", ");
         }
         this.txtMediaPersons.setText(persons.toString());
 
         StringBuilder companies = new StringBuilder();
         for(Company company : this.baseMediaObject.getCompanies()) {
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+            baseDescriptionObject.setTitle(company.getTitle());
+            baseDescriptionObject.setCover(company.getCover());
+            baseDescriptionObject.setId(company.getId());
+            if(company.getFoundation() != null) {
+                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
+            }
+            this.lvMediaCompanies.getAdapter().add(baseDescriptionObject);
+
             companies.append(company.getTitle()).append(", ");
         }
         this.txtMediaCompanies.setText(companies.toString());
@@ -153,6 +194,11 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
     public void changeMode(boolean editMode) {
         this.txtMediaCompanies.setEnabled(editMode);
         this.txtMediaPersons.setEnabled(editMode);
+
+        this.txtMediaCompanies.setVisibility(editMode ? View.VISIBLE : View.GONE);
+        this.txtMediaPersons.setVisibility(editMode ? View.VISIBLE : View.GONE);
+        this.lvMediaCompanies.setVisibility(editMode ? View.GONE : View.VISIBLE);
+        this.lvMediaPersons.setVisibility(editMode ? View.GONE : View.VISIBLE);
     }
 
     @Override
