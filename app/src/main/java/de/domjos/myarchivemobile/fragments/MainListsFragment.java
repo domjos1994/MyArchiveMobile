@@ -240,6 +240,7 @@ public class MainListsFragment extends ParentFragment {
                         for (int j = 0; j <= checkedItems.length - 1; j++) {
                             if (checkedItems[j]) {
                                 mediaList.getBaseMediaObjects().add((BaseMediaObject) Objects.requireNonNull(arrayList.get(arrayList.keySet().toArray(new String[]{})[j])).getObject());
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
                             }
                         }
                     });
