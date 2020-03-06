@@ -44,6 +44,7 @@ import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDelete
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
+import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -157,6 +158,10 @@ public class ControlsHelper {
         String where = "";
 
         if(mediaFilter.isList()) {
+            try {
+                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("id=" + mediaFilter.getMediaList().getId());
+                mediaFilter.setMediaList(mediaLists==null ? mediaFilter.getMediaList() : mediaLists.get(0));
+            } catch (Exception ignored) {}
             if(mediaFilter.getMediaList() != null) {
                 List<Long> bookIds = new LinkedList<>(), movieIds = new LinkedList<>(), musicIds = new LinkedList<>(), gameIds = new LinkedList<>();
                 for(BaseMediaObject baseMediaObject : mediaFilter.getMediaList().getBaseMediaObjects()) {
