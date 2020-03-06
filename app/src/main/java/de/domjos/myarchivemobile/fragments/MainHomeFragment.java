@@ -58,6 +58,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
+import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
@@ -168,7 +169,34 @@ public class MainHomeFragment extends ParentFragment {
                             libraryObject.setPerson(people.get(i));
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
                         }
+                        MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_add)), R.mipmap.ic_launcher_round, this.getActivity());
                     });
+                    b.show();
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getContext());
+            }
+        });
+
+        this.lvMedia.addButtonClick(R.drawable.icon_list, this.getString(R.string.lists), objectList -> {
+            try {
+                AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+                b.setTitle(getString(R.string.lists));
+                List<String> listString = new LinkedList<>();
+                List<MediaList> lists = MainActivity.GLOBALS.getDatabase().getMediaLists("");
+                for(MediaList list : lists) {
+                    listString.add(list.getTitle());
+                }
+                if(!listString.isEmpty()) {
+                    String[] listArray = listString.toArray(new String[]{});
+                    b.setItems(listArray, ((dialogInterface, i) -> {
+                        MediaList mediaList = lists.get(i);
+                        for(BaseDescriptionObject baseDescriptionObject : objectList) {
+                            mediaList.getBaseMediaObjects().add((BaseMediaObject) baseDescriptionObject.getObject());
+                        }
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                        MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_add)), R.mipmap.ic_launcher_round, this.getActivity());
+                    }));
                     b.show();
                 }
             } catch (Exception ex) {
