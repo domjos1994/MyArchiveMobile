@@ -157,6 +157,7 @@ public class MainLibraryFragment extends ParentFragment {
 
         this.changeMode(false, false);
         this.reload();
+        this.select();
         return root;
     }
 
@@ -247,6 +248,7 @@ public class MainLibraryFragment extends ParentFragment {
                     }
                     baseDescriptionObject.setDescription(description);
                     baseDescriptionObject.setObject(libraryObject);
+                    baseDescriptionObject.setId(libraryObject.getId());
                     this.lvMediaHistory.getAdapter().add(baseDescriptionObject);
                 }
             }
@@ -266,7 +268,28 @@ public class MainLibraryFragment extends ParentFragment {
 
     @Override
     public void select() {
+        try {
+            long id = Objects.requireNonNull(this.getArguments()).getLong("id");
+            if(id != 0) {
+                for(int i = 0; i<=this.lvMediaLibrary.getAdapter().getItemCount() - 1; i++) {
+                    this.currentObject = this.lvMediaLibrary.getAdapter().getItem(i);
+                    if(this.currentObject != null) {
+                        this.lvMediaLibrary.select(this.currentObject);
+                        this.reloadLibraryObjects();
 
+                        for(int j = 0; j<=this.lvMediaLibrary.getAdapter().getItemCount() - 1; j++) {
+                            BaseDescriptionObject historyObject = this.lvMediaHistory.getAdapter().getItem(j);
+                            if(historyObject.getId() == id) {
+                                this.lvMediaHistory.select(historyObject);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
     }
 
     private void initControls(View view) {

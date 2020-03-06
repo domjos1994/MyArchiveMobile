@@ -386,6 +386,9 @@ public final class MainActivity extends AbstractActivity {
         if(title.trim().equals(this.getString(R.string.album))) {
             this.navController.navigate(R.id.navMainMediaMusic, args);
         }
+        if(title.trim().equals(this.getString(R.string.library))) {
+            this.navController.navigate(R.id.navMainLibrary, args);
+        }
     }
 
     private void initGlobals() throws InvalidKeySpecException, NoSuchAlgorithmException {

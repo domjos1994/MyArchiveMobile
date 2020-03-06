@@ -72,6 +72,17 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
                 activity.finish();
             }
         });
+
+        this.lvLibrary.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            Intent intent = new Intent();
+            intent.putExtra("type", this.getString(R.string.library));
+            intent.putExtra("id", listObject.getId());
+            Activity activity = MediaListFragment.this.getActivity();
+            if(activity != null) {
+                activity.setResult(Activity.RESULT_OK, intent);
+                activity.finish();
+            }
+        });
     }
 
     public void setPerson(boolean person) {
@@ -95,6 +106,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
             }
 
             baseDescriptionObject.setDescription(String.format("%s - %s", deadLine, broughtBackAt).trim());
+            baseDescriptionObject.setId(libraryObject.getValue().getId());
             this.lvLibrary.getAdapter().add(baseDescriptionObject);
         }
 
