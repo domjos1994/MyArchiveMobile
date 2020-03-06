@@ -150,7 +150,13 @@ public class WikiDataWebservice extends JSONService {
             JSONObject info = pages.getJSONObject(iterator.next()).getJSONArray("imageinfo").getJSONObject(0);
             String imgURL = info.getString("url");
             if(!imgURL.endsWith(".svg"))  {
-                return ConvertHelper.convertStringToByteArray(imgURL);
+                byte[] bytes = ConvertHelper.convertStringToByteArray(imgURL);
+                double length = bytes.length / (1024.0 * 1024.0);
+                if(length >= 1) {
+                    return null;
+                } else {
+                    return bytes;
+                }
             }
         }
         return null;

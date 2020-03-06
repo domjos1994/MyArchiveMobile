@@ -763,7 +763,9 @@ public class Database extends SQLiteOpenHelper {
                 if(dt!=null) {
                     person.setBirthDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                 }
-                person.setImage(cursor.getBlob(cursor.getColumnIndex("image")));
+                try {
+                    person.setImage(cursor.getBlob(cursor.getColumnIndex("image")));
+                } catch (Exception ignored) {}
                 person.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
                 people.add(person);
             }
@@ -781,7 +783,9 @@ public class Database extends SQLiteOpenHelper {
                     if(dt!=null) {
                         person.setBirthDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
                     }
-                    person.setImage(tmp.getBlob(tmp.getColumnIndex("image")));
+                    try {
+                        person.setImage(tmp.getBlob(tmp.getColumnIndex("image")));
+                    } catch (Exception ignored) {}
                     person.setDescription(tmp.getString(tmp.getColumnIndex(Database.DESCRIPTION)));
                     people.add(person);
                 }
