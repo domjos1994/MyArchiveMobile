@@ -44,7 +44,11 @@ public class WikiDataPersonTask extends AbstractTask<Person, Void, List<Person>>
         try {
             for(Person person : people) {
                 WikiDataWebservice wikiDataWebService = new WikiDataWebservice(person.getFirstName(), person.getLastName());
-                persons.add(wikiDataWebService.getPerson());
+                Person tmp = wikiDataWebService.getPerson();
+                if(tmp.getImage() == null) {
+                    tmp.setImage(person.getImage());
+                }
+                persons.add(tmp);
             }
         } catch (Exception ex) {
             super.printException(ex);

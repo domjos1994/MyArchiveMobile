@@ -44,7 +44,11 @@ public class WikiDataCompanyTask extends AbstractTask<Company, Void, List<Compan
         try {
             for(Company company : companies) {
                 WikiDataWebservice wikiDataWebService = new WikiDataWebservice(company.getTitle());
-                companyList.add(wikiDataWebService.getCompany());
+                Company tmp = wikiDataWebService.getCompany();
+                if(tmp.getCover() == null) {
+                    tmp.setCover(company.getCover());
+                }
+                companyList.add(tmp);
             }
         } catch (Exception ex) {
             super.printException(ex);
