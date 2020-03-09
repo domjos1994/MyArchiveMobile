@@ -162,6 +162,7 @@
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
         app:listItemDivider="@drawable/divider"
+        app:iconColor="@color/textColorPrimary"
         app:selectedListItemBackground="@drawable/selected_background" />
 
     <LinearLayout

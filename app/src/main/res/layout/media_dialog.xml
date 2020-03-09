@@ -81,6 +81,7 @@
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
         app:itemIcon="@mipmap/ic_launcher_round"
+        app:iconColor="@color/textColorPrimary"
         android:layout_below="@+id/searchControls"
         android:layout_above="@+id/cmdSave"/>
 

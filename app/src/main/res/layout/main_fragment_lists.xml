@@ -35,6 +35,7 @@
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
         app:readOnly="true"
+        app:iconColor="@color/textColorPrimary"
         android:padding="4dp"/>
 
     <TextView
@@ -51,6 +52,7 @@
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
+        app:iconColor="@color/textColorPrimary"
         android:padding="4dp"/>
 
     <TextView

@@ -180,6 +180,7 @@
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
+        app:iconColor="@color/textColorPrimary"
         android:layout_margin="4dp"
         android:layout_above="@+id/footer"
         android:layout_below="@+id/filterScrollView"/>

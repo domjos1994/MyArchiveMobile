@@ -31,6 +31,7 @@
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemBackgroundStatePositive="@drawable/background_positive"
         app:listItemDivider="@drawable/divider"
+        app:iconColor="@color/textColorPrimary"
         android:padding="4dp"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintHeight_percent="0.86"
