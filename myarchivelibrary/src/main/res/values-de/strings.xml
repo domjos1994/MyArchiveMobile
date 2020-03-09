@@ -33,4 +33,6 @@
 
     <string name="scanner_save">Übernehmen</string>
     <string name="scanner_cancel">Abbrechen</string>
+
+    <string name="sys_no_internet">No Internet-Connection!</string>
 </resources>

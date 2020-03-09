@@ -32,6 +32,7 @@ import android.widget.*;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.InterruptedIOException;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -361,7 +362,10 @@ public class MediaDialog extends DialogFragment {
                         baseDescriptionObjects.add(baseDescriptionObject);
                     }
                 }
-            } catch (InterruptedIOException ignored) {} catch (Exception ex) {
+            } catch (InterruptedIOException ignored) {
+            } catch (UnknownHostException ex) {
+                this.printMessage(getContext().getString(R.string.sys_no_internet));
+            } catch (Exception ex) {
                 this.printException(ex);
             }
             return baseDescriptionObjects;

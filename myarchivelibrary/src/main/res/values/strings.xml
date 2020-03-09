@@ -46,4 +46,6 @@
 
     <string name="scanner_save">Accept</string>
     <string name="scanner_cancel">Cancel</string>
+
+    <string name="sys_no_internet">No Internet-Connection!</string>
 </resources>

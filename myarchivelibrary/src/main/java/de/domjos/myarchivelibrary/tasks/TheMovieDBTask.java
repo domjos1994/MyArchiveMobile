@@ -20,6 +20,7 @@ package de.domjos.myarchivelibrary.tasks;
 import android.app.Activity;
 
 import java.io.InterruptedIOException;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,7 +55,10 @@ public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
                 if(movie != null) {
                     movies.add(movie);
                 }
-            } catch (InterruptedIOException ignored) {} catch (Exception ex) {
+            } catch (InterruptedIOException ignored) {
+            } catch (UnknownHostException ex) {
+                this.printMessage(getContext().getString(R.string.sys_no_internet));
+            } catch (Exception ex) {
                 super.printException(ex);
             }
         }

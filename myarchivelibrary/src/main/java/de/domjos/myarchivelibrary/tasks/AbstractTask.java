@@ -85,6 +85,10 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, this.icon, this.getContext()));
     }
 
+    public void printMessage(String msg) {
+        ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printMessage(msg, this.icon, this.getContext()));
+    }
+
     protected abstract void before();
 
     public void after(PostExecuteListener postExecuteListener) {

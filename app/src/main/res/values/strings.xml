@@ -161,4 +161,5 @@
     <string name="sys_search">Search</string>
     <string name="sys_empty" formatted="false"> (Empty)</string>
     <string name="sys_success" formatted="false">%s successfully!</string>
+    <string name="sys_no_internet">No Internet-Connection!</string>
 </resources>
