@@ -550,7 +550,7 @@ public class MainHomeFragment extends ParentFragment {
                 if(mediaFilter.getTitle().trim().equals(this.getString(R.string.filter_no_filter))) {
                     baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), searchString);
                 } else {
-                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), mediaFilter);
+                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), mediaFilter, searchString);
                 }
             }
             for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
@@ -572,10 +572,17 @@ public class MainHomeFragment extends ParentFragment {
 
     @Override
     public void reload(String search, boolean reload) {
+        MediaFilter mediaFilter = null;
+        if(this.spFilter != null) {
+            if(this.spFilter.getSelectedItem() != null) {
+                mediaFilter = this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition());
+            }
+        }
+
         this.search = search;
 
         if(reload) {
-            this.reload(null);
+            this.reload(mediaFilter);
         }
     }
 

@@ -155,6 +155,10 @@ public class ControlsHelper {
     }
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) {
+        return ControlsHelper.getAllMediaItems(context, mediaFilter, "");
+    }
+
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter, String extendedWhere) {
         String where = "";
 
         if(mediaFilter.isList()) {
@@ -212,17 +216,18 @@ public class ControlsHelper {
         }
 
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
+        String fullWhere = where.trim().isEmpty() ? extendedWhere : where + " AND (" + extendedWhere + ")";
         if(mediaFilter.isBooks()) {
-            mp.put(new Book(), where);
+            mp.put(new Book(), fullWhere);
         }
         if(mediaFilter.isMovies()) {
-            mp.put(new Movie(), where);
+            mp.put(new Movie(), fullWhere);
         }
         if(mediaFilter.isMusic()) {
-            mp.put(new Album(), where);
+            mp.put(new Album(), fullWhere);
         }
         if(mediaFilter.isGames()) {
-            mp.put(new Game(), where);
+            mp.put(new Game(), fullWhere);
         }
         return ControlsHelper.getAllMediaItems(context, mp);
     }
