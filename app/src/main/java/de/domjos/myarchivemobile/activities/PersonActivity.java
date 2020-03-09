@@ -23,6 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +34,8 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.PersonPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -65,6 +68,25 @@ public final class PersonActivity extends AbstractActivity {
             this.person = (Person) listObject.getObject();
             this.personPagerAdapter.setMediaObject(this.person);
             this.changeMode(false, true);
+        });
+
+        this.lvPersons.addButtonClick(R.drawable.icon_search, this.getString(R.string.sys_search), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                try {
+                    Person person = (Person) baseDescriptionObject.getObject();
+                    if(person != null) {
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                        wikiDataPersonTask.after(new AbstractTask.PostExecuteListener<List<Person>>() {
+                            @Override
+                            public void onPostExecute(List<Person> o) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
+                                reload();
+                            }
+                        });
+                        wikiDataPersonTask.execute(person);
+                    }
+                } catch (Exception ignored) {}
+            }
         });
 
 
