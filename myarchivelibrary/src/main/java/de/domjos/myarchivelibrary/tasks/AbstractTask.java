@@ -73,6 +73,14 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         }
     }
 
+    @Override
+    public void onCancelled() {
+        super.onCancelled();
+        if (this.showNotifications) {
+            MessageHelper.stopNotification(this.getContext(), this.id);
+        }
+    }
+
     public void printException(Exception ex) {
         ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, this.icon, this.getContext()));
     }
@@ -106,7 +114,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         return this.weakReference.get();
     }
 
-    abstract static class PostExecuteListener<Result> {
-        abstract void onPostExecute(Result result);
+    public abstract static class PostExecuteListener<Result> {
+        public abstract void onPostExecute(Result result);
     }
 }

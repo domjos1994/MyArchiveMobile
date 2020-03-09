@@ -60,7 +60,7 @@
             android:autofillHints="@string/sys_search"
             tools:targetApi="o" />
         <ImageButton
-    style="@style/imageButton"
+            style="@style/imageButton"
             android:id="@+id/cmdSearch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -68,7 +68,8 @@
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_search"
             android:src="@drawable/icon_search"
-            tools:ignore="VectorDrawableCompat" />
+            tools:ignore="VectorDrawableCompat"
+            android:tag="@string/sys_search"/>
     </LinearLayout>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
@@ -86,7 +87,7 @@
         android:layout_above="@+id/cmdSave"/>
 
     <ImageButton
-    style="@style/imageButton"
+        style="@style/imageButton"
         android:id="@+id/cmdSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,6 +95,7 @@
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
         android:contentDescription="@string/sys_save"
+        android:tag="@string/sys_save"
         app:srcCompat="@drawable/icon_save"
         android:src="@drawable/icon_save"
         tools:ignore="VectorDrawableCompat"

@@ -19,6 +19,7 @@ package de.domjos.myarchivelibrary.tasks;
 
 import android.app.Activity;
 
+import java.io.InterruptedIOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class TheAudioDBTask extends AbstractTask<Long, Void, List<Album>> {
                 if(album != null) {
                     movies.add(album);
                 }
-            } catch (Exception ex) {
+            } catch (InterruptedIOException ignored) {} catch (Exception ex) {
                 super.printException(ex);
             }
         }
