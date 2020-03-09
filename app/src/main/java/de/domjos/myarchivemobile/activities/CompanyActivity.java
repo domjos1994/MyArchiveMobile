@@ -23,6 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +34,8 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -65,6 +68,25 @@ public final class CompanyActivity extends AbstractActivity {
             this.company = (Company) listObject.getObject();
             this.companyPagerAdapter.setMediaObject(this.company);
             this.changeMode(false, true);
+        });
+
+        this.lvCompanies.addButtonClick(R.drawable.icon_search, this.getString(R.string.sys_search), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                try {
+                    Company company = (Company) baseDescriptionObject.getObject();
+                    if(company != null) {
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                        wikiDataCompanyTask.after(new AbstractTask.PostExecuteListener<List<Company>>() {
+                            @Override
+                            public void onPostExecute(List<Company> o) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
+                                reload();
+                            }
+                        });
+                        wikiDataCompanyTask.execute(company);
+                    }
+                } catch (Exception ignored) {}
+            }
         });
 
 
