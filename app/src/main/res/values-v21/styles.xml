@@ -48,4 +48,10 @@
         <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
         <item name="android:preferenceCategoryStyle">@style/AppTheme.PreferenceTheme</item>
     </style>
+
+    <style name="AppTheme.PreferenceTheme" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="colorAccent">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:colorAccent">@color/textColorPrimary</item>
+    </style>
 </resources>

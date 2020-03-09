@@ -341,38 +341,12 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         this.cmdFilterExpand.setOnClickListener(view -> {
-            Activity activity = Objects.requireNonNull(this.getActivity());
             boolean noFilterSelected = this.spFilter.getSelectedItem().toString().equals(this.getString(R.string.filter_no_filter));
             boolean isList = Objects.requireNonNull(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition())).isList();
-            if(this.rowName != null) {
-                if (this.rowName.getVisibility() == View.GONE && !noFilterSelected && !isList) {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
-                    this.rowName.setVisibility(View.VISIBLE);
-                    this.rowMedia1.setVisibility(View.VISIBLE);
-                    this.rowMedia2.setVisibility(View.VISIBLE);
-                    this.txtFilterSearch.setVisibility(View.VISIBLE);
-                    this.txtFilterCategories.setVisibility(View.VISIBLE);
-                    this.txtFilterTags.setVisibility(View.VISIBLE);
-                    this.txtFilterCustomFields.setVisibility(View.VISIBLE);
-                } else {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
-                    this.rowName.setVisibility(View.GONE);
-                    this.rowMedia1.setVisibility(View.GONE);
-                    this.rowMedia2.setVisibility(View.GONE);
-                    this.txtFilterSearch.setVisibility(View.GONE);
-                    this.txtFilterCategories.setVisibility(View.GONE);
-                    this.txtFilterTags.setVisibility(View.GONE);
-                    this.txtFilterCustomFields.setVisibility(View.GONE);
-                }
+            if (this.rowName.getVisibility() == View.VISIBLE || noFilterSelected || isList) {
+                this.lessFilterView();
             } else {
-                int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
-                if(this.filter.getLayoutParams().height == px48 && !noFilterSelected) {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
-                    this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
-                } else {
-                    this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
-                    this.filter.getLayoutParams().height = px48;
-                }
+                this.moreFilterView();
             }
 
             this.filter.requestLayout();
@@ -395,6 +369,12 @@ public class MainHomeFragment extends ParentFragment {
         this.spFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                boolean noFilterSelected = spFilter.getSelectedItem().toString().equals(getString(R.string.filter_no_filter));
+                boolean isList = Objects.requireNonNull(arrayAdapter.getItem(spFilter.getSelectedItemPosition())).isList();
+                if (noFilterSelected || isList) {
+                    lessFilterView();
+                }
+
                 if(Objects.requireNonNull(arrayAdapter.getItem(i)).getTitle().equals(getString(R.string.filter_temp))) {
                     getObject(tempFilter);
                     reload(tempFilter);
@@ -410,6 +390,41 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         this.reloadFilter();
+    }
+
+    private void lessFilterView() {
+        Activity activity = Objects.requireNonNull(this.getActivity());
+        if(this.rowName != null) {
+            this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
+            this.rowName.setVisibility(View.GONE);
+            this.rowMedia1.setVisibility(View.GONE);
+            this.rowMedia2.setVisibility(View.GONE);
+            this.txtFilterSearch.setVisibility(View.GONE);
+            this.txtFilterCategories.setVisibility(View.GONE);
+            this.txtFilterTags.setVisibility(View.GONE);
+            this.txtFilterCustomFields.setVisibility(View.GONE);
+        } else {
+            int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
+            this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
+            this.filter.getLayoutParams().height = px48;
+        }
+    }
+
+    private void moreFilterView() {
+        Activity activity = Objects.requireNonNull(this.getActivity());
+        if(this.rowName != null) {
+            this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
+            this.rowName.setVisibility(View.VISIBLE);
+            this.rowMedia1.setVisibility(View.VISIBLE);
+            this.rowMedia2.setVisibility(View.VISIBLE);
+            this.txtFilterSearch.setVisibility(View.VISIBLE);
+            this.txtFilterCategories.setVisibility(View.VISIBLE);
+            this.txtFilterTags.setVisibility(View.VISIBLE);
+            this.txtFilterCustomFields.setVisibility(View.VISIBLE);
+        } else {
+            this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
+            this.filter.getLayoutParams().height = TableLayout.LayoutParams.WRAP_CONTENT;
+        }
     }
 
     private void reloadFilter() {

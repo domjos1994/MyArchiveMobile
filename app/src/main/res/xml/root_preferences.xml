@@ -41,7 +41,7 @@
         app:title="@string/settings_services"
         app:icon="@drawable/icon_cloud">
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             android:contentDescription="@string/settings_services_google_books_summary"
             android:hint="@string/settings_services_google_books"
             app:dialogIcon="@drawable/icon_cloud"
@@ -52,7 +52,7 @@
             app:summary="@string/settings_services_google_books_summary"
             app:title="@string/settings_services_google_books" />
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             app:key="txtMovieDBKey"
             app:title="@string/settings_services_movie_db"
             app:summary="@string/settings_services_movie_db_summary"
@@ -63,7 +63,7 @@
 			android:contentDescription="@string/settings_services_movie_db_summary"
 			android:hint="@string/settings_services_movie_db"/>
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             app:key="txtIGDBKey"
             app:title="@string/settings_services_igdb"
             app:summary="@string/settings_services_igdb_summary"
@@ -74,7 +74,7 @@
 			android:contentDescription="@string/settings_services_igdb_summary"
 			android:hint="@string/settings_services_igdb"/>
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             app:key="txtEANDataKey"
             app:title="@string/settings_services_ean_data"
             app:summary="@string/settings_services_ean_data_summary"

@@ -45,6 +45,7 @@
 
     <style name="AppTheme.PreferenceTheme" parent="PreferenceThemeOverlay.v14.Material">
         <item name="colorAccent">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <style name="appCompatAlert" parent="Theme.AppCompat.Dialog.Alert">

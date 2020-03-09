@@ -136,6 +136,7 @@ public class MediaDialog extends DialogFragment {
             if(this.cmdSave.getTag().toString().equals(this.getString(R.string.sys_save))) {
                 this.cmdSave.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_cancel));
                 this.cmdSave.setTag(this.getString(R.string.sys_cancel));
+                this.setCancelable(false);
                 if(this.currentObject != null) {
                     if(this.multiple) {
                         int icon = R.mipmap.ic_launcher_round;
@@ -160,6 +161,8 @@ public class MediaDialog extends DialogFragment {
                                             }
                                             cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
                                             cmdSave.setTag(getString(R.string.sys_save));
+                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                            MediaDialog.this.setCancelable(true);
                                         }
                                     });
                                     theMovieDBTask.execute(id);
@@ -173,6 +176,8 @@ public class MediaDialog extends DialogFragment {
                                             }
                                             cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
                                             cmdSave.setTag(getString(R.string.sys_save));
+                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                            MediaDialog.this.setCancelable(true);
                                         }
                                     });
                                     theAudioDBTask.execute(id);
@@ -187,6 +192,8 @@ public class MediaDialog extends DialogFragment {
                                             }
                                             cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
                                             cmdSave.setTag(getString(R.string.sys_save));
+                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                            MediaDialog.this.setCancelable(true);
                                         }
                                     });
                                     googleBooksTask.execute("");
@@ -201,14 +208,16 @@ public class MediaDialog extends DialogFragment {
                                             }
                                             cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
                                             cmdSave.setTag(getString(R.string.sys_save));
+                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                            MediaDialog.this.setCancelable(true);
                                         }
                                     });
                                     igdbTask.execute(id);
                                 }
-                                MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_save)), icon, this.activity);
                             }
                         } catch (Exception ex) {
                             MessageHelper.printException(ex, icon, this.activity);
+                            MediaDialog.this.setCancelable(true);
                         }
                     } else {
                         Intent intent = new Intent();
