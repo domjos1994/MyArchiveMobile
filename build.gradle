@@ -37,7 +37,7 @@ ext.propMinify = false
 ext.propShrink = false
 
 ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/github.properties"
-ext.propCustomWidgetsVersion = "2.3.7"
+ext.propCustomWidgetsVersion = "2.3.8"
 
 buildscript {
     repositories {
