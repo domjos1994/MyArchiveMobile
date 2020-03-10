@@ -38,7 +38,7 @@
                 android:layout_height="@dimen/spinner_height"
                 android:layout_weight="9"/>
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdFilterExpand"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -60,7 +60,7 @@
                 android:autofillHints="@string/sys_title"
                 tools:targetApi="o" />
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdFilterSave"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -71,7 +71,7 @@
                 android:contentDescription="@string/sys_save"
                 tools:ignore="VectorDrawableCompat" />
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdFilterDelete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -163,7 +163,8 @@
         app:listItemBackground="@drawable/background"
         app:listItemDivider="@drawable/divider"
         app:iconColor="@color/textColorPrimary"
-        app:selectedListItemBackground="@drawable/selected_background" />
+        app:selectedListItemBackground="@drawable/selected_background"
+        android:contentDescription="@string/main_navigation_media"/>
 
     <LinearLayout
         android:id="@+id/footer"

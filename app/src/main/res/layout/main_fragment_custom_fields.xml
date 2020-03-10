@@ -45,12 +45,14 @@
 
     <ScrollView
         android:id="@+id/scrollView"
+        android:contentDescription="@string/customFields"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
         android:padding="4dp">
         <TableLayout
             android:layout_width="match_parent"
+            android:contentDescription="@string/customFields"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:weightSum="10">

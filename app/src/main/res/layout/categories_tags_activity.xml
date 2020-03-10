@@ -44,7 +44,8 @@
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/selected_background"
         app:listItemDivider="@drawable/divider"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        android:contentDescription="@string/categories_and_tags"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -62,7 +63,8 @@
         app:listItemDivider="@drawable/divider"
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        android:contentDescription="@string/main_navigation_media"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -71,12 +73,14 @@
 
     <ScrollView
         android:layout_width="match_parent"
+        android:contentDescription="@string/categories_and_tags"
         android:layout_height="0dp"
         android:layout_weight="4"
         android:padding="4dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/categories_and_tags"
             android:orientation="vertical">
             <EditText
                 android:id="@+id/txtTitle"

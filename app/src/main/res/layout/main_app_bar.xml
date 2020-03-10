@@ -34,23 +34,23 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/cmdSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="3dp">
-            </androidx.appcompat.widget.SearchView>
             <ImageButton
                 android:id="@+id/cmdSearchWeb"
                 android:background="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="end"
                 android:layout_margin="3dp"
                 android:contentDescription="@string/sys_search"
                 app:srcCompat="@drawable/icon_web">
             </ImageButton>
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/cmdSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_margin="3dp">
+            </androidx.appcompat.widget.SearchView>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>

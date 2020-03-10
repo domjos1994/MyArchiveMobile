@@ -26,13 +26,15 @@
         android:id="@+id/filterScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/media_general">
         <TableLayout
             android:id="@+id/filter"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:weightSum="10"
-            android:background="@drawable/background">
+            android:background="@drawable/background"
+            android:contentDescription="@string/media_general">
 
             <TableRow
                 android:layout_height="48dp">
@@ -183,7 +185,8 @@
         app:iconColor="@color/textColorPrimary"
         android:layout_margin="4dp"
         android:layout_above="@+id/footer"
-        android:layout_below="@+id/filterScrollView"/>
+        android:layout_below="@+id/filterScrollView"
+        android:contentDescription="@string/main_navigation_media"/>
 
     <LinearLayout
         android:id="@+id/footer"

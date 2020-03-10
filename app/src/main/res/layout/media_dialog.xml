@@ -84,7 +84,8 @@
         app:itemIcon="@mipmap/ic_launcher_round"
         app:iconColor="@color/textColorPrimary"
         android:layout_below="@+id/searchControls"
-        android:layout_above="@+id/cmdSave"/>
+        android:layout_above="@+id/cmdSave"
+        android:contentDescription="@string/main_navigation_media"/>
 
     <ImageButton
         style="@style/imageButton"

@@ -21,12 +21,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:contentDescription="@string/media_companies">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:contentDescription="@string/media_companies">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,8 +46,7 @@
                 tools:targetApi="o" />
 
             <ImageButton
-    style="@style/imageButton"
-
+                style="@style/imageButton"
                 android:id="@+id/cmdCompanySearch"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

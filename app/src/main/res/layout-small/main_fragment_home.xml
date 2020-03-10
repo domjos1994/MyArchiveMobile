@@ -42,7 +42,7 @@
                     android:layout_height="30dp"
                     android:layout_weight="9"/>
                 <ImageButton
-    style="@style/imageButton"
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterExpand"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
@@ -66,7 +66,7 @@
                     android:autofillHints="@string/sys_title"
                     tools:targetApi="o" />
                 <ImageButton
-    style="@style/imageButton"
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterSave"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -77,7 +77,7 @@
                     android:contentDescription="@string/sys_save"
                     tools:ignore="VectorDrawableCompat" />
                 <ImageButton
-    style="@style/imageButton"
+                    style="@style/imageButton"
                     android:id="@+id/cmdFilterDelete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -175,7 +175,8 @@
         app:iconColor="@color/textColorPrimary"
         android:layout_margin="4dp"
         android:layout_above="@+id/footer"
-        android:layout_below="@+id/filterScrollView"/>
+        android:layout_below="@+id/filterScrollView"
+        android:contentDescription="@string/main_navigation_media"/>
 
     <LinearLayout
         android:id="@+id/footer"
