@@ -82,7 +82,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
                     this.changeMode(true, false);
-                    setObject(new CustomField());
+                    this.setObject(new CustomField());
                     this.customField = null;
                     break;
                 case R.id.cmdEdit:
@@ -93,7 +93,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     changeMode(false, false);
-                    setObject(new CustomField());
+                    this.setObject(new CustomField());
                     this.customField = null;
                     break;
                 case R.id.cmdSave:

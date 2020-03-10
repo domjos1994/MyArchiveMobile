@@ -104,7 +104,7 @@ public class MainLibraryFragment extends ParentFragment {
                     this.changeMode(true, false);
                     libraryObject = new LibraryObject();
                     libraryObject.setDeadLine(new Date());
-                    setObject(libraryObject);
+                    this.setObject(libraryObject);
                     this.libraryObject = null;
                     break;
                 case R.id.cmdEdit:

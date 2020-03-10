@@ -88,6 +88,7 @@ public class MainGamesFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     this.changeMode(false, false);
+                    this.gamePagerAdapter.setMediaObject(new Game());
                     currentObject = null;
                     this.reload();
                     break;
@@ -100,6 +101,7 @@ public class MainGamesFragment extends ParentFragment {
                         if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
                             this.changeMode(false, false);
+                            this.gamePagerAdapter.setMediaObject(new Game());
                             this.currentObject = null;
                             this.reload();
                         }

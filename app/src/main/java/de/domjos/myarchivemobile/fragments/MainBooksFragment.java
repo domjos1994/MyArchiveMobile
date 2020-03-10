@@ -89,7 +89,8 @@ public class MainBooksFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     this.changeMode(false, false);
-                    currentObject = null;
+                    this.bookPagerAdapter.setMediaObject(new Book());
+                    this.currentObject = null;
                     this.reload();
                     break;
                 case R.id.cmdSave:
@@ -101,6 +102,7 @@ public class MainBooksFragment extends ParentFragment {
                         if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
                             this.changeMode(false, false);
+                            this.bookPagerAdapter.setMediaObject(new Book());
                             this.currentObject = null;
                             this.reload();
                         }

@@ -88,6 +88,7 @@ public class MainMoviesFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     this.changeMode(false, false);
+                    this.moviePagerAdapter.setMediaObject(new Movie());
                     currentObject = null;
                     this.reload();
                     break;
@@ -100,6 +101,7 @@ public class MainMoviesFragment extends ParentFragment {
                         if(this.validator.checkDuplicatedEntry(movie.getTitle(), movie.getId(), this.lvMovies.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
                             this.changeMode(false, false);
+                            this.moviePagerAdapter.setMediaObject(new Movie());
                             this.currentObject = null;
                             this.reload();
                         }

@@ -88,6 +88,7 @@ public class MainMusicFragment extends ParentFragment {
                     break;
                 case R.id.cmdCancel:
                     this.changeMode(false, false);
+                    this.albumPagerAdapter.setMediaObject(new Album());
                     currentObject = null;
                     this.reload();
                     break;
@@ -100,6 +101,7 @@ public class MainMusicFragment extends ParentFragment {
                         if(this.validator.checkDuplicatedEntry(album.getTitle(), album.getId(), this.lvAlbums.getAdapter().getList())) {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
                             this.changeMode(false, false);
+                            this.albumPagerAdapter.setMediaObject(new Album());
                             this.currentObject = null;
                             this.reload();
                         }

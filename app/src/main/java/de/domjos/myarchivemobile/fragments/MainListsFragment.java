@@ -105,18 +105,18 @@ public class MainListsFragment extends ParentFragment {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
                     this.changeMode(true, false);
-                    setObject(new MediaList());
+                    this.setObject(new MediaList());
                     this.mediaList = null;
                     break;
                 case R.id.cmdEdit:
                     if(mediaList != null) {
                         this.changeMode(true, true);
-                        setObject(mediaList);
+                        this.setObject(mediaList);
                     }
                     break;
                 case R.id.cmdCancel:
                     changeMode(false, false);
-                    setObject(new MediaList());
+                    this.setObject(new MediaList());
                     this.mediaList = null;
                     break;
                 case R.id.cmdSave:
@@ -129,8 +129,8 @@ public class MainListsFragment extends ParentFragment {
                             if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
                                 MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
                                 this.changeMode(false, false);
-                                this.mediaList = null;
                                 this.setObject(new MediaList());
+                                this.mediaList = null;
                                 this.reload();
                             }
                         }
