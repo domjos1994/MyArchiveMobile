@@ -24,9 +24,16 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -37,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -154,10 +162,6 @@ public class ControlsHelper {
         return ControlsHelper.getAllMediaItems(context, mp);
     }
 
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter) {
-        return ControlsHelper.getAllMediaItems(context, mediaFilter, "");
-    }
-
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter, String extendedWhere) {
         String where = "";
 
@@ -237,28 +241,44 @@ public class ControlsHelper {
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp)) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                if(baseMediaObject.getCover() != null) {
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                } else {
+                    baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_book));
+                }
                 baseDescriptionObject.setDescription(context.getString(R.string.book));
                 baseDescriptionObject.setObject(baseMediaObject);
                 baseDescriptionObjects.add(baseDescriptionObject);
             }
             if(baseMediaObject instanceof Movie) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                if(baseMediaObject.getCover() != null) {
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                } else {
+                    baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_movie));
+                }
                 baseDescriptionObject.setDescription(context.getString(R.string.movie));
                 baseDescriptionObject.setObject(baseMediaObject);
                 baseDescriptionObjects.add(baseDescriptionObject);
             }
             if(baseMediaObject instanceof Album) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                if(baseMediaObject.getCover() != null) {
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                } else {
+                    baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_music));
+                }
                 baseDescriptionObject.setDescription(context.getString(R.string.album));
                 baseDescriptionObject.setObject(baseMediaObject);
                 baseDescriptionObjects.add(baseDescriptionObject);
             }
             if(baseMediaObject instanceof Game) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                baseDescriptionObject.setCover(baseMediaObject.getCover());
+                if(baseMediaObject.getCover() != null) {
+                    baseDescriptionObject.setCover(baseMediaObject.getCover());
+                } else {
+                    baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_game));
+                }
                 baseDescriptionObject.setDescription(context.getString(R.string.game));
                 baseDescriptionObject.setObject(baseMediaObject);
                 baseDescriptionObjects.add(baseDescriptionObject);
@@ -326,5 +346,19 @@ public class ControlsHelper {
             }
             ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = editMode ? 10 : pagerWeight;
         }
+    }
+
+    private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (DrawableCompat.wrap(Objects.requireNonNull(drawable))).mutate();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(Objects.requireNonNull(drawable).getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }
