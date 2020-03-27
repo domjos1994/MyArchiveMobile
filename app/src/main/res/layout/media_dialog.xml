@@ -34,7 +34,7 @@
         android:textStyle="bold"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true" />
 
     <Spinner
         android:id="@+id/spWebServices"
@@ -58,7 +58,8 @@
             android:hint="@string/sys_search"
             android:inputType="text"
             android:autofillHints="@string/sys_search"
-            tools:targetApi="o" />
+            tools:targetApi="o"
+            android:imeOptions="actionDone"/>
         <ImageButton
             style="@style/imageButton"
             android:id="@+id/cmdSearch"

@@ -23,10 +23,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 
 import androidx.fragment.app.DialogFragment;
@@ -112,6 +114,13 @@ public class MediaDialog extends DialogFragment {
         if(!this.search.trim().isEmpty()) {
             this.reload(0);
         }
+
+        this.txtSearch.setOnEditorActionListener((textView, i, event) -> {
+            if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (i == EditorInfo.IME_ACTION_DONE)) {
+                this.cmdSearch.callOnClick();
+            }
+            return false;
+        });
 
         this.cmdSearch.setOnClickListener(view -> {
             this.reload(this.spWebservices.getSelectedItemPosition());
