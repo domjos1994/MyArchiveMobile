@@ -146,6 +146,7 @@ public class MainApiFragment extends ParentFragment {
                 } else {
                     this.importToDatabase();
                 }
+                MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.api)), R.mipmap.ic_launcher_round, this.getActivity());
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }
