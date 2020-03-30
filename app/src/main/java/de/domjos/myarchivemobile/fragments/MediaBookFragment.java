@@ -24,12 +24,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.angads25.filepicker.view.FilePickerDialog;
+
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -38,12 +42,14 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaBookNumberOfPages, txtMediaBookPath, txtMediaBookLastRead;
     private EditText txtMediaBookEdition, txtMediaBookTopics;
     private Spinner spMediaBookType;
     private CustomSpinnerAdapter<String> typeAdapter;
+    private ImageButton cmdMediaBookPath;
 
     private Book book;
 
@@ -57,6 +63,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaBookNumberOfPages = view.findViewById(R.id.txtMediaBookNumberOfPages);
         this.txtMediaBookPath = view.findViewById(R.id.txtMediaBookPath);
+        this.cmdMediaBookPath = view.findViewById(R.id.cmdMediaBookPath);
 
         this.txtMediaBookEdition = view.findViewById(R.id.txtMediaBookEdition);
         this.txtMediaBookTopics = view.findViewById(R.id.txtMediaBookTopics);
@@ -69,6 +76,20 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         }
         this.spMediaBookType.setAdapter(this.typeAdapter);
         this.typeAdapter.notifyDataSetChanged();
+
+        this.cmdMediaBookPath.setOnClickListener(event -> {
+            List<String> filter = Arrays.asList("PDF", "pdf");
+            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, Objects.requireNonNull(this.getActivity()));
+            dialog.setDialogSelectionListener(files -> {
+                if ( files != null) {
+                    if(files.length != 0) {
+                        txtMediaBookPath.setText(files[0]);
+                        spMediaBookType.setSelection(this.typeAdapter.getPosition(Book.Type.eBook.name()));
+                    }
+                }
+            });
+            dialog.show();
+        });
 
         this.changeMode(false);
     }
@@ -120,6 +141,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaBookEdition.setEnabled(editMode);
         this.txtMediaBookTopics.setEnabled(editMode);
         this.txtMediaBookLastRead.setEnabled(editMode);
+        this.cmdMediaBookPath.setEnabled(editMode);
     }
 
     @Override

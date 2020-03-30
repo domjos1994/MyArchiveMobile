@@ -35,6 +35,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaBookFragment;
+    private AbstractFragment<BaseMediaObject> mediaPlayerFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
@@ -49,6 +50,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment = new MediaCoverFragment<>();
         this.mediaGeneralFragment = new MediaGeneralFragment();
         this.mediaBookFragment = new MediaBookFragment();
+        this.mediaPlayerFragment = new MediaPlayerFragment();
         this.mediaPersonsCompaniesFragment = new MediaPersonsCompaniesFragment();
         this.mediaRatingFragment = new MediaRatingFragment();
         this.mediaCustomFieldFragment = new MediaCustomFieldFragment();
@@ -56,6 +58,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.setAbstractPagerAdapter(this);
         this.mediaGeneralFragment.setAbstractPagerAdapter(this);
         this.mediaBookFragment.setAbstractPagerAdapter(this);
+        this.mediaPlayerFragment.setAbstractPagerAdapter(this);
         this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
         this.mediaRatingFragment.setAbstractPagerAdapter(this);
         this.mediaCustomFieldFragment.setAbstractPagerAdapter(this);
@@ -84,8 +87,10 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
             case 3:
                 return this.mediaBookFragment;
             case 4:
-                return this.mediaRatingFragment;
+                return this.mediaPlayerFragment;
             case 5:
+                return this.mediaRatingFragment;
+            case 6:
                 return this.mediaCustomFieldFragment;
             default:
                 return new Fragment();
@@ -111,9 +116,12 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
                 this.mediaBookFragment = (MediaBookFragment) createdFragment;
                 return this.mediaBookFragment;
             case 4:
+                this.mediaPlayerFragment = (MediaPlayerFragment) createdFragment;
+                return this.mediaPlayerFragment;
+            case 5:
                 this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
                 return this.mediaRatingFragment;
-            case 5:
+            case 6:
                 this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
                 return this.mediaCustomFieldFragment;
             default:
@@ -126,6 +134,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaGeneralFragment.changeMode(editMode);
         this.mediaCoverFragment.changeMode(editMode);
         this.mediaBookFragment.changeMode(editMode);
+        this.mediaPlayerFragment.changeMode(editMode);
         this.mediaPersonsCompaniesFragment.changeMode(editMode);
         this.mediaRatingFragment.changeMode(editMode);
         this.mediaCustomFieldFragment.changeMode(editMode);
@@ -137,6 +146,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.setMediaObject(book);
         this.mediaPersonsCompaniesFragment.setMediaObject(book);
         this.mediaBookFragment.setMediaObject(book);
+        this.mediaPlayerFragment.setMediaObject(book);
         this.mediaRatingFragment.setMediaObject(book);
         this.mediaCustomFieldFragment.setMediaObject(book);
     }
@@ -167,6 +177,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaBookFragment.onActivityResult(requestCode, resultCode, data);
+        this.mediaPlayerFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
         this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
@@ -178,7 +189,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
 
     @Override
     public int getCount() {
-        return 6;
+        return 7;
     }
 
     @Override
@@ -189,6 +200,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         validator = this.mediaPersonsCompaniesFragment.initValidation(validator);
         validator = this.mediaRatingFragment.initValidation(validator);
         validator = this.mediaCustomFieldFragment.initValidation(validator);
+        validator = this.mediaPlayerFragment.initValidation(validator);
         return this.mediaBookFragment.initValidation(validator);
     }
 }

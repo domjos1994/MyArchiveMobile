@@ -49,7 +49,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchivemobile.helper.PDFHelper;
+import de.domjos.myarchivemobile.helper.PDFWriterHelper;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -184,8 +184,8 @@ public class MainApiFragment extends ParentFragment {
         if(chkApiGames.isChecked()) {
             baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames(""));
         }
-        PDFHelper pdfHelper = new PDFHelper(path, Objects.requireNonNull(this.getActivity()));
-        pdfHelper.execute(baseMediaObjects);
+        PDFWriterHelper pdfWriterHelper = new PDFWriterHelper(path, Objects.requireNonNull(this.getActivity()));
+        pdfWriterHelper.execute(baseMediaObjects);
     }
 
     private void exportToDatabase() throws Exception {

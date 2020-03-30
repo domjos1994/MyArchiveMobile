@@ -39,14 +39,13 @@ import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.services.PDFService;
 import de.domjos.myarchivemobile.R;
 
-public class PDFHelper {
+public class PDFWriterHelper {
     private PDFService pdfService;
     private Context context;
 
     private final int headerColor, rowColor;
 
-    @SuppressWarnings("deprecation")
-    public PDFHelper(String file, Context context) {
+    public PDFWriterHelper(String file, Context context) {
         this.context = context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             this.headerColor = context.getColor(R.color.colorPrimaryDark);

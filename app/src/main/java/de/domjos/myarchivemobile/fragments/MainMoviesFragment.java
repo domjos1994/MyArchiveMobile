@@ -144,7 +144,7 @@ public class MainMoviesFragment extends ParentFragment {
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         this.viewPager = view.findViewById(R.id.viewPager);
-        this.viewPager.setOffscreenPageLimit(5);
+        this.viewPager.setOffscreenPageLimit(6);
         tabLayout.setupWithViewPager(this.viewPager);
 
         this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(Objects.requireNonNull(this.getActivity()).getSupportFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
@@ -155,8 +155,9 @@ public class MainMoviesFragment extends ParentFragment {
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_person);
         Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.icon_movie);
-        Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.icon_stars);
-        Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.icon_field);
+        Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.icon_video);
+        Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.icon_stars);
+        Objects.requireNonNull(tabLayout.getTabAt(6)).setIcon(R.drawable.icon_field);
 
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
