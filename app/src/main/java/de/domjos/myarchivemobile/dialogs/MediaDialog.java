@@ -223,6 +223,11 @@ public class MediaDialog extends DialogFragment {
                                     });
                                     igdbTask.execute(id);
                                 }
+                            } else {
+                                MessageHelper.printMessage(validator.getResult(), R.mipmap.ic_launcher_round, this.activity);
+                                this.cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                this.cmdSave.setTag(getString(R.string.sys_save));
+                                MediaDialog.this.setCancelable(true);
                             }
                         } catch (Exception ex) {
                             MessageHelper.printException(ex, icon, this.activity);
