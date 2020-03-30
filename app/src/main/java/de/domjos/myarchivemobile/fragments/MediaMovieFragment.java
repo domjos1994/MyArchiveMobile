@@ -23,22 +23,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.angads25.filepicker.view.FilePickerDialog;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     private EditText txtMediaMovieLength, txtMediaMoviePath, txtMediaMovieLastSeen;
+    private ImageButton cmdMediaMoviePath;
     private Spinner spMediaMovieType;
     private CustomSpinnerAdapter<String> typeAdapter;
 
@@ -54,6 +62,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtMediaMovieLength = view.findViewById(R.id.txtMediaMovieLength);
         this.txtMediaMoviePath = view.findViewById(R.id.txtMediaMoviePath);
+        this.cmdMediaMoviePath = view.findViewById(R.id.cmdMediaMoviePath);
         this.spMediaMovieType = view.findViewById(R.id.spMediaMovieType);
         this.txtMediaMovieLastSeen = view.findViewById(R.id.txtMediaMovieLastSeen);
 
@@ -63,6 +72,20 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         }
         this.spMediaMovieType.setAdapter(this.typeAdapter);
         this.typeAdapter.notifyDataSetChanged();
+
+        this.cmdMediaMoviePath.setOnClickListener(event -> {
+            List<String> filter = Arrays.asList("MP4", "mp4", "AVI", "avi");
+            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, Objects.requireNonNull(this.getActivity()));
+            dialog.setDialogSelectionListener(files -> {
+                if ( files != null) {
+                    if(files.length != 0) {
+                        txtMediaMoviePath.setText(files[0]);
+                        spMediaMovieType.setSelection(this.typeAdapter.getPosition(Movie.Type.Virtual.name()));
+                    }
+                }
+            });
+            dialog.show();
+        });
 
         this.changeMode(false);
     }
@@ -106,6 +129,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     public void changeMode(boolean editMode) {
         this.txtMediaMovieLength.setEnabled(editMode);
         this.txtMediaMoviePath.setEnabled(editMode);
+        this.cmdMediaMoviePath.setEnabled(editMode);
         this.spMediaMovieType.setEnabled(editMode);
         this.txtMediaMovieLastSeen.setEnabled(editMode);
     }

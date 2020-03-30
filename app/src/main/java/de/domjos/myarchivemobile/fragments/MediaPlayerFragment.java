@@ -18,6 +18,8 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ScaleGestureDetector;
@@ -27,9 +29,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.File;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -45,9 +53,10 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
     private BaseMediaObject baseMediaObject;
 
     private LinearLayout zoomArea;
-    private ImageButton cmdZoomMinus, cmdZoomPlus, cmdNext, cmdPrevious;
+    private ImageButton cmdZoomMinus, cmdZoomPlus, cmdNext, cmdStop, cmdPlay, cmdPrevious;
     private TextView lblZoom, lblCurrent;
     private ImageView ivCurrent;
+    private VideoView vvCurrent;
 
     private int current, max;
     private float mScaleFactor = 1.0f;
@@ -67,6 +76,8 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
         this.cmdZoomMinus = view.findViewById(R.id.cmdPdfZoomMinus);
         this.cmdZoomPlus = view.findViewById(R.id.cmdPdfZoomPlus);
         this.cmdNext = view.findViewById(R.id.cmdNext);
+        this.cmdStop = view.findViewById(R.id.cmdStop);
+        this.cmdPlay = view.findViewById(R.id.cmdPlay);
         this.cmdPrevious = view.findViewById(R.id.cmdPrevious);
         this.lblZoom = view.findViewById(R.id.lblPdfZoom);
         this.lblCurrent = view.findViewById(R.id.lblCurrent);
@@ -78,10 +89,27 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             return false;
         });
 
+        this.vvCurrent = view.findViewById(R.id.vvCurrent);
+        this.vvCurrent.setOnPreparedListener(mediaPlayer -> {
+            this.updateDurationLabel();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    Objects.requireNonNull(MediaPlayerFragment.this.getActivity()).runOnUiThread(()->updateDurationLabel());
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(task, 1000, 1000);
+        });
+
         this.cmdNext.setOnClickListener(event -> {
             if(this.type == Type.Book) {
                 if(this.current < this.max) {
                     this.openPDF(++this.current);
+                }
+            } else {
+                if(this.vvCurrent.getCurrentPosition() + 10000 < this.vvCurrent.getDuration()) {
+                    this.vvCurrent.seekTo(this.vvCurrent.getCurrentPosition() + 10000);
                 }
             }
         });
@@ -90,6 +118,33 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             if(this.type == Type.Book) {
                 if (this.current > 1) {
                     this.openPDF(--this.current);
+                }
+            } else {
+                if (this.vvCurrent.getCurrentPosition() > 10000) {
+                    this.vvCurrent.seekTo(this.vvCurrent.getCurrentPosition() - 10000);
+                }
+            }
+        });
+
+        this.cmdPlay.setOnClickListener(event -> {
+            if(this.type == Type.Book) {
+                this.openPDF(1);
+            } else {
+                this.vvCurrent.setVideoPath(this.path);
+                this.vvCurrent.start();
+            }
+        });
+
+        this.cmdStop.setOnClickListener(event -> {
+            if(this.type == Type.Book) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    if(this.pdfReaderHelper != null) {
+                        this.pdfReaderHelper.close();
+                    }
+                }
+            } else {
+                if(this.vvCurrent.isPlaying()) {
+                    this.vvCurrent.stopPlayback();
                 }
             }
         });
@@ -107,12 +162,13 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             this.path = ((Book) baseMediaObject).getPath();
             this.zoomArea.setVisibility(View.VISIBLE);
             this.ivCurrent.setVisibility(View.VISIBLE);
-            this.openPDF(1);
+            this.vvCurrent.setVisibility(View.GONE);
         } else if(this.baseMediaObject instanceof Movie) {
             this.type = Type.Movie;
             this.path = ((Movie) baseMediaObject).getPath();
             this.zoomArea.setVisibility(View.GONE);
             this.ivCurrent.setVisibility(View.GONE);
+            this.vvCurrent.setVisibility(View.VISIBLE);
         }
     }
 
@@ -126,12 +182,21 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
         return this.baseMediaObject;
     }
 
+    private void updateDurationLabel() {
+        float duration = this.vvCurrent.getDuration() / 1000.0f;
+        float position = this.vvCurrent.getCurrentPosition() / 1000.0f;
+        String content = String.format("%ss / %ss", Math.round(position), Math.round(duration));
+        this.lblCurrent.setText(content);
+    }
+
     @Override
     public void changeMode(boolean editMode) {
         this.cmdZoomMinus.setEnabled(editMode);
         this.cmdZoomPlus.setEnabled(editMode);
         this.cmdNext.setEnabled(editMode);
         this.cmdPrevious.setEnabled(editMode);
+        this.cmdStop.setEnabled(editMode);
+        this.cmdPlay.setEnabled(editMode);
     }
 
     @Override
@@ -152,6 +217,13 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
 
                 this.mScaleFactor = 1.0f;
                 this.scale(this.mScaleFactor);
+            } else {
+                File file = new File(this.path);
+                Intent target = new Intent(Intent.ACTION_VIEW);
+                target.setDataAndType(Uri.fromFile(file),"application/pdf");
+                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                Intent intent = Intent.createChooser(target, "Open File");
+                startActivity(intent);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());

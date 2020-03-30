@@ -61,6 +61,14 @@
         android:layout_below="@+id/zoomArea"
         android:layout_above="@+id/controls"
         android:contentDescription="@string/media_general"/>
+    <VideoView
+        android:id="@+id/vvCurrent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/zoomArea"
+        android:layout_above="@+id/controls"
+        android:contentDescription="@string/media_general"
+        android:visibility="gone"/>
     <LinearLayout
         android:id="@+id/controls"
         android:layout_width="match_parent"
@@ -72,9 +80,17 @@
             android:id="@+id/cmdPrevious"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_previous"
+            style="@style/imageButton"/>
+        <ImageButton
+            android:id="@+id/cmdStop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/sys_search"
+            app:srcCompat="@drawable/icon_stop"
             style="@style/imageButton"/>
         <TextView
             android:id="@+id/lblCurrent"
@@ -86,10 +102,18 @@
             android:textSize="14sp"
             android:textStyle="bold"/>
         <ImageButton
+            android:id="@+id/cmdPlay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/sys_search"
+            app:srcCompat="@drawable/icon_play"
+            style="@style/imageButton"/>
+        <ImageButton
             android:id="@+id/cmdNext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_next"
             style="@style/imageButton"/>
