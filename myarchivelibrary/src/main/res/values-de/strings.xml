@@ -19,6 +19,11 @@
 <resources>
     <string name="scanner_codes">Codes</string>
 
+    <string name="service_type_movies">Filme</string>
+    <string name="service_type_music">Musik</string>
+    <string name="service_type_books">Bücher</string>
+    <string name="service_type_games">Spiele</string>
+
     <string name="service_google_search_content">In Google Books suchen…</string>
 
     <string name="service_ean_data_search_content">In EANData suchen…</string>

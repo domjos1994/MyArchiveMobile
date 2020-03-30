@@ -20,6 +20,11 @@
 
     <string name="scanner_codes">Codes</string>
 
+    <string name="service_type_movies">Movies</string>
+    <string name="service_type_music">Music</string>
+    <string name="service_type_books">Books</string>
+    <string name="service_type_games">Games</string>
+
     <string name="service_google_search" translatable="false">Google Books</string>
     <string name="service_google_search_content">Search in Google Books…</string>
 

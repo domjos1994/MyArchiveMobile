@@ -92,6 +92,11 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
     }
 
     @Override
+    public String getType() {
+        return super.CONTEXT.getString(R.string.service_type_music);
+    }
+
+    @Override
     public String getUrl() {
         return "https://theaudiodb.com";
     }

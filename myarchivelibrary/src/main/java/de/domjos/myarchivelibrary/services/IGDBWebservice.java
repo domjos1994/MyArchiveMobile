@@ -95,6 +95,11 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
     }
 
     @Override
+    public String getType() {
+        return super.CONTEXT.getString(R.string.service_type_games);
+    }
+
+    @Override
     public String getUrl() {
         return "https://www.igdb.com";
     }

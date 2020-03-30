@@ -46,9 +46,11 @@ public abstract class TitleWebservice<T extends BaseMediaObject> extends JSONSer
 
     public abstract String getUrl();
 
+    public abstract String getType();
+
     @Override
     @NonNull
     public String toString() {
-        return this.getTitle();
+        return this.getType();
     }
 }

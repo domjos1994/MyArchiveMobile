@@ -134,6 +134,11 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
     }
 
     @Override
+    public String getType() {
+        return super.CONTEXT.getString(R.string.service_type_movies);
+    }
+
+    @Override
     public String getUrl() {
         return "https://imdb.org";
     }

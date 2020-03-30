@@ -108,6 +108,11 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
     }
 
     @Override
+    public String getType() {
+        return super.CONTEXT.getString(R.string.service_type_books);
+    }
+
+    @Override
     public String getUrl() {
         return "https://books.google.com";
     }
