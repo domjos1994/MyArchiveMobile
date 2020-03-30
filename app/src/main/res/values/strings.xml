@@ -101,6 +101,7 @@
     <string name="media_general_price">Price</string>
     <string name="media_general_category">Category</string>
     <string name="media_general_tags">Tags</string>
+    <string name="media_general_empty">Field is empty!</string>
 
     <string name="media_rating_web">Web-Rating</string>
     <string name="media_rating_own">Own Rating</string>

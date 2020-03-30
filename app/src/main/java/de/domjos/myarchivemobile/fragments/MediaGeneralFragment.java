@@ -138,12 +138,16 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         });
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
+            Context ctx = Objects.requireNonNull(this.getActivity());
             try {
                 String type;
                 String search = this.txtMediaGeneralTitle.getText().toString();
                 TitleWebservice<? extends BaseMediaObject> titleWebservice;
-                Context ctx = this.getContext();
                 Settings settings = MainActivity.GLOBALS.getSettings();
+
+                if(search.trim().isEmpty()) {
+                    throw new Exception(ctx.getString(R.string.media_general_empty));
+                }
 
                 if(this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment) {
                     type = this.getString(R.string.movie);
@@ -162,59 +166,65 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
                 mediaDialog.show(this.getParentFragmentManager(), "dialog");
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, ctx);
             }
         });
 
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
+            Activity ctx = Objects.requireNonNull(this.getActivity());
             try {
                 int icon = R.mipmap.ic_launcher_round;
                 boolean notifications = MainActivity.GLOBALS.getSettings().isNotifications();
+                String search = this.txtMediaGeneralCode.getText().toString();
+
+                if(search.trim().isEmpty()) {
+                    throw new Exception(ctx.getString(R.string.media_general_empty));
+                }
 
                 if((this.abstractPagerAdapter.getItem(3) instanceof MediaBookFragment)) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), notifications, icon, "", MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(ctx, notifications, icon, "", MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                     List<Book> books = googleBooksTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if (books != null && !books.isEmpty()) {
                         Book book = books.get(0);
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), notifications, icon);
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(ctx, notifications, icon);
                         book.setPersons(wikiDataPersonTask.execute(book.getPersons().toArray(new Person[]{})).get());
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), notifications, icon);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(ctx, notifications, icon);
                         book.setCompanies(wikiDataCompanyTask.execute(book.getCompanies().toArray(new Company[]{})).get());
 
                         this.abstractPagerAdapter.setMediaObject(book);
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaMovieFragment)) {
-                    EANDataMovieTask eanDataTask = new EANDataMovieTask(this.getActivity(), notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
+                    EANDataMovieTask eanDataTask = new EANDataMovieTask(ctx, notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Movie> movies = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(movies != null && !movies.isEmpty()) {
                         Movie movie = movies.get(0);
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), notifications, icon);
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(ctx, notifications, icon);
                         movie.setPersons(wikiDataPersonTask.execute(movie.getPersons().toArray(new Person[]{})).get());
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), notifications, icon);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(ctx, notifications, icon);
                         movie.setCompanies(wikiDataCompanyTask.execute(movie.getCompanies().toArray(new Company[]{})).get());
 
                         this.abstractPagerAdapter.setMediaObject(movie);
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaAlbumFragment)) {
-                    EANDataAlbumTask eanDataTask = new EANDataAlbumTask(this.getActivity(), notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
+                    EANDataAlbumTask eanDataTask = new EANDataAlbumTask(ctx, notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Album> albums = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(albums != null && !albums.isEmpty()) {
                         Album album = albums.get(0);
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), notifications, icon);
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(ctx, notifications, icon);
                         album.setPersons(wikiDataPersonTask.execute(album.getPersons().toArray(new Person[]{})).get());
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), notifications, icon);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(ctx, notifications, icon);
                         album.setCompanies(wikiDataCompanyTask.execute(album.getCompanies().toArray(new Company[]{})).get());
 
                         this.abstractPagerAdapter.setMediaObject(album);
                     }
                 } else if((this.abstractPagerAdapter.getItem(3) instanceof MediaGameFragment)) {
-                    EANDataGameTask eanDataTask = new EANDataGameTask(this.getActivity(), notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
+                    EANDataGameTask eanDataTask = new EANDataGameTask(ctx, notifications, icon, MainActivity.GLOBALS.getSettings().getEANDataKey());
                     List<Game> games = eanDataTask.execute(this.txtMediaGeneralCode.getText().toString()).get();
                     if(games != null && !games.isEmpty()) {
                         Game game = games.get(0);
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), notifications, icon);
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(ctx, notifications, icon);
                         game.setPersons(wikiDataPersonTask.execute(game.getPersons().toArray(new Person[]{})).get());
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(),notifications, icon);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(ctx,notifications, icon);
                         game.setCompanies(wikiDataCompanyTask.execute(game.getCompanies().toArray(new Company[]{})).get());
 
                         this.abstractPagerAdapter.setMediaObject(game);
