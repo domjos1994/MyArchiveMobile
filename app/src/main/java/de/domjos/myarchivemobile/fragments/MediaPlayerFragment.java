@@ -18,8 +18,6 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ScaleGestureDetector;
@@ -34,7 +32,6 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +41,7 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
+import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.helper.PDFReaderHelper;
 
@@ -130,8 +128,18 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             if(this.type == Type.Book) {
                 this.openPDF(1);
             } else {
-                this.vvCurrent.setVideoPath(this.path);
-                this.vvCurrent.start();
+                if(this.path.toLowerCase().endsWith("mp4") || this.path.toLowerCase().endsWith("avi")) {
+                    this.vvCurrent.setVideoPath(this.path);
+                    this.vvCurrent.start();
+                } else {
+                    if(this.path.toLowerCase().contains("youtu")) {
+                        if(!IntentHelper.startYoutubeIntent(this.path, Objects.requireNonNull(this.getActivity()))) {
+                            IntentHelper.startBrowserIntent(this.path, Objects.requireNonNull(this.getActivity()));
+                        }
+                    } else {
+                        IntentHelper.startBrowserIntent(this.path, Objects.requireNonNull(this.getActivity()));
+                    }
+                }
             }
         });
 
@@ -218,12 +226,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
                 this.mScaleFactor = 1.0f;
                 this.scale(this.mScaleFactor);
             } else {
-                File file = new File(this.path);
-                Intent target = new Intent(Intent.ACTION_VIEW);
-                target.setDataAndType(Uri.fromFile(file),"application/pdf");
-                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                Intent intent = Intent.createChooser(target, "Open File");
-                startActivity(intent);
+                IntentHelper.startPDFIntent(Objects.requireNonNull(this.getActivity()), this.path);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());

@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Objects;
@@ -65,5 +66,31 @@ public class IntentHelper {
             return (Bitmap) Objects.requireNonNull(intent.getExtras()).get("data");
         }
         return null;
+    }
+
+    public static void startPDFIntent(Activity activity, String path) {
+        File file = new File(path);
+        Intent target = new Intent(Intent.ACTION_VIEW);
+        target.setDataAndType(Uri.fromFile(file),"application/pdf");
+        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        Intent intent = Intent.createChooser(target, "Open File");
+        activity.startActivity(intent);
+    }
+
+    public static boolean startYoutubeIntent(String link, Activity activity) {
+        boolean install = false;
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(link));
+        try {
+            intent.setClassName("com.google.android.youtube", "com.google.android.youtube.WatchActivity");
+            activity.startActivity(intent);
+            install = true;
+        } catch (Exception ignored) {}
+        return install;
+    }
+
+    public static void startBrowserIntent(String link, Activity activity) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(link));
+        activity.startActivity(i);
     }
 }
