@@ -50,6 +50,7 @@ public class PDFService {
     private final Map<String, Integer> positions;
     private int icon;
     private Context context;
+    private Rectangle size;
 
     public PDFService(String file, int icon, Context context) {
         this.fonts = new LinkedHashMap<>();
@@ -77,6 +78,7 @@ public class PDFService {
             PdfWriter pdfWriter = PdfWriter.getInstance(this.document, new FileOutputStream(file));
             pdfWriter.setPageEvent(new PDFService.HeaderFooter(PDFService.P));
             this.document.open();
+            this.size = this.document.getPageSize();
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.icon, this.context);
         }
@@ -84,7 +86,7 @@ public class PDFService {
 
     public void addHeadPage(byte[] icon, String title, String subTitle) {
         try {
-            this.addParagraph(title, PDFService.H1, PDFService.CENTER, 40f);
+            this.addParagraph(title, PDFService.H3, PDFService.CENTER, 40f);
             this.addImage(icon, PDFService.CENTER, 10f);
             this.addParagraph(subTitle, PDFService.H3, PDFService.CENTER, 30f);
             this.newPage();
@@ -148,7 +150,22 @@ public class PDFService {
     public void addImage(byte[] imageContent, String position, float padding) {
         try {
             Image image = Image.getInstance(imageContent);
+            float imgWidth = image.getWidth();
+            float imgHeight = image.getHeight();
+            float maxWidth = this.size.getWidth() - (2 * padding);
+            float maxHeight = this.size.getHeight() - (padding + 90);
+
+            if(imgWidth > maxWidth) {
+                imgWidth = maxWidth;
+            }
+            if(imgHeight > maxHeight) {
+                imgHeight = maxHeight;
+            }
+
+            image.scaleAbsolute(imgWidth, imgHeight);
             image.setPaddingTop(padding);
+            image.setIndentationLeft(padding);
+            image.setIndentationRight(padding);
 
             Integer pos = this.positions.get(position);
             if(pos != null) {

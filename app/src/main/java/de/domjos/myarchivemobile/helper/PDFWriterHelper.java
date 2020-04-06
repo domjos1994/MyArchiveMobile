@@ -86,69 +86,105 @@ public class PDFWriterHelper {
     }
 
     private void addMediaObject(BaseMediaObject baseMediaObject) {
-        this.pdfService.addParagraph(baseMediaObject.getTitle(), PDFService.H1, PDFService.CENTER, 20f);
-        if(baseMediaObject.getCover() != null) {
-            this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 10f);
-        }
-        this.pdfService.addParagraph(this.context.getString(R.string.media_general), PDFService.H3, PDFService.LEFT, 10f);
+        this.pdfService.addParagraph(baseMediaObject.getTitle(), PDFService.H4, PDFService.CENTER, 20f);
+        Map<String, Float> columns = new LinkedHashMap<>();
+        columns.put(this.context.getString(R.string.media_general), 200.0f);
+        columns.put("", 400.0f);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.context.getString(R.string.media_general_originalTitle)).append(": ").append(baseMediaObject.getOriginalTitle()).append("\n");
-        if(baseMediaObject.getReleaseDate() != null) {
-            stringBuilder.append(this.context.getString(R.string.media_general_releaseDate)).append(": ").append(ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), this.context.getString(R.string.sys_date_format))).append("\n");
+        List<List<String>> rows = new LinkedList<>();
+        if(!baseMediaObject.getOriginalTitle().trim().isEmpty()) {
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_originalTitle), baseMediaObject.getOriginalTitle()));
         }
-        stringBuilder.append(this.context.getString(R.string.media_general_price)).append(": ").append(baseMediaObject.getPrice()).append("\n");
-        stringBuilder.append(this.context.getString(R.string.media_general_code)).append(": ").append(baseMediaObject.getCode()).append("\n");
+        if(baseMediaObject.getReleaseDate() != null) {
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_releaseDate), ConvertHelper.convertDateToString(baseMediaObject.getReleaseDate(), this.context.getString(R.string.sys_date_format))));
+        }
+        if(baseMediaObject.getPrice() != 0.0) {
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_price), String.valueOf(baseMediaObject.getPrice())));
+        }
+        if(!baseMediaObject.getCode().trim().isEmpty()) {
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_code), baseMediaObject.getCode()));
+        }
         if(baseMediaObject.getCategory() != null) {
-            stringBuilder.append(this.context.getString(R.string.media_general_category)).append(": ").append(baseMediaObject.getCategory().getTitle()).append("\n");
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_category), baseMediaObject.getCategory().getTitle()));
         }
         if(baseMediaObject.getTags() != null && !baseMediaObject.getTags().isEmpty()) {
-            stringBuilder.append(this.context.getString(R.string.media_general_tags)).append(": ");
+            StringBuilder stringBuilder = new StringBuilder();
             for(BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
                 stringBuilder.append(baseDescriptionObject.getTitle()).append(", ");
             }
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_tags), stringBuilder.toString()));
         }
-        this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
+        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
+
+        if(baseMediaObject.getCover() != null) {
+            this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 10f);
+        }
     }
 
     private void addBook(Book book) {
-        StringBuilder stringBuilder = new StringBuilder();
+        Map<String, Float> columns = new LinkedHashMap<>();
+        columns.put(this.context.getString(R.string.book), 200.0f);
+        columns.put("", 400.0f);
+
+        List<List<String>> rows = new LinkedList<>();
         if(book.getType() != null) {
-            stringBuilder.append(this.context.getString(R.string.book_type)).append(": ").append(book.getType().toString()).append("\n");
+            rows.add(Arrays.asList(this.context.getString(R.string.book_type), book.getType().toString()));
         }
-        stringBuilder.append(this.context.getString(R.string.book_edition)).append(": ").append(book.getEdition()).append("\n");
-        stringBuilder.append(this.context.getString(R.string.book_topics)).append(": ").append(TextUtils.join(",", book.getTopics())).append("\n");
-        stringBuilder.append(this.context.getString(R.string.book_numberOfPages)).append(": ").append(book.getNumberOfPages()).append("\n");
-        stringBuilder.append(this.context.getString(R.string.book_path)).append(": ").append(book.getPath());
-        this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
+        if(!book.getEdition().trim().isEmpty()) {
+            rows.add(Arrays.asList(this.context.getString(R.string.book_edition), book.getEdition()));
+        }
+        if(!book.getTopics().isEmpty()) {
+            rows.add(Arrays.asList(this.context.getString(R.string.book_topics), TextUtils.join(",", book.getTopics())));
+        }
+        if(book.getNumberOfPages() != 0) {
+            rows.add(Arrays.asList(this.context.getString(R.string.book_numberOfPages), String.valueOf(book.getNumberOfPages())));
+        }
+        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
     }
 
     private void addMovie(Movie movie) {
-        StringBuilder stringBuilder = new StringBuilder();
+        Map<String, Float> columns = new LinkedHashMap<>();
+        columns.put(this.context.getString(R.string.movie), 200.0f);
+        columns.put("", 400.0f);
+
+        List<List<String>> rows = new LinkedList<>();
         if(movie.getType() != null) {
-            stringBuilder.append(this.context.getString(R.string.movie_type)).append(": ").append(movie.getType().toString()).append("\n");
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), movie.getType().toString()));
         }
-        stringBuilder.append(this.context.getString(R.string.movie_length)).append(": ").append(movie.getLength()).append("\n");
-        stringBuilder.append(this.context.getString(R.string.movie_path)).append(": ").append(movie.getPath());
-        this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
+        if(movie.getLength() != 0.0) {
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(movie.getLength())));
+        }
+        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
     }
 
     private void addGame(Game game) {
-        StringBuilder stringBuilder = new StringBuilder();
+        Map<String, Float> columns = new LinkedHashMap<>();
+        columns.put(this.context.getString(R.string.game), 200.0f);
+        columns.put("", 400.0f);
+
+        List<List<String>> rows = new LinkedList<>();
         if(game.getType() != null) {
-            stringBuilder.append(this.context.getString(R.string.game_type)).append(": ").append(game.getType().toString()).append("\n");
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), game.getType().toString()));
         }
-        stringBuilder.append(this.context.getString(R.string.game_length)).append(": ").append(game.getLength()).append("\n");
-        this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
+        if(game.getLength() != 0.0) {
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(game.getLength())));
+        }
+        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
     }
 
     private void addAlbum(Album album) {
-        StringBuilder stringBuilder = new StringBuilder();
+        Map<String, Float> columns = new LinkedHashMap<>();
+        columns.put(this.context.getString(R.string.album), 200.0f);
+        columns.put("", 400.0f);
+
+        List<List<String>> rows = new LinkedList<>();
         if(album.getType() != null) {
-            stringBuilder.append(this.context.getString(R.string.album_type)).append(": ").append(album.getType().toString()).append("\n");
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), album.getType().toString()));
         }
-        stringBuilder.append(this.context.getString(R.string.album_number)).append(": ").append(album.getNumberOfDisks()).append("\n");
-        this.pdfService.addParagraph(stringBuilder.toString(), PDFService.P, PDFService.LEFT, 10f);
+        if(album.getNumberOfDisks() != 0.0) {
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(album.getNumberOfDisks())));
+        }
+        this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
     }
 
     private void addPersons(List<Person> people) {
