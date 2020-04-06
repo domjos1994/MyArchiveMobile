@@ -1,6 +1,7 @@
 *.iml
 .gradle
 gradle
+gradlew*
 .idea
 .DS_Store
 build
@@ -9,3 +10,4 @@ captures
 .cxx
 release
 local.properties
+gradle.properties
