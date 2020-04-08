@@ -19,8 +19,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/barcode_scanner"
@@ -34,17 +33,22 @@
         android:hint="@string/scanner_codes"
         android:autofillHints="@string/scanner_codes"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:inputType="textMultiLine"
-        android:enabled="false"
+        android:singleLine="false"
+        android:overScrollMode="always"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
         android:layout_above="@+id/cmdScannerSave"
         tools:targetApi="o" />
 
     <ImageButton
         android:id="@+id/cmdScannerSave"
-        app:srcCompat="@android:drawable/ic_menu_save"
+        android:src="@drawable/save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:contentDescription="@string/module_name"/>
+        android:contentDescription="@string/module_name"
+        android:background="#454545"
+        style="?android:attr/buttonBarButtonStyle"/>
 </RelativeLayout>
