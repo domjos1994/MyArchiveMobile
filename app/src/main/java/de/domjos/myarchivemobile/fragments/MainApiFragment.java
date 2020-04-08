@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -50,10 +51,20 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.helper.PDFWriterHelper;
+import de.domjos.myarchivemobile.settings.Settings;
 
 import static android.app.Activity.RESULT_OK;
 
 public class MainApiFragment extends ParentFragment {
+    private final static String BOOKS = "books";
+    private final static String MOVIES = "movies";
+    private final static String GAMES = "games";
+    private final static String MUSIC = "music";
+    private final static String NAME = "name";
+    private final static String PATH = "path";
+    private final static String TYPE = "type";
+    private final static String FORMAT = "format";
+
     private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies;
     private EditText txtApiName, txtApiPath;
     private String[] typeArray, formatArray;
@@ -80,6 +91,11 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMusic = root.findViewById(R.id.chkApiMusic);
         this.chkApiGames = root.findViewById(R.id.chkApiGames);
 
+        try {
+            this.loadFromSettings(spApiFormat, spApiType);
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+        }
 
         ImageButton cmdApi = root.findViewById(R.id.cmdApi);
 
@@ -147,6 +163,7 @@ public class MainApiFragment extends ParentFragment {
                     this.importToDatabase();
                 }
                 MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.api)), R.mipmap.ic_launcher_round, this.getActivity());
+                this.saveSettings(spApiFormat, spApiType);
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }
@@ -220,5 +237,45 @@ public class MainApiFragment extends ParentFragment {
         Intent mainIntent = Intent.makeRestartActivityTask(componentName);
         context.startActivity(mainIntent);
         Runtime.getRuntime().exit(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadFromSettings(Spinner spFormat, Spinner spType) {
+        Settings settings = MainActivity.GLOBALS.getSettings();
+        this.chkApiBooks.setChecked(settings.getSetting(MainApiFragment.BOOKS, false));
+        this.chkApiMovies.setChecked(settings.getSetting(MainApiFragment.MOVIES, false));
+        this.chkApiMusic.setChecked(settings.getSetting(MainApiFragment.MUSIC, false));
+        this.chkApiGames.setChecked(settings.getSetting(MainApiFragment.GAMES, false));
+
+        this.txtApiName.setText(settings.getSetting(MainApiFragment.NAME, "export"));
+        this.txtApiPath.setText(settings.getSetting(MainApiFragment.PATH, "export"));
+
+        Adapter formatAdapter = spFormat.getAdapter();
+        if(formatAdapter instanceof CustomSpinnerAdapter) {
+            CustomSpinnerAdapter<String> spinnerAdapter = (CustomSpinnerAdapter<String>) formatAdapter;
+            String format = settings.getSetting(MainApiFragment.FORMAT, this.formatArray[0]);
+            spFormat.setSelection(spinnerAdapter.getPosition(format));
+        }
+
+        Adapter typeAdapter = spType.getAdapter();
+        if(typeAdapter instanceof CustomSpinnerAdapter) {
+            CustomSpinnerAdapter<String> spinnerAdapter = (CustomSpinnerAdapter<String>) typeAdapter;
+            String type = settings.getSetting(MainApiFragment.TYPE, this.typeArray[0]);
+            spType.setSelection(spinnerAdapter.getPosition(type));
+        }
+    }
+
+    private void saveSettings(Spinner spFormat, Spinner spType) {
+        Settings settings = MainActivity.GLOBALS.getSettings();
+        settings.setSetting(MainApiFragment.BOOKS, this.chkApiBooks.isChecked());
+        settings.setSetting(MainApiFragment.MOVIES, this.chkApiMovies.isChecked());
+        settings.setSetting(MainApiFragment.MUSIC, this.chkApiMusic.isChecked());
+        settings.setSetting(MainApiFragment.GAMES, this.chkApiGames.isChecked());
+
+        settings.setSetting(MainApiFragment.PATH, this.txtApiPath.getText().toString());
+        settings.setSetting(MainApiFragment.NAME, this.txtApiName.getText().toString());
+
+        settings.setSetting(MainApiFragment.FORMAT, spFormat.getSelectedItem().toString());
+        settings.setSetting(MainApiFragment.TYPE, spType.getSelectedItem().toString());
     }
 }

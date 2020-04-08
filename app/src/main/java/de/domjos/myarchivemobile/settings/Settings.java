@@ -22,48 +22,20 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import de.domjos.customwidgets.utils.Crypto;
-import de.domjos.myarchivemobile.R;
-
 public final class Settings {
     private SharedPreferences sharedPreferences;
     private SharedPreferences userPreferences;
-    private Crypto crypto;
 
-    public Settings(Context context) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public Settings(Context context) {
 
         this.sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.crypto = new Crypto(context, context.getString(R.string.sys_password));
-    }
-
-
-    public <T> T getSetting(String key, T defVal) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        return this.getSetting(key, defVal, false);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getSetting(String key, T defVal, boolean encrypted) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+    public <T> T getSetting(String key, T defVal) {
         if(defVal instanceof String) {
-            if(encrypted) {
-                String returnValue = this.sharedPreferences.getString(key, (String) defVal);
-                if(returnValue.equals(defVal)) {
-                    return (T) returnValue;
-                } else {
-                    return (T) this.crypto.decryptString(returnValue);
-                }
-            } else {
-                return (T) this.sharedPreferences.getString(key, (String) defVal);
-            }
+            return (T) this.sharedPreferences.getString(key, (String) defVal);
         }
         if(defVal instanceof Float) {
             return (T) (Float) this.sharedPreferences.getFloat(key, (Float) defVal);
@@ -81,18 +53,10 @@ public final class Settings {
         return null;
     }
 
-    public <T> void setSetting(String key, T object) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        this.setSetting(key, object, false);
-    }
-
-    public <T> void setSetting(String key, T object, boolean encrypted) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+    public <T> void setSetting(String key, T object) {
         SharedPreferences.Editor editor = this.sharedPreferences.edit();
         if(object instanceof String) {
-            if(encrypted) {
-                editor.putString(key, this.crypto.encryptString(((String) object)));
-            } else {
-                editor.putString(key, (String) object);
-            }
+            editor.putString(key, (String) object);
         }
         if(object instanceof Float) {
             editor.putFloat(key, (Float) object);
