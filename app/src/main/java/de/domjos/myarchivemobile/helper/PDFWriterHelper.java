@@ -87,6 +87,11 @@ public class PDFWriterHelper {
 
     private void addMediaObject(BaseMediaObject baseMediaObject) {
         this.pdfService.addParagraph(baseMediaObject.getTitle(), PDFService.H4, PDFService.CENTER, 20f);
+
+        if(baseMediaObject.getCover() != null) {
+            this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 256f, 256f, 10f);
+        }
+
         Map<String, Float> columns = new LinkedHashMap<>();
         columns.put(this.context.getString(R.string.media_general), 200.0f);
         columns.put("", 400.0f);
@@ -115,10 +120,6 @@ public class PDFWriterHelper {
             rows.add(Arrays.asList(this.context.getString(R.string.media_general_tags), stringBuilder.toString()));
         }
         this.pdfService.addTable(columns, rows, this.headerColor, this.rowColor, 10);
-
-        if(baseMediaObject.getCover() != null) {
-            this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 10f);
-        }
     }
 
     private void addBook(Book book) {

@@ -50,7 +50,6 @@ public class PDFService {
     private final Map<String, Integer> positions;
     private int icon;
     private Context context;
-    private Rectangle size;
 
     public PDFService(String file, int icon, Context context) {
         this.fonts = new LinkedHashMap<>();
@@ -78,7 +77,6 @@ public class PDFService {
             PdfWriter pdfWriter = PdfWriter.getInstance(this.document, new FileOutputStream(file));
             pdfWriter.setPageEvent(new PDFService.HeaderFooter(PDFService.P));
             this.document.open();
-            this.size = this.document.getPageSize();
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.icon, this.context);
         }
@@ -87,7 +85,7 @@ public class PDFService {
     public void addHeadPage(byte[] icon, String title, String subTitle) {
         try {
             this.addParagraph(title, PDFService.H3, PDFService.CENTER, 40f);
-            this.addImage(icon, PDFService.CENTER, 10f);
+            this.addImage(icon, PDFService.CENTER, 256f, 256f, 10f);
             this.addParagraph(subTitle, PDFService.H3, PDFService.CENTER, 30f);
             this.newPage();
         } catch (Exception ex) {
@@ -105,7 +103,8 @@ public class PDFService {
             }
 
             PdfPTable pdfPTable = new PdfPTable(columnSizes);
-            pdfPTable.setPaddingTop(padding);
+            pdfPTable.setSpacingBefore(padding);
+            pdfPTable.setSpacingAfter(padding);
             for(String columnHeader : columns.keySet()) {
                 PdfPCell cell = new PdfPCell(new Phrase(columnHeader, this.fonts.get(PDFService.H5)));
                 cell.setBackgroundColor(new BaseColor(headerColor));
@@ -140,32 +139,35 @@ public class PDFService {
                 paragraph.setAlignment(pos);
             }
 
-            paragraph.setPaddingTop(padding);
+            paragraph.setSpacingBefore(padding);
+            paragraph.setSpacingAfter(padding);
             this.document.add(paragraph);
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.icon, this.context);
         }
     }
 
-    public void addImage(byte[] imageContent, String position, float padding) {
+    public void addImage(byte[] imageContent, String position, float maxWidth, float maxHeight, float padding) {
         try {
             Image image = Image.getInstance(imageContent);
             float imgWidth = image.getWidth();
             float imgHeight = image.getHeight();
-            float maxWidth = this.size.getWidth() - (2 * padding);
-            float maxHeight = this.size.getHeight() - (padding + 90);
 
-            if(imgWidth > maxWidth) {
-                imgWidth = maxWidth;
-            }
-            if(imgHeight > maxHeight) {
-                imgHeight = maxHeight;
+            float width = imgWidth;
+            float height = imgHeight;
+            if(maxHeight<imgHeight) {
+                float factor = maxHeight /imgHeight;
+                width = imgWidth * factor;
+                height = maxHeight;
+            } else if(maxWidth<imgWidth) {
+                float factor = maxWidth /imgWidth;
+                width = maxWidth;
+                height = imgHeight * factor;
             }
 
-            image.scaleAbsolute(imgWidth, imgHeight);
-            image.setPaddingTop(padding);
-            image.setIndentationLeft(padding);
-            image.setIndentationRight(padding);
+            image.scaleAbsolute(width, height);
+            image.setSpacingBefore(padding);
+            image.setSpacingAfter(padding);
 
             Integer pos = this.positions.get(position);
             if(pos != null) {
