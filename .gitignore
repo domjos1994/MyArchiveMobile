@@ -9,4 +9,4 @@ captures
 .externalNativeBuild
 .cxx
 release
-gradle.properties
+local.properties
