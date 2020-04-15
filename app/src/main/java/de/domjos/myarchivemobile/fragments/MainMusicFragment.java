@@ -30,6 +30,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +72,13 @@ public class MainMusicFragment extends ParentFragment {
             this.currentObject = listObject;
             this.albumPagerAdapter.setMediaObject((Album) this.currentObject.getObject());
             this.changeMode(false, true);
+        });
+        this.lvAlbums.addButtonClick(R.drawable.icon_music, this.getString(R.string.album_last_heard), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                Album album = (Album) baseDescriptionObject.getObject();
+                album.setLastHeard(new Date());
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+            }
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {

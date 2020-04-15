@@ -30,6 +30,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +72,13 @@ public class MainMoviesFragment extends ParentFragment {
             this.currentObject = listObject;
             this.moviePagerAdapter.setMediaObject((Movie) this.currentObject.getObject());
             this.changeMode(false, true);
+        });
+        this.lvMovies.addButtonClick(R.drawable.icon_movie, this.getString(R.string.movie_last_seen), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                Movie movie = (Movie) baseDescriptionObject.getObject();
+                movie.setLastSeen(new Date());
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+            }
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {

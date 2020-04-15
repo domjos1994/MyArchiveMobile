@@ -30,6 +30,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,6 +73,13 @@ public class MainBooksFragment extends ParentFragment {
             this.currentObject = listObject;
             this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
             this.changeMode(false, true);
+        });
+        this.lvBooks.addButtonClick(R.drawable.icon_book, this.getString(R.string.book_last_read), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                Book book = (Book) baseDescriptionObject.getObject();
+                book.setLastRead(new Date());
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+            }
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {

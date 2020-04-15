@@ -30,6 +30,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +72,13 @@ public class MainGamesFragment extends ParentFragment {
             this.currentObject = listObject;
             this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
             this.changeMode(false, true);
+        });
+        this.lvGames.addButtonClick(R.drawable.icon_game, this.getString(R.string.game_last_played), list -> {
+            for(BaseDescriptionObject baseDescriptionObject : list) {
+                Game game = (Game) baseDescriptionObject.getObject();
+                game.setLastPlayed(new Date());
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+            }
         });
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
