@@ -39,6 +39,10 @@
     <string name="scanner_save">Übernehmen</string>
     <string name="scanner_cancel">Abbrechen</string>
 
+    <string name="scanner_dialog_message">Die Codes wurden noch nicht gespeichert!</string>
+    <string name="scanner_dialog_positive">Zurück</string>
+    <string name="scanner_dialog_negative">Schließen</string>
+
     <string name="sys_no_internet">No Internet-Connection!</string>
     <string name="sys_save">Speichern</string>
 </resources>

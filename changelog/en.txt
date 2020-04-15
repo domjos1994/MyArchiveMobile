@@ -1,1 +1,2 @@
-- solve bugs
+- Message if Scanner contains unsaved Codes
+- Mass-Change for last seen...

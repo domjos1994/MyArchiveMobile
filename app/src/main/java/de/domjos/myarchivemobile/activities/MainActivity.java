@@ -58,8 +58,6 @@ import de.domjos.myarchivelibrary.services.IGDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -342,7 +340,9 @@ public final class MainActivity extends AbstractActivity {
                 List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
                 for(Fragment fragment : fragments) {
                     if(fragment instanceof ParentFragment) {
-                        ((ParentFragment) fragment).setCodes(data.getStringExtra("codes"), data.getStringExtra("parent"));
+                        if(data != null) {
+                            ((ParentFragment) fragment).setCodes(data.getStringExtra("codes"), data.getStringExtra("parent"));
+                        }
                     }
                 }
             }
@@ -395,7 +395,7 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
-    private void initGlobals() throws InvalidKeySpecException, NoSuchAlgorithmException {
+    private void initGlobals() {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
         checkNetwork.registerNetworkCallback();

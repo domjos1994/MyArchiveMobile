@@ -52,6 +52,10 @@
     <string name="scanner_save">Accept</string>
     <string name="scanner_cancel">Cancel</string>
 
+    <string name="scanner_dialog_message">The codes weren\'t saved yet!</string>
+    <string name="scanner_dialog_positive">Back</string>
+    <string name="scanner_dialog_negative">Close</string>
+
     <string name="sys_no_internet">No Internet-Connection!</string>
     <string name="sys_save">Save</string>
 </resources>

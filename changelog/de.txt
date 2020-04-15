@@ -1,1 +1,2 @@
-- Bugs erledigne
+- Meldung, wenn Scanner ungespeicherte Codes enthält
+- Massenänderung für zuletzt gelesen...
