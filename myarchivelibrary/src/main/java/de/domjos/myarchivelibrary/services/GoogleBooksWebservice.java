@@ -174,14 +174,6 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         if(info.getImageLinks() != null) {
             Volume.VolumeInfo.ImageLinks imageLinks = info.getImageLinks();
 
-            if(imageLinks.getLarge() != null && !imageLinks.getLarge().isEmpty()) {
-                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getLarge().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
-            }
-
-            if(book.getCover() == null && imageLinks.getMedium() != null && !imageLinks.getMedium().isEmpty()) {
-                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getMedium().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
-            }
-
             if(book.getCover() == null && imageLinks.getSmall() != null && !imageLinks.getSmall().isEmpty()) {
                 book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getSmall().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
             }
