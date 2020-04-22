@@ -1,2 +1,2 @@
-- Meldung, wenn Scanner ungespeicherte Codes enthält
-- Massenänderung für zuletzt gelesen...
+- Laden als Hintergrund-Prozess
+- Import von CSV und Txt

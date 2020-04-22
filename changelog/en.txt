@@ -1,2 +1,2 @@
-- Message if Scanner contains unsaved Codes
-- Mass-Change for last seen...
+- Loading as Background-Process
+- Import of CSV and TXT
