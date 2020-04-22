@@ -541,7 +541,7 @@ public class Database extends SQLiteOpenHelper {
         return mediaFilters;
     }
 
-    public void insertOrUpdateCustomField(CustomField customField) {
+    public long insertOrUpdateCustomField(CustomField customField) {
         SQLiteStatement statement = this.getBaseStatement(customField, Arrays.asList(Database.TITLE, Database.DESCRIPTION, Database.TYPE, "allowedValues", Database.BOOKS, Database.MOVIES, Database.ALBUMS, Database.GAMES));
         statement.bindString(1, customField.getTitle());
         statement.bindString(2, customField.getDescription());
@@ -551,8 +551,15 @@ public class Database extends SQLiteOpenHelper {
         statement.bindLong(6, customField.isMovies() ? 1 : 0);
         statement.bindLong(7, customField.isAlbums() ? 1 : 0);
         statement.bindLong(8, customField.isGames() ? 1 : 0);
-        statement.execute();
-        statement.close();
+        if(customField.getId() != 0) {
+            statement.execute();
+            statement.close();
+            return customField.getId();
+        } else {
+            long id = statement.executeInsert();
+            statement.close();
+            return id;
+        }
     }
 
     public List<CustomField> getCustomFields(String where) {

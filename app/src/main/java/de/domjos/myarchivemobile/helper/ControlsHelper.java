@@ -241,10 +241,14 @@ public class ControlsHelper {
         for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp)) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
-                if(baseMediaObject.getCover() != null) {
-                    baseDescriptionObject.setCover(baseMediaObject.getCover());
-                } else {
-                    baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_book));
+                try {
+                    if(baseMediaObject.getCover() != null) {
+                        baseDescriptionObject.setCover(baseMediaObject.getCover());
+                    } else {
+                        baseDescriptionObject.setCover(ControlsHelper.getBitmapFromVectorDrawable(context, R.drawable.icon_book));
+                    }
+                } catch (OutOfMemoryError error) {
+                    System.gc();
                 }
                 baseDescriptionObject.setDescription(context.getString(R.string.book));
                 baseDescriptionObject.setObject(baseMediaObject);

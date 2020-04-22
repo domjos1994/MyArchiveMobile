@@ -58,8 +58,9 @@ dependencies {
     implementation ("com.journeyapps:zxing-android-embedded:3.5.0") {transitive = false}
     implementation 'com.google.zxing:core:3.4.0'
 
-    // pdf
+    // io
     implementation 'com.itextpdf:itextg:5.5.10'
+    implementation 'com.opencsv:opencsv:4.6'
 
     // import own libraries
     implementation "de.domjos:customwidgets:$propCustomWidgetsVersion"
