@@ -177,4 +177,6 @@
     <string name="sys_empty" formatted="false"> (Leer)</string>
     <string name="sys_success" formatted="false">%s erfolgreich!</string>
     <string name="sys_no_internet">No Internet-Connection!</string>
+    <string name="sys_reload">Laden</string>
+    <string name="sys_reload_summary">Daten laden…</string>
 </resources>

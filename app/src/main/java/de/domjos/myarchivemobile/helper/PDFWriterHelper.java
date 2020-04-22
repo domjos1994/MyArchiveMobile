@@ -61,27 +61,28 @@ public class PDFWriterHelper {
         this.pdfService.addHeadPage(icon, this.context.getString(R.string.main_navigation_media), this.context.getString(R.string.app_name));
     }
 
-    public void execute(List<BaseMediaObject> objects) {
-        for(BaseMediaObject baseMediaObject : objects) {
-            this.addMediaObject(baseMediaObject);
+    public void addRow(BaseMediaObject baseMediaObject) {
+        this.addMediaObject(baseMediaObject);
 
-            if(baseMediaObject instanceof Book) {
-                this.addBook((Book) baseMediaObject);
-            }
-            if(baseMediaObject instanceof Movie) {
-                this.addMovie((Movie) baseMediaObject);
-            }
-            if(baseMediaObject instanceof Game) {
-                this.addGame((Game) baseMediaObject);
-            }
-            if(baseMediaObject instanceof Album) {
-                this.addAlbum((Album) baseMediaObject);
-            }
-
-            this.addPersons(baseMediaObject.getPersons());
-            this.addCompanies(baseMediaObject.getCompanies());
-            this.pdfService.newPage();
+        if(baseMediaObject instanceof Book) {
+            this.addBook((Book) baseMediaObject);
         }
+        if(baseMediaObject instanceof Movie) {
+            this.addMovie((Movie) baseMediaObject);
+        }
+        if(baseMediaObject instanceof Game) {
+            this.addGame((Game) baseMediaObject);
+        }
+        if(baseMediaObject instanceof Album) {
+            this.addAlbum((Album) baseMediaObject);
+        }
+
+        this.addPersons(baseMediaObject.getPersons());
+        this.addCompanies(baseMediaObject.getCompanies());
+        this.pdfService.newPage();
+    }
+
+    public void close() {
         this.pdfService.close();
     }
 

@@ -117,7 +117,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/pbProgress"
+        android:layout_above="@+id/tblFooter"
         android:layout_below="@+id/tblControls">
         <TableLayout
             android:id="@+id/tblCells"
@@ -152,22 +152,44 @@
         </TableLayout>
     </ScrollView>
 
-    <ProgressBar
-        android:id="@+id/pbProgress"
+    <TableLayout
+        android:id="@+id/tblFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/cmdApi"
-        android:layout_margin="4dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+        android:layout_alignParentBottom="true"
+        android:weightSum="10"
+        android:orientation="vertical">
 
-    <ImageButton
-        style="@style/imageButton"
-        android:id="@+id/cmdApi"
-        android:src="@drawable/icon_api"
-        app:srcCompat="@drawable/icon_api"
-        android:contentDescription="@string/api"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        tools:ignore="VectorDrawableCompat"
-        android:layout_alignParentBottom="true"/>
+        <TextView
+            android:id="@+id/lblMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"/>
+
+        <TableRow>
+            <ProgressBar
+                android:id="@+id/pbProgress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:layout_margin="4dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+            <TextView
+                android:id="@+id/lblState"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"/>
+        </TableRow>
+
+        <ImageButton
+            style="@style/imageButton"
+            android:id="@+id/cmdApi"
+            android:src="@drawable/icon_api"
+            app:srcCompat="@drawable/icon_api"
+            android:contentDescription="@string/api"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="10"
+            tools:ignore="VectorDrawableCompat"/>
+    </TableLayout>
 </RelativeLayout>

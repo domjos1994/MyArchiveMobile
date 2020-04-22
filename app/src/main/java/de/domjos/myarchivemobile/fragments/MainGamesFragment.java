@@ -40,11 +40,14 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
+import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainGamesFragment extends ParentFragment {
@@ -187,16 +190,24 @@ public class MainGamesFragment extends ParentFragment {
             }
 
             this.lvGames.getAdapter().clear();
-            for(Game game : MainActivity.GLOBALS.getDatabase().getGames(searchQuery)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(game.getTitle());
-                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), this.getString(R.string.sys_date_format)));
-                baseDescriptionObject.setCover(game.getCover());
-                baseDescriptionObject.setId(game.getId());
-                baseDescriptionObject.setState(game.getLastPlayed()!=null);
-                baseDescriptionObject.setObject(game);
-                this.lvGames.getAdapter().add(baseDescriptionObject);
-            }
+            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames);
+            loadingTask.after(new AbstractTask.PostExecuteListener<List<Game>>() {
+                @Override
+                public void onPostExecute(List<Game> games) {
+                    for(Game game : games) {
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        baseDescriptionObject.setTitle(game.getTitle());
+                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), getString(R.string.sys_date_format)));
+                        baseDescriptionObject.setCover(game.getCover());
+                        baseDescriptionObject.setId(game.getId());
+                        baseDescriptionObject.setState(game.getLastPlayed()!=null);
+                        baseDescriptionObject.setObject(game);
+                        lvGames.getAdapter().add(baseDescriptionObject);
+                    }
+                }
+            });
+            loadingTask.execute();
+
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

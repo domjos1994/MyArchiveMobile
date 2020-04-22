@@ -63,11 +63,12 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
-import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
 
 public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
@@ -231,7 +232,6 @@ public class MainHomeFragment extends ParentFragment {
             reload(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
         });
 
-        this.reload(null);
         return root;
     }
 
@@ -485,7 +485,6 @@ public class MainHomeFragment extends ParentFragment {
         for(MediaFilter filter : MainActivity.GLOBALS.getDatabase().getFilters("")) {
             this.arrayAdapter.add(filter);
         }
-        this.reload(null);
     }
 
     private void setObject(MediaFilter mediaFilter) {
@@ -541,25 +540,23 @@ public class MainHomeFragment extends ParentFragment {
                 searchString = "";
             }
 
-            int counter = 0;
-            this.lvMedia.getAdapter().clear();
-            List<BaseDescriptionObject> baseDescriptionObjects;
-            if(mediaFilter==null) {
-                baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), searchString);
-            } else {
-                if(mediaFilter.getTitle().trim().equals(this.getString(R.string.filter_no_filter))) {
-                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), searchString);
-                } else {
-                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getActivity(), mediaFilter, searchString);
-                }
-            }
-            for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                this.lvMedia.getAdapter().add(baseDescriptionObject);
-                counter++;
-            }
 
-            String count = String.format("%s: %s", Objects.requireNonNull(this.getActivity()).getString(R.string.main_navigation_media), counter);
-            this.lblEntriesCount.setText(count);
+            final int[] counter = {0};
+            this.lvMedia.getAdapter().clear();
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia);
+            loadingTask.after(new AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>() {
+                @Override
+                public void onPostExecute(List<BaseDescriptionObject> baseDescriptionObjects) {
+                    for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                        lvMedia.getAdapter().add(baseDescriptionObject);
+                        counter[0]++;
+                    }
+
+                    String count = String.format("%s: %s", Objects.requireNonNull(getActivity()).getString(R.string.main_navigation_media), counter[0]);
+                    lblEntriesCount.setText(count);
+                }
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

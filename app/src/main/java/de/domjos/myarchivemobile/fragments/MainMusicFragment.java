@@ -41,10 +41,12 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
+import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMusicFragment extends ParentFragment {
@@ -189,16 +191,23 @@ public class MainMusicFragment extends ParentFragment {
             }
 
             this.lvAlbums.getAdapter().clear();
-            for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums(searchQuery)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(album.getTitle());
-                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), this.getString(R.string.sys_date_format)));
-                baseDescriptionObject.setCover(album.getCover());
-                baseDescriptionObject.setId(album.getId());
-                baseDescriptionObject.setState(album.getLastHeard()!=null);
-                baseDescriptionObject.setObject(album);
-                this.lvAlbums.getAdapter().add(baseDescriptionObject);
-            }
+            LoadingTask<Album> loadingTask = new LoadingTask<>(this.getActivity(), new Album(), null, searchQuery, this.lvAlbums);
+            loadingTask.after(new AbstractTask.PostExecuteListener<List<Album>>() {
+                @Override
+                public void onPostExecute(List<Album> albums) {
+                    for(Album album : albums) {
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        baseDescriptionObject.setTitle(album.getTitle());
+                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), getString(R.string.sys_date_format)));
+                        baseDescriptionObject.setCover(album.getCover());
+                        baseDescriptionObject.setId(album.getId());
+                        baseDescriptionObject.setState(album.getLastHeard()!=null);
+                        baseDescriptionObject.setObject(album);
+                        lvAlbums.getAdapter().add(baseDescriptionObject);
+                    }
+                }
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

@@ -111,12 +111,12 @@ public final class MainActivity extends AbstractActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 initSearch(query);
-                return false;
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                initSearch(newText);
+                //initSearch(newText);
                 return false;
             }
         });

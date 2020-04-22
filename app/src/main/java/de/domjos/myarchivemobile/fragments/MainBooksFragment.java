@@ -41,10 +41,12 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
+import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 
@@ -189,16 +191,23 @@ public class MainBooksFragment extends ParentFragment {
             }
 
             this.lvBooks.getAdapter().clear();
-            for(Book book : MainActivity.GLOBALS.getDatabase().getBooks(searchQuery)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(book.getTitle());
-                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), this.getString(R.string.sys_date_format)));
-                baseDescriptionObject.setCover(book.getCover());
-                baseDescriptionObject.setId(book.getId());
-                baseDescriptionObject.setState(book.getLastRead()!=null);
-                baseDescriptionObject.setObject(book);
-                this.lvBooks.getAdapter().add(baseDescriptionObject);
-            }
+            LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks);
+            loadingTask.after(new AbstractTask.PostExecuteListener<List<Book>>() {
+                @Override
+                public void onPostExecute(List<Book> books) {
+                    for(Book book : books) {
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        baseDescriptionObject.setTitle(book.getTitle());
+                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), getString(R.string.sys_date_format)));
+                        baseDescriptionObject.setCover(book.getCover());
+                        baseDescriptionObject.setId(book.getId());
+                        baseDescriptionObject.setState(book.getLastRead()!=null);
+                        baseDescriptionObject.setObject(book);
+                        lvBooks.getAdapter().add(baseDescriptionObject);
+                    }
+                }
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
