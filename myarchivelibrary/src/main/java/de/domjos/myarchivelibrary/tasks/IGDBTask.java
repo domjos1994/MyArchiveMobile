@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
@@ -34,12 +35,6 @@ public class IGDBTask extends AbstractTask<Long, Void, List<Game>> {
     public IGDBTask(Activity activity, boolean showNotifications, int icon, String key) {
         super(activity, R.string.service_igdb_search, R.string.service_igdb_search_content, showNotifications, icon);
         this.key = key;
-    }
-
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
