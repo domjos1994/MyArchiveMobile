@@ -29,16 +29,17 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
@@ -76,12 +77,9 @@ public final class CompanyActivity extends AbstractActivity {
                     Company company = (Company) baseDescriptionObject.getObject();
                     if(company != null) {
                         WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
-                        wikiDataCompanyTask.after(new AbstractTask.PostExecuteListener<List<Company>>() {
-                            @Override
-                            public void onPostExecute(List<Company> o) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
-                                reload();
-                            }
+                        wikiDataCompanyTask.after((AbstractTask.PostExecuteListener<List<Company>>) o -> {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
+                            reload();
                         });
                         wikiDataCompanyTask.execute(company);
                     }
@@ -179,16 +177,20 @@ public final class CompanyActivity extends AbstractActivity {
     protected void reload() {
         try {
             this.lvCompanies.getAdapter().clear();
-            for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("", 0)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(company.getTitle());
-                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
-                baseDescriptionObject.setCover(company.getCover());
-                baseDescriptionObject.setId(company.getId());
-                baseDescriptionObject.setObject(company);
-                this.lvCompanies.getAdapter().add(baseDescriptionObject);
-            }
-            this.select();
+            LoadingTask<Company> loadingTask = new LoadingTask<>(CompanyActivity.this, new Company(), null, "", this.lvCompanies);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Company>>) companies -> {
+                for(Company company : companies) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(company.getTitle());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(company.getFoundation(), this.getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(company.getCover());
+                    baseDescriptionObject.setId(company.getId());
+                    baseDescriptionObject.setObject(company);
+                    this.lvCompanies.getAdapter().add(baseDescriptionObject);
+                }
+                this.select();
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CompanyActivity.this);
         }

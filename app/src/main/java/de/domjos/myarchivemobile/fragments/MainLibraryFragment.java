@@ -32,10 +32,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -47,6 +49,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
@@ -173,13 +176,17 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            for(BaseDescriptionObject baseDescriptionObject : ControlsHelper.getAllMediaItems(this.getActivity(), searchString)) {
-                baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
-                baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());
-                baseDescriptionObject.setId(baseDescriptionObject.getId());
-                this.lvMediaLibrary.getAdapter().add(baseDescriptionObject);
-            }
-            this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+                for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                    baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
+                    baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());
+                    baseDescriptionObject.setId(baseDescriptionObject.getId());
+                    this.lvMediaLibrary.getAdapter().add(baseDescriptionObject);
+                }
+                this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

@@ -328,6 +328,11 @@ public final class MainActivity extends AbstractActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        this.navController.navigateUp();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull  int[] grantResults) {
         this.initPermissions();
     }

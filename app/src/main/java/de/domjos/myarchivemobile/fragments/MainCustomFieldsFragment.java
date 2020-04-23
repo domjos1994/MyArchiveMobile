@@ -31,10 +31,12 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -43,6 +45,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainCustomFieldsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -135,14 +138,18 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            for(CustomField customField : MainActivity.GLOBALS.getDatabase().getCustomFields("")) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(customField.getTitle());
-                baseDescriptionObject.setDescription(customField.getDescription());
-                baseDescriptionObject.setObject(customField);
-                baseDescriptionObject.setId(customField.getId());
-                this.lvCustomFields.getAdapter().add(baseDescriptionObject);
-            }
+            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, "", this.lvCustomFields);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
+                for(CustomField customField : customFields) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(customField.getTitle());
+                    baseDescriptionObject.setDescription(customField.getDescription());
+                    baseDescriptionObject.setObject(customField);
+                    baseDescriptionObject.setId(customField.getId());
+                    this.lvCustomFields.getAdapter().add(baseDescriptionObject);
+                }
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

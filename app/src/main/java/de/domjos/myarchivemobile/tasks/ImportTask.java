@@ -16,7 +16,7 @@
  */
 
 
-package de.domjos.myarchivemobile.fragments.tasks;
+package de.domjos.myarchivemobile.tasks;
 
 import android.app.Activity;
 import android.widget.ProgressBar;
@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -47,45 +48,35 @@ import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivelibrary.services.TextService;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
+import de.domjos.customwidgets.model.tasks.StatusTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
-public class ImportTask extends AbstractTask<Void, TaskStatus, Void> {
+public class ImportTask extends StatusTask<Void, Void> {
     private String path;
-    private int max;
     private boolean books, movies, music;
-    private WeakReference<ProgressBar> pbProgress;
     private Map<String, Spinner> cells;
-    private WeakReference<TextView> lblState, lblMessage;
+    private WeakReference<TextView> lblState;
 
     public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, Map<String, Spinner> cells) {
         super(
                 activity,
-                Objects.requireNonNull(activity).getString(R.string.settings_general_database_import),
+                R.string.settings_general_database_import,
                 R.string.settings_general_database_import_summary,
-                MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
 
         this.path = path;
-        this.pbProgress = new WeakReference<>(pbProgress);
         this.books = books;
         this.movies = movies;
         this.music = music;
         this.cells = cells;
         this.lblState = new WeakReference<>(lblState);
-        this.lblMessage = new WeakReference<>(lblMessage);
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
     protected final void onProgressUpdate(TaskStatus... values) {
-        this.pbProgress.get().setProgress((int) (values[0].status / (this.max / 100.0)));
-        this.lblMessage.get().setText(values[0].message);
-        this.lblState.get().setText(String.format("%s / %s", this.max, values[0].status));
+        super.onProgressUpdate(values);
+        this.lblState.get().setText(String.format("%s / %s", this.max, values[0].getStatus()));
     }
 
     @Override

@@ -29,16 +29,17 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.PersonPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public final class PersonActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvPersons;
@@ -76,12 +77,9 @@ public final class PersonActivity extends AbstractActivity {
                     Person person = (Person) baseDescriptionObject.getObject();
                     if(person != null) {
                         WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
-                        wikiDataPersonTask.after(new AbstractTask.PostExecuteListener<List<Person>>() {
-                            @Override
-                            public void onPostExecute(List<Person> o) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
-                                reload();
-                            }
+                        wikiDataPersonTask.after((AbstractTask.PostExecuteListener<List<Person>>) o -> {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
+                            reload();
                         });
                         wikiDataPersonTask.execute(person);
                     }
@@ -179,16 +177,20 @@ public final class PersonActivity extends AbstractActivity {
     protected void reload() {
         try {
             this.lvPersons.getAdapter().clear();
-            for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
-                baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
-                baseDescriptionObject.setCover(person.getImage());
-                baseDescriptionObject.setId(person.getId());
-                baseDescriptionObject.setObject(person);
-                this.lvPersons.getAdapter().add(baseDescriptionObject);
-            }
-            this.select();
+            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, "", this.lvPersons);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Person>>) persons -> {
+                for(Person person : persons) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(person.getBirthDate(), this.getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(person.getImage());
+                    baseDescriptionObject.setId(person.getId());
+                    baseDescriptionObject.setObject(person);
+                    this.lvPersons.getAdapter().add(baseDescriptionObject);
+                }
+                this.select();
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, PersonActivity.this);
         }

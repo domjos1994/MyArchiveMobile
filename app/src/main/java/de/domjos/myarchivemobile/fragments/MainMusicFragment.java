@@ -35,18 +35,18 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
-import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMusicFragment extends ParentFragment {
@@ -192,20 +192,18 @@ public class MainMusicFragment extends ParentFragment {
 
             this.lvAlbums.getAdapter().clear();
             LoadingTask<Album> loadingTask = new LoadingTask<>(this.getActivity(), new Album(), null, searchQuery, this.lvAlbums);
-            loadingTask.after(new AbstractTask.PostExecuteListener<List<Album>>() {
-                @Override
-                public void onPostExecute(List<Album> albums) {
-                    for(Album album : albums) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(album.getTitle());
-                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), getString(R.string.sys_date_format)));
-                        baseDescriptionObject.setCover(album.getCover());
-                        baseDescriptionObject.setId(album.getId());
-                        baseDescriptionObject.setState(album.getLastHeard()!=null);
-                        baseDescriptionObject.setObject(album);
-                        lvAlbums.getAdapter().add(baseDescriptionObject);
-                    }
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Album>>) albums -> {
+                for(Album album : albums) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(album.getTitle());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(album.getCover());
+                    baseDescriptionObject.setId(album.getId());
+                    baseDescriptionObject.setState(album.getLastHeard()!=null);
+                    baseDescriptionObject.setObject(album);
+                    lvAlbums.getAdapter().add(baseDescriptionObject);
                 }
+                this.select();
             });
             loadingTask.execute();
         } catch (Exception ex) {
@@ -241,16 +239,18 @@ public class MainMusicFragment extends ParentFragment {
 
     @Override
     public void select() {
-        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
-        if( id != 0) {
-            for(int i = 0; i<=this.lvAlbums.getAdapter().getItemCount()-1; i++) {
-                BaseDescriptionObject baseDescriptionObject = this.lvAlbums.getAdapter().getItem(i);
-                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
-                if(baseMediaObject.getId() == id) {
-                    currentObject = baseDescriptionObject;
-                    albumPagerAdapter.setMediaObject((Album) currentObject.getObject());
-                    changeMode(false, true);
-                    return;
+        if(this.getArguments() != null) {
+            long id = this.getArguments().getLong("id");
+            if( id != 0) {
+                for(int i = 0; i<=this.lvAlbums.getAdapter().getItemCount()-1; i++) {
+                    BaseDescriptionObject baseDescriptionObject = this.lvAlbums.getAdapter().getItem(i);
+                    BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                    if(baseMediaObject.getId() == id) {
+                        currentObject = baseDescriptionObject;
+                        albumPagerAdapter.setMediaObject((Album) currentObject.getObject());
+                        changeMode(false, true);
+                        return;
+                    }
                 }
             }
         }

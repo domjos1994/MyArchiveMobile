@@ -53,12 +53,11 @@ import java.util.Objects;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.services.TextService;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
-import de.domjos.myarchivemobile.fragments.tasks.ExportTask;
-import de.domjos.myarchivemobile.fragments.tasks.ImportTask;
+import de.domjos.myarchivemobile.tasks.ExportTask;
+import de.domjos.myarchivemobile.tasks.ImportTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Settings;
 
@@ -213,12 +212,9 @@ public class MainApiFragment extends ParentFragment {
                                 baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames(""));
                             }
                             ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, this.lblState, this.lblMessage, baseMediaObjects);
-                            exportTask.after(new AbstractTask.PostExecuteListener() {
-                                @Override
-                                public void onPostExecute(Object o) {
-                                    MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
-                                    saveSettings(spApiFormat, spApiType);
-                                }
+                            exportTask.after(o -> {
+                                MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
+                                saveSettings(spApiFormat, spApiType);
                             });
                             exportTask.execute();
                             break;
@@ -251,12 +247,9 @@ public class MainApiFragment extends ParentFragment {
                                     this.txtApiPath.getText().toString(),
                                     this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
                                     this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.mpCells);
-                                importTask.after(new AbstractTask.PostExecuteListener() {
-                                    @Override
-                                    public void onPostExecute(Object o) {
-                                        MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
-                                        saveSettings(spApiFormat, spApiType);
-                                    }
+                                importTask.after(o -> {
+                                    MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
+                                    saveSettings(spApiFormat, spApiType);
                                 });
                                 importTask.execute();
                             }

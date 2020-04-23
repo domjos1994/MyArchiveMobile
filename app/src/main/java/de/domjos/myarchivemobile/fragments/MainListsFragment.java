@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -47,6 +48,7 @@ import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainListsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -158,14 +160,18 @@ public class MainListsFragment extends ParentFragment {
             }
 
             this.lvMediaLists.getAdapter().clear();
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("")) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setTitle(mediaList.getTitle());
-                baseDescriptionObject.setDescription(mediaList.getDescription());
-                baseDescriptionObject.setObject(mediaList);
-                baseDescriptionObject.setId(mediaList.getId());
-                this.lvMediaLists.getAdapter().add(baseDescriptionObject);
-            }
+            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
+                for(MediaList mediaList : mediaLists) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(mediaList.getTitle());
+                    baseDescriptionObject.setDescription(mediaList.getDescription());
+                    baseDescriptionObject.setObject(mediaList);
+                    baseDescriptionObject.setId(mediaList.getId());
+                    this.lvMediaLists.getAdapter().add(baseDescriptionObject);
+                }
+            });
+            loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

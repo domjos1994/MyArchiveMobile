@@ -1,40 +1,42 @@
-package de.domjos.myarchivemobile.fragments.tasks;
+package de.domjos.myarchivemobile.tasks;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.customwidgets.model.tasks.ExtendedStatusTask;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivelibrary.model.media.CustomField;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
+import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
-public class LoadingTask<T> extends AbstractTask<Void, Void, List> {
+public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
     private T test;
     private MediaFilter mediaFilter;
     private String searchString;
     private WeakReference<SwipeRefreshDeleteList> lv;
 
     public LoadingTask(Activity activity, T test, MediaFilter mediaFilter, String searchString, SwipeRefreshDeleteList lv) {
-        super(activity, activity.getString(R.string.sys_reload), R.string.sys_reload_summary, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+        super(activity, R.string.sys_reload, R.string.sys_reload_summary, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, new ProgressBar(activity), new TextView(activity));
 
         this.lv = new WeakReference<>(lv);
         this.test = test;
         this.mediaFilter = mediaFilter;
         this.searchString = searchString;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
@@ -71,6 +73,18 @@ public class LoadingTask<T> extends AbstractTask<Void, Void, List> {
                 }
                 if(this.test instanceof Game) {
                     return MainActivity.GLOBALS.getDatabase().getGames(this.searchString);
+                }
+                if(this.test instanceof Person) {
+                    return MainActivity.GLOBALS.getDatabase().getPersons("", 0);
+                }
+                if(this.test instanceof Company) {
+                    return MainActivity.GLOBALS.getDatabase().getCompanies("", 0);
+                }
+                if(this.test instanceof MediaList) {
+                    return MainActivity.GLOBALS.getDatabase().getMediaLists("");
+                }
+                if(this.test instanceof CustomField) {
+                    return MainActivity.GLOBALS.getDatabase().getCustomFields("");
                 }
             }
         } catch (Exception ex) {

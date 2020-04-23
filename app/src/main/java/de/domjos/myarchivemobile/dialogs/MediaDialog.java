@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -54,7 +55,6 @@ import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivelibrary.services.TitleWebservice;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivelibrary.tasks.IGDBTask;
 import de.domjos.myarchivelibrary.tasks.TheAudioDBTask;
@@ -162,64 +162,52 @@ public class MediaDialog extends DialogFragment {
                                 if(currentWebService instanceof MovieDBWebservice) {
                                     String key = MainActivity.GLOBALS.getSettings().getMovieDBKey();
                                     theMovieDBTask = new TheMovieDBTask(this.activity, notification, icon, description, key);
-                                    theMovieDBTask.after(new AbstractTask.PostExecuteListener<List<Movie>>() {
-                                        @Override
-                                        public void onPostExecute(List<Movie> o) {
-                                            if(o != null && !o.isEmpty()) {
-                                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(o.get(0));
-                                            }
-                                            cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
-                                            cmdSave.setTag(getString(R.string.sys_save));
-                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
-                                            MediaDialog.this.setCancelable(true);
+                                    theMovieDBTask.after((AbstractTask.PostExecuteListener<List<Movie>>) o -> {
+                                        if(o != null && !o.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(o.get(0));
                                         }
+                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setTag(getString(R.string.sys_save));
+                                        MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                        MediaDialog.this.setCancelable(true);
                                     });
                                     theMovieDBTask.execute(id);
                                 } else if(currentWebService instanceof AudioDBWebservice) {
                                     theAudioDBTask = new TheAudioDBTask(this.activity, notification, icon);
-                                    theAudioDBTask.after(new AbstractTask.PostExecuteListener<List<Album>>() {
-                                        @Override
-                                        public void onPostExecute(List<Album> o) {
-                                            if(o != null && !o.isEmpty()) {
-                                                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(o.get(0));
-                                            }
-                                            cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
-                                            cmdSave.setTag(getString(R.string.sys_save));
-                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
-                                            MediaDialog.this.setCancelable(true);
+                                    theAudioDBTask.after((AbstractTask.PostExecuteListener<List<Album>>) o -> {
+                                        if(o != null && !o.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(o.get(0));
                                         }
+                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setTag(getString(R.string.sys_save));
+                                        MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                        MediaDialog.this.setCancelable(true);
                                     });
                                     theAudioDBTask.execute(id);
                                 } else if(currentWebService instanceof GoogleBooksWebservice) {
                                     String key = MainActivity.GLOBALS.getSettings().getGoogleBooksKey();
                                     googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
-                                    googleBooksTask.after(new AbstractTask.PostExecuteListener<List<Book>>() {
-                                        @Override
-                                        public void onPostExecute(List<Book> o) {
-                                            if(o != null && !o.isEmpty()) {
-                                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(o.get(0));
-                                            }
-                                            cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
-                                            cmdSave.setTag(getString(R.string.sys_save));
-                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
-                                            MediaDialog.this.setCancelable(true);
+                                    googleBooksTask.after((AbstractTask.PostExecuteListener<List<Book>>) o -> {
+                                        if(o != null && !o.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(o.get(0));
                                         }
+                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setTag(getString(R.string.sys_save));
+                                        MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                        MediaDialog.this.setCancelable(true);
                                     });
                                     googleBooksTask.execute("");
                                 } else if(currentWebService instanceof IGDBWebservice) {
                                     String key = MainActivity.GLOBALS.getSettings().getIGDBKey();
                                     igdbTask = new IGDBTask(this.activity, notification, icon, key);
-                                    igdbTask.after(new AbstractTask.PostExecuteListener<List<Game>>() {
-                                        @Override
-                                        public void onPostExecute(List<Game> o) {
-                                            if(o != null && !o.isEmpty()) {
-                                                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(o.get(0));
-                                            }
-                                            cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
-                                            cmdSave.setTag(getString(R.string.sys_save));
-                                            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
-                                            MediaDialog.this.setCancelable(true);
+                                    igdbTask.after((AbstractTask.PostExecuteListener<List<Game>>) o -> {
+                                        if(o != null && !o.isEmpty()) {
+                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(o.get(0));
                                         }
+                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setTag(getString(R.string.sys_save));
+                                        MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
+                                        MediaDialog.this.setCancelable(true);
                                     });
                                     igdbTask.execute(id);
                                 }
@@ -289,17 +277,14 @@ public class MediaDialog extends DialogFragment {
 
                     if(currentService != null) {
                         this.searchTask = new SearchTask(this.activity, MainActivity.GLOBALS.getSettings().isNotifications(), currentService);
-                        this.searchTask.after(new AbstractTask.PostExecuteListener() {
-                            @Override
-                            public void onPostExecute(Object o) {
-                                List<BaseDescriptionObject> baseDescriptionObjects = (List<BaseDescriptionObject>) o;
-                                lvMedia.getAdapter().clear();
-                                for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                                    lvMedia.getAdapter().add(baseDescriptionObject);
-                                }
-                                cmdSearch.setImageDrawable(getResources().getDrawable(R.drawable.icon_search));
-                                cmdSearch.setTag(getString(R.string.sys_search));
+                        this.searchTask.after(o -> {
+                            List<BaseDescriptionObject> baseDescriptionObjects = (List<BaseDescriptionObject>) o;
+                            lvMedia.getAdapter().clear();
+                            for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                                lvMedia.getAdapter().add(baseDescriptionObject);
                             }
+                            cmdSearch.setImageDrawable(getResources().getDrawable(R.drawable.icon_search));
+                            cmdSearch.setTag(getString(R.string.sys_search));
                         });
                         this.searchTask.execute(this.search);
                     }
@@ -360,14 +345,8 @@ public class MediaDialog extends DialogFragment {
         private TitleWebservice<? extends  BaseMediaObject> titleWebservice;
 
         SearchTask(Activity activity, boolean showNotifications, TitleWebservice<? extends BaseMediaObject> titleWebservice) {
-            super(activity, titleWebservice.getTitle(), R.string.sys_search, showNotifications, R.mipmap.ic_launcher_round);
+            super(activity, R.string.sys_search, R.string.sys_search, showNotifications, R.mipmap.ic_launcher_round);
             this.titleWebservice = titleWebservice;
-        }
-
-
-        @Override
-        protected void before() {
-
         }
 
         @Override

@@ -35,18 +35,18 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
-import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 
@@ -192,20 +192,18 @@ public class MainBooksFragment extends ParentFragment {
 
             this.lvBooks.getAdapter().clear();
             LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks);
-            loadingTask.after(new AbstractTask.PostExecuteListener<List<Book>>() {
-                @Override
-                public void onPostExecute(List<Book> books) {
-                    for(Book book : books) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(book.getTitle());
-                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), getString(R.string.sys_date_format)));
-                        baseDescriptionObject.setCover(book.getCover());
-                        baseDescriptionObject.setId(book.getId());
-                        baseDescriptionObject.setState(book.getLastRead()!=null);
-                        baseDescriptionObject.setObject(book);
-                        lvBooks.getAdapter().add(baseDescriptionObject);
-                    }
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Book>>) books -> {
+                for(Book book : books) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(book.getTitle());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(book.getCover());
+                    baseDescriptionObject.setId(book.getId());
+                    baseDescriptionObject.setState(book.getLastRead()!=null);
+                    baseDescriptionObject.setObject(book);
+                    lvBooks.getAdapter().add(baseDescriptionObject);
                 }
+                this.select();
             });
             loadingTask.execute();
         } catch (Exception ex) {
@@ -241,16 +239,18 @@ public class MainBooksFragment extends ParentFragment {
 
     @Override
     public void select() {
-        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
-        if(id != 0) {
-            for(int i = 0; i<=this.lvBooks.getAdapter().getItemCount()-1; i++) {
-                BaseDescriptionObject baseDescriptionObject = this.lvBooks.getAdapter().getItem(i);
-                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
-                if(baseMediaObject.getId() == id) {
-                    currentObject = baseDescriptionObject;
-                    bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
-                    changeMode(false, true);
-                    return;
+        if(this.getArguments() != null) {
+            long id = this.getArguments().getLong("id");
+            if(id != 0) {
+                for(int i = 0; i<=this.lvBooks.getAdapter().getItemCount()-1; i++) {
+                    BaseDescriptionObject baseDescriptionObject = this.lvBooks.getAdapter().getItem(i);
+                    BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                    if(baseMediaObject.getId() == id) {
+                        currentObject = baseDescriptionObject;
+                        bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
+                        changeMode(false, true);
+                        return;
+                    }
                 }
             }
         }

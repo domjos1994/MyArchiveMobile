@@ -35,19 +35,18 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
-import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainGamesFragment extends ParentFragment {
@@ -191,20 +190,18 @@ public class MainGamesFragment extends ParentFragment {
 
             this.lvGames.getAdapter().clear();
             LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames);
-            loadingTask.after(new AbstractTask.PostExecuteListener<List<Game>>() {
-                @Override
-                public void onPostExecute(List<Game> games) {
-                    for(Game game : games) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(game.getTitle());
-                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), getString(R.string.sys_date_format)));
-                        baseDescriptionObject.setCover(game.getCover());
-                        baseDescriptionObject.setId(game.getId());
-                        baseDescriptionObject.setState(game.getLastPlayed()!=null);
-                        baseDescriptionObject.setObject(game);
-                        lvGames.getAdapter().add(baseDescriptionObject);
-                    }
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Game>>) games -> {
+                for(Game game : games) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(game.getTitle());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(game.getCover());
+                    baseDescriptionObject.setId(game.getId());
+                    baseDescriptionObject.setState(game.getLastPlayed()!=null);
+                    baseDescriptionObject.setObject(game);
+                    lvGames.getAdapter().add(baseDescriptionObject);
                 }
+                this.select();
             });
             loadingTask.execute();
 
@@ -241,16 +238,18 @@ public class MainGamesFragment extends ParentFragment {
 
     @Override
     public void select() {
-        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
-        if(id != 0) {
-            for(int i = 0; i<=this.lvGames.getAdapter().getItemCount()-1; i++) {
-                BaseDescriptionObject baseDescriptionObject = this.lvGames.getAdapter().getItem(i);
-                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
-                if(baseMediaObject.getId() == id) {
-                    currentObject = baseDescriptionObject;
-                    gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
-                    changeMode(false, true);
-                    return;
+        if(this.getArguments() != null) {
+            long id = this.getArguments().getLong("id");
+            if (id != 0) {
+                for (int i = 0; i <= this.lvGames.getAdapter().getItemCount() - 1; i++) {
+                    BaseDescriptionObject baseDescriptionObject = this.lvGames.getAdapter().getItem(i);
+                    BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                    if (baseMediaObject.getId() == id) {
+                        currentObject = baseDescriptionObject;
+                        gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
+                        changeMode(false, true);
+                        return;
+                    }
                 }
             }
         }

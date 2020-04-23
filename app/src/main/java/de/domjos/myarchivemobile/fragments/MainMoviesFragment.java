@@ -35,18 +35,18 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.MoviePagerAdapter;
-import de.domjos.myarchivemobile.fragments.tasks.LoadingTask;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMoviesFragment extends ParentFragment {
@@ -191,20 +191,18 @@ public class MainMoviesFragment extends ParentFragment {
 
             this.lvMovies.getAdapter().clear();
             LoadingTask<Movie> loadingTask = new LoadingTask<>(this.getActivity(), new Movie(), null, searchQuery, this.lvMovies);
-            loadingTask.after(new AbstractTask.PostExecuteListener<List<Movie>>() {
-                @Override
-                public void onPostExecute(List<Movie> movies) {
-                    for(Movie movie : movies) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                        baseDescriptionObject.setTitle(movie.getTitle());
-                        baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), getString(R.string.sys_date_format)));
-                        baseDescriptionObject.setCover(movie.getCover());
-                        baseDescriptionObject.setId(movie.getId());
-                        baseDescriptionObject.setState(movie.getLastSeen()!=null);
-                        baseDescriptionObject.setObject(movie);
-                        lvMovies.getAdapter().add(baseDescriptionObject);
-                    }
+            loadingTask.after((AbstractTask.PostExecuteListener<List<Movie>>) movies -> {
+                for(Movie movie : movies) {
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject.setTitle(movie.getTitle());
+                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), getString(R.string.sys_date_format)));
+                    baseDescriptionObject.setCover(movie.getCover());
+                    baseDescriptionObject.setId(movie.getId());
+                    baseDescriptionObject.setState(movie.getLastSeen()!=null);
+                    baseDescriptionObject.setObject(movie);
+                    lvMovies.getAdapter().add(baseDescriptionObject);
                 }
+                this.select();
             });
             loadingTask.execute();
         } catch (Exception ex) {
@@ -240,16 +238,18 @@ public class MainMoviesFragment extends ParentFragment {
 
     @Override
     public void select() {
-        long id = Objects.requireNonNull(this.getArguments()).getLong("id");
-        if(id != 0) {
-            for(int i = 0; i<=this.lvMovies.getAdapter().getItemCount()-1; i++) {
-                BaseDescriptionObject baseDescriptionObject = this.lvMovies.getAdapter().getItem(i);
-                BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
-                if(baseMediaObject.getId() == id) {
-                    currentObject = baseDescriptionObject;
-                    moviePagerAdapter.setMediaObject((Movie) currentObject.getObject());
-                    changeMode(false, true);
-                    return;
+        if(this.getArguments() != null) {
+            long id = this.getArguments().getLong("id");
+            if(id != 0) {
+                for(int i = 0; i<=this.lvMovies.getAdapter().getItemCount()-1; i++) {
+                    BaseDescriptionObject baseDescriptionObject = this.lvMovies.getAdapter().getItem(i);
+                    BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
+                    if(baseMediaObject.getId() == id) {
+                        currentObject = baseDescriptionObject;
+                        moviePagerAdapter.setMediaObject((Movie) currentObject.getObject());
+                        changeMode(false, true);
+                        return;
+                    }
                 }
             }
         }
