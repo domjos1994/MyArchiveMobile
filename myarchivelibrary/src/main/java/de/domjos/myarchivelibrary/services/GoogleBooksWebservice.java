@@ -24,6 +24,8 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.books.Books;
 import com.google.api.services.books.model.Volume;
+import com.google.api.services.books.model.Volumes;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -62,6 +64,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
                 list = list.setKey(this.key);
             }
             if(list != null) {
+                Volumes volume = list.execute();
                 List<Volume> volumes = list.execute().getItems();
                 if(volumes != null && !volumes.isEmpty()) {
                     return this.getBookFromList(volumes.get(0));
@@ -173,14 +176,18 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
     private static void setCover(Volume.VolumeInfo info, Book book) {
         if(info.getImageLinks() != null) {
             Volume.VolumeInfo.ImageLinks imageLinks = info.getImageLinks();
+            addCover(book, imageLinks.getSmall());
+            addCover(book, imageLinks.getThumbnail());
+            addCover(book, imageLinks.getSmallThumbnail());
+            addCover(book, imageLinks.getMedium());
+            addCover(book, imageLinks.getLarge());
+            addCover(book, imageLinks.getExtraLarge());
+        }
+    }
 
-            if(book.getCover() == null && imageLinks.getSmall() != null && !imageLinks.getSmall().isEmpty()) {
-                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getSmall().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
-            }
-
-            if(book.getCover() == null && imageLinks.getThumbnail() != null && !imageLinks.getThumbnail().isEmpty()) {
-                book.setCover(ConvertHelper.convertStringToByteArray(imageLinks.getThumbnail().replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
-            }
+    private static void addCover(Book book, String link) {
+        if(book.getCover() == null && link != null && !link.isEmpty()) {
+            book.setCover(ConvertHelper.convertStringToByteArray(link));
         }
     }
 

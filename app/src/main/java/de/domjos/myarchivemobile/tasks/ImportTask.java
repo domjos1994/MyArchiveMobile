@@ -126,7 +126,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                     Book book = (Book) mediaObject;
 
                     try {
-                        Book webServiceBook = null;
+                        Book webServiceBook;
 
                         String code = book.getCode();
                         if(code.trim().isEmpty()) {
@@ -140,15 +140,17 @@ public class ImportTask extends StatusTask<Void, Void> {
                         }
 
                         if(code.isEmpty()) {
-                            GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", "", "");
-                            List<BaseMediaObject> baseMediaObjects = googleBooksWebservice.getMedia(book.getTitle());
-                            if(!baseMediaObjects.isEmpty()) {
-                                googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", baseMediaObjects.get(0).getDescription(), "");
-                                webServiceBook = googleBooksWebservice.execute();
-                            }
+                            webServiceBook = this.searchBookByTitle(book, null);
                         } else {
                             GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), code, "", "");
                             webServiceBook = googleBooksWebservice.execute();
+                            if(webServiceBook == null) {
+                                webServiceBook = this.searchBookByTitle(book, null);
+                            } else {
+                                if(webServiceBook.getCover() != null) {
+                                    webServiceBook = this.searchBookByTitle(book, webServiceBook);
+                                }
+                            }
                         }
 
                         if(webServiceBook != null) {
@@ -224,6 +226,16 @@ public class ImportTask extends StatusTask<Void, Void> {
             }
             i++;
         }
+    }
+
+    private Book searchBookByTitle(Book book, Book webServiceBook) throws Exception {
+        GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", "", "");
+        List<BaseMediaObject> baseMediaObjects = googleBooksWebservice.getMedia(book.getTitle());
+        if(!baseMediaObjects.isEmpty()) {
+            googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", baseMediaObjects.get(0).getDescription(), "");
+            webServiceBook = googleBooksWebservice.execute();
+        }
+        return webServiceBook;
     }
 
     private void mergeDataFromWebservice(BaseMediaObject importedObject, BaseMediaObject webServiceObject) {

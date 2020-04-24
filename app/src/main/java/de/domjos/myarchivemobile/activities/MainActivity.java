@@ -354,10 +354,12 @@ public final class MainActivity extends AbstractActivity {
             if(requestCode == MainActivity.SETTINGS_REQUEST) {
                 this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
             }
-            if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST && data.hasExtra("type") && data.hasExtra("id")) {
-                String type = data.getStringExtra("type");
-                if(type != null) {
-                    this.selectTab(type, data.getLongExtra("id", 0));
+            if(data != null) {
+                if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST && data.hasExtra("type") && data.hasExtra("id")) {
+                    String type = data.getStringExtra("type");
+                    if(type != null) {
+                        this.selectTab(type, data.getLongExtra("id", 0));
+                    }
                 }
             }
 
