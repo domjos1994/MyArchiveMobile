@@ -17,8 +17,8 @@
 
 // Top-level build file where you can icon_add configuration options common to all sub-projects/modules.
 
-ext.propVersion = 26
-ext.propVersionCode = "0.2.alpha.6"
+ext.propVersion = 27
+ext.propVersionCode = "0.2.alpha.7"
 
 ext.propJavaVersion = "8"
 
