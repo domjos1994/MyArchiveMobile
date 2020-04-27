@@ -7,7 +7,6 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.model.tasks.ExtendedStatusTask;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.customwidgets.model.BaseDescriptionObject;

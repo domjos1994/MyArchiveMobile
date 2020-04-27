@@ -9,7 +9,9 @@ import java.util.List;
 
 import de.domjos.customwidgets.model.tasks.StatusTask;
 import de.domjos.customwidgets.model.tasks.TaskStatus;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.services.TextService;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.PDFWriterHelper;
@@ -46,7 +48,12 @@ public class ExportTask extends StatusTask<Void, Void> {
             }
             pdfWriterHelper.close();
         } else {
-
+            try {
+                TextService textService = new TextService(this.path);
+                textService.writeFile(this.baseMediaObjects);
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+            }
         }
         return null;
     }

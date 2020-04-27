@@ -21,14 +21,21 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.CustomField;
 
 public class TextService {
     private String path;
@@ -71,6 +78,50 @@ public class TextService {
         }
         reader.close();
         return items;
+    }
+
+    public void writeFile(List<BaseMediaObject> objects) throws Exception {
+        List<Map<String, String>> ls = new LinkedList<>();
+        for(BaseMediaObject baseMediaObject : objects) {
+            Map<String, String> mp = new LinkedHashMap<>();
+            mp.put("title", baseMediaObject.getTitle());
+            mp.put("originalTitle", baseMediaObject.getOriginalTitle());
+            mp.put("price", String.valueOf(baseMediaObject.getPrice()));
+            mp.put("code", baseMediaObject.getCode());
+            if(baseMediaObject.getCategory() != null) {
+                mp.put("category", baseMediaObject.getCategory().getTitle());
+            }
+            mp.put("description", baseMediaObject.getDescription());
+            mp.put("ratingOwn", String.valueOf(baseMediaObject.getRatingOwn()));
+            mp.put("ratingWeb", String.valueOf(baseMediaObject.getRatingWeb()));
+            mp.put("ratingNote", baseMediaObject.getRatingNote());
+
+            StringBuilder persons = new StringBuilder();
+            for(Person person : baseMediaObject.getPersons()) {
+                persons.append(person.getFirstName()).append(" ").append(person.getLastName()).append(", ");
+            }
+            mp.put("persons", persons.toString());
+
+            StringBuilder companies = new StringBuilder();
+            for(Company company : baseMediaObject.getCompanies()) {
+                companies.append(company.getTitle()).append(", ");
+            }
+            mp.put("companies", companies.toString());
+
+            StringBuilder customFields = new StringBuilder();
+            for(Map.Entry<CustomField, String> customFieldValue : baseMediaObject.getCustomFieldValues().entrySet()) {
+                customFields.append(String.format("%s: %s, ", customFieldValue.getKey().getTitle(), customFieldValue.getValue()));
+            }
+            mp.put("customFields", customFields.toString());
+            ls.add(mp);
+        }
+
+        CSVWriter csvWriter = new CSVWriter(new FileWriter(this.path));
+        csvWriter.writeNext(ls.get(0).keySet().toArray(new String[]{}));
+        for(Map<String, String> entry : ls) {
+            csvWriter.writeNext(entry.values().toArray(new String[]{}));
+        }
+        csvWriter.close();
     }
 
     private char getSplitter() throws Exception {

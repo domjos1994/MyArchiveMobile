@@ -187,7 +187,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
 
     private static void addCover(Book book, String link) {
         if(book.getCover() == null && link != null && !link.isEmpty()) {
-            book.setCover(ConvertHelper.convertStringToByteArray(link));
+            book.setCover(ConvertHelper.convertStringToByteArray(link.replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
         }
     }
 

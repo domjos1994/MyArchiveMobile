@@ -304,6 +304,36 @@ public class ImportTask extends StatusTask<Void, Void> {
         }
     }
 
+    private String validateCode(String content) {
+        if(content == null) {
+            return "";
+        }
+
+        if(content.trim().isEmpty()) {
+            return "";
+        }
+
+        content = content.trim();
+        if(content.contains(",")) {
+            String[] codes = content.split(",");
+            if(codes.length >= 1) {
+                return codes[0];
+            }
+        }
+
+        if(content.contains(";")) {
+            String[] codes = content.split(";");
+            if(codes.length >= 1) {
+                return codes[0];
+            }
+        }
+        if(!content.trim().isEmpty()) {
+            return content.trim();
+        }
+
+        return "";
+    }
+
     private void setValueToObject(BaseMediaObject mediaObject, String column, String value, String cell) throws Exception {
         Map<String, Integer> columns = new LinkedHashMap<>();
         int i = 0;
@@ -327,7 +357,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                 mediaObject.setPrice(Double.parseDouble(value));
                 break;
             case 4:
-                mediaObject.setCode(value);
+                mediaObject.setCode(this.validateCode(value));
                 break;
             case 5:
                 BaseDescriptionObject categoryObject = new BaseDescriptionObject();
