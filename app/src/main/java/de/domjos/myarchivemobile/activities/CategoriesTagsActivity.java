@@ -87,33 +87,35 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.setObject(new BaseDescriptionObject());
-                    this.baseDescriptionObject = null;
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.setObject(new BaseDescriptionObject());
+                        this.baseDescriptionObject = null;
+                    } else {
+                        this.changeMode(false, false);
+                        this.setObject(new BaseDescriptionObject());
+                        this.baseDescriptionObject = null;
+                    }
                     break;
                 case R.id.cmdEdit:
-                    this.changeMode(true, true);
-                    this.setObject(baseDescriptionObject);
-                    break;
-                case R.id.cmdCancel:
-                    this.changeMode(false, false);
-                    this.setObject(new BaseDescriptionObject());
-                    this.baseDescriptionObject = null;
-                    break;
-                case R.id.cmdSave:
-                    if(this.validator.getState()) {
-                        BaseDescriptionObject baseDescriptionObject = this.getObject();
-                        if(this.baseDescriptionObject != null) {
-                            baseDescriptionObject.setId(this.baseDescriptionObject.getId());
-                        }
-                        if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
-                            this.changeMode(false, false);
-                            this.setObject(new BaseDescriptionObject());
-                            this.baseDescriptionObject = null;
-                        }
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        this.changeMode(true, true);
+                        this.setObject(baseDescriptionObject);
                     } else {
-                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
+                        if(this.validator.getState()) {
+                            BaseDescriptionObject baseDescriptionObject = this.getObject();
+                            if(this.baseDescriptionObject != null) {
+                                baseDescriptionObject.setId(this.baseDescriptionObject.getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
+                                this.changeMode(false, false);
+                                this.setObject(new BaseDescriptionObject());
+                                this.baseDescriptionObject = null;
+                            }
+                        } else {
+                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
+                        }
                     }
                     break;
             }
@@ -137,6 +139,9 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.txtTitle = this.findViewById(R.id.txtTitle);
         this.txtDescription = this.findViewById(R.id.txtDescription);
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
 
         this.changeMode(false, false);
     }
@@ -162,7 +167,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects(table, "", 0, "")) {
                 de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
-                current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
+                current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
                 current.setId(baseDescriptionObject.getId());
                 current.setObject(baseDescriptionObject);
@@ -173,7 +178,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("categories", "", 0, "")) {
                 de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
-                current.setTitle(database.getObjects(table, baseDescriptionObject.getId()).isEmpty() ? title + empty : title);
+                current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
                 current.setDescription(baseDescriptionObject.getDescription());
                 current.setId(baseDescriptionObject.getId());
                 current.setObject(baseDescriptionObject);
@@ -199,10 +204,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         if(this.validator != null) {
             this.validator.clear();
         }
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
 
         this.txtTitle.setEnabled(editMode);
         this.txtDescription.setEnabled(editMode);
@@ -217,7 +219,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 table = "categories";
             }
             if(baseDescriptionObject!=null) {
-                List<BaseMediaObject> mediaObjectList = MainActivity.GLOBALS.getDatabase().getObjects(table, baseDescriptionObject.getId());
+                List<BaseMediaObject> mediaObjectList = MainActivity.GLOBALS.getDatabase().getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags"));
                 if(!mediaObjectList.isEmpty()) {
                     for(BaseMediaObject baseMediaObject : mediaObjectList) {
                         this.lvMedia.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getApplicationContext()));

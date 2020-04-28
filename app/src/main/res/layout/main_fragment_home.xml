@@ -188,28 +188,48 @@
         android:layout_below="@+id/filterScrollView"
         android:contentDescription="@string/main_navigation_media"/>
 
-    <LinearLayout
+    <TableLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="49dp"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/background">
+        android:background="@drawable/background"
+        android:weightSum="10">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="center"
             android:gravity="center"/>
-        <TextView
-            android:id="@+id/lblEntriesCount"
-            android:text="@string/sys_add"
-            android:textSize="16sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_gravity="center"
-            android:gravity="center"/>
-    </LinearLayout>
+        <TableRow>
+            <ImageButton
+                android:id="@+id/cmdPrevious"
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/icon_previous"
+                android:contentDescription="@string/sys_previous"
+                android:background="@null"/>
+            <TextView
+                android:id="@+id/lblEntriesCount"
+                android:text="@string/sys_add"
+                android:textSize="16sp"
+                android:layout_weight="8"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:padding="2dp"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+            <ImageButton
+                android:id="@+id/cmdNext"
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/icon_next"
+                android:contentDescription="@string/sys_next"
+                android:background="@null"/>
+        </TableRow>
+    </TableLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAppGames"
@@ -217,7 +237,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="228dp"
+        android:layout_marginBottom="242dp"
         android:layout_marginEnd="32dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
@@ -238,7 +258,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="184dp"
+        android:layout_marginBottom="198dp"
         android:layout_marginEnd="32dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
@@ -259,7 +279,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="140dp"
+        android:layout_marginBottom="154dp"
         android:layout_marginEnd="32dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
@@ -280,7 +300,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="110dp"
         android:layout_marginEnd="32dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
@@ -301,7 +321,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginEnd="24dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"

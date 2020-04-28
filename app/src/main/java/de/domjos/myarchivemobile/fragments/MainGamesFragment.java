@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -53,6 +54,7 @@ public class MainGamesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvGames;
     private GamePagerAdapter gamePagerAdapter;
     private BottomNavigationView bottomNavigationView;
+    private TextView txtStatistics;
     private ViewPager viewPager;
     private String search;
 
@@ -85,38 +87,48 @@ public class MainGamesFragment extends ParentFragment {
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.gamePagerAdapter.setMediaObject(new Game());
-                    this.currentObject = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(this.currentObject != null) {
-                        this.changeMode(true, true);
-                        this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
-                    }
-                    break;
-                case R.id.cmdCancel:
-                    this.changeMode(false, false);
-                    this.gamePagerAdapter.setMediaObject(new Game());
-                    currentObject = null;
+                case R.id.cmdNext:
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("games") + 1, "games");
                     this.reload();
                     break;
-                case R.id.cmdSave:
-                    if(this.validator.getState()) {
-                        Game game = this.gamePagerAdapter.getMediaObject();
-                        if(this.currentObject!=null) {
-                            game.setId(((Game) this.currentObject.getObject()).getId());
-                        }
-                        if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                            this.changeMode(false, false);
-                            this.gamePagerAdapter.setMediaObject(new Game());
-                            this.currentObject = null;
-                            this.reload();
+                case R.id.cmdPrevious:
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("games") - 1, "games");
+                    this.reload();
+                    break;
+                case R.id.cmdAdd:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.gamePagerAdapter.setMediaObject(new Game());
+                        this.currentObject = null;
+                    } else {
+                        this.changeMode(false, false);
+                        this.gamePagerAdapter.setMediaObject(new Game());
+                        currentObject = null;
+                        this.reload();
+                    }
+                    break;
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(this.currentObject != null) {
+                            this.changeMode(true, true);
+                            this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
                         }
                     } else {
-                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                        if(this.validator.getState()) {
+                            Game game = this.gamePagerAdapter.getMediaObject();
+                            if(this.currentObject!=null) {
+                                game.setId(((Game) this.currentObject.getObject()).getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                                this.changeMode(false, false);
+                                this.gamePagerAdapter.setMediaObject(new Game());
+                                this.currentObject = null;
+                                this.reload();
+                            }
+                        } else {
+                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                        }
                     }
                     break;
             }
@@ -135,10 +147,7 @@ public class MainGamesFragment extends ParentFragment {
     @Override
     public  void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
 
         if(this.lvGames.getLayoutParams() instanceof LinearLayout.LayoutParams) {
             this.lvGames.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
@@ -151,13 +160,16 @@ public class MainGamesFragment extends ParentFragment {
     private void initControls(View view) {
         this.lvGames = view.findViewById(R.id.lvMediaGames);
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
+
+        this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         this.viewPager = view.findViewById(R.id.viewPager);
         this.viewPager.setOffscreenPageLimit(5);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game(), "games"));
         this.validator = this.gamePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.gamePagerAdapter);
 
@@ -167,10 +179,6 @@ public class MainGamesFragment extends ParentFragment {
         Objects.requireNonNull(tabLayout.getTabAt(3)).setIcon(R.drawable.icon_game);
         Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.icon_stars);
         Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.icon_field);
-
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
     private void reload() {
@@ -189,7 +197,7 @@ public class MainGamesFragment extends ParentFragment {
             }
 
             this.lvGames.getAdapter().clear();
-            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames);
+            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames, "games");
             loadingTask.after((AbstractTask.PostExecuteListener<List<Game>>) games -> {
                 for(Game game : games) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -202,6 +210,7 @@ public class MainGamesFragment extends ParentFragment {
                     lvGames.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
+                ControlsHelper.setMediaStatistics(this.txtStatistics, "games");
             });
             loadingTask.execute();
 

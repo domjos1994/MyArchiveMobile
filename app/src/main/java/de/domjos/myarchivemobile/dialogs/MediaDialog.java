@@ -156,7 +156,7 @@ public class MediaDialog extends DialogFragment {
                             long id = ((BaseMediaObject) this.currentObject.getObject()).getId();
                             String description = ((BaseMediaObject) this.currentObject.getObject()).getDescription();
                             Validator validator = new Validator(this.activity, icon);
-                            List<BaseDescriptionObject> baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.activity, "");
+                            List<BaseDescriptionObject> baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.activity, "", "media");
 
                             if(validator.checkDuplicatedEntry(this.currentObject.getTitle(), 0, baseDescriptionObjects) && currentWebService != null) {
                                 if(currentWebService instanceof MovieDBWebservice) {

@@ -35,6 +35,18 @@
             app:title="@string/settings_general_debug"
             app:summary="@string/settings_general_debug_summary"
             app:icon="@drawable/icon_arrow_right"/>
+
+        <androidx.preference.EditTextPreference
+            android:contentDescription="@string/settings_general_media_count_summary"
+            android:hint="@string/settings_general_media_count"
+            android:defaultValue="@string/settings_general_media_count_default"
+            app:dialogIcon="@mipmap/ic_launcher_round"
+            app:dialogMessage="@string/settings_general_media_count_summary"
+            app:dialogTitle="@string/settings_general_media_count"
+            app:icon="@drawable/icon_arrow_right"
+            app:key="txtMediaCount"
+            app:summary="@string/settings_general_media_count_summary"
+            app:title="@string/settings_general_media_count" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

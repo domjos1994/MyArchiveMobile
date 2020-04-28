@@ -37,6 +37,7 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.settings.Settings;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -57,16 +58,16 @@ public class LibraryService extends JobService {
         }
 
         try {
-            for(Book object : this.database.getBooks("")) {
+            for(Book object : this.database.getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Movie object : this.database.getMovies("")) {
+            for(Movie object : this.database.getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Album object : this.database.getAlbums("")) {
+            for(Album object : this.database.getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Game object : this.database.getGames("")) {
+            for(Game object : this.database.getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
         } catch (Exception ex) {

@@ -68,6 +68,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainHomeFragment extends ParentFragment {
@@ -104,7 +105,8 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppGames = root.findViewById(R.id.fabAppGames);
 
         this.lblEntriesCount = root.findViewById(R.id.lblEntriesCount);
-
+        ImageButton cmdNext = root.findViewById(R.id.cmdNext);
+        ImageButton cmdPrevious = root.findViewById(R.id.cmdPrevious);
 
         this.lvMedia = root.findViewById(R.id.lvMedia);
         this.initFilter(root);
@@ -151,9 +153,19 @@ public class MainHomeFragment extends ParentFragment {
             }
         });
 
+        cmdPrevious.setOnClickListener(view -> {
+            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("home") - 1, "home");
+            this.reload(search, true);
+        });
+
+        cmdNext.setOnClickListener(view -> {
+            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("home") + 1, "home");
+            this.reload(search, true);
+        });
+
         this.lvMedia.addButtonClick(R.drawable.icon_library, this.getString(R.string.library), objectList -> {
             try {
-                AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+                AlertDialog.Builder b = new AlertDialog.Builder(requireActivity());
                 b.setTitle(getString(R.string.media_persons));
                 List<String> personsString = new LinkedList<>();
                 List<Person> people = MainActivity.GLOBALS.getDatabase().getPersons("", 0);
@@ -181,10 +193,10 @@ public class MainHomeFragment extends ParentFragment {
 
         this.lvMedia.addButtonClick(R.drawable.icon_list, this.getString(R.string.lists), objectList -> {
             try {
-                AlertDialog.Builder b = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+                AlertDialog.Builder b = new AlertDialog.Builder(requireActivity());
                 b.setTitle(getString(R.string.lists));
                 List<String> listString = new LinkedList<>();
-                List<MediaList> lists = MainActivity.GLOBALS.getDatabase().getMediaLists("");
+                List<MediaList> lists = MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"));
                 for(MediaList list : lists) {
                     listString.add(list.getTitle());
                 }
@@ -237,7 +249,7 @@ public class MainHomeFragment extends ParentFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Objects.requireNonNull(this.getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        this.requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     private void initFilter(View view) {
@@ -258,7 +270,7 @@ public class MainHomeFragment extends ParentFragment {
         this.txtFilterCustomFields = view.findViewById(R.id.txtFilterCustomFields);
         this.txtFilterCustomFields.setTokenizer(new CommaTokenizer());
         List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("");
-        CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtFilterCustomFields);
+        CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtFilterCustomFields);
         for(CustomField customField : customFields) {
             arrayAdapter.add(customField.getTitle());
         }
@@ -269,7 +281,7 @@ public class MainHomeFragment extends ParentFragment {
         this.rowMedia1 = view.findViewById(R.id.rowMedia1);
         this.rowMedia2 = view.findViewById(R.id.rowMedia2);
 
-        this.arrayAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()));
+        this.arrayAdapter = new CustomSpinnerAdapter<>(this.requireContext());
         this.spFilter.setAdapter(this.arrayAdapter);
         this.arrayAdapter.notifyDataSetChanged();
     }
@@ -393,7 +405,7 @@ public class MainHomeFragment extends ParentFragment {
     }
 
     private void lessFilterView() {
-        Activity activity = Objects.requireNonNull(this.getActivity());
+        Activity activity = this.requireActivity();
         if(this.rowName != null) {
             this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
             this.rowName.setVisibility(View.GONE);
@@ -404,14 +416,14 @@ public class MainHomeFragment extends ParentFragment {
             this.txtFilterTags.setVisibility(View.GONE);
             this.txtFilterCustomFields.setVisibility(View.GONE);
         } else {
-            int px48 = ConvertHelper.convertDPToPixels(48, Objects.requireNonNull(this.getContext()));
+            int px48 = ConvertHelper.convertDPToPixels(48, this.requireContext());
             this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_more));
             this.filter.getLayoutParams().height = px48;
         }
     }
 
     private void moreFilterView() {
-        Activity activity = Objects.requireNonNull(this.getActivity());
+        Activity activity = this.requireActivity();
         if(this.rowName != null) {
             this.cmdFilterExpand.setImageDrawable(ConvertHelper.convertResourcesToDrawable(activity, R.drawable.icon_expand_less));
             this.rowName.setVisibility(View.VISIBLE);
@@ -471,7 +483,7 @@ public class MainHomeFragment extends ParentFragment {
         this.arrayAdapter.add(gamesFilter);
 
         try {
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("")) {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
                 MediaFilter listFilter = new MediaFilter();
                 listFilter.setTitle("[" + mediaList.getTitle() + "]");
                 listFilter.setMediaList(mediaList);
@@ -541,17 +553,14 @@ public class MainHomeFragment extends ParentFragment {
             }
 
 
-            final int[] counter = {0};
             this.lvMedia.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia);
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, "home");
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     lvMedia.getAdapter().add(baseDescriptionObject);
-                    counter[0]++;
                 }
 
-                String count = String.format("%s: %s", Objects.requireNonNull(getActivity()).getString(R.string.main_navigation_media), counter[0]);
-                lblEntriesCount.setText(count);
+                ControlsHelper.setMediaStatistics(lblEntriesCount, "home");
             });
             loadingTask.execute();
         } catch (Exception ex) {

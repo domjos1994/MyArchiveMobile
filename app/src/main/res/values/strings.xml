@@ -145,10 +145,9 @@
     <string name="settings_general_notifications_summary">Enable Notifications!</string>
     <string name="settings_general_debug">Debug-Mode</string>
     <string name="settings_general_debug_summary">Enable Debug-Mode</string>
-    <string name="settings_general_database_export">Export Database</string>
-    <string name="settings_general_database_export_summary">Export Database to Download-Folder</string>
-    <string name="settings_general_database_import">Import Database</string>
-    <string name="settings_general_database_import_summary">Import Database from Download-Folder</string>
+    <string name="settings_general_media_count">Number of shown Media-Items</string>
+    <string name="settings_general_media_count_summary">Set the Number of shown Media-Items</string>
+    <string name="settings_general_media_count_default" translatable="false">100</string>
     <string name="settings_services">Webservices</string>
     <string name="settings_services_google_books">Google-Books-Key</string>
     <string name="settings_services_google_books_summary">Set Google-Books-Key!</string>
@@ -181,4 +180,6 @@
     <string name="sys_no_internet">No Internet-Connection!</string>
     <string name="sys_reload">Reload</string>
     <string name="sys_reload_summary">Reload data…</string>
+    <string name="sys_next">Next</string>
+    <string name="sys_previous">Previous</string>
 </resources>

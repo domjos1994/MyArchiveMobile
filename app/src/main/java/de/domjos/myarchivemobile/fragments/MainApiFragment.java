@@ -84,7 +84,7 @@ public class MainApiFragment extends ParentFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_api, container, false);
 
-        Activity activity = Objects.requireNonNull(this.getActivity());
+        Activity activity = this.requireActivity();
 
         this.typeArray = activity.getResources().getStringArray(R.array.api_type);
         this.formatArray = new String[4];
@@ -95,7 +95,7 @@ public class MainApiFragment extends ParentFragment {
 
 
         Spinner spApiType = root.findViewById(R.id.spApiType);
-        spApiType.setAdapter(new CustomSpinnerAdapter<>(this.getActivity(), this.typeArray));
+        spApiType.setAdapter(new CustomSpinnerAdapter<>(this.requireActivity(), this.typeArray));
         Spinner spApiFormat = root.findViewById(R.id.spApiFormat);
         CustomSpinnerAdapter<String> formatAdapter = new CustomSpinnerAdapter<>(this.getActivity());
         spApiFormat.setAdapter(formatAdapter);
@@ -200,16 +200,16 @@ public class MainApiFragment extends ParentFragment {
                             String path = this.txtApiPath.getText().toString() + File.separatorChar  + this.txtApiName.getText().toString() + "." + spApiFormat.getSelectedItem().toString();
                             List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
                             if(chkApiBooks.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getBooks(""));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiMovies.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getMovies(""));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiMusic.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getAlbums(""));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiGames.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames(""));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, this.lblState, this.lblMessage, baseMediaObjects);
                             exportTask.after(o -> {
@@ -383,6 +383,7 @@ public class MainApiFragment extends ParentFragment {
             adapter.notifyDataSetChanged();
             this.mpCells.put(cell, spinner);
             this.tblCells.addView(tableRow);
+            this.selectColumn(cell, spinner, adapter);
         }
     }
 
@@ -396,5 +397,30 @@ public class MainApiFragment extends ParentFragment {
             columns.add(cellArray[i]);
         }
         return columns;
+    }
+
+    private void selectColumn(String cell, Spinner spinner, CustomSpinnerAdapter<String> adapter) {
+        String lower = cell.trim().toLowerCase();
+        if(lower.startsWith("original")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_general_originalTitle)));
+        } else if(lower.startsWith("title") || lower.startsWith("titel")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.sys_title)));
+        } else if(lower.startsWith("descr") || lower.startsWith("beschr")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.sys_description)));
+        } else if(lower.startsWith("isbn") || lower.startsWith("ean")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_general_code)));
+        } else if(lower.startsWith("genre")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_general_category)));
+        } else if(lower.startsWith("year") || lower.startsWith("jahr") || lower.contains("release") || lower.contains("erschein")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_general_releaseDate)));
+        } else if(lower.contains("pages") || lower.contains("seiten")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.book_numberOfPages)));
+        } else if(lower.startsWith("author") || lower.startsWith("autor") || lower.startsWith("actor") || lower.startsWith("interpret")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_persons)));
+        }  else if(lower.startsWith("publisher") || lower.startsWith("heraus") || lower.startsWith("verlaog")) {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.media_companies)));
+        } else {
+            spinner.setSelection(adapter.getPosition(this.getString(R.string.customFields)));
+        }
     }
 }

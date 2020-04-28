@@ -110,7 +110,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-    public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content) {
+    public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content, int number, int offset) {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
 
         StringBuilder builder = new StringBuilder();
@@ -123,7 +123,7 @@ public class Database extends SQLiteOpenHelper {
         }
         builder.replace(builder.length() - 3, builder.length(), "");
 
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()), new String[]{});
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()) + " LIMIT " + number + " OFFSET " + offset, new String[]{});
         while (cursor.moveToNext()) {
             BaseMediaObject baseMediaObject = null;
             switch (cursor.getString(cursor.getColumnIndex("type"))) {
@@ -180,9 +180,9 @@ public class Database extends SQLiteOpenHelper {
         this.saveForeignTables(album, album.getTable());
     }
 
-    public List<Album> getAlbums(String where) throws ParseException {
+    public List<Album> getAlbums(String where, int number, int offset) throws ParseException {
         List<Album> albums = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM albums" + this.where(where), null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM albums" + this.where(where) + " LIMIT " + number + " OFFSET " + offset, null);
         while (cursor.moveToNext()) {
             Album album = new Album();
             this.getMediaObjectFromCursor(cursor, album, Database.ALBUMS);
@@ -228,9 +228,9 @@ public class Database extends SQLiteOpenHelper {
         this.saveForeignTables(movie, movie.getTable());
     }
 
-    public List<Movie> getMovies(String where) throws ParseException {
+    public List<Movie> getMovies(String where, int number, int offset) throws ParseException {
         List<Movie> movies = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM movies" + this.where(where), null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM movies" + this.where(where) + " LIMIT " + number + " OFFSET " + offset, null);
         while (cursor.moveToNext()) {
             Movie movie = new Movie();
             this.getMediaObjectFromCursor(cursor, movie, Database.MOVIES);
@@ -278,9 +278,9 @@ public class Database extends SQLiteOpenHelper {
         this.saveForeignTables(book, book.getTable());
     }
 
-    public List<Book> getBooks(String where) throws ParseException {
+    public List<Book> getBooks(String where, int number, int offset) throws ParseException {
         List<Book> books = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM books" + this.where(where), null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM books" + this.where(where) + " LIMIT " + number + " OFFSET " + offset, null);
         while (cursor.moveToNext()) {
             Book book = new Book();
             this.getMediaObjectFromCursor(cursor, book, Database.BOOKS);
@@ -327,9 +327,9 @@ public class Database extends SQLiteOpenHelper {
         this.saveForeignTables(game, game.getTable());
     }
 
-    public List<Game> getGames(String where) throws ParseException {
+    public List<Game> getGames(String where, int number, int offset) throws ParseException {
         List<Game> games = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM games" + this.where(where), null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM games" + this.where(where) + " LIMIT " + number + " OFFSET " + offset, null);
         while (cursor.moveToNext()) {
             Game game = new Game();
             this.getMediaObjectFromCursor(cursor, game, Database.GAMES);
@@ -409,7 +409,7 @@ public class Database extends SQLiteOpenHelper {
         return libraryObjects;
     }
 
-    public Map<BaseMediaObject, LibraryObject> getLendOutObjects(Person person) throws ParseException {
+    public Map<BaseMediaObject, LibraryObject> getLendOutObjects(Person person, int number, int offset) throws ParseException {
         Map<BaseMediaObject, LibraryObject> mp = new LinkedHashMap<>();
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT media, type, id FROM library WHERE person=" + person.getId(), new String[]{});
         while (cursor.moveToNext()) {
@@ -419,16 +419,16 @@ public class Database extends SQLiteOpenHelper {
             String type = cursor.getString(cursor.getColumnIndex("type"));
             switch (type.trim().toLowerCase()) {
                 case Database.BOOKS:
-                    baseMediaObject = this.getBooks(Database.ID_FILTER + id).get(0);
+                    baseMediaObject = this.getBooks(Database.ID_FILTER + id, number, offset).get(0);
                     break;
                 case Database.MOVIES:
-                    baseMediaObject = this.getMovies(Database.ID_FILTER + id).get(0);
+                    baseMediaObject = this.getMovies(Database.ID_FILTER + id, number, offset).get(0);
                     break;
                 case "albums":
-                    baseMediaObject = this.getAlbums(Database.ID_FILTER + id).get(0);
+                    baseMediaObject = this.getAlbums(Database.ID_FILTER + id, number, offset).get(0);
                     break;
                 case Database.GAMES:
-                    baseMediaObject = this.getGames(Database.ID_FILTER + id).get(0);
+                    baseMediaObject = this.getGames(Database.ID_FILTER + id, number, offset).get(0);
                     break;
             }
             mp.put(baseMediaObject, libraryObject);
@@ -482,7 +482,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public List<MediaList> getMediaLists(String where) throws ParseException {
+    public List<MediaList> getMediaLists(String where, int number, int offset) throws ParseException {
         List<MediaList> mediaLists = new LinkedList<>();
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM lists" + this.where(where), null);
         while (cursor.moveToNext()) {
@@ -494,7 +494,7 @@ public class Database extends SQLiteOpenHelper {
             if(deadLine != null) {
                 mediaList.setDeadLine(!deadLine.isEmpty() ? ConvertHelper.convertStringToDate(deadLine, Database.DATE_FORMAT) : null);
             }
-            mediaList.setBaseMediaObjects(this.getObjects("lists", mediaList.getId()));
+            mediaList.setBaseMediaObjects(this.getObjects("lists", mediaList.getId(), number, offset));
             mediaLists.add(mediaList);
         }
         cursor.close();
@@ -582,7 +582,7 @@ public class Database extends SQLiteOpenHelper {
         return customFields;
     }
 
-    public List<BaseMediaObject> getObjects(String table, long id) {
+    public List<BaseMediaObject> getObjects(String table, long id, int number, int offset) {
         String start = "id IN (";
         String booksWhere = start, moviesWhere = start, gamesWhere = start, albumsWhere = start;
 
@@ -614,7 +614,7 @@ public class Database extends SQLiteOpenHelper {
         mp.put(new Movie(), moviesWhere);
         mp.put(new Game(), gamesWhere);
         mp.put(new Album(), albumsWhere);
-        return this.getObjectList(mp);
+        return this.getObjectList(mp, number, offset);
     }
 
     public void deleteItem(DatabaseObject databaseObject) {

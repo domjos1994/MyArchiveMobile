@@ -91,35 +91,37 @@ public final class PersonActivity extends AbstractActivity {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.personPagerAdapter.setMediaObject(new Person());
-                    this.person = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(this.person != null) {
-                        this.changeMode(true, true);
-                        this.personPagerAdapter.setMediaObject(this.person);
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.personPagerAdapter.setMediaObject(new Person());
+                        this.person = null;
+                    } else {
+                        this.changeMode(false, false);
+                        this.person = null;
+                        this.reload();
                     }
                     break;
-                case R.id.cmdCancel:
-                    this.changeMode(false, false);
-                    this.person = null;
-                    this.reload();
-                    break;
-                case R.id.cmdSave:
-                    if(this.validator.getState()) {
-                        Person person = this.personPagerAdapter.getMediaObject();
-                        if(this.person!=null) {
-                            person.setId(this.person.getId());
-                        }
-                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
-                            this.changeMode(false, false);
-                            this.person = null;
-                            this.reload();
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(this.person != null) {
+                            this.changeMode(true, true);
+                            this.personPagerAdapter.setMediaObject(this.person);
                         }
                     } else {
-                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
+                        if(this.validator.getState()) {
+                            Person person = this.personPagerAdapter.getMediaObject();
+                            if(this.person!=null) {
+                                person.setId(this.person.getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
+                                this.changeMode(false, false);
+                                this.person = null;
+                                this.reload();
+                            }
+                        } else {
+                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
+                        }
                     }
                     break;
             }
@@ -131,6 +133,9 @@ public final class PersonActivity extends AbstractActivity {
     protected void initControls() {
         this.lvPersons = this.findViewById(R.id.lvPersons);
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
 
         TabLayout tabLayout = this.findViewById(R.id.tabLayout);
         this.viewPager = this.findViewById(R.id.viewPager);
@@ -151,10 +156,6 @@ public final class PersonActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_person);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
-
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
     private void select() {
@@ -177,7 +178,7 @@ public final class PersonActivity extends AbstractActivity {
     protected void reload() {
         try {
             this.lvPersons.getAdapter().clear();
-            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, "", this.lvPersons);
+            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, "", this.lvPersons, "persons");
             loadingTask.after((AbstractTask.PostExecuteListener<List<Person>>) persons -> {
                 for(Person person : persons) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -198,10 +199,7 @@ public final class PersonActivity extends AbstractActivity {
 
     protected void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, bottomNavigationView);
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvPersons, 4);
         ControlsHelper.changeScreenIfEditMode(mp, this.viewPager, PersonActivity.this, editMode);

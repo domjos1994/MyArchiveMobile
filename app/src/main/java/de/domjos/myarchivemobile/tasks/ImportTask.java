@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -61,8 +63,8 @@ public class ImportTask extends StatusTask<Void, Void> {
     public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, Map<String, Spinner> cells) {
         super(
                 activity,
-                R.string.settings_general_database_import,
-                R.string.settings_general_database_import_summary,
+                R.string.api,
+                R.string.api,
                 MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
 
         this.path = path;
@@ -334,7 +336,110 @@ public class ImportTask extends StatusTask<Void, Void> {
         return "";
     }
 
-    private void setValueToObject(BaseMediaObject mediaObject, String column, String value, String cell) throws Exception {
+    private Date validateReleaseDate(String  content) {
+        try {
+            if(content == null) {
+                return null;
+            }
+
+            if(content.trim().isEmpty()) {
+                return null;
+            }
+
+            content = content.trim();
+            if(content.contains(".")) {
+                int number = this.countChar('.', content);
+                if(number == 2) {
+                    int index = content.indexOf(".");
+                    if(index == 2) {
+                        return ConvertHelper.convertStringToDate(content, "dd.MM.yyyy");
+                    } else if(index == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy.MM.dd");
+                    } else {
+                        return null;
+                    }
+                } else if(number == 1) {
+                    int index = content.indexOf(".");
+                    if(index == 2) {
+                        return ConvertHelper.convertStringToDate(content, "MM.yyyy");
+                    } else if(index == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy.MM");
+                    } else {
+                        return null;
+                    }
+                } else if(this.isInt(content)) {
+                    if(content.length() == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy");
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+
+            content = content.trim();
+            if(content.contains("-")) {
+                int number = this.countChar('-', content);
+                if(number == 2) {
+                    int index = content.indexOf("-");
+                    if(index == 2) {
+                        return ConvertHelper.convertStringToDate(content, "dd-MM-yyyy");
+                    } else if(index == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy-MM-dd");
+                    } else {
+                        return null;
+                    }
+                } else if(number == 1) {
+                    int index = content.indexOf(".");
+                    if(index == 2) {
+                        return ConvertHelper.convertStringToDate(content, "MM-yyyy");
+                    } else if(index == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy-MM");
+                    } else {
+                        return null;
+                    }
+                } else if(this.isInt(content)) {
+                    if(content.length() == 4) {
+                        return ConvertHelper.convertStringToDate(content, "yyyy");
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+
+            if(this.isInt(content)) {
+                if(content.length() == 4) {
+                    return ConvertHelper.convertStringToDate(content, "yyyy");
+                } else {
+                    return null;
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    private int countChar(char ch, String content) {
+        Pattern pattern = Pattern.compile("[^" + ch + "]*" + ch);
+        Matcher matcher = pattern.matcher(content);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
+    }
+
+    private boolean isInt(String content) {
+        try {
+            Integer.parseInt(content);
+            return true;
+        } catch (Exception ignored) {}
+        return false;
+    }
+
+    private void setValueToObject(BaseMediaObject mediaObject, String column, String value, String cell) {
         Map<String, Integer> columns = new LinkedHashMap<>();
         int i = 0;
         for(String item : this.getContext().getResources().getStringArray(R.array.api_cells)) {
@@ -350,8 +455,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                 mediaObject.setOriginalTitle(value);
                 break;
             case 2:
-                Date release = ConvertHelper.convertStringToDate(value, this.getContext().getString(R.string.sys_date_format));
-                mediaObject.setReleaseDate(release);
+                mediaObject.setReleaseDate(this.validateReleaseDate(value));
                 break;
             case 3:
                 mediaObject.setPrice(Double.parseDouble(value));

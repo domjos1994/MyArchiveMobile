@@ -87,7 +87,7 @@ dependencies {
     implementation project(path: ':myarchivelibrary')
 
     // test libraries
-    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.preference:preference:1.1.1'
     testImplementation "junit:junit:$propJUnitVersion"
     androidTestImplementation "androidx.test.ext:junit:$propJUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$propEspressoVersion"

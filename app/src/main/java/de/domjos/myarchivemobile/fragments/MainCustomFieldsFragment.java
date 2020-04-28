@@ -84,38 +84,40 @@ public class MainCustomFieldsFragment extends ParentFragment {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.setObject(new CustomField());
-                    this.customField = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(customField != null) {
-                        this.changeMode(true, true);
-                        setObject(customField);
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.setObject(new CustomField());
+                        this.customField = null;
+                    } else {
+                        changeMode(false, false);
+                        this.setObject(new CustomField());
+                        this.customField = null;
                     }
                     break;
-                case R.id.cmdCancel:
-                    changeMode(false, false);
-                    this.setObject(new CustomField());
-                    this.customField = null;
-                    break;
-                case R.id.cmdSave:
-                    try {
-                        if(this.validator.getState()) {
-                            CustomField customField = this.getObject();
-                            if(this.customField != null) {
-                                customField.setId(this.customField.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
-                                this.changeMode(false, false);
-                                this.customField = null;
-                                this.setObject(new CustomField());
-                                this.reload();
-                            }
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(customField != null) {
+                            this.changeMode(true, true);
+                            setObject(customField);
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                    } else {
+                        try {
+                            if(this.validator.getState()) {
+                                CustomField customField = this.getObject();
+                                if(this.customField != null) {
+                                    customField.setId(this.customField.getId());
+                                }
+                                if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
+                                    this.changeMode(false, false);
+                                    this.customField = null;
+                                    this.setObject(new CustomField());
+                                    this.reload();
+                                }
+                            }
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        }
                     }
                     break;
             }
@@ -138,7 +140,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, "", this.lvCustomFields);
+            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, "", this.lvCustomFields, "customFields");
             loadingTask.after((AbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
                 for(CustomField customField : customFields) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -228,6 +230,8 @@ public class MainCustomFieldsFragment extends ParentFragment {
         this.chkCustomFieldGames = view.findViewById(R.id.chkCustomFieldGames);
 
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
 
         this.initValidator();
         this.changeMode(false, false);
@@ -235,10 +239,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
     @Override
     public  void changeMode(boolean editMode, boolean selected) {
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
 
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvCustomFields, 7);

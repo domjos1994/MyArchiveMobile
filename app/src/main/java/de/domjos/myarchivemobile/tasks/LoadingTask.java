@@ -28,10 +28,12 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
     private MediaFilter mediaFilter;
     private String searchString;
     private WeakReference<SwipeRefreshDeleteList> lv;
+    private String key;
 
-    public LoadingTask(Activity activity, T test, MediaFilter mediaFilter, String searchString, SwipeRefreshDeleteList lv) {
+    public LoadingTask(Activity activity, T test, MediaFilter mediaFilter, String searchString, SwipeRefreshDeleteList lv, String key) {
         super(activity, R.string.sys_reload, R.string.sys_reload_summary, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, new ProgressBar(activity), new TextView(activity));
 
+        this.key = key;
         this.lv = new WeakReference<>(lv);
         this.test = test;
         this.mediaFilter = mediaFilter;
@@ -51,27 +53,27 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
             if(this.test == null) {
                 List baseDescriptionObjects;
                 if(mediaFilter==null) {
-                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.searchString);
+                    baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.searchString, this.key);
                 } else {
                     if(mediaFilter.getTitle().trim().equals(this.getContext().getString(R.string.filter_no_filter))) {
-                        baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.searchString);
+                        baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.searchString, this.key);
                     } else {
-                        baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.mediaFilter, this.searchString);
+                        baseDescriptionObjects = ControlsHelper.getAllMediaItems(this.getContext(), this.mediaFilter, this.searchString, key);
                     }
                 }
                 return baseDescriptionObjects;
             } else {
                 if(this.test instanceof Book) {
-                    return MainActivity.GLOBALS.getDatabase().getBooks(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase().getBooks(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof Movie) {
-                    return MainActivity.GLOBALS.getDatabase().getMovies(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase().getMovies(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof Album) {
-                    return MainActivity.GLOBALS.getDatabase().getAlbums(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase().getAlbums(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof Game) {
-                    return MainActivity.GLOBALS.getDatabase().getGames(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase().getGames(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof Person) {
                     return MainActivity.GLOBALS.getDatabase().getPersons("", 0);
@@ -80,7 +82,7 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
                     return MainActivity.GLOBALS.getDatabase().getCompanies("", 0);
                 }
                 if(this.test instanceof MediaList) {
-                    return MainActivity.GLOBALS.getDatabase().getMediaLists("");
+                    return MainActivity.GLOBALS.getDatabase().getMediaLists("", -1, MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof CustomField) {
                     return MainActivity.GLOBALS.getDatabase().getCustomFields("");

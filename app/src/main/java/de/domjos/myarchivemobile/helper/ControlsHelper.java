@@ -29,8 +29,10 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -38,6 +40,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -69,7 +72,7 @@ public class ControlsHelper {
 
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
+    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject, String key) {
         try {
             long id = -1;
             if(fragment.getArguments() != null) {
@@ -88,28 +91,28 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Album) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
                         }
                     }
                     if(emptyObject instanceof Movie) {
                         if(currentObject != null) {
                             baseMediaObject = (Movie) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
                         }
                     }
                     if(emptyObject instanceof Game) {
                         if(currentObject != null) {
                             baseMediaObject = (Game) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
                         }
                     }
                     if(emptyObject instanceof Book) {
                         if(currentObject != null) {
                             baseMediaObject = (Book) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
                         }
                     }
                     if(baseMediaObject != null) {
@@ -153,21 +156,21 @@ public class ControlsHelper {
         }
     }
 
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search) {
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, String search, String key) {
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
         mp.put(new Book(), search);
         mp.put(new Movie(), search);
         mp.put(new Album(), search);
         mp.put(new Game(), search);
-        return ControlsHelper.getAllMediaItems(context, mp);
+        return ControlsHelper.getAllMediaItems(context, mp, key);
     }
 
-    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter, String extendedWhere) {
+    public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter, String extendedWhere, String key) {
         String where = "";
 
         if(mediaFilter.isList()) {
             try {
-                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("id=" + mediaFilter.getMediaList().getId());
+                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("id=" + mediaFilter.getMediaList().getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 mediaFilter.setMediaList(mediaLists==null ? mediaFilter.getMediaList() : mediaLists.get(0));
             } catch (Exception ignored) {}
             if(mediaFilter.getMediaList() != null) {
@@ -189,7 +192,7 @@ public class ControlsHelper {
                 mp.put(new Movie(), "id in (" + TextUtils.join(", ", movieIds) + ")");
                 mp.put(new Album(), "id in (" + TextUtils.join(", ", musicIds) + ")");
                 mp.put(new Game(), "id in (" + TextUtils.join(", ", gameIds) + ")");
-                return ControlsHelper.getAllMediaItems(context, mp);
+                return ControlsHelper.getAllMediaItems(context, mp, key);
             }
         } else {
             List<String> categories = Arrays.asList(mediaFilter.getCategories().split("\\|"));
@@ -233,12 +236,12 @@ public class ControlsHelper {
         if(mediaFilter.isGames()) {
             mp.put(new Game(), fullWhere);
         }
-        return ControlsHelper.getAllMediaItems(context, mp);
+        return ControlsHelper.getAllMediaItems(context, mp, key);
     }
 
-    private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp) {
+    private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp, String key) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp)) {
+        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key))) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                 try {
@@ -350,6 +353,36 @@ public class ControlsHelper {
             }
             ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = editMode ? 10 : pagerWeight;
         }
+    }
+
+    public static void navViewEditMode(boolean editMode, boolean selected, BottomNavigationView navigationView) {
+        MenuItem addItem = navigationView.getMenu().findItem(R.id.cmdAdd);
+        MenuItem editItem = navigationView.getMenu().findItem(R.id.cmdAdd);
+        if(editMode) {
+            addItem.setIcon(R.drawable.icon_cancel);
+            addItem.setTitle(R.string.sys_cancel);
+            editItem.setIcon(R.drawable.icon_save);
+            editItem.setTitle(R.string.sys_save);
+
+            addItem.setVisible(true);
+            editItem.setVisible(true);
+        } else {
+            addItem.setIcon(R.drawable.icon_add);
+            addItem.setTitle(R.string.sys_add);
+            editItem.setIcon(R.drawable.icon_edit);
+            editItem.setTitle(R.string.sys_edit);
+
+            addItem.setVisible(true);
+            addItem.setVisible(selected);
+        }
+    }
+
+    public static void setMediaStatistics(TextView txt, String key) {
+        int currentPage = MainActivity.GLOBALS.getPage(key);
+        int numberOfItems = MainActivity.GLOBALS.getSettings().getMediaCount();
+        int max = (currentPage + 1) * numberOfItems;
+
+        txt.setText(String.format("%s - %s", max - numberOfItems, max));
     }
 
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

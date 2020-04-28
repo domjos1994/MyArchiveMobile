@@ -19,6 +19,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/cmdPrevious"
+        android:title="@string/sys_previous"
+        android:icon="@drawable/icon_previous"/>
+
+    <item
         android:id="@+id/cmdAdd"
         android:title="@string/sys_add"
         android:icon="@drawable/icon_add"/>
@@ -29,12 +34,7 @@
         android:icon="@drawable/icon_edit"/>
 
     <item
-        android:id="@+id/cmdCancel"
-        android:title="@string/sys_cancel"
-        android:icon="@drawable/icon_cancel"/>
-
-    <item
-        android:id="@+id/cmdSave"
-        android:title="@string/sys_save"
-        android:icon="@drawable/icon_save"/>
+        android:id="@+id/cmdNext"
+        android:title="@string/sys_next"
+        android:icon="@drawable/icon_next"/>
 </menu>

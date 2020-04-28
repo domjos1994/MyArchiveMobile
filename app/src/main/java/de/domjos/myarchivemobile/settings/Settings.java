@@ -22,12 +22,15 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
+import de.domjos.myarchivemobile.R;
+
 public final class Settings {
     private SharedPreferences sharedPreferences;
     private SharedPreferences userPreferences;
+    private Context context;
 
     public Settings(Context context) {
-
+        this.context = context;
         this.sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -79,6 +82,10 @@ public final class Settings {
 
     public boolean isDebugMode() {
         return this.userPreferences.getBoolean("swtDebugMode", false);
+    }
+
+    public int getMediaCount() {
+        return this.userPreferences.getInt("txtMediaCount", Integer.parseInt(this.context.getString(R.string.settings_general_media_count_default)));
     }
 
     public String getEANDataKey() {

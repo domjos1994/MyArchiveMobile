@@ -25,7 +25,7 @@ ext.propJavaVersion = "8"
 ext.propCompVersion = 29
 ext.propMinVersion = 20
 ext.propAndroidVersion = "1.1.0"
-ext.propAndroidNavVersion = "2.2.1"
+ext.propAndroidNavVersion = "2.2.2"
 
 ext.propJUnitVersion = '4.13'
 ext.propJUnitExtVersion = "1.1.1"
@@ -38,7 +38,7 @@ ext.propMinify = false
 ext.propShrink = false
 
 ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/github.properties"
-ext.propCustomWidgetsVersion = "3.3.3"
+ext.propCustomWidgetsVersion = "3.4.0"
 
 buildscript {
     repositories {

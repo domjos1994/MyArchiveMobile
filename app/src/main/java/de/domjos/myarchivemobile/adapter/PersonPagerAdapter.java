@@ -75,12 +75,12 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
             this.mediaCoverFragment.setMediaObject(mediaObject);
 
             List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId())) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("persons"))) {
                 baseDescriptionObjects.add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.context));
             }
             this.mediaListFragment.setMediaObject(baseDescriptionObjects);
 
-            this.mediaListFragment.setLibraryObjects(MainActivity.GLOBALS.getDatabase().getLendOutObjects(mediaObject));
+            this.mediaListFragment.setLibraryObjects(MainActivity.GLOBALS.getDatabase().getLendOutObjects(mediaObject, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("persons")));
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }

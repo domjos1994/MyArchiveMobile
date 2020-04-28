@@ -75,7 +75,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
             this.mediaCoverFragment.setMediaObject(mediaObject);
 
             List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId())) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("companies"))) {
                 baseDescriptionObjects.add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.context));
             }
             this.mediaListFragment.setMediaObject(baseDescriptionObjects);

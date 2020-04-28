@@ -91,35 +91,37 @@ public final class CompanyActivity extends AbstractActivity {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.companyPagerAdapter.setMediaObject(new Company());
-                    this.company = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(this.company != null) {
-                        this.changeMode(true, true);
-                        this.companyPagerAdapter.setMediaObject(this.company);
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.companyPagerAdapter.setMediaObject(new Company());
+                        this.company = null;
+                    } else {
+                        this.changeMode(false, false);
+                        this.company = null;
+                        this.reload();
                     }
                     break;
-                case R.id.cmdCancel:
-                    this.changeMode(false, false);
-                    this.company = null;
-                    this.reload();
-                    break;
-                case R.id.cmdSave:
-                    if(this.validator.getState()) {
-                        Company company = this.companyPagerAdapter.getMediaObject();
-                        if(this.company !=null) {
-                            company.setId(this.company.getId());
-                        }
-                        if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
-                            this.changeMode(false, false);
-                            this.company = null;
-                            this.reload();
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(this.company != null) {
+                            this.changeMode(true, true);
+                            this.companyPagerAdapter.setMediaObject(this.company);
                         }
                     } else {
-                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
+                        if(this.validator.getState()) {
+                            Company company = this.companyPagerAdapter.getMediaObject();
+                            if(this.company !=null) {
+                                company.setId(this.company.getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
+                                this.changeMode(false, false);
+                                this.company = null;
+                                this.reload();
+                            }
+                        } else {
+                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
+                        }
                     }
                     break;
             }
@@ -131,6 +133,9 @@ public final class CompanyActivity extends AbstractActivity {
     protected void initControls() {
         this.lvCompanies = this.findViewById(R.id.lvCompanies);
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
 
         TabLayout tabLayout = this.findViewById(R.id.tabLayout);
         this.viewPager = this.findViewById(R.id.viewPager);
@@ -151,10 +156,6 @@ public final class CompanyActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_people);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
-
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
     private void select() {
@@ -177,7 +178,7 @@ public final class CompanyActivity extends AbstractActivity {
     protected void reload() {
         try {
             this.lvCompanies.getAdapter().clear();
-            LoadingTask<Company> loadingTask = new LoadingTask<>(CompanyActivity.this, new Company(), null, "", this.lvCompanies);
+            LoadingTask<Company> loadingTask = new LoadingTask<>(CompanyActivity.this, new Company(), null, "", this.lvCompanies, "companies");
             loadingTask.after((AbstractTask.PostExecuteListener<List<Company>>) companies -> {
                 for(Company company : companies) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -198,10 +199,7 @@ public final class CompanyActivity extends AbstractActivity {
 
     protected void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvCompanies, 4);
         ControlsHelper.changeScreenIfEditMode(mp, this.viewPager, CompanyActivity.this, editMode);

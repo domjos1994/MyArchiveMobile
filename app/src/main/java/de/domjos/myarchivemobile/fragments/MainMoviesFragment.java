@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
@@ -53,6 +54,7 @@ public class MainMoviesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvMovies;
     private MoviePagerAdapter moviePagerAdapter;
     private BottomNavigationView bottomNavigationView;
+    private TextView txtStatistics;
     private ViewPager viewPager;
     private String search;
 
@@ -85,38 +87,48 @@ public class MainMoviesFragment extends ParentFragment {
 
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.moviePagerAdapter.setMediaObject(new Movie());
-                    this.currentObject = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(this.currentObject != null) {
-                        this.changeMode(true, true);
-                        this.moviePagerAdapter.setMediaObject((Movie) this.currentObject.getObject());
-                    }
-                    break;
-                case R.id.cmdCancel:
-                    this.changeMode(false, false);
-                    this.moviePagerAdapter.setMediaObject(new Movie());
-                    currentObject = null;
+                case R.id.cmdNext:
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("movies") + 1, "movies");
                     this.reload();
                     break;
-                case R.id.cmdSave:
-                    if(this.validator.getState()) {
-                        Movie movie = this.moviePagerAdapter.getMediaObject();
-                        if(this.currentObject!=null) {
-                            movie.setId(((Movie) this.currentObject.getObject()).getId());
-                        }
-                        if(this.validator.checkDuplicatedEntry(movie.getTitle(), movie.getId(), this.lvMovies.getAdapter().getList())) {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
-                            this.changeMode(false, false);
-                            this.moviePagerAdapter.setMediaObject(new Movie());
-                            this.currentObject = null;
-                            this.reload();
+                case R.id.cmdPrevious:
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("movies") - 1, "movies");
+                    this.reload();
+                    break;
+                case R.id.cmdAdd:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.moviePagerAdapter.setMediaObject(new Movie());
+                        this.currentObject = null;
+                    } else {
+                        this.changeMode(false, false);
+                        this.moviePagerAdapter.setMediaObject(new Movie());
+                        currentObject = null;
+                        this.reload();
+                    }
+                    break;
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(this.currentObject != null) {
+                            this.changeMode(true, true);
+                            this.moviePagerAdapter.setMediaObject((Movie) this.currentObject.getObject());
                         }
                     } else {
-                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                        if(this.validator.getState()) {
+                            Movie movie = this.moviePagerAdapter.getMediaObject();
+                            if(this.currentObject!=null) {
+                                movie.setId(((Movie) this.currentObject.getObject()).getId());
+                            }
+                            if(this.validator.checkDuplicatedEntry(movie.getTitle(), movie.getId(), this.lvMovies.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                                this.changeMode(false, false);
+                                this.moviePagerAdapter.setMediaObject(new Movie());
+                                this.currentObject = null;
+                                this.reload();
+                            }
+                        } else {
+                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                        }
                     }
                     break;
             }
@@ -135,10 +147,7 @@ public class MainMoviesFragment extends ParentFragment {
     @Override
     public void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
 
         if(this.lvMovies.getLayoutParams() instanceof LinearLayout.LayoutParams) {
             this.lvMovies.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
@@ -151,13 +160,16 @@ public class MainMoviesFragment extends ParentFragment {
     private void initControls(View view) {
         this.lvMovies = view.findViewById(R.id.lvMediaMovies);
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
+
+        this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         this.viewPager = view.findViewById(R.id.viewPager);
         this.viewPager.setOffscreenPageLimit(6);
         tabLayout.setupWithViewPager(this.viewPager);
 
-        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(Objects.requireNonNull(this.getActivity()).getSupportFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie()));
+        this.moviePagerAdapter = new MoviePagerAdapter(Objects.requireNonNull(this.requireActivity().getSupportFragmentManager()), this.getContext(),() -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, moviePagerAdapter, currentObject, lvMovies, new Movie(), "movies"));
         this.validator = this.moviePagerAdapter.initValidator();
         this.viewPager.setAdapter(this.moviePagerAdapter);
 
@@ -168,10 +180,6 @@ public class MainMoviesFragment extends ParentFragment {
         Objects.requireNonNull(tabLayout.getTabAt(4)).setIcon(R.drawable.icon_video);
         Objects.requireNonNull(tabLayout.getTabAt(5)).setIcon(R.drawable.icon_stars);
         Objects.requireNonNull(tabLayout.getTabAt(6)).setIcon(R.drawable.icon_field);
-
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
     }
 
     private void reload() {
@@ -190,7 +198,7 @@ public class MainMoviesFragment extends ParentFragment {
             }
 
             this.lvMovies.getAdapter().clear();
-            LoadingTask<Movie> loadingTask = new LoadingTask<>(this.getActivity(), new Movie(), null, searchQuery, this.lvMovies);
+            LoadingTask<Movie> loadingTask = new LoadingTask<>(this.getActivity(), new Movie(), null, searchQuery, this.lvMovies, "movies");
             loadingTask.after((AbstractTask.PostExecuteListener<List<Movie>>) movies -> {
                 for(Movie movie : movies) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -203,6 +211,7 @@ public class MainMoviesFragment extends ParentFragment {
                     lvMovies.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
+                ControlsHelper.setMediaStatistics(this.txtStatistics, "movies");
             });
             loadingTask.execute();
         } catch (Exception ex) {

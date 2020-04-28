@@ -33,6 +33,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.settings.Settings;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -53,7 +54,7 @@ public class ListService extends JobService {
         }
 
         try {
-            for(MediaList mediaList : this.database.getMediaLists("")) {
+            for(MediaList mediaList : this.database.getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("list"))) {
                 this.checkListObject(mediaList);
             }
         } catch (Exception ex) {

@@ -104,54 +104,56 @@ public class MainLibraryFragment extends ParentFragment {
             LibraryObject libraryObject;
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    libraryObject = new LibraryObject();
-                    libraryObject.setDeadLine(new Date());
-                    this.setObject(libraryObject);
-                    this.libraryObject = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(this.libraryObject != null) {
-                        this.changeMode(true, true);
-                        setObject(this.libraryObject);
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        libraryObject = new LibraryObject();
+                        libraryObject.setDeadLine(new Date());
+                        this.setObject(libraryObject);
+                        this.libraryObject = null;
+                    } else {
+                        changeMode(false, false);
+                        setObject(new LibraryObject());
+                        this.libraryObject = null;
+                        reloadLibraryObjects();
                     }
                     break;
-                case R.id.cmdCancel:
-                    changeMode(false, false);
-                    setObject(new LibraryObject());
-                    this.libraryObject = null;
-                    reloadLibraryObjects();
-                    break;
-                case R.id.cmdSave:
-                    try {
-                        libraryObject = this.getObject();
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
                         if(this.libraryObject != null) {
-                            libraryObject.setId(this.libraryObject.getId());
+                            this.changeMode(true, true);
+                            setObject(this.libraryObject);
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+                    } else {
+                        try {
+                            libraryObject = this.getObject();
+                            if(this.libraryObject != null) {
+                                libraryObject.setId(this.libraryObject.getId());
+                            }
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
 
-                        if(this.libraryObject != null) {
-                            if(this.libraryObject.getId() != 0) {
-                                BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                                for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                    if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
-                                        baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
-                                        break;
+                            if(this.libraryObject != null) {
+                                if(this.libraryObject.getId() != 0) {
+                                    BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
+                                    for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                                        if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                            baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
+                                            break;
+                                        }
                                     }
+                                } else {
+                                    ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                                 }
                             } else {
                                 ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                             }
-                        } else {
-                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
-                        }
 
-                        this.changeMode(false, false);
-                        this.libraryObject = null;
-                        this.reloadLibraryObjects();
-                        this.setObject(new LibraryObject());
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                            this.changeMode(false, false);
+                            this.libraryObject = null;
+                            this.reloadLibraryObjects();
+                            this.setObject(new LibraryObject());
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        }
                     }
                     break;
             }
@@ -176,7 +178,7 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary);
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary, "library");
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
@@ -311,11 +313,10 @@ public class MainLibraryFragment extends ParentFragment {
         this.txtLibraryPerson = view.findViewById(R.id.txtLibraryPerson);
 
         this.bottomNavigationView = view.findViewById(R.id.navigationView);
-
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
+        this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(false);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(false);
 
         try {
             this.arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtLibraryPerson);
@@ -330,10 +331,8 @@ public class MainLibraryFragment extends ParentFragment {
 
     @Override
     public  void changeMode(boolean editMode, boolean selected) {
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected && this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).isVisible());
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
 
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvMediaLibrary, 4);

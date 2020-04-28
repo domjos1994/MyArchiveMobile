@@ -106,38 +106,40 @@ public class MainListsFragment extends ParentFragment {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdAdd:
-                    this.changeMode(true, false);
-                    this.setObject(new MediaList());
-                    this.mediaList = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(mediaList != null) {
-                        this.changeMode(true, true);
-                        this.setObject(mediaList);
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
+                        this.changeMode(true, false);
+                        this.setObject(new MediaList());
+                        this.mediaList = null;
+                    } else {
+                        changeMode(false, false);
+                        this.setObject(new MediaList());
+                        this.mediaList = null;
                     }
                     break;
-                case R.id.cmdCancel:
-                    changeMode(false, false);
-                    this.setObject(new MediaList());
-                    this.mediaList = null;
-                    break;
-                case R.id.cmdSave:
-                    try {
-                        if(this.validator.getState()) {
-                            MediaList mediaList = this.getObject();
-                            if(this.mediaList != null) {
-                                mediaList.setId(this.mediaList.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
-                                this.changeMode(false, false);
-                                this.setObject(new MediaList());
-                                this.mediaList = null;
-                                this.reload();
-                            }
+                case R.id.cmdEdit:
+                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                        if(mediaList != null) {
+                            this.changeMode(true, true);
+                            this.setObject(mediaList);
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                    } else {
+                        try {
+                            if(this.validator.getState()) {
+                                MediaList mediaList = this.getObject();
+                                if(this.mediaList != null) {
+                                    mediaList.setId(this.mediaList.getId());
+                                }
+                                if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
+                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                                    this.changeMode(false, false);
+                                    this.setObject(new MediaList());
+                                    this.mediaList = null;
+                                    this.reload();
+                                }
+                            }
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        }
                     }
                     break;
             }
@@ -160,7 +162,7 @@ public class MainListsFragment extends ParentFragment {
             }
 
             this.lvMediaLists.getAdapter().clear();
-            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists);
+            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists, "lists");
             loadingTask.after((AbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
                 for(MediaList mediaList : mediaLists) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -237,7 +239,7 @@ public class MainListsFragment extends ParentFragment {
         if (item.getItemId() == R.id.menListsMediaAdd) {
             try {
                 if(mediaList != null) {
-                    List<BaseDescriptionObject> descriptionObjectList = ControlsHelper.getAllMediaItems(this.getActivity(), "");
+                    List<BaseDescriptionObject> descriptionObjectList = ControlsHelper.getAllMediaItems(this.getActivity(), "", "lists");
                     boolean[] checkedItems = new boolean[descriptionObjectList.size()];
                     Map<String, BaseDescriptionObject> arrayList = new LinkedHashMap<>();
                     int i = 0;
@@ -300,10 +302,7 @@ public class MainListsFragment extends ParentFragment {
 
     @Override
     public  void changeMode(boolean editMode, boolean selected) {
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(!editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(!editMode && selected);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdCancel).setVisible(editMode);
-        this.bottomNavigationView.getMenu().findItem(R.id.cmdSave).setVisible(editMode);
+        ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
 
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvMediaLists, 4);

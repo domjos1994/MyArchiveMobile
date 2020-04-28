@@ -17,17 +17,23 @@
 
 package de.domjos.myarchivemobile.settings;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import de.domjos.myarchivelibrary.database.Database;
+import de.domjos.myarchivemobile.activities.MainActivity;
 
 public final class Globals {
     private Database database;
     private Settings settings;
     private boolean network;
+    private Map<String, Integer> page;
 
     public Globals() {
         this.database = null;
         this.settings = null;
         this.network = true;
+        this.page = new LinkedHashMap<>();
     }
 
     public Database getDatabase() {
@@ -52,5 +58,33 @@ public final class Globals {
 
     public void setNetwork(boolean network) {
         this.network = network;
+    }
+
+    public void setPage(int page, String key) {
+        this.page.put(key, page * MainActivity.GLOBALS.getSettings().getMediaCount());
+    }
+
+    public int getPage(String key) {
+        if(!this.page.containsKey(key))  {
+            this.page.put(key, 0);
+        }
+
+        Integer number = this.page.get(key);
+        if(number != null) {
+            return number / MainActivity.GLOBALS.getSettings().getMediaCount();
+        }
+        return 0;
+    }
+
+    public int getOffset(String key) {
+        if(!this.page.containsKey(key))  {
+            this.page.put(key, 0);
+        }
+
+        Integer number = this.page.get(key);
+        if(number != null) {
+            return number;
+        }
+        return 0;
     }
 }
