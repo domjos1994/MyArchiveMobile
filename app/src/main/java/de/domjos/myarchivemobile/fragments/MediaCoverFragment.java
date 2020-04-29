@@ -30,8 +30,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -58,8 +56,8 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.cmdMediaCoverGallery = view.findViewById(R.id.cmdMediaCoverGallery);
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
-        this.cmdMediaCoverGallery.setOnClickListener(view1 -> IntentHelper.startGalleryIntent(Objects.requireNonNull(this.getActivity())));
-        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> IntentHelper.startCameraIntent(Objects.requireNonNull(this.getActivity())));
+        this.cmdMediaCoverGallery.setOnClickListener(view1 -> IntentHelper.startGalleryIntent(this.requireActivity()));
+        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> IntentHelper.startCameraIntent(this.requireActivity()));
 
         this.changeMode(false);
     }

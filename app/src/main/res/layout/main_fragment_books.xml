@@ -24,6 +24,7 @@
     android:orientation="vertical">
 
     <de.domjos.customwidgets.widgets.SplitPaneLayout
+        android:id="@+id/spl"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         app:orientation="vertical"

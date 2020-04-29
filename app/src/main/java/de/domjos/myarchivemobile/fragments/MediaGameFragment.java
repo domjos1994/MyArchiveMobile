@@ -28,8 +28,6 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -56,7 +54,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaGameType = view.findViewById(R.id.spMediaGameType);
         this.txtMediaGameLastPlayed = view.findViewById(R.id.txtMediaGameLastPlayed);
 
-        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
+        this.typeAdapter = new CustomSpinnerAdapter<>(this.requireActivity());
         for(Game.Type type : Game.Type.values()) {
             this.typeAdapter.add(type.name());
         }

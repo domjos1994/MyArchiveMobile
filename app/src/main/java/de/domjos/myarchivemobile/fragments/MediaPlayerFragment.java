@@ -32,7 +32,6 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -93,7 +92,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    Objects.requireNonNull(MediaPlayerFragment.this.getActivity()).runOnUiThread(()->updateDurationLabel());
+                    MediaPlayerFragment.this.requireActivity().runOnUiThread(()->updateDurationLabel());
                 }
             };
             Timer timer = new Timer();
@@ -133,11 +132,11 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
                     this.vvCurrent.start();
                 } else {
                     if(this.path.toLowerCase().contains("youtu")) {
-                        if(!IntentHelper.startYoutubeIntent(this.path, Objects.requireNonNull(this.getActivity()))) {
-                            IntentHelper.startBrowserIntent(this.path, Objects.requireNonNull(this.getActivity()));
+                        if(!IntentHelper.startYoutubeIntent(this.path, this.requireActivity())) {
+                            IntentHelper.startBrowserIntent(this.path, this.requireActivity());
                         }
                     } else {
-                        IntentHelper.startBrowserIntent(this.path, Objects.requireNonNull(this.getActivity()));
+                        IntentHelper.startBrowserIntent(this.path, this.requireActivity());
                     }
                 }
             }
@@ -226,7 +225,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
                 this.mScaleFactor = 1.0f;
                 this.scale(this.mScaleFactor);
             } else {
-                IntentHelper.startPDFIntent(Objects.requireNonNull(this.getActivity()), this.path);
+                IntentHelper.startPDFIntent(this.requireActivity(), this.path);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());

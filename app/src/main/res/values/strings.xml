@@ -74,6 +74,12 @@
         <item>@string/album_number</item>
         <item>@string/customFields</item>
     </string-array>
+    <string name="api_task_import">Import File!</string>
+    <string name="api_task_import_data">Get Data!</string>
+    <string name="api_task_import_webservice">Finalize Data by Webservice!</string>
+    <string name="api_task_import_content">Import Data from File to Database!</string>
+    <string name="api_task_export">Export Data!</string>
+    <string name="api_task_export_content">Export Data from Database to File!</string>
 
     <string name="filter_no_filter">No Filter</string>
     <string name="filter_temp">Temporary Settings</string>

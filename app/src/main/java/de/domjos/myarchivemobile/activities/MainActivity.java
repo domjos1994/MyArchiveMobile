@@ -48,9 +48,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
 import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
@@ -81,10 +79,6 @@ public final class MainActivity extends AbstractActivity {
     private final static int SETTINGS_REQUEST = 51;
     private final static int PER_COMP_TAG_CAT_REQUEST = 52;
     private final static int SCANNER_REQUEST = 53;
-    public final static LinearLayout.LayoutParams OPEN_LIST = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 4);
-    public final static LinearLayout.LayoutParams CLOSE_LIST = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 0);
-    public final static LinearLayout.LayoutParams CLOSE_PAGER = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 6);
-    public final static LinearLayout.LayoutParams OPEN_PAGER = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 10);
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;

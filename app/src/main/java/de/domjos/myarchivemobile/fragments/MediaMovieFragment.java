@@ -33,12 +33,10 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
@@ -66,7 +64,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaMovieType = view.findViewById(R.id.spMediaMovieType);
         this.txtMediaMovieLastSeen = view.findViewById(R.id.txtMediaMovieLastSeen);
 
-        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
+        this.typeAdapter = new CustomSpinnerAdapter<>(this.requireActivity());
         for(Movie.Type type : Movie.Type.values()) {
             this.typeAdapter.add(type.name());
         }
@@ -75,7 +73,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaMoviePath.setOnClickListener(event -> {
             List<String> filter = Arrays.asList("MP4", "mp4", "AVI", "avi");
-            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, Objects.requireNonNull(this.getActivity()));
+            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, this.requireActivity());
             dialog.setDialogSelectionListener(files -> {
                 if ( files != null) {
                     if(files.length != 0) {

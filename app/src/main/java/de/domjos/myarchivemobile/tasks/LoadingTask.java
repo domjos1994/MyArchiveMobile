@@ -41,6 +41,7 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List doInBackground(Void... voids) {
         try {
             ((Activity) this.getContext()).runOnUiThread(() -> {

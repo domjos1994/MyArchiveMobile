@@ -49,6 +49,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainLibraryFragment extends ParentFragment {
@@ -178,7 +179,7 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary, "library");
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY);
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
@@ -278,7 +279,7 @@ public class MainLibraryFragment extends ParentFragment {
     @Override
     public void select() {
         try {
-            long id = Objects.requireNonNull(this.getArguments()).getLong("id");
+            long id = this.requireArguments().getLong("id");
             if(id != 0) {
                 for(int i = 0; i<=this.lvMediaLibrary.getAdapter().getItemCount() - 1; i++) {
                     this.currentObject = this.lvMediaLibrary.getAdapter().getItem(i);
@@ -319,7 +320,7 @@ public class MainLibraryFragment extends ParentFragment {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
 
         try {
-            this.arrayAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), this.txtLibraryPerson);
+            this.arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtLibraryPerson);
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
                 arrayAdapter.add(person);
             }
@@ -337,7 +338,7 @@ public class MainLibraryFragment extends ParentFragment {
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvMediaLibrary, 4);
         mp.put(this.lvMediaHistory, 3);
-        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, Objects.requireNonNull(this.getActivity()), editMode);
+        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, this.requireActivity(), editMode);
 
         this.lvMediaHistory.setReadOnly(editMode);
         this.txtLibraryPerson.setEnabled(editMode);

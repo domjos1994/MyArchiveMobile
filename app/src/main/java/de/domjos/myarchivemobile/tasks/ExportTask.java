@@ -9,7 +9,6 @@ import java.util.List;
 
 import de.domjos.customwidgets.model.tasks.StatusTask;
 import de.domjos.customwidgets.model.tasks.TaskStatus;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.services.TextService;
 import de.domjos.myarchivemobile.R;
@@ -23,7 +22,7 @@ public class ExportTask extends StatusTask<Void, Void> {
     private List<BaseMediaObject> baseMediaObjects;
 
     public ExportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, List<BaseMediaObject> baseMediaObjects) {
-        super(activity, R.string.api, R.string.api, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
+        super(activity, R.string.api_task_export, R.string.api_task_export_content, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
 
         this.path = path;
         this.baseMediaObjects = baseMediaObjects;
@@ -39,21 +38,31 @@ public class ExportTask extends StatusTask<Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        if(this.path.toLowerCase().endsWith("pdf")) {
+        try {
             int i = 0;
-            PDFWriterHelper pdfWriterHelper = new PDFWriterHelper(this.path, this.getContext());
-            for(BaseMediaObject baseMediaObject : this.baseMediaObjects) {
-                pdfWriterHelper.addRow(baseMediaObject);
-                publishProgress(new TaskStatus(++i, "Import Row " + baseMediaObject.getTitle()));
-            }
-            pdfWriterHelper.close();
-        } else {
-            try {
+            if(this.path.toLowerCase().endsWith("pdf")) {
+                PDFWriterHelper pdfWriterHelper = new PDFWriterHelper(this.path, this.getContext());
+                for(BaseMediaObject baseMediaObject : this.baseMediaObjects) {
+                    pdfWriterHelper.addRow(baseMediaObject);
+                    publishProgress(new TaskStatus(++i, "Import Row " + baseMediaObject.getTitle()));
+                }
+                pdfWriterHelper.close();
+            } else {
                 TextService textService = new TextService(this.path);
-                textService.writeFile(this.baseMediaObjects);
-            } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                textService.openWriter();
+                boolean header = false;
+                for(BaseMediaObject baseMediaObject : this.baseMediaObjects) {
+                    if(!header) {
+                        header = true;
+                        textService.writeHeader(baseMediaObject);
+                    }
+                    textService.writeLine(baseMediaObject);
+                    publishProgress(new TaskStatus(++i, "Import Row " + baseMediaObject.getTitle()));
+                }
+                textService.closeWriter();
             }
+        } catch (Exception ex) {
+            super.printException(ex);
         }
         return null;
     }

@@ -31,11 +31,13 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -51,6 +53,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.customwidgets.widgets.SplitPaneLayout;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -64,12 +67,13 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
+import de.domjos.myarchivemobile.settings.Globals;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class ControlsHelper {
-
+    public static boolean fromHome = false;
 
     @SuppressWarnings("unchecked")
     public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject, String key) {
@@ -91,28 +95,28 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Album) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
                         }
                     }
                     if(emptyObject instanceof Movie) {
                         if(currentObject != null) {
                             baseMediaObject = (Movie) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
                         }
                     }
                     if(emptyObject instanceof Game) {
                         if(currentObject != null) {
                             baseMediaObject = (Game) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
                         }
                     }
                     if(emptyObject instanceof Book) {
                         if(currentObject != null) {
                             baseMediaObject = (Book) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key)).get(0);
+                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
                         }
                     }
                     if(baseMediaObject != null) {
@@ -357,7 +361,7 @@ public class ControlsHelper {
 
     public static void navViewEditMode(boolean editMode, boolean selected, BottomNavigationView navigationView) {
         MenuItem addItem = navigationView.getMenu().findItem(R.id.cmdAdd);
-        MenuItem editItem = navigationView.getMenu().findItem(R.id.cmdAdd);
+        MenuItem editItem = navigationView.getMenu().findItem(R.id.cmdEdit);
         if(editMode) {
             addItem.setIcon(R.drawable.icon_cancel);
             addItem.setTitle(R.string.sys_cancel);
@@ -373,7 +377,16 @@ public class ControlsHelper {
             editItem.setTitle(R.string.sys_edit);
 
             addItem.setVisible(true);
-            addItem.setVisible(selected);
+            editItem.setVisible(selected);
+        }
+    }
+
+    public static void splitPaneEditMode(ViewGroup spl, boolean editMode) {
+        if(spl != null) {
+            if(spl instanceof SplitPaneLayout) {
+                SplitPaneLayout layout = (SplitPaneLayout) spl;
+                layout.setSplitterPositionPercent(editMode ? 0.0f : 0.4f);
+            }
         }
     }
 
@@ -383,6 +396,19 @@ public class ControlsHelper {
         int max = (currentPage + 1) * numberOfItems;
 
         txt.setText(String.format("%s - %s", max - numberOfItems, max));
+    }
+
+    public static String setThePage(Fragment fragment, String table, String key) {
+        if(fragment.getArguments() != null && ControlsHelper.fromHome) {
+            long id = fragment.getArguments().getLong("id");
+            if( id != 0) {
+                key = key.replace(Globals.RESET, "");
+                int page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
+                MainActivity.GLOBALS.setPage(page, key);
+                ControlsHelper.fromHome = false;
+            }
+        }
+        return key;
     }
 
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

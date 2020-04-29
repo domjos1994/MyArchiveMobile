@@ -44,6 +44,7 @@ import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
+import de.domjos.customwidgets.utils.WidgetUtils;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
@@ -143,7 +144,7 @@ public class MediaDialog extends DialogFragment {
 
         this.cmdSave.setOnClickListener(view -> {
             if(this.cmdSave.getTag().toString().equals(this.getString(R.string.sys_save))) {
-                this.cmdSave.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_cancel));
+                this.cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_cancel));
                 this.cmdSave.setTag(this.getString(R.string.sys_cancel));
                 this.setCancelable(false);
                 if(this.currentObject != null) {
@@ -166,7 +167,7 @@ public class MediaDialog extends DialogFragment {
                                         if(o != null && !o.isEmpty()) {
                                             MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(o.get(0));
                                         }
-                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
@@ -178,7 +179,7 @@ public class MediaDialog extends DialogFragment {
                                         if(o != null && !o.isEmpty()) {
                                             MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(o.get(0));
                                         }
-                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
@@ -191,7 +192,7 @@ public class MediaDialog extends DialogFragment {
                                         if(o != null && !o.isEmpty()) {
                                             MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(o.get(0));
                                         }
-                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
@@ -204,7 +205,7 @@ public class MediaDialog extends DialogFragment {
                                         if(o != null && !o.isEmpty()) {
                                             MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(o.get(0));
                                         }
-                                        cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                        cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
@@ -213,7 +214,7 @@ public class MediaDialog extends DialogFragment {
                                 }
                             } else {
                                 MessageHelper.printMessage(validator.getResult(), R.mipmap.ic_launcher_round, this.activity);
-                                this.cmdSave.setImageDrawable(getResources().getDrawable(R.drawable.icon_save));
+                                this.cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                 this.cmdSave.setTag(getString(R.string.sys_save));
                                 MediaDialog.this.setCancelable(true);
                             }
@@ -246,7 +247,7 @@ public class MediaDialog extends DialogFragment {
                     this.igdbTask.cancel(true);
                 }
 
-                this.cmdSave.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_save));
+                this.cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                 this.cmdSave.setTag(this.getString(R.string.sys_save));
             }
         });
@@ -270,7 +271,7 @@ public class MediaDialog extends DialogFragment {
     private void reload(int position) {
         try {
             if(this.cmdSearch.getTag().toString().equals(this.getString(R.string.sys_search))) {
-                this.cmdSearch.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_cancel));
+                this.cmdSearch.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_cancel));
                 this.cmdSearch.setTag(this.getString(R.string.sys_cancel));
                 if(this.type != null && this.titleWebservices != null) {
                     TitleWebservice currentService = this.webServiceAdapter.getItem(position);
@@ -283,7 +284,7 @@ public class MediaDialog extends DialogFragment {
                             for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                                 lvMedia.getAdapter().add(baseDescriptionObject);
                             }
-                            cmdSearch.setImageDrawable(getResources().getDrawable(R.drawable.icon_search));
+                            cmdSearch.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_search));
                             cmdSearch.setTag(getString(R.string.sys_search));
                         });
                         this.searchTask.execute(this.search);
@@ -294,7 +295,7 @@ public class MediaDialog extends DialogFragment {
                     this.searchTask.cancel(true);
                 }
 
-                this.cmdSearch.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_search));
+                this.cmdSearch.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_search));
                 this.cmdSearch.setTag(this.getString(R.string.sys_search));
             }
         } catch (Exception ex) {
@@ -303,8 +304,8 @@ public class MediaDialog extends DialogFragment {
     }
 
     private void initControls(View view) {
-        this.activity = Objects.requireNonNull(this.getActivity());
-        Bundle arguments = Objects.requireNonNull(this.getArguments());
+        this.activity = this.requireActivity();
+        Bundle arguments = this.requireArguments();
         this.type = arguments.getString("type");
         this.search = arguments.getString("search");
 
@@ -316,7 +317,7 @@ public class MediaDialog extends DialogFragment {
         this.lblTitle.setMovementMethod(LinkMovementMethod.getInstance());
 
         this.spWebservices = view.findViewById(R.id.spWebServices);
-        this.webServiceAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()), this.titleWebservices);
+        this.webServiceAdapter = new CustomSpinnerAdapter<>(this.activity, this.titleWebservices);
         this.spWebservices.setAdapter(this.webServiceAdapter);
         this.webServiceAdapter.notifyDataSetChanged();
     }

@@ -111,7 +111,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         }
 
         this.txtMediaGeneralCategory = view.findViewById(R.id.txtMediaGeneralCategory);
-        CustomAutoCompleteAdapter<String> categoryAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaGeneralCategory);
+        CustomAutoCompleteAdapter<String> categoryAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaGeneralCategory);
         for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "")) {
             categoryAdapter.add(baseDescriptionObject.getTitle());
         }
@@ -120,7 +120,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.txtMediaGeneralTags = view.findViewById(R.id.txtMediaGeneralTags);
         this.txtMediaGeneralTags.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        CustomAutoCompleteAdapter<String> tagAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaGeneralTags);
+        CustomAutoCompleteAdapter<String> tagAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaGeneralTags);
         for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "")) {
             tagAdapter.add(baseDescriptionObject.getTitle());
         }
@@ -138,7 +138,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         });
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
-            Context ctx = Objects.requireNonNull(this.getActivity());
+            Context ctx = this.requireActivity();
             try {
                 String type;
                 String search = this.txtMediaGeneralTitle.getText().toString();
@@ -171,7 +171,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         });
 
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
-            Activity ctx = Objects.requireNonNull(this.getActivity());
+            Activity ctx = this.requireActivity();
             try {
                 int icon = R.mipmap.ic_launcher_round;
                 boolean notifications = MainActivity.GLOBALS.getSettings().isNotifications();

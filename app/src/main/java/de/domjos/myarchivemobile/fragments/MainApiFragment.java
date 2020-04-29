@@ -97,7 +97,7 @@ public class MainApiFragment extends ParentFragment {
         Spinner spApiType = root.findViewById(R.id.spApiType);
         spApiType.setAdapter(new CustomSpinnerAdapter<>(this.requireActivity(), this.typeArray));
         Spinner spApiFormat = root.findViewById(R.id.spApiFormat);
-        CustomSpinnerAdapter<String> formatAdapter = new CustomSpinnerAdapter<>(this.getActivity());
+        CustomSpinnerAdapter<String> formatAdapter = new CustomSpinnerAdapter<>(this.requireActivity());
         spApiFormat.setAdapter(formatAdapter);
         formatAdapter.notifyDataSetChanged();
 
@@ -292,7 +292,7 @@ public class MainApiFragment extends ParentFragment {
     private void importToDatabase() throws Exception {
         String path = this.txtApiPath.getText().toString();
         MainActivity.GLOBALS.getDatabase().getDatabase(path);
-        MainApiFragment.triggerRebirth(Objects.requireNonNull(this.getContext()));
+        MainApiFragment.triggerRebirth(this.requireContext());
     }
 
     @Override
@@ -301,7 +301,7 @@ public class MainApiFragment extends ParentFragment {
             String path = this.txtApiPath.getText().toString();
             if(resultCode == RESULT_OK && requestCode == 965) {
                 MainActivity.GLOBALS.getDatabase().getDatabase(path);
-                MainApiFragment.triggerRebirth(Objects.requireNonNull(this.getContext()));
+                MainApiFragment.triggerRebirth(this.requireContext());
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
@@ -371,7 +371,7 @@ public class MainApiFragment extends ParentFragment {
 
     @SuppressLint("InflateParams")
     private void fillPnlCells(List<String> cells) {
-        LayoutInflater inflater = (LayoutInflater) Objects.requireNonNull(this.getActivity()).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) this.requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.tblCells.removeViews(1, this.tblCells.getChildCount() - 1);
         this.mpCells.clear();
         for(String cell : cells) {
@@ -388,7 +388,7 @@ public class MainApiFragment extends ParentFragment {
     }
 
     private CustomSpinnerAdapter<String> reloadColumns() {
-        CustomSpinnerAdapter<String> columns = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
+        CustomSpinnerAdapter<String> columns = new CustomSpinnerAdapter<>(this.requireActivity());
         columns.clear();
 
         String[] cellArray = this.getResources().getStringArray(R.array.api_cells);

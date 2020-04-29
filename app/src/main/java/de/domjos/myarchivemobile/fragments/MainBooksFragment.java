@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,6 +46,7 @@ import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
@@ -54,13 +54,14 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 public class MainBooksFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvBooks;
     private BookPagerAdapter bookPagerAdapter;
-    private ViewPager viewPager;
     private BottomNavigationView bottomNavigationView;
     private TextView txtStatistics;
     private String search;
+    private ViewGroup spl;
 
     private BaseDescriptionObject currentObject = null;
     private Validator validator;
+    private boolean changePage;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_books, container, false);
@@ -89,11 +90,13 @@ public class MainBooksFragment extends ParentFragment {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdNext:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("books") + 1, "books");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) + 1, Globals.BOOKS);
                     this.reload();
                     break;
                 case R.id.cmdPrevious:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("books") - 1, "books");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) - 1, Globals.BOOKS);
                     this.reload();
                     break;
                 case R.id.cmdAdd:
@@ -149,12 +152,7 @@ public class MainBooksFragment extends ParentFragment {
     public  void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
-
-        if(this.lvBooks.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-            this.lvBooks.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
-        }
-
+        ControlsHelper.splitPaneEditMode(this.spl, editMode);
         this.bookPagerAdapter.changeMode(editMode);
     }
 
@@ -166,13 +164,15 @@ public class MainBooksFragment extends ParentFragment {
         this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        this.viewPager = view.findViewById(R.id.viewPager);
-        this.viewPager.setOffscreenPageLimit(6);
-        tabLayout.setupWithViewPager(this.viewPager);
+        ViewPager viewPager = view.findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(6);
+        tabLayout.setupWithViewPager(viewPager);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book(), "books"));
+        this.spl = view.findViewById(R.id.spl);
+
+        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book(), Globals.BOOKS));
         this.validator = this.bookPagerAdapter.initValidator();
-        this.viewPager.setAdapter(this.bookPagerAdapter);
+        viewPager.setAdapter(this.bookPagerAdapter);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_general);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
@@ -185,6 +185,8 @@ public class MainBooksFragment extends ParentFragment {
 
     private void reload() {
         try {
+
+
             String searchQuery = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
@@ -199,7 +201,10 @@ public class MainBooksFragment extends ParentFragment {
             }
 
             this.lvBooks.getAdapter().clear();
-            LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks, "books");
+            String key = this.returnKey();
+            key = ControlsHelper.setThePage(this, "books", key);
+            LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks, key);
+            String finalKey = key;
             loadingTask.after((AbstractTask.PostExecuteListener<List<Book>>) books -> {
                 for(Book book : books) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -212,12 +217,33 @@ public class MainBooksFragment extends ParentFragment {
                     lvBooks.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
-                ControlsHelper.setMediaStatistics(this.txtStatistics, "books");
+                ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
             loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+    }
+
+    private String returnKey() {
+        String key = Globals.BOOKS;
+
+        if(this.search != null) {
+            if(!this.search.isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        } else {
+            if(!MainActivity.getQuery().isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        }
+
+        if(!this.changePage) {
+            key += Globals.RESET;
+        } else {
+            this.changePage = false;
+        }
+        return key;
     }
 
     @Override
@@ -257,6 +283,7 @@ public class MainBooksFragment extends ParentFragment {
                     if(baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
                         bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
+                        lvBooks.select(currentObject);
                         changeMode(false, true);
                         return;
                     }
@@ -264,4 +291,6 @@ public class MainBooksFragment extends ParentFragment {
             }
         }
     }
+
+
 }

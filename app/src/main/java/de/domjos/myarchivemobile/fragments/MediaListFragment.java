@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -142,7 +141,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
             this.lvLibrary.setVisibility(View.GONE);
             ((LinearLayout.LayoutParams)this.lvMedia.getLayoutParams()).weight = 9;
         } else {
-            int orientation = Objects.requireNonNull(this.getContext()).getResources().getConfiguration().orientation;
+            int orientation = this.requireContext().getResources().getConfiguration().orientation;
 
             if(orientation == Configuration.ORIENTATION_PORTRAIT) {
                 if(this.isEmpty()) {
@@ -178,7 +177,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
     }
 
     private void hideLibrary() {
-        int orientation = Objects.requireNonNull(this.getContext()).getResources().getConfiguration().orientation;
+        int orientation = this.requireContext().getResources().getConfiguration().orientation;
 
         if(orientation == Configuration.ORIENTATION_PORTRAIT) {
             if (this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams) {

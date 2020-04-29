@@ -28,8 +28,6 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -56,7 +54,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
         this.spMediaAlbumType = view.findViewById(R.id.spMediaAlbumType);
         this.txtMediaAlbumLastHeard = view.findViewById(R.id.txtMediaAlbumLastHeard);
 
-        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
+        this.typeAdapter = new CustomSpinnerAdapter<>(this.requireActivity());
         for(Album.Type type : Album.Type.values()) {
             this.typeAdapter.add(type.name());
         }

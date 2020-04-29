@@ -33,7 +33,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
@@ -221,7 +220,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
         String[] typeArray = this.getResources().getStringArray(R.array.customFields_type_values);
         this.spCustomFieldType = view.findViewById(R.id.spCustomFieldType);
-        CustomSpinnerAdapter<String> adapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()), typeArray);
+        CustomSpinnerAdapter<String> adapter = new CustomSpinnerAdapter<>(this.requireContext(), typeArray);
         this.spCustomFieldType.setAdapter(adapter);
 
         this.chkCustomFieldAlbums = view.findViewById(R.id.chkCustomFieldAlbums);
@@ -243,7 +242,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvCustomFields, 7);
-        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, Objects.requireNonNull(this.getActivity()), editMode);
+        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, this.requireActivity(), editMode);
 
         this.txtCustomFieldTitle.setEnabled(editMode);
         this.txtCustomFieldDescription.setEnabled(editMode);

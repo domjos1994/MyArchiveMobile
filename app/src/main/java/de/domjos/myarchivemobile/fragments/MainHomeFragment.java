@@ -69,6 +69,7 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainHomeFragment extends ParentFragment {
@@ -88,7 +89,7 @@ public class MainHomeFragment extends ParentFragment {
 
     private SwipeRefreshDeleteList lvMedia;
     private String search;
-    private boolean isOpen = false;
+    private boolean isOpen = false, changePage;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_home, container, false);
@@ -154,12 +155,14 @@ public class MainHomeFragment extends ParentFragment {
         });
 
         cmdPrevious.setOnClickListener(view -> {
-            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("home") - 1, "home");
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.HOME) - 1, Globals.HOME);
             this.reload(search, true);
         });
 
         cmdNext.setOnClickListener(view -> {
-            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("home") + 1, "home");
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.HOME) + 1, Globals.HOME);
             this.reload(search, true);
         });
 
@@ -223,6 +226,7 @@ public class MainHomeFragment extends ParentFragment {
         this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
             if(mainActivity != null) {
+                ControlsHelper.fromHome = true;
                 mainActivity.selectTab(listObject.getDescription(), ((BaseMediaObject) listObject.getObject()).getId());
             }
         });
@@ -554,18 +558,40 @@ public class MainHomeFragment extends ParentFragment {
 
 
             this.lvMedia.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, "home");
+            String key = this.returnKey();
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key);
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     lvMedia.getAdapter().add(baseDescriptionObject);
                 }
 
-                ControlsHelper.setMediaStatistics(lblEntriesCount, "home");
+                ControlsHelper.setMediaStatistics(lblEntriesCount, key);
             });
             loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+    }
+
+    private String returnKey() {
+        String key = Globals.HOME;
+
+        if(this.search != null) {
+            if(!this.search.isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        } else {
+            if(!MainActivity.getQuery().isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        }
+
+        if(!this.changePage) {
+            key += Globals.RESET;
+        } else {
+            this.changePage = false;
+        }
+        return key;
     }
 
     @Override

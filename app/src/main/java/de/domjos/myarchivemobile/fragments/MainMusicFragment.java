@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,6 +46,7 @@ import de.domjos.myarchivelibrary.tasks.EANDataAlbumTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
@@ -55,11 +55,12 @@ public class MainMusicFragment extends ParentFragment {
     private AlbumPagerAdapter albumPagerAdapter;
     private BottomNavigationView bottomNavigationView;
     private TextView txtStatistics;
-    private ViewPager viewPager;
     private String search;
+    private ViewGroup spl;
 
     private BaseDescriptionObject currentObject = null;
     private Validator validator;
+    private boolean changePage;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_music, container, false);
@@ -88,11 +89,13 @@ public class MainMusicFragment extends ParentFragment {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdNext:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("music") + 1, "music");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) + 1, Globals.MUSIC);
                     this.reload();
                     break;
                 case R.id.cmdPrevious:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("music") - 1, "music");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) - 1, Globals.MUSIC);
                     this.reload();
                     break;
                 case R.id.cmdAdd:
@@ -148,12 +151,7 @@ public class MainMusicFragment extends ParentFragment {
     public void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
-
-        if(this.lvAlbums.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-            this.lvAlbums.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
-        }
-
+        ControlsHelper.splitPaneEditMode(this.spl, editMode);
         this.albumPagerAdapter.changeMode(editMode);
     }
 
@@ -165,13 +163,15 @@ public class MainMusicFragment extends ParentFragment {
         this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        this.viewPager = view.findViewById(R.id.viewPager);
-        this.viewPager.setOffscreenPageLimit(5);
-        tabLayout.setupWithViewPager(this.viewPager);
+        ViewPager viewPager = view.findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(5);
+        tabLayout.setupWithViewPager(viewPager);
 
-        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album(), "music"));
+        this.spl = view.findViewById(R.id.spl);
+
+        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album(), Globals.MUSIC));
         this.validator = this.albumPagerAdapter.initValidator();
-        this.viewPager.setAdapter(this.albumPagerAdapter);
+        viewPager.setAdapter(this.albumPagerAdapter);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_general);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
@@ -199,7 +199,10 @@ public class MainMusicFragment extends ParentFragment {
             }
 
             this.lvAlbums.getAdapter().clear();
-            LoadingTask<Album> loadingTask = new LoadingTask<>(this.getActivity(), new Album(), null, searchQuery, this.lvAlbums, "music");
+            String key = this.returnKey();
+            key = ControlsHelper.setThePage(this, "albums", key);
+            LoadingTask<Album> loadingTask = new LoadingTask<>(this.getActivity(), new Album(), null, searchQuery, this.lvAlbums, key);
+            String finalKey = key;
             loadingTask.after((AbstractTask.PostExecuteListener<List<Album>>) albums -> {
                 for(Album album : albums) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -212,12 +215,33 @@ public class MainMusicFragment extends ParentFragment {
                     lvAlbums.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
-                ControlsHelper.setMediaStatistics(this.txtStatistics, "music");
+                ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
             loadingTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+    }
+
+    private String returnKey() {
+        String key = Globals.MUSIC;
+
+        if(this.search != null) {
+            if(!this.search.isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        } else {
+            if(!MainActivity.getQuery().isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        }
+
+        if(!this.changePage) {
+            key += Globals.RESET;
+        } else {
+            this.changePage = false;
+        }
+        return key;
     }
 
     @Override
@@ -257,6 +281,7 @@ public class MainMusicFragment extends ParentFragment {
                     if(baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
                         albumPagerAdapter.setMediaObject((Album) currentObject.getObject());
+                        lvAlbums.select(currentObject);
                         changeMode(false, true);
                         return;
                     }

@@ -48,6 +48,7 @@ import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainListsFragment extends ParentFragment {
@@ -162,7 +163,7 @@ public class MainListsFragment extends ParentFragment {
             }
 
             this.lvMediaLists.getAdapter().clear();
-            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists, "lists");
+            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists, Globals.LISTS);
             loadingTask.after((AbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
                 for(MediaList mediaList : mediaLists) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -239,7 +240,7 @@ public class MainListsFragment extends ParentFragment {
         if (item.getItemId() == R.id.menListsMediaAdd) {
             try {
                 if(mediaList != null) {
-                    List<BaseDescriptionObject> descriptionObjectList = ControlsHelper.getAllMediaItems(this.getActivity(), "", "lists");
+                    List<BaseDescriptionObject> descriptionObjectList = ControlsHelper.getAllMediaItems(this.getActivity(), "", Globals.LISTS);
                     boolean[] checkedItems = new boolean[descriptionObjectList.size()];
                     Map<String, BaseDescriptionObject> arrayList = new LinkedHashMap<>();
                     int i = 0;
@@ -271,7 +272,7 @@ public class MainListsFragment extends ParentFragment {
 
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
-        Objects.requireNonNull(this.getActivity()).getMenuInflater().inflate(R.menu.list_menu, menu);
+        this.requireActivity().getMenuInflater().inflate(R.menu.list_menu, menu);
     }
 
     @Override
@@ -307,7 +308,7 @@ public class MainListsFragment extends ParentFragment {
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();
         mp.put(this.lvMediaLists, 4);
         mp.put(this.lvMediaObjects, 4);
-        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, Objects.requireNonNull(this.getActivity()), editMode);
+        ControlsHelper.changeScreenIfEditMode(mp, this.scrollView, this.requireActivity(), editMode);
 
         this.txtListTitle.setEnabled(editMode);
         this.txtListDeadline.setEnabled(editMode);

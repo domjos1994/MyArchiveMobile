@@ -34,7 +34,6 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -70,7 +69,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaBookLastRead = view.findViewById(R.id.txtMediaBookLastRead);
 
         this.spMediaBookType = view.findViewById(R.id.spMediaBookType);
-        this.typeAdapter = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getActivity()));
+        this.typeAdapter = new CustomSpinnerAdapter<>(this.requireActivity());
         for(Book.Type type : Book.Type.values()) {
             this.typeAdapter.add(type.name());
         }
@@ -79,7 +78,7 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
 
         this.cmdMediaBookPath.setOnClickListener(event -> {
             List<String> filter = Arrays.asList("PDF", "pdf");
-            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, Objects.requireNonNull(this.getActivity()));
+            FilePickerDialog dialog = ControlsHelper.openFilePicker(false, false, filter, this.requireActivity());
             dialog.setDialogSelectionListener(files -> {
                 if ( files != null) {
                     if(files.length != 0) {

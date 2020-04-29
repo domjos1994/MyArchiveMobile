@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,6 +46,7 @@ import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
+import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
@@ -55,11 +55,12 @@ public class MainGamesFragment extends ParentFragment {
     private GamePagerAdapter gamePagerAdapter;
     private BottomNavigationView bottomNavigationView;
     private TextView txtStatistics;
-    private ViewPager viewPager;
     private String search;
+    private ViewGroup spl;
 
     private BaseDescriptionObject currentObject = null;
     private Validator validator;
+    private boolean changePage;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_games, container, false);
@@ -88,11 +89,13 @@ public class MainGamesFragment extends ParentFragment {
         this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.cmdNext:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("games") + 1, "games");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) + 1, Globals.GAMES);
                     this.reload();
                     break;
                 case R.id.cmdPrevious:
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage("games") - 1, "games");
+                    this.changePage = true;
+                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) - 1, Globals.GAMES);
                     this.reload();
                     break;
                 case R.id.cmdAdd:
@@ -148,12 +151,7 @@ public class MainGamesFragment extends ParentFragment {
     public  void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
-
-        if(this.lvGames.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-            this.lvGames.setLayoutParams(editMode ? MainActivity.CLOSE_LIST : MainActivity.OPEN_LIST);
-            this.viewPager.setLayoutParams(editMode ? MainActivity.OPEN_PAGER : MainActivity.CLOSE_PAGER);
-        }
-
+        ControlsHelper.splitPaneEditMode(this.spl, editMode);
         this.gamePagerAdapter.changeMode(editMode);
     }
 
@@ -165,13 +163,15 @@ public class MainGamesFragment extends ParentFragment {
         this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        this.viewPager = view.findViewById(R.id.viewPager);
-        this.viewPager.setOffscreenPageLimit(5);
-        tabLayout.setupWithViewPager(this.viewPager);
+        ViewPager viewPager = view.findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(5);
+        tabLayout.setupWithViewPager(viewPager);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game(), "games"));
+        this.spl = view.findViewById(R.id.spl);
+
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game(), Globals.GAMES));
         this.validator = this.gamePagerAdapter.initValidator();
-        this.viewPager.setAdapter(this.gamePagerAdapter);
+        viewPager.setAdapter(this.gamePagerAdapter);
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_general);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
@@ -197,7 +197,10 @@ public class MainGamesFragment extends ParentFragment {
             }
 
             this.lvGames.getAdapter().clear();
-            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames, "games");
+            String key = this.returnKey();
+            key = ControlsHelper.setThePage(this, "games", key);
+            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames, key);
+            String finalKey = key;
             loadingTask.after((AbstractTask.PostExecuteListener<List<Game>>) games -> {
                 for(Game game : games) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
@@ -210,13 +213,34 @@ public class MainGamesFragment extends ParentFragment {
                     lvGames.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
-                ControlsHelper.setMediaStatistics(this.txtStatistics, "games");
+                ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
             loadingTask.execute();
 
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+    }
+
+    private String returnKey() {
+        String key = Globals.GAMES;
+
+        if(this.search != null) {
+            if(!this.search.isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        } else {
+            if(!MainActivity.getQuery().isEmpty()) {
+                key += Globals.SEARCH;
+            }
+        }
+
+        if(!this.changePage) {
+            key += Globals.RESET;
+        } else {
+            this.changePage = false;
+        }
+        return key;
     }
 
     @Override
@@ -256,6 +280,7 @@ public class MainGamesFragment extends ParentFragment {
                     if (baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
                         gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
+                        lvGames.select(currentObject);
                         changeMode(false, true);
                         return;
                     }

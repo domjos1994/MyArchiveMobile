@@ -17,10 +17,6 @@
 
 package de.domjos.myarchivemobile.activities;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -28,14 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
-
-import java.util.Objects;
-
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivemobile.R;
-import de.domjos.myarchivemobile.settings.Settings;
 
 public final class SettingsActivity extends AppCompatActivity {
 

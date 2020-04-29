@@ -29,6 +29,17 @@ public final class Globals {
     private boolean network;
     private Map<String, Integer> page;
 
+    public static final String BOOKS = "books";
+    public static final String MOVIES = "movies";
+    public static final String MUSIC = "music";
+    public static final String GAMES = "games";
+    public static final String HOME = "home";
+    public static final String SEARCH = "search";
+    public static final String RESET = "reset";
+    public static final String LIBRARY = "library";
+    public static final String LISTS = "lists";
+
+
     public Globals() {
         this.database = null;
         this.settings = null;
@@ -61,11 +72,23 @@ public final class Globals {
     }
 
     public void setPage(int page, String key) {
+        boolean reset = key.contains(Globals.RESET);
+        key = key.replace(Globals.RESET, "");
+        if(reset) {
+            page = 0;
+        }
+
         this.page.put(key, page * MainActivity.GLOBALS.getSettings().getMediaCount());
     }
 
     public int getPage(String key) {
+        boolean reset = key.contains(Globals.RESET);
+        key = key.replace(Globals.RESET, "");
+
         if(!this.page.containsKey(key))  {
+            this.page.put(key, 0);
+        }
+        if(reset) {
             this.page.put(key, 0);
         }
 
@@ -77,7 +100,13 @@ public final class Globals {
     }
 
     public int getOffset(String key) {
+        boolean reset = key.contains(Globals.RESET);
+        key = key.replace(Globals.RESET, "");
+
         if(!this.page.containsKey(key))  {
+            this.page.put(key, 0);
+        }
+        if(reset) {
             this.page.put(key, 0);
         }
 

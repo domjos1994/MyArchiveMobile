@@ -27,8 +27,6 @@ import android.widget.MultiAutoCompleteTextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -65,7 +63,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
 
         try {
             this.txtMediaPersons.setTokenizer(new CommaTokenizer());
-            CustomAutoCompleteAdapter<String> personsAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaPersons);
+            CustomAutoCompleteAdapter<String> personsAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaPersons);
             for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
                 personsAdapter.add(person.getFirstName() + " " + person.getLastName());
             }
@@ -77,7 +75,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
 
         try {
             this.txtMediaCompanies.setTokenizer(new CommaTokenizer());
-            CustomAutoCompleteAdapter<String> companiesAdapter = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getActivity()), this.txtMediaCompanies);
+            CustomAutoCompleteAdapter<String> companiesAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaCompanies);
             for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("", 0)) {
                 companiesAdapter.add(company.getTitle());
             }

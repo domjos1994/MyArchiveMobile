@@ -152,6 +152,32 @@ public class Database extends SQLiteOpenHelper {
         return baseMediaObjects;
     }
 
+    public int getPageOfItem(String table, long id, int number) {
+        int offset = 0;
+        int currentPage = 0;
+
+        String paramQuery = "SELECT %s FROM %s";
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format(paramQuery, "count(id)", table), new String[]{});
+        cursor.moveToNext();
+        int max = cursor.getInt(0);
+        cursor.close();
+
+        for(;offset<=max; offset += number, currentPage++) {
+            int page = -1;
+            cursor = this.getReadableDatabase().rawQuery(String.format(paramQuery, "id", table) + " LIMIT " + number + " OFFSET " + offset, new String[]{});
+            while (cursor.moveToNext()) {
+                if(cursor.getInt(0) == id) {
+                    page = currentPage;
+                }
+            }
+            cursor.close();
+            if(page != -1) {
+                return page;
+            }
+        }
+        return -1;
+    }
+
     public void insertOrUpdateAlbum(Album album) {
         SQLiteStatement statement = this.getStatement(album, Arrays.asList(Database.TYPE, "numberOfDisks", "last_heard"));
         int position = this.insertOrUpdateBaseMediaObject(statement, album);

@@ -63,8 +63,8 @@ public class ImportTask extends StatusTask<Void, Void> {
     public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, Map<String, Spinner> cells) {
         super(
                 activity,
-                R.string.api,
-                R.string.api,
+                R.string.api_task_import,
+                R.string.api_task_import_content,
                 MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
 
         this.path = path;
@@ -98,7 +98,7 @@ public class ImportTask extends StatusTask<Void, Void> {
 
         int i = 0;
         for(Map<String, String> row : rows) {
-            publishProgress(new TaskStatus(i, "Import Data"));
+            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_data)));
             BaseMediaObject mediaObject;
             if(this.books) {
                 mediaObject = new Book();
@@ -122,7 +122,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                 }
             }
 
-            publishProgress(new TaskStatus(i, "Call WebService"));
+            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
             if(this.books) {
                 if(mediaObject instanceof Book) {
                     Book book = (Book) mediaObject;
