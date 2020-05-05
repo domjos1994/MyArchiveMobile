@@ -112,6 +112,14 @@
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
         </TableRow>
+        <TableRow>
+            <CheckBox
+                android:id="@+id/chkApiWebService"
+                android:hint="@string/api_webservice"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="10"/>
+        </TableRow>
     </TableLayout>
 
     <ScrollView

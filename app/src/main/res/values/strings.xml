@@ -52,6 +52,7 @@
     </string-array>
     <string name="api_file_name">File-Name</string>
     <string name="api_file_name_default">export</string>
+    <string name="api_webservice">Get Data from WebService</string>
     <string name="api_csv_column">Column in File</string>
     <string name="api_db_column">Column in Database</string>
     <string-array name="api_cells">

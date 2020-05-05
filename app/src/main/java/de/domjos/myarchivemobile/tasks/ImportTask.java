@@ -56,11 +56,11 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 
 public class ImportTask extends StatusTask<Void, Void> {
     private String path;
-    private boolean books, movies, music;
+    private boolean books, movies, music, webservice;
     private Map<String, Spinner> cells;
     private WeakReference<TextView> lblState;
 
-    public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, Map<String, Spinner> cells) {
+    public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells) {
         super(
                 activity,
                 R.string.api_task_import,
@@ -71,6 +71,7 @@ public class ImportTask extends StatusTask<Void, Void> {
         this.books = books;
         this.movies = movies;
         this.music = music;
+        this.webservice = webservice;
         this.cells = cells;
         this.lblState = new WeakReference<>(lblState);
     }
@@ -128,35 +129,37 @@ public class ImportTask extends StatusTask<Void, Void> {
                     Book book = (Book) mediaObject;
 
                     try {
-                        Book webServiceBook;
+                        if(this.webservice) {
+                            Book webServiceBook;
 
-                        String code = book.getCode();
-                        if(code.trim().isEmpty()) {
-                            code = "";
-                        } else if(code.contains(",")) {
-                            code = code.split(",")[0].trim();
-                        } else if(code.contains(";")) {
-                            code = code.split(";")[0].trim();
-                        } else {
-                            code = code.trim();
-                        }
+                            String code = book.getCode();
+                            if(code.trim().isEmpty()) {
+                                code = "";
+                            } else if(code.contains(",")) {
+                                code = code.split(",")[0].trim();
+                            } else if(code.contains(";")) {
+                                code = code.split(";")[0].trim();
+                            } else {
+                                code = code.trim();
+                            }
 
-                        if(code.isEmpty()) {
-                            webServiceBook = this.searchBookByTitle(book, null);
-                        } else {
-                            GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), code, "", "");
-                            webServiceBook = googleBooksWebservice.execute();
-                            if(webServiceBook == null) {
+                            if(code.isEmpty()) {
                                 webServiceBook = this.searchBookByTitle(book, null);
                             } else {
-                                if(webServiceBook.getCover() != null) {
-                                    webServiceBook = this.searchBookByTitle(book, webServiceBook);
+                                GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), code, "", "");
+                                webServiceBook = googleBooksWebservice.execute();
+                                if(webServiceBook == null) {
+                                    webServiceBook = this.searchBookByTitle(book, null);
+                                } else {
+                                    if(webServiceBook.getCover() != null) {
+                                        webServiceBook = this.searchBookByTitle(book, webServiceBook);
+                                    }
                                 }
                             }
-                        }
 
-                        if(webServiceBook != null) {
-                            this.mergeDataFromWebservice(book, webServiceBook);
+                            if(webServiceBook != null) {
+                                this.mergeDataFromWebservice(book, webServiceBook);
+                            }
                         }
                     } catch (Exception ignored) {}
 
@@ -167,17 +170,19 @@ public class ImportTask extends StatusTask<Void, Void> {
                     Movie movie = (Movie) mediaObject;
 
                     try {
-                        Movie webServiceMovie = null;
+                        if(this.webservice) {
+                            Movie webServiceMovie = null;
 
-                        MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(movie.getTitle());
-                        if(!baseMediaObjects.isEmpty()) {
-                            webservice =  new MovieDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), baseMediaObjects.get(0).getDescription(), "");
-                            webServiceMovie = webservice.execute();
-                        }
+                            MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
+                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(movie.getTitle());
+                            if(!baseMediaObjects.isEmpty()) {
+                                webservice =  new MovieDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), baseMediaObjects.get(0).getDescription(), "");
+                                webServiceMovie = webservice.execute();
+                            }
 
-                        if(webServiceMovie != null) {
-                            this.mergeDataFromWebservice(movie, webServiceMovie);
+                            if(webServiceMovie != null) {
+                                this.mergeDataFromWebservice(movie, webServiceMovie);
+                            }
                         }
                     } catch (Exception ignored) {}
 
@@ -188,17 +193,19 @@ public class ImportTask extends StatusTask<Void, Void> {
                     Album album = (Album) mediaObject;
 
                     try {
-                        Album webServiceAlbum = null;
+                        if(this.webservice) {
+                            Album webServiceAlbum = null;
 
-                        AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(album.getTitle());
-                        if(!baseMediaObjects.isEmpty()) {
-                            webservice =  new AudioDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId());
-                            webServiceAlbum = webservice.execute();
-                        }
+                            AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
+                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(album.getTitle());
+                            if(!baseMediaObjects.isEmpty()) {
+                                webservice =  new AudioDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId());
+                                webServiceAlbum = webservice.execute();
+                            }
 
-                        if(webServiceAlbum != null) {
-                            this.mergeDataFromWebservice(album, webServiceAlbum);
+                            if(webServiceAlbum != null) {
+                                this.mergeDataFromWebservice(album, webServiceAlbum);
+                            }
                         }
                     } catch (Exception ignored) {}
 
@@ -209,17 +216,19 @@ public class ImportTask extends StatusTask<Void, Void> {
                     Game game = (Game) mediaObject;
 
                     try {
-                        Game webServiceGame = null;
+                        if(this.webservice) {
+                            Game webServiceGame = null;
 
-                        IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(game.getTitle());
-                        if(!baseMediaObjects.isEmpty()) {
-                            webservice =  new IGDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), "");
-                            webServiceGame = webservice.execute();
-                        }
+                            IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
+                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(game.getTitle());
+                            if(!baseMediaObjects.isEmpty()) {
+                                webservice =  new IGDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), "");
+                                webServiceGame = webservice.execute();
+                            }
 
-                        if(webServiceGame != null) {
-                            this.mergeDataFromWebservice(game, webServiceGame);
+                            if(webServiceGame != null) {
+                                this.mergeDataFromWebservice(game, webServiceGame);
+                            }
                         }
                     } catch (Exception ignored) {}
 

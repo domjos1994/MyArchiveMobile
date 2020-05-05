@@ -68,13 +68,14 @@ public class MainApiFragment extends ParentFragment {
     private final static String MOVIES = "movies";
     private final static String GAMES = "games";
     private final static String MUSIC = "music";
+    private final static String WEBSERVICE= "webService";
     private final static String NAME = "name";
     private final static String PATH = "path";
     private final static String TYPE = "type";
     private final static String FORMAT = "format";
 
     private TableLayout tblCells;
-    private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies;
+    private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies, chkApiWebService;
     private EditText txtApiName, txtApiPath;
     private String[] typeArray, formatArray;
     private Map<String, Spinner> mpCells = new LinkedHashMap<>();
@@ -120,6 +121,7 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMovies = root.findViewById(R.id.chkApiMovies);
         this.chkApiMusic = root.findViewById(R.id.chkApiMusic);
         this.chkApiGames = root.findViewById(R.id.chkApiGames);
+        this.chkApiWebService = root.findViewById(R.id.chkApiWebService);
 
         try {
             this.loadFromSettings(spApiFormat, spApiType);
@@ -153,11 +155,13 @@ public class MainApiFragment extends ParentFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 boolean first = spApiFormat.getSelectedItem().toString().equals(formatArray[0]);
                 boolean csvOrTxt = spApiType.getSelectedItemPosition() == 0 || spApiType.getSelectedItemPosition() == 1;
+                boolean imp = spApiFormat.getSelectedItemPosition() == 1;
 
                 chkApiBooks.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
                 chkApiMovies.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
                 chkApiMusic.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
                 chkApiGames.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
+                chkApiWebService.setVisibility(imp && csvOrTxt ? View.VISIBLE : View.GONE);
 
                 hidePnlCells(spApiType.getSelectedItem().toString(), spApiFormat.getSelectedItem().toString());
             }
@@ -246,7 +250,7 @@ public class MainApiFragment extends ParentFragment {
                                     MainApiFragment.this.getActivity(),
                                     this.txtApiPath.getText().toString(),
                                     this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
-                                    this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.mpCells);
+                                    this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(), this.mpCells);
                                 importTask.after(o -> {
                                     MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
                                     saveSettings(spApiFormat, spApiType);
@@ -324,6 +328,7 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMovies.setChecked(settings.getSetting(MainApiFragment.MOVIES, false));
         this.chkApiMusic.setChecked(settings.getSetting(MainApiFragment.MUSIC, false));
         this.chkApiGames.setChecked(settings.getSetting(MainApiFragment.GAMES, false));
+        this.chkApiWebService.setChecked(settings.getSetting(MainApiFragment.WEBSERVICE, false));
 
         this.txtApiName.setText(settings.getSetting(MainApiFragment.NAME, "export"));
         this.txtApiPath.setText(settings.getSetting(MainApiFragment.PATH, "export"));
@@ -349,6 +354,7 @@ public class MainApiFragment extends ParentFragment {
         settings.setSetting(MainApiFragment.MOVIES, this.chkApiMovies.isChecked());
         settings.setSetting(MainApiFragment.MUSIC, this.chkApiMusic.isChecked());
         settings.setSetting(MainApiFragment.GAMES, this.chkApiGames.isChecked());
+        settings.setSetting(MainApiFragment.WEBSERVICE, this.chkApiWebService.isChecked());
 
         settings.setSetting(MainApiFragment.PATH, this.txtApiPath.getText().toString());
         settings.setSetting(MainApiFragment.NAME, this.txtApiName.getText().toString());
