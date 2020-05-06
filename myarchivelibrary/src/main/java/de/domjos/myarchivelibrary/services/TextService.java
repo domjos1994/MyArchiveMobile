@@ -125,6 +125,10 @@ public class TextService {
         this.csvWriter.writeNext(mp.keySet().toArray(new String[]{}));
     }
 
+    public void writeLine(String line) {
+        this.csvWriter.writeNext(new String[]{line});
+    }
+
     public void writeLine(BaseMediaObject baseMediaObject) {
         Map<String, String> mp = new LinkedHashMap<>();
         mp.put("title", baseMediaObject.getTitle());

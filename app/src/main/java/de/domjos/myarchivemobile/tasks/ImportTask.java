@@ -54,11 +54,12 @@ import de.domjos.customwidgets.model.tasks.StatusTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
-public class ImportTask extends StatusTask<Void, Void> {
+public class ImportTask extends StatusTask<Void, List<String>> {
     private String path;
     private boolean books, movies, music, webservice;
     private Map<String, Spinner> cells;
     private WeakReference<TextView> lblState;
+    private List<String> results;
 
     public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells) {
         super(
@@ -74,6 +75,7 @@ public class ImportTask extends StatusTask<Void, Void> {
         this.webservice = webservice;
         this.cells = cells;
         this.lblState = new WeakReference<>(lblState);
+        this.results = new LinkedList<>();
     }
 
     @Override
@@ -83,13 +85,13 @@ public class ImportTask extends StatusTask<Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected List<String> doInBackground(Void... voids) {
         try {
             this.importToTXTOrCSV();
         } catch (Exception ex) {
             this.printException(ex);
         }
-        return null;
+        return this.results;
     }
 
     private void importToTXTOrCSV() throws Exception {
@@ -97,7 +99,7 @@ public class ImportTask extends StatusTask<Void, Void> {
         List<Map<String, String>> rows = textService.readFile();
         this.max = rows.size();
 
-        int i = 0;
+        int i = 1;
         for(Map<String, String> row : rows) {
             publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_data)));
             BaseMediaObject mediaObject;
@@ -123,13 +125,36 @@ public class ImportTask extends StatusTask<Void, Void> {
                 }
             }
 
-            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
+            if(!this.webservice) {
+                String mandatory = this.getContext().getString(R.string.api_task_import_msg_not_success_mandatory);
+                String line = String.valueOf(i);
+                String message = this.getContext().getString(R.string.api_task_import_msg_not_success);
+
+                if(mediaObject.getTitle() == null) {
+                    this.results.add(String.format(message, line, mandatory));
+                    i++;
+                    continue;
+                } else {
+                    if(mediaObject.getTitle().trim().isEmpty()) {
+                        this.results.add(String.format(message, line, mandatory));
+                        i++;
+                        continue;
+                    }
+                }
+                if(mediaObject.getOriginalTitle() == null) {
+                    this.results.add(String.format(message, line, mandatory));
+                    i++;
+                    continue;
+                }
+            }
+
             if(this.books) {
                 if(mediaObject instanceof Book) {
                     Book book = (Book) mediaObject;
 
                     try {
                         if(this.webservice) {
+                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
                             Book webServiceBook;
 
                             String code = book.getCode();
@@ -164,6 +189,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
                 }
             } else if(this.movies) {
                 if(mediaObject instanceof Movie) {
@@ -171,6 +197,7 @@ public class ImportTask extends StatusTask<Void, Void> {
 
                     try {
                         if(this.webservice) {
+                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
                             Movie webServiceMovie = null;
 
                             MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
@@ -187,6 +214,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
                 }
             } else if(this.music) {
                 if(mediaObject instanceof Album) {
@@ -194,6 +222,7 @@ public class ImportTask extends StatusTask<Void, Void> {
 
                     try {
                         if(this.webservice) {
+                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
                             Album webServiceAlbum = null;
 
                             AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
@@ -210,6 +239,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
                 }
             } else {
                 if(mediaObject instanceof Game) {
@@ -217,6 +247,7 @@ public class ImportTask extends StatusTask<Void, Void> {
 
                     try {
                         if(this.webservice) {
+                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
                             Game webServiceGame = null;
 
                             IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
@@ -233,6 +264,7 @@ public class ImportTask extends StatusTask<Void, Void> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
                 }
             }
             i++;

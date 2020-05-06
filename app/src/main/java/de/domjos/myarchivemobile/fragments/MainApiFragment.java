@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.services.TextService;
@@ -251,8 +253,20 @@ public class MainApiFragment extends ParentFragment {
                                     this.txtApiPath.getText().toString(),
                                     this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
                                     this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(), this.mpCells);
-                                importTask.after(o -> {
-                                    MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
+                                importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
+                                    String logPath = "";
+                                    try {
+                                        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                                        String path = downloadFolder.getAbsolutePath() + File.separatorChar + "myArchiveMobile_import.log";
+                                        TextService textService = new TextService(path);
+                                        textService.openWriter();
+                                        for(String line : o) {
+                                            textService.writeLine(line);
+                                        }
+                                        textService.closeWriter();
+                                        logPath = path;
+                                    } catch (Exception ignored) {}
+                                    MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)) + (logPath.trim().isEmpty()? "": ":" + logPath.trim()), R.mipmap.ic_launcher_round, getActivity());
                                     saveSettings(spApiFormat, spApiType);
                                 });
                                 importTask.execute();
@@ -328,7 +342,7 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMovies.setChecked(settings.getSetting(MainApiFragment.MOVIES, false));
         this.chkApiMusic.setChecked(settings.getSetting(MainApiFragment.MUSIC, false));
         this.chkApiGames.setChecked(settings.getSetting(MainApiFragment.GAMES, false));
-        this.chkApiWebService.setChecked(settings.getSetting(MainApiFragment.WEBSERVICE, false));
+        this.chkApiWebService.setChecked(settings.getSetting(MainApiFragment.WEBSERVICE, true));
 
         this.txtApiName.setText(settings.getSetting(MainApiFragment.NAME, "export"));
         this.txtApiPath.setText(settings.getSetting(MainApiFragment.PATH, "export"));

@@ -118,7 +118,8 @@
                 android:hint="@string/api_webservice"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="10"/>
+                android:layout_weight="10"
+                android:checked="true"/>
         </TableRow>
     </TableLayout>
 
