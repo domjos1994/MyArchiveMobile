@@ -1,2 +1,2 @@
-- Laden als Hintergrund-Prozess
-- Import von CSV und Txt
+- importiere CSV und TXT
+- ebooks anzeigen
