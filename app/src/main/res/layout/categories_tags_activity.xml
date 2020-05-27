@@ -16,7 +16,7 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -28,86 +28,92 @@
     <Spinner
         android:id="@+id/spItems"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/spinner_height"/>
+        android:layout_height="@dimen/spinner_height"
+        android:layout_alignParentTop="true"
+        android:dropDownSelector="@color/textColorPrimary"/>
 
     <TextView
+        android:id="@+id/separator"
+        android:layout_below="@+id/spItems"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separatorColor"/>
+        android:background="@color/textColorPrimary"/>
 
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-        android:id="@+id/lvCategoriesOrTags"
+    <de.domjos.customwidgets.widgets.SplitPaneLayout
+        android:id="@+id/splPane"
+        android:layout_below="@+id/separator"
+        android:layout_above="@+id/pnlControls"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9"
-        app:itemIcon="@drawable/icon_tag"
-        app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
-        android:padding="4dp"
-        android:contentDescription="@string/categories_and_tags"/>
+        android:layout_height="match_parent"
+        app:splitterSize="3dp"
+        app:orientation="vertical"
+        app:splitterPosition="50%"
+        app:splitterMovable="true"
+        app:splitterBackground="@color/textColorPrimary">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/separatorColor"/>
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            android:id="@+id/lvCategoriesOrTags"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:itemIcon="@drawable/icon_tag"
+            app:listItemBackground="@drawable/background"
+            app:selectedListItemBackground="@drawable/selected_background"
+            app:listItemDivider="@drawable/divider"
+            android:padding="4dp"
+            android:contentDescription="@string/categories_and_tags"/>
 
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
-        android:id="@+id/lvMedia"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6"
-        app:itemIcon="@mipmap/ic_launcher_round"
-        app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
-        app:iconColor="@color/textColorPrimary"
-        app:readOnly="true"
-        android:padding="4dp"
-        android:contentDescription="@string/main_navigation_media"/>
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            android:id="@+id/lvMedia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:itemIcon="@mipmap/ic_launcher_round"
+            app:listItemBackground="@drawable/background"
+            app:selectedListItemBackground="@drawable/selected_background"
+            app:listItemDivider="@drawable/divider"
+            app:iconColor="@color/textColorPrimary"
+            app:readOnly="true"
+            android:padding="4dp"
+            android:contentDescription="@string/main_navigation_media"/>
+    </de.domjos.customwidgets.widgets.SplitPaneLayout>
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/pnlControls"
+        android:layout_above="@+id/navigationView"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/separatorColor"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/categories_and_tags"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:padding="4dp">
-        <LinearLayout
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/textColorPrimary"/>
+        <EditText
+            android:id="@+id/txtTitle"
+            android:hint="@string/sys_title"
+            android:autofillHints="@string/sys_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/categories_and_tags"
-            android:orientation="vertical">
-            <EditText
-                android:id="@+id/txtTitle"
-                android:hint="@string/sys_title"
-                android:autofillHints="@string/sys_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                tools:targetApi="o" />
-            <EditText
-                android:id="@+id/txtDescription"
-                android:hint="@string/sys_description"
-                android:autofillHints="@string/sys_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                tools:targetApi="o"/>
-        </LinearLayout>
-    </ScrollView>
+            android:layout_margin="4dp"
+            android:inputType="text"
+            tools:targetApi="o" />
+        <EditText
+            android:id="@+id/txtDescription"
+            android:hint="@string/sys_description"
+            android:autofillHints="@string/sys_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:inputType="text"
+            tools:targetApi="o"/>
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
         app:menu="@menu/controls"/>
-</LinearLayout>
+</RelativeLayout>

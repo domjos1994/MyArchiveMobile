@@ -88,6 +88,13 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
                 if(this.test instanceof CustomField) {
                     return MainActivity.GLOBALS.getDatabase().getCustomFields("");
                 }
+                if(this.test instanceof de.domjos.myarchivelibrary.model.base.BaseDescriptionObject) {
+                    if(this.key.equals(this.getContext().getString(R.string.media_general_tags).toLowerCase())) {
+                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "");
+                    } else {
+                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "");
+                    }
+                }
             }
         } catch (Exception ex) {
             super.printException(ex);

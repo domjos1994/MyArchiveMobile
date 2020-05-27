@@ -561,11 +561,13 @@ public class MainHomeFragment extends ParentFragment {
             String key = this.returnKey();
             LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key);
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
-                for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
-                    lvMedia.getAdapter().add(baseDescriptionObject);
-                }
+                if(baseDescriptionObjects != null) {
+                    for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
+                        lvMedia.getAdapter().add(baseDescriptionObject);
+                    }
 
-                ControlsHelper.setMediaStatistics(lblEntriesCount, key);
+                    ControlsHelper.setMediaStatistics(lblEntriesCount, key);
+                }
             });
             loadingTask.execute();
         } catch (Exception ex) {

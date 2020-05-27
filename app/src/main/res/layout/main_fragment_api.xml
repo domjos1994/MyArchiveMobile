@@ -65,7 +65,7 @@
             <Button
                 android:id="@+id/cmdApiPath"
                 android:text="@string/export_search"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_width="0dp"
                 android:layout_weight="2"/>
         </TableRow>
@@ -87,13 +87,13 @@
             <CheckBox
                 android:id="@+id/chkApiBooks"
                 android:hint="@string/main_navigation_media_books"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
             <CheckBox
                 android:id="@+id/chkApiMovies"
                 android:hint="@string/main_navigation_media_movies"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
         </TableRow>
@@ -102,13 +102,13 @@
             <CheckBox
                 android:id="@+id/chkApiMusic"
                 android:hint="@string/main_navigation_media_music"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
             <CheckBox
                 android:id="@+id/chkApiGames"
                 android:hint="@string/main_navigation_media_games"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
         </TableRow>

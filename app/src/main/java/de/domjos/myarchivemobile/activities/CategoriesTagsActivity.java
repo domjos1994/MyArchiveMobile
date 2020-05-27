@@ -20,15 +20,20 @@ package de.domjos.myarchivemobile.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
 import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -38,6 +43,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public final class CategoriesTagsActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvItems, lvMedia;
@@ -129,7 +135,21 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.lvMedia = this.findViewById(R.id.lvMedia);
 
         this.spItems = this.findViewById(R.id.spItems);
-        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<>(this.getApplicationContext());
+        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<String>(this.getApplicationContext()) {
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                TextView tv = (TextView) super.getView(position, convertView, parent);
+                tv.setTextColor(getResources().getColor(R.color.textColorPrimary));
+                return tv;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent){
+                TextView tv = (TextView) super.getDropDownView(position,convertView,parent);
+                tv.setTextColor(getResources().getColor(R.color.textColorPrimary));
+                return tv;
+            }
+        };
         itemsAdapter.add(this.getString(R.string.media_general_tags));
         itemsAdapter.add(this.getString(R.string.media_general_category));
         this.spItems.setAdapter(itemsAdapter);
@@ -163,8 +183,9 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         Database database = MainActivity.GLOBALS.getDatabase();
 
         this.lvItems.getAdapter().clear();
-        if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
-            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects(table, "", 0, "")) {
+        LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(this, new BaseDescriptionObject(), null, "", this.lvItems, table);
+        task.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) o -> {
+            for(BaseDescriptionObject baseDescriptionObject : o) {
                 de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                 String title = baseDescriptionObject.getTitle();
                 current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
@@ -173,18 +194,8 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 current.setObject(baseDescriptionObject);
                 this.lvItems.getAdapter().add(current);
             }
-        }
-        if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_category))) {
-            for (BaseDescriptionObject baseDescriptionObject : database.getBaseObjects("categories", "", 0, "")) {
-                de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
-                String title = baseDescriptionObject.getTitle();
-                current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
-                current.setDescription(baseDescriptionObject.getDescription());
-                current.setId(baseDescriptionObject.getId());
-                current.setObject(baseDescriptionObject);
-                this.lvItems.getAdapter().add(current);
-            }
-        }
+        });
+        task.execute();
     }
 
     private void setObject(BaseDescriptionObject baseDescriptionObject) {
