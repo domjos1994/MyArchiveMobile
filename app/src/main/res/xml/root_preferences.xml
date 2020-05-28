@@ -19,7 +19,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.preference.PreferenceCategory
+    <de.domjos.myarchivemobile.custom.CustomPreferenceCategory
         app:title="@string/settings_general"
         app:icon="@mipmap/ic_launcher_round">
 
@@ -47,9 +47,9 @@
             app:key="txtMediaCount"
             app:summary="@string/settings_general_media_count_summary"
             app:title="@string/settings_general_media_count" />
-    </androidx.preference.PreferenceCategory>
+    </de.domjos.myarchivemobile.custom.CustomPreferenceCategory>
 
-    <androidx.preference.PreferenceCategory
+    <de.domjos.myarchivemobile.custom.CustomPreferenceCategory
         app:title="@string/settings_services"
         app:icon="@drawable/icon_cloud">
 
@@ -97,6 +97,6 @@
 			android:contentDescription="@string/settings_services_ean_data_summary"
 			android:hint="@string/settings_services_ean_data"/>
 
-    </androidx.preference.PreferenceCategory>
+    </de.domjos.myarchivemobile.custom.CustomPreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
