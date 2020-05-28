@@ -48,6 +48,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 
 import de.domjos.myarchivelibrary.services.AudioDBWebservice;
@@ -133,14 +134,17 @@ public final class MainActivity extends AbstractActivity {
         this.navHostFragment.getNavController().addOnDestinationChangedListener((controller, destination, arguments) -> {
             this.label = Objects.requireNonNull(destination.getLabel()).toString();
             if(this.menu != null) {
-                menu.findItem(R.id.menMainScanner).setVisible(
-                        (
-                                this.label.equals(this.getString(R.string.main_navigation_media_books)) ||
-                                        this.label.equals(this.getString(R.string.main_navigation_media_movies)) ||
-                                        this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
-                                        this.label.equals(this.getString(R.string.main_navigation_media_games))
-                        )
-                );
+                boolean isMediaFragment =
+                        this.label.equals(this.getString(R.string.main_navigation_media_books)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_movies)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
+                        this.label.equals(this.getString(R.string.main_navigation_media_games));
+
+                boolean hideNavButtons = this.label.equals(this.getString(R.string.api));
+
+                this.menu.findItem(R.id.menMainScanner).setVisible(isMediaFragment);
+                this.cmdSearch.setVisibility(hideNavButtons ? View.GONE : View.VISIBLE);
+                this.cmdSearchWeb.setVisibility(hideNavButtons ? View.GONE : View.VISIBLE);
             }
         });
 
