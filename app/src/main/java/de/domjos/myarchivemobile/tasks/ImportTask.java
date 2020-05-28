@@ -66,7 +66,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                 activity,
                 R.string.api_task_import,
                 R.string.api_task_import_content,
-                MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, pbProgress, lblMessage);
+                MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.not_import, pbProgress, lblMessage);
 
         this.path = path;
         this.books = books;

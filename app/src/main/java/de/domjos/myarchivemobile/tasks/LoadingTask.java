@@ -31,7 +31,7 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
     private String key;
 
     public LoadingTask(Activity activity, T test, MediaFilter mediaFilter, String searchString, SwipeRefreshDeleteList lv, String key) {
-        super(activity, R.string.sys_reload, R.string.sys_reload_summary, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, new ProgressBar(activity), new TextView(activity));
+        super(activity, R.string.sys_reload, R.string.sys_reload_summary, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.not_refresh, new ProgressBar(activity), new TextView(activity));
 
         this.key = key;
         this.lv = new WeakReference<>(lv);
