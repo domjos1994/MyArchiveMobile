@@ -21,7 +21,8 @@
 
     <de.domjos.myarchivemobile.custom.CustomPreferenceCategory
         app:title="@string/settings_general"
-        app:icon="@mipmap/ic_launcher_round">
+        app:icon="@mipmap/ic_launcher_round"
+        app:summary="@string/settings_general_summary">
 
         <androidx.preference.CheckBoxPreference
             app:key="swtNotifications"
@@ -51,7 +52,8 @@
 
     <de.domjos.myarchivemobile.custom.CustomPreferenceCategory
         app:title="@string/settings_services"
-        app:icon="@drawable/icon_cloud">
+        app:icon="@drawable/icon_cloud"
+        app:summary="@string/settings_services_summary">
 
         <androidx.preference.EditTextPreference
             android:contentDescription="@string/settings_services_google_books_summary"

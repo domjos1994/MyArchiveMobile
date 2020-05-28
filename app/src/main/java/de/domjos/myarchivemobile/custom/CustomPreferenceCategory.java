@@ -19,6 +19,7 @@ package de.domjos.myarchivemobile.custom;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -47,7 +48,14 @@ public class CustomPreferenceCategory extends PreferenceCategory {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
         TextView titleView = holder.itemView.findViewById(android.R.id.title);
+        TextView summaryView = holder.itemView.findViewById(android.R.id.summary);
+        summaryView.setSingleLine(true);
+        summaryView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        summaryView.setMarqueeRepeatLimit(-1);
+        summaryView.setSelected(true);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             titleView.setTextColor(this.getContext().getColor(R.color.textColorPrimary));
         } else {

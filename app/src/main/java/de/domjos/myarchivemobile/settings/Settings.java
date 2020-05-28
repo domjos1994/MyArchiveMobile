@@ -85,7 +85,11 @@ public final class Settings {
     }
 
     public int getMediaCount() {
-        return this.userPreferences.getInt("txtMediaCount", Integer.parseInt(this.context.getString(R.string.settings_general_media_count_default)));
+        try {
+            return this.userPreferences.getInt("txtMediaCount", Integer.parseInt(this.context.getString(R.string.settings_general_media_count_default)));
+        } catch (Exception ex) {
+            return Integer.parseInt(this.context.getString(R.string.settings_general_media_count_default));
+        }
     }
 
     public String getEANDataKey() {

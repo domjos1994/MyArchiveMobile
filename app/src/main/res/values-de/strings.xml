@@ -152,6 +152,7 @@
 
     <string name="settings">Einstellungen</string>
     <string name="settings_general">Generell</string>
+    <string name="settings_general_summary">Generelle Einstellungen für die App!</string>
     <string name="settings_general_notifications">Notifikationen</string>
     <string name="settings_general_notifications_summary">Notifikationen aktivieren!</string>
     <string name="settings_general_debug">Debug-Modus</string>
@@ -159,6 +160,7 @@
     <string name="settings_general_media_count">Anzahl angezeigter Medien</string>
     <string name="settings_general_media_count_summary">Die Anzahl der angezeigen Medien setzen</string>
     <string name="settings_services">Webservices</string>
+    <string name="settings_services_summary">Einstellungen für die Internet-Dienste!\nBitte nur ändern, wenn Sie auch wissen, was Sie tun!</string>
     <string name="settings_services_google_books">Google-Books-Schlüssel</string>
     <string name="settings_services_google_books_summary">Google-Books-Schlüssel setzen!</string>
     <string name="settings_services_audio_db">Audio-DB-Schlüssel</string>
