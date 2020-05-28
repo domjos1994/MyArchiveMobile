@@ -57,8 +57,8 @@
             android:layout_height="match_parent"
             app:itemIcon="@drawable/icon_tag"
             app:listItemBackground="@drawable/background"
-            app:selectedListItemBackground="@drawable/selected_background"
-            app:listItemDivider="@drawable/divider"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_divider"
             android:padding="4dp"
             android:contentDescription="@string/categories_and_tags"/>
 
@@ -68,8 +68,8 @@
             android:layout_height="match_parent"
             app:itemIcon="@mipmap/ic_launcher_round"
             app:listItemBackground="@drawable/background"
-            app:selectedListItemBackground="@drawable/selected_background"
-            app:listItemDivider="@drawable/divider"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_divider"
             app:iconColor="@color/textColorPrimary"
             app:readOnly="true"
             android:padding="4dp"

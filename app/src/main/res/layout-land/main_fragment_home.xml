@@ -161,9 +161,9 @@
         android:layout_margin="4dp"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
-        app:listItemDivider="@drawable/divider"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
-        app:selectedListItemBackground="@drawable/selected_background"
+        app:selectedListItemBackground="@drawable/background_selected"
         android:contentDescription="@string/main_navigation_media"/>
 
     <TableLayout

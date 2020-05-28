@@ -41,8 +41,8 @@
         android:contentDescription="@string/media_persons"
         app:itemIcon="@drawable/icon_person"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"/>
     <TextView
@@ -66,8 +66,8 @@
         android:contentDescription="@string/media_persons"
         app:itemIcon="@drawable/icon_people"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"/>
 </LinearLayout>

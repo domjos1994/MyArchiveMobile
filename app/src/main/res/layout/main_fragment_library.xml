@@ -31,8 +31,8 @@
         android:layout_weight="4"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"
         android:padding="4dp"/>
@@ -49,8 +49,8 @@
         android:layout_weight="3"
         app:itemIcon="@drawable/icon_library"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         android:padding="4dp"/>
 

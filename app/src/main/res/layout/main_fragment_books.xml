@@ -46,8 +46,8 @@
                 app:itemIcon="@drawable/icon_book"
                 app:listItemBackground="@drawable/background"
                 app:listItemBackgroundStatePositive="@drawable/background_positive"
-                app:listItemDivider="@drawable/divider"
-                app:selectedListItemBackground="@drawable/selected_background"
+                app:listItemDivider="@drawable/background_divider"
+                app:selectedListItemBackground="@drawable/background_selected"
                 android:layout_above="@+id/lblNumber"/>
             <TextView
                 android:id="@+id/lblNumber"

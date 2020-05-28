@@ -46,10 +46,12 @@
     <string name="customFields_allowed">Allowed Values (Separated by ;)</string>
 
     <string name="api">Export/Import</string>
+    <string name="api_type_description">Would you like to export or import data?</string>
     <string-array name="api_type">
         <item>Export</item>
         <item>Import</item>
     </string-array>
+    <string name="api_format_description">Which format?</string>
     <string name="api_file_name">File-Name</string>
     <string name="api_file_name_default">export</string>
     <string name="api_webservice">Get Data from WebService</string>

@@ -32,8 +32,8 @@
         android:layout_weight="7"
         app:itemIcon="@drawable/icon_field"
         app:listItemBackground="@drawable/background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/divider"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"
         android:padding="4dp"/>
