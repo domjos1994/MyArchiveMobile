@@ -1,2 +1,3 @@
-- importiere CSV und TXT
-- ebooks anzeigen
+- Notifikations-Icon bisher nur weiß, jetzt sichtbar
+- Bug bei den Datei-System-Berechtigungen
+- besseres Design für API

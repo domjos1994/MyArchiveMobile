@@ -1,2 +1,3 @@
-- import CSV and TXT
-- show ebooks
+- Notifications-Icon only white now visible
+- Bug at the FileSystem-Permissions in newer Android-Versions
+- better design for api
