@@ -27,6 +27,7 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:textColorHint">@color/hintColor</item>
+        <item name="android:listDivider">@color/textColorPrimary</item>
         <item name="android:label">@color/textColorPrimary</item>
         <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorPrimary</item>
@@ -55,6 +56,13 @@
 
     <style name="filePickerStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:background">@color/windowBackground</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+    </style>
+
+    <style name="dialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <style name="button" parent="@android:style/Widget.Button">

@@ -17,9 +17,12 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 
@@ -84,6 +87,46 @@ public final class LogActivity extends AbstractActivity {
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainScanner).setVisible(false);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int requestCode = 0;
+        Intent intent = null;
+        switch (item.getItemId()) {
+            case R.id.menMainPersons:
+                intent = new Intent(this, PersonActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCompanies:
+                intent = new Intent(this, CompanyActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCategoriesAndTags:
+                intent = new Intent(this, CategoriesTagsActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainSettings:
+                intent = new Intent(this, SettingsActivity.class);
+                requestCode = MainActivity.SETTINGS_REQUEST;
+                break;
+            case R.id.menMainLog:
+                intent = new Intent(this, LogActivity.class);
+                break;
+        }
+        if(intent != null) {
+            this.startActivityForResult(intent, requestCode);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static class Task extends AsyncTask<Void, Void, List<String>> {

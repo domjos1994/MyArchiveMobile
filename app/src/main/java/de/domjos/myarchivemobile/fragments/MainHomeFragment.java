@@ -129,6 +129,7 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppBooks.setOnClickListener(view -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
             if(mainActivity != null) {
+                ControlsHelper.fromHome = true;
                 mainActivity.selectTab(this.getString(R.string.book), 0);
             }
         });
@@ -136,6 +137,7 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppMusic.setOnClickListener(view -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
             if(mainActivity != null) {
+                ControlsHelper.fromHome = true;
                 mainActivity.selectTab(this.getString(R.string.album), 0);
             }
         });
@@ -143,6 +145,7 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppMovies.setOnClickListener(view -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
             if(mainActivity != null) {
+                ControlsHelper.fromHome = true;
                 mainActivity.selectTab(this.getString(R.string.movie), 0);
             }
         });
@@ -150,6 +153,7 @@ public class MainHomeFragment extends ParentFragment {
         this.fabAppGames.setOnClickListener(view -> {
             MainActivity mainActivity = ((MainActivity)MainHomeFragment.this.getActivity());
             if(mainActivity != null) {
+                ControlsHelper.fromHome = true;
                 mainActivity.selectTab(this.getString(R.string.game), 0);
             }
         });

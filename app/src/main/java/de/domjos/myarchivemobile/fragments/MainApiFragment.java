@@ -41,6 +41,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
@@ -77,7 +78,7 @@ public class MainApiFragment extends ParentFragment {
     private final static String FORMAT = "format";
 
     private TableLayout tblCells;
-    private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies, chkApiWebService;
+    private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies, chkApiWebService, chkApiDelete;
     private EditText txtApiName, txtApiPath;
     private String[] typeArray, formatArray;
     private Map<String, Spinner> mpCells = new LinkedHashMap<>();
@@ -124,6 +125,7 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiMusic = root.findViewById(R.id.chkApiMusic);
         this.chkApiGames = root.findViewById(R.id.chkApiGames);
         this.chkApiWebService = root.findViewById(R.id.chkApiWebService);
+        this.chkApiDelete = root.findViewById(R.id.chkApiDelete);
 
         try {
             this.loadFromSettings(spApiFormat, spApiType);
@@ -164,6 +166,7 @@ public class MainApiFragment extends ParentFragment {
                 chkApiMusic.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
                 chkApiGames.setVisibility(first || csvOrTxt ? View.VISIBLE : View.GONE);
                 chkApiWebService.setVisibility(imp && csvOrTxt ? View.VISIBLE : View.GONE);
+                chkApiDelete.setVisibility(imp && csvOrTxt ? View.VISIBLE : View.GONE);
 
                 hidePnlCells(spApiType.getSelectedItem().toString(), spApiFormat.getSelectedItem().toString());
             }
@@ -248,28 +251,21 @@ public class MainApiFragment extends ParentFragment {
                                 selected += 1;
                             }
                             if(selected == 1) {
-                                ImportTask importTask = new ImportTask(
-                                    MainApiFragment.this.getActivity(),
-                                    this.txtApiPath.getText().toString(),
-                                    this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
-                                    this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(), this.mpCells);
-                                importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
-                                    String logPath = "";
-                                    try {
-                                        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                                        String path = downloadFolder.getAbsolutePath() + File.separatorChar + "myArchiveMobile_import.log";
-                                        TextService textService = new TextService(path);
-                                        textService.openWriter();
-                                        for(String line : o) {
-                                            textService.writeLine(line);
-                                        }
-                                        textService.closeWriter();
-                                        logPath = path;
-                                    } catch (Exception ignored) {}
-                                    MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)) + (logPath.trim().isEmpty()? "": ":" + logPath.trim()), R.mipmap.ic_launcher_round, getActivity());
-                                    saveSettings(spApiFormat, spApiType);
-                                });
-                                importTask.execute();
+                                if(chkApiWebService.isChecked()) {
+                                    if(!MainActivity.GLOBALS.isNetwork()) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+                                        builder.setTitle(R.string.api_webservice_no_network_title);
+                                        builder.setMessage(R.string.api_webservice_no_network_content);
+                                        builder.setIcon(R.mipmap.ic_launcher_round);
+                                        builder.setNegativeButton(R.string.api_webservice_no_network_no, (dialogInterface, i) -> {});
+                                        builder.setPositiveButton(R.string.api_webservice_no_network_yes, (dialogInterface, i) -> fillAndExecuteImportTask(spApiFormat, spApiType));
+                                        builder.show();
+                                    } else {
+                                        fillAndExecuteImportTask(spApiFormat, spApiType);
+                                    }
+                                } else {
+                                    fillAndExecuteImportTask(spApiFormat, spApiType);
+                                }
                             }
                             break;
                         case 2:
@@ -311,6 +307,36 @@ public class MainApiFragment extends ParentFragment {
         String path = this.txtApiPath.getText().toString();
         MainActivity.GLOBALS.getDatabase().getDatabase(path);
         MainApiFragment.triggerRebirth(this.requireContext());
+    }
+
+    private void fillAndExecuteImportTask(Spinner spApiFormat, Spinner spApiType) {
+        if(this.chkApiDelete.isChecked()) {
+            this.lblMessage.setText(R.string.api_delete);
+            MainActivity.GLOBALS.getDatabase().deleteAll();
+        }
+
+        ImportTask importTask = new ImportTask(
+                MainApiFragment.this.getActivity(),
+                this.txtApiPath.getText().toString(),
+                this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
+                this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(), this.mpCells);
+        importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
+            String logPath = "";
+            try {
+                File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                String path = downloadFolder.getAbsolutePath() + File.separatorChar + "myArchiveMobile_import.log";
+                TextService textService = new TextService(path);
+                textService.openWriter();
+                for(String line : o) {
+                    textService.writeLine(line);
+                }
+                textService.closeWriter();
+                logPath = path;
+            } catch (Exception ignored) {}
+            MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)) + (logPath.trim().isEmpty()? "": ":" + logPath.trim()), R.mipmap.ic_launcher_round, getActivity());
+            saveSettings(spApiFormat, spApiType);
+        });
+        importTask.execute();
     }
 
     @Override

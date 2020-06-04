@@ -1,3 +1,20 @@
+/*
+ * This file is part of the MyArchiveMobile distribution (https://github.com/domjos1994/MyArchiveMobile).
+ * Copyright (c) 2020 Dominic Joas.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.domjos.myarchivemobile.tasks;
 
 import android.app.Activity;
@@ -65,34 +82,54 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
                 return baseDescriptionObjects;
             } else {
                 if(this.test instanceof Book) {
-                    return MainActivity.GLOBALS.getDatabase().getBooks(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                    MediaFilter mediaFilter = new MediaFilter();
+                    mediaFilter.setBooks(true);
+                    mediaFilter.setMovies(false);
+                    mediaFilter.setGames(false);
+                    mediaFilter.setMusic(false);
+                    return ControlsHelper.getAllMediaItems(this.getContext(), mediaFilter, this.searchString, key);
                 }
                 if(this.test instanceof Movie) {
-                    return MainActivity.GLOBALS.getDatabase().getMovies(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                    MediaFilter mediaFilter = new MediaFilter();
+                    mediaFilter.setBooks(false);
+                    mediaFilter.setMovies(true);
+                    mediaFilter.setGames(false);
+                    mediaFilter.setMusic(false);
+                    return ControlsHelper.getAllMediaItems(this.getContext(), mediaFilter, this.searchString, key);
                 }
                 if(this.test instanceof Album) {
-                    return MainActivity.GLOBALS.getDatabase().getAlbums(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                    MediaFilter mediaFilter = new MediaFilter();
+                    mediaFilter.setBooks(false);
+                    mediaFilter.setMovies(false);
+                    mediaFilter.setGames(false);
+                    mediaFilter.setMusic(true);
+                    return ControlsHelper.getAllMediaItems(this.getContext(), mediaFilter, this.searchString, key);
                 }
                 if(this.test instanceof Game) {
-                    return MainActivity.GLOBALS.getDatabase().getGames(this.searchString, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                    MediaFilter mediaFilter = new MediaFilter();
+                    mediaFilter.setBooks(false);
+                    mediaFilter.setMovies(false);
+                    mediaFilter.setGames(true);
+                    mediaFilter.setMusic(false);
+                    return ControlsHelper.getAllMediaItems(this.getContext(), mediaFilter, this.searchString, key);
                 }
                 if(this.test instanceof Person) {
-                    return MainActivity.GLOBALS.getDatabase().getPersons("", 0);
+                    return MainActivity.GLOBALS.getDatabase().getPersons(this.searchString);
                 }
                 if(this.test instanceof Company) {
-                    return MainActivity.GLOBALS.getDatabase().getCompanies("", 0);
+                    return MainActivity.GLOBALS.getDatabase().getCompanies(this.searchString);
                 }
                 if(this.test instanceof MediaList) {
-                    return MainActivity.GLOBALS.getDatabase().getMediaLists("", -1, MainActivity.GLOBALS.getOffset(key));
+                    return MainActivity.GLOBALS.getDatabase().getMediaLists(this.searchString, -1, MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof CustomField) {
-                    return MainActivity.GLOBALS.getDatabase().getCustomFields("");
+                    return MainActivity.GLOBALS.getDatabase().getCustomFields(this.searchString);
                 }
                 if(this.test instanceof de.domjos.myarchivelibrary.model.base.BaseDescriptionObject) {
                     if(this.key.equals(this.getContext().getString(R.string.media_general_tags).toLowerCase())) {
-                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "");
+                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, this.searchString);
                     } else {
-                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "");
+                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, this.searchString);
                     }
                 }
             }

@@ -75,6 +75,7 @@ public class MainMusicFragment extends ParentFragment {
         });
         this.lvAlbums.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.currentObject = listObject;
+            this.currentObject.setObject(ControlsHelper.getObject(listObject, this.requireContext()));
             this.albumPagerAdapter.setMediaObject((Album) this.currentObject.getObject());
             this.changeMode(false, true);
         });
@@ -203,15 +204,8 @@ public class MainMusicFragment extends ParentFragment {
             key = ControlsHelper.setThePage(this, "albums", key);
             LoadingTask<Album> loadingTask = new LoadingTask<>(this.getActivity(), new Album(), null, searchQuery, this.lvAlbums, key);
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Album>>) albums -> {
-                for(Album album : albums) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(album.getTitle());
-                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(album.getReleaseDate(), getString(R.string.sys_date_format)));
-                    baseDescriptionObject.setCover(album.getCover());
-                    baseDescriptionObject.setId(album.getId());
-                    baseDescriptionObject.setState(album.getLastHeard()!=null);
-                    baseDescriptionObject.setObject(album);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) albums -> {
+                for(BaseDescriptionObject baseDescriptionObject : albums) {
                     lvAlbums.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
@@ -280,6 +274,7 @@ public class MainMusicFragment extends ParentFragment {
                     BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
                     if(baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
+                        this.currentObject.setObject(ControlsHelper.getObject(baseDescriptionObject, this.requireContext()));
                         albumPagerAdapter.setMediaObject((Album) currentObject.getObject());
                         lvAlbums.select(currentObject);
                         changeMode(false, true);

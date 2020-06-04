@@ -75,6 +75,7 @@ public class MainGamesFragment extends ParentFragment {
         });
         this.lvGames.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.currentObject = listObject;
+            this.currentObject.setObject(ControlsHelper.getObject(listObject, this.requireContext()));
             this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
             this.changeMode(false, true);
         });
@@ -201,15 +202,8 @@ public class MainGamesFragment extends ParentFragment {
             key = ControlsHelper.setThePage(this, "games", key);
             LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames, key);
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Game>>) games -> {
-                for(Game game : games) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(game.getTitle());
-                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(game.getReleaseDate(), getString(R.string.sys_date_format)));
-                    baseDescriptionObject.setCover(game.getCover());
-                    baseDescriptionObject.setId(game.getId());
-                    baseDescriptionObject.setState(game.getLastPlayed()!=null);
-                    baseDescriptionObject.setObject(game);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) games -> {
+                for(BaseDescriptionObject baseDescriptionObject : games) {
                     lvGames.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
@@ -279,6 +273,7 @@ public class MainGamesFragment extends ParentFragment {
                     BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
                     if (baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
+                        this.currentObject.setObject(ControlsHelper.getObject(baseDescriptionObject, this.requireContext()));
                         gamePagerAdapter.setMediaObject((Game) currentObject.getObject());
                         lvGames.select(currentObject);
                         changeMode(false, true);

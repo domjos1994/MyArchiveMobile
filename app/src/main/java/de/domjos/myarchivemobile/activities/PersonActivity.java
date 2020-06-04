@@ -17,6 +17,11 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,6 +48,7 @@ import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public final class PersonActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvPersons;
+    private SearchView searchView;
     private PersonPagerAdapter personPagerAdapter;
     private BottomNavigationView bottomNavigationView;
     private ViewPager viewPager;
@@ -58,6 +64,19 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                reload(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         this.lvPersons.setOnReloadListener(PersonActivity.this::reload);
         this.lvPersons.setOnDeleteListener(listObject -> {
             Person person = (Person) listObject.getObject();
@@ -131,7 +150,10 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        ControlsHelper.addToolbar(this);
+
         this.lvPersons = this.findViewById(R.id.lvPersons);
+        this.searchView = this.findViewById(R.id.cmdSearch);
         this.bottomNavigationView = this.findViewById(R.id.navigationView);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdNext).setVisible(false);
         this.bottomNavigationView.getMenu().findItem(R.id.cmdPrevious).setVisible(false);
@@ -158,6 +180,46 @@ public final class PersonActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainScanner).setVisible(false);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int requestCode = 0;
+        Intent intent = null;
+        switch (item.getItemId()) {
+            case R.id.menMainPersons:
+                intent = new Intent(this, PersonActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCompanies:
+                intent = new Intent(this, CompanyActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCategoriesAndTags:
+                intent = new Intent(this, CategoriesTagsActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainSettings:
+                intent = new Intent(this, SettingsActivity.class);
+                requestCode = MainActivity.SETTINGS_REQUEST;
+                break;
+            case R.id.menMainLog:
+                intent = new Intent(this, LogActivity.class);
+                break;
+        }
+        if(intent != null) {
+            this.startActivityForResult(intent, requestCode);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void select() {
         if(this.firstReload) {
             long id = this.getIntent().getLongExtra("id", 0L);
@@ -176,9 +238,16 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
+        this.reload("");
+    }
+
+    private void reload(String search) {
+        if(!search.trim().isEmpty()) {
+            search = "lastName like '%" + search + "%'";
+        }
         try {
             this.lvPersons.getAdapter().clear();
-            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, "", this.lvPersons, "persons");
+            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, search, this.lvPersons, "persons");
             loadingTask.after((AbstractTask.PostExecuteListener<List<Person>>) persons -> {
                 for(Person person : persons) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();

@@ -35,6 +35,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
@@ -84,39 +86,59 @@ public class ControlsHelper {
             }
 
             if(id != -1) {
-                if(id == 0) {
+                /*if(id == 0) {
                     fragment.changeMode(true, false);
                     abstractPagerAdapter.setMediaObject(emptyObject);
                     currentObject = null;
-                } else {
+                } else {*/
                     String where = "id=" + id;
                     BaseMediaObject baseMediaObject = null;
                     if(emptyObject instanceof Album) {
                         if(currentObject != null) {
                             baseMediaObject = (Album) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
+                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            if(!baseMediaObjects.isEmpty()) {
+                                baseMediaObject = baseMediaObjects.get(0);
+                            } else {
+                                baseMediaObject = new Album();
+                            }
                         }
                     }
                     if(emptyObject instanceof Movie) {
                         if(currentObject != null) {
                             baseMediaObject = (Movie) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
+                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            if(!baseMediaObjects.isEmpty()) {
+                                baseMediaObject = baseMediaObjects.get(0);
+                            } else {
+                                baseMediaObject = new Movie();
+                            }
                         }
                     }
                     if(emptyObject instanceof Game) {
                         if(currentObject != null) {
                             baseMediaObject = (Game) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
+                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            if(!baseMediaObjects.isEmpty()) {
+                                baseMediaObject = baseMediaObjects.get(0);
+                            } else {
+                                baseMediaObject = new Game();
+                            }
                         }
                     }
                     if(emptyObject instanceof Book) {
                         if(currentObject != null) {
                             baseMediaObject = (Book) currentObject.getObject();
                         } else {
-                            baseMediaObject = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0).get(0);
+                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            if(!baseMediaObjects.isEmpty()) {
+                                baseMediaObject = baseMediaObjects.get(0);
+                            } else {
+                                baseMediaObject = new Book();
+                            }
                         }
                     }
                     if(baseMediaObject != null) {
@@ -131,12 +153,18 @@ public class ControlsHelper {
                         abstractPagerAdapter.setMediaObject(baseMediaObject);
                         lv.select(currentObject);
                     }
-                }
+                //}
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
         }
         return currentObject;
+    }
+
+    public static void addToolbar(AppCompatActivity activity) {
+        Toolbar toolbar = activity.findViewById(R.id.toolbar);
+        activity.setSupportActionBar(toolbar);
+        Objects.requireNonNull(activity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     public static void scheduleJob(Context context, List<Class<? extends JobService>> classes) {
@@ -167,6 +195,25 @@ public class ControlsHelper {
         mp.put(new Album(), search);
         mp.put(new Game(), search);
         return ControlsHelper.getAllMediaItems(context, mp, key);
+    }
+
+    public static <T extends BaseMediaObject> T getObject(BaseDescriptionObject baseDescriptionObject, Context context) {
+        try {
+            baseDescriptionObject.setId(((BaseMediaObject)baseDescriptionObject.getObject()).getId());
+            if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.book))) {
+                return (T) MainActivity.GLOBALS.getDatabase().getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+            }
+            if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.movie))) {
+                return (T) MainActivity.GLOBALS.getDatabase().getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+            }
+            if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.album))) {
+                return (T) MainActivity.GLOBALS.getDatabase().getAlbums("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+            }
+            if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.game))) {
+                return (T) MainActivity.GLOBALS.getDatabase().getGames("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 
     public static List<BaseDescriptionObject> getAllMediaItems(Context context, MediaFilter mediaFilter, String extendedWhere, String key) {
@@ -404,6 +451,11 @@ public class ControlsHelper {
             if( id != 0) {
                 key = key.replace(Globals.RESET, "");
                 int page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
+                MainActivity.GLOBALS.setPage(page, key);
+                ControlsHelper.fromHome = false;
+            } else {
+                key = key.replace(Globals.RESET, "");
+                int page = 1;
                 MainActivity.GLOBALS.setPage(page, key);
                 ControlsHelper.fromHome = false;
             }

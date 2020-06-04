@@ -105,5 +105,5 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/controls"/>
+        app:menu="@menu/navigation_bottom"/>
 </LinearLayout>

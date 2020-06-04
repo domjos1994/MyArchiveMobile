@@ -31,6 +31,7 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:textColorHint">@color/hintColor</item>
+        <item name="android:listDivider">@color/textColorPrimary</item>
         <item name="android:label">@color/textColorPrimary</item>
         <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorPrimary</item>
@@ -43,7 +44,7 @@
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <item name="android:buttonStyle">@style/button</item>
-        <item name="alertDialogTheme">@style/appCompatAlert</item>
+        <item name="alertDialogTheme">@style/filePickerStyle</item>
 
         <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
         <item name="android:preferenceCategoryStyle">@style/AppTheme.PreferenceTheme</item>
@@ -53,5 +54,14 @@
         <item name="colorAccent">@color/textColorPrimary</item>
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:colorAccent">@color/textColorPrimary</item>
+    </style>
+
+    <style name="filePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:background">@color/windowBackground</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/dialogButton</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/dialogButton</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
     </style>
 </resources>

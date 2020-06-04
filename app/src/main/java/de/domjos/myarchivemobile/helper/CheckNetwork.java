@@ -36,19 +36,30 @@ public class CheckNetwork {
         this.context = context;
     }
 
-    public void registerNetworkCallback() {
+    public void registerNetworkCallback(NetworkListener networkListener) {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if(networkListener != null) {
+                    MainActivity.GLOBALS.setNetwork(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+                    networkListener.hasConnections(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+                }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Objects.requireNonNull(connectivityManager).registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback(){
                         @Override
                         public void onAvailable(@NonNull Network network) {
                             MainActivity.GLOBALS.setNetwork(true);
+                            if(networkListener != null) {
+                                networkListener.hasConnections(true);
+                            }
                         }
                         @Override
                         public void onLost(@NonNull Network network) {
                             MainActivity.GLOBALS.setNetwork(false);
+                            if(networkListener != null) {
+                                networkListener.hasConnections(false);
+                            }
                         }
                     });
                 } else {
@@ -56,10 +67,16 @@ public class CheckNetwork {
                         @Override
                         public void onAvailable(@NonNull Network network) {
                             MainActivity.GLOBALS.setNetwork(true);
+                            if(networkListener != null) {
+                                networkListener.hasConnections(true);
+                            }
                         }
                         @Override
                         public void onLost(@NonNull Network network) {
                             MainActivity.GLOBALS.setNetwork(false);
+                            if(networkListener != null) {
+                                networkListener.hasConnections(false);
+                            }
                         }
                     });
                 }
@@ -69,5 +86,10 @@ public class CheckNetwork {
         }catch (Exception e){
             MainActivity.GLOBALS.setNetwork(true);
         }
+    }
+
+    @FunctionalInterface
+    public interface NetworkListener {
+        void hasConnections(boolean activeConnections);
     }
 }

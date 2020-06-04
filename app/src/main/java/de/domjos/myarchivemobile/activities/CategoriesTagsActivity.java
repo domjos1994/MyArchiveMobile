@@ -19,10 +19,13 @@ package de.domjos.myarchivemobile.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -47,6 +50,7 @@ import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public final class CategoriesTagsActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvItems, lvMedia;
+    private SearchView searchView;
     private Spinner spItems;
     private EditText txtTitle, txtDescription;
     private BottomNavigationView bottomNavigationView;
@@ -61,6 +65,19 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                reload(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
         this.spItems.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -95,13 +112,11 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 case R.id.cmdAdd:
                     if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
                         this.changeMode(true, false);
-                        this.setObject(new BaseDescriptionObject());
-                        this.baseDescriptionObject = null;
                     } else {
                         this.changeMode(false, false);
-                        this.setObject(new BaseDescriptionObject());
-                        this.baseDescriptionObject = null;
                     }
+                    this.setObject(new BaseDescriptionObject());
+                    this.baseDescriptionObject = null;
                     break;
                 case R.id.cmdEdit:
                     if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
@@ -131,8 +146,11 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        ControlsHelper.addToolbar(this);
+
         this.lvItems = this.findViewById(R.id.lvCategoriesOrTags);
         this.lvMedia = this.findViewById(R.id.lvMedia);
+        this.searchView = this.findViewById(R.id.cmdSearch);
 
         this.spItems = this.findViewById(R.id.spItems);
         CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<String>(this.getApplicationContext()) {
@@ -167,6 +185,46 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainScanner).setVisible(false);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int requestCode = 0;
+        Intent intent = null;
+        switch (item.getItemId()) {
+            case R.id.menMainPersons:
+                intent = new Intent(this, PersonActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCompanies:
+                intent = new Intent(this, CompanyActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainCategoriesAndTags:
+                intent = new Intent(this, CategoriesTagsActivity.class);
+                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+                break;
+            case R.id.menMainSettings:
+                intent = new Intent(this, SettingsActivity.class);
+                requestCode = MainActivity.SETTINGS_REQUEST;
+                break;
+            case R.id.menMainLog:
+                intent = new Intent(this, LogActivity.class);
+                break;
+        }
+        if(intent != null) {
+            this.startActivityForResult(intent, requestCode);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void initValidator() {
         this.validator = new Validator(CategoriesTagsActivity.this, R.mipmap.ic_launcher_round);
         this.validator.addEmptyValidator(this.txtTitle);
@@ -174,6 +232,14 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
+        this.reload("");
+    }
+
+    private void reload(String search) {
+        if(!search.trim().isEmpty()) {
+            search = "title like '%" + search + "%'";
+        }
+
         if(this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags))) {
             table = this.getString(R.string.media_general_tags).toLowerCase();
         } else {
@@ -183,7 +249,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         Database database = MainActivity.GLOBALS.getDatabase();
 
         this.lvItems.getAdapter().clear();
-        LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(this, new BaseDescriptionObject(), null, "", this.lvItems, table);
+        LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(this, new BaseDescriptionObject(), null, search, this.lvItems, table);
         task.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) o -> {
             for(BaseDescriptionObject baseDescriptionObject : o) {
                 de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();

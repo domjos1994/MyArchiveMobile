@@ -139,7 +139,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, "", this.lvCustomFields, "customFields");
+            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, this.search, this.lvCustomFields, "customFields");
             loadingTask.after((AbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
                 for(CustomField customField : customFields) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();

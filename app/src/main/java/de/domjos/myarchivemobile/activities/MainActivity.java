@@ -41,10 +41,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkRequest;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -77,9 +73,9 @@ import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
     private final static boolean INIT_WITH_EXAMPLE_DATA = false;
-    private final static int SETTINGS_REQUEST = 51;
-    private final static int PER_COMP_TAG_CAT_REQUEST = 52;
-    private final static int SCANNER_REQUEST = 53;
+    public final static int SETTINGS_REQUEST = 51;
+    public final static int PER_COMP_TAG_CAT_REQUEST = 52;
+    public final static int SCANNER_REQUEST = 53;
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
@@ -140,66 +136,14 @@ public final class MainActivity extends AbstractActivity {
                         this.label.equals(this.getString(R.string.main_navigation_media_music)) ||
                         this.label.equals(this.getString(R.string.main_navigation_media_games));
 
-                boolean hideNavButtons = this.label.equals(this.getString(R.string.api));
+                boolean isHomeFragment = this.label.equals(this.getString(R.string.app_name));
+                boolean isApiFragment = this.label.equals(this.getString(R.string.api));
 
-                this.menu.findItem(R.id.menMainScanner).setVisible(isMediaFragment);
-                this.cmdSearch.setVisibility(hideNavButtons ? View.GONE : View.VISIBLE);
-                this.cmdSearchWeb.setVisibility(hideNavButtons ? View.GONE : View.VISIBLE);
+                this.menu.findItem(R.id.menMainScanner).setVisible(isMediaFragment && MainActivity.GLOBALS.isNetwork());
+                this.cmdSearch.setVisibility(isApiFragment ? View.GONE : View.VISIBLE);
+                this.cmdSearchWeb.setVisibility(!(isMediaFragment || isHomeFragment) ? View.GONE : View.VISIBLE);
             }
         });
-
-        ConnectivityManager manager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
-        if(manager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            manager.registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
-                @Override
-                public void onAvailable(@NonNull Network network) {
-                    if(menu != null && label != null) {
-                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
-
-                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                    }
-                }
-
-                @Override
-                public void onLosing(@NonNull Network network, int maxMsToLive) {
-                    if(menu != null && label != null) {
-                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
-
-                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                    }
-                }
-
-                @Override
-                public void onLost(@NonNull Network network) {
-                    if(menu != null && label != null) {
-                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
-
-                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                    }
-                }
-
-                @Override
-                public void onUnavailable() {
-                    if(menu != null && label != null) {
-                        boolean book = label.equals(getString(R.string.main_navigation_media_books));
-                        boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
-                        boolean music = label.equals(getString(R.string.main_navigation_media_music));
-                        boolean game = label.equals(getString(R.string.main_navigation_media_games));
-
-                        runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
-                    }
-                }
-            });
-        }
     }
 
     private void initSearch(String query) {
@@ -268,7 +212,7 @@ public final class MainActivity extends AbstractActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
         menu.findItem(R.id.menMainScanner).setVisible(
                 (
@@ -403,7 +347,16 @@ public final class MainActivity extends AbstractActivity {
     private void initGlobals() {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
-        checkNetwork.registerNetworkCallback();
+        checkNetwork.registerNetworkCallback(availableNetwork -> {
+            if(menu != null && label != null) {
+                boolean book = label.equals(getString(R.string.main_navigation_media_books));
+                boolean movie = label.equals(getString(R.string.main_navigation_media_movies));
+                boolean music = label.equals(getString(R.string.main_navigation_media_music));
+                boolean game = label.equals(getString(R.string.main_navigation_media_games));
+
+                runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
+            }
+        });
 
         Database database = new Database(this.getApplicationContext());
         MainActivity.GLOBALS.setDatabase(database);

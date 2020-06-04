@@ -36,7 +36,6 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -76,6 +75,7 @@ public class MainBooksFragment extends ParentFragment {
         });
         this.lvBooks.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.currentObject = listObject;
+            this.currentObject.setObject(ControlsHelper.getObject(listObject, this.requireContext()));
             this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
             this.changeMode(false, true);
         });
@@ -205,15 +205,8 @@ public class MainBooksFragment extends ParentFragment {
             key = ControlsHelper.setThePage(this, "books", key);
             LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks, key);
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Book>>) books -> {
-                for(Book book : books) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(book.getTitle());
-                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(book.getReleaseDate(), getString(R.string.sys_date_format)));
-                    baseDescriptionObject.setCover(book.getCover());
-                    baseDescriptionObject.setId(book.getId());
-                    baseDescriptionObject.setState(book.getLastRead()!=null);
-                    baseDescriptionObject.setObject(book);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) books -> {
+                for(BaseDescriptionObject baseDescriptionObject : books) {
                     lvBooks.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
@@ -282,12 +275,15 @@ public class MainBooksFragment extends ParentFragment {
                     BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
                     if(baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
+                        this.currentObject.setObject(ControlsHelper.getObject(baseDescriptionObject, this.requireContext()));
                         bookPagerAdapter.setMediaObject((Book) currentObject.getObject());
                         lvBooks.select(currentObject);
                         changeMode(false, true);
                         return;
                     }
                 }
+            } else {
+                changeMode(true, false);
             }
         }
     }

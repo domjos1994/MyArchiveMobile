@@ -75,6 +75,7 @@ public class MainMoviesFragment extends ParentFragment {
         });
         this.lvMovies.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.currentObject = listObject;
+            this.currentObject.setObject(ControlsHelper.getObject(listObject, this.requireContext()));
             this.moviePagerAdapter.setMediaObject((Movie) this.currentObject.getObject());
             this.changeMode(false, true);
         });
@@ -202,15 +203,8 @@ public class MainMoviesFragment extends ParentFragment {
             key = ControlsHelper.setThePage(this, "movies", key);
             LoadingTask<Movie> loadingTask = new LoadingTask<>(this.getActivity(), new Movie(), null, searchQuery, this.lvMovies, key);
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Movie>>) movies -> {
-                for(Movie movie : movies) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setTitle(movie.getTitle());
-                    baseDescriptionObject.setDescription(ConvertHelper.convertDateToString(movie.getReleaseDate(), getString(R.string.sys_date_format)));
-                    baseDescriptionObject.setCover(movie.getCover());
-                    baseDescriptionObject.setId(movie.getId());
-                    baseDescriptionObject.setState(movie.getLastSeen()!=null);
-                    baseDescriptionObject.setObject(movie);
+            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) movies -> {
+                for(BaseDescriptionObject baseDescriptionObject : movies) {
                     lvMovies.getAdapter().add(baseDescriptionObject);
                 }
                 this.select();
@@ -279,6 +273,7 @@ public class MainMoviesFragment extends ParentFragment {
                     BaseMediaObject baseMediaObject = (BaseMediaObject) baseDescriptionObject.getObject();
                     if(baseMediaObject.getId() == id) {
                         currentObject = baseDescriptionObject;
+                        this.currentObject.setObject(ControlsHelper.getObject(baseDescriptionObject, this.requireContext()));
                         moviePagerAdapter.setMediaObject((Movie) currentObject.getObject());
                         lvMovies.select(currentObject);
                         changeMode(false, true);

@@ -272,7 +272,7 @@ public class MainListsFragment extends ParentFragment {
 
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
-        this.requireActivity().getMenuInflater().inflate(R.menu.list_menu, menu);
+        this.requireActivity().getMenuInflater().inflate(R.menu.ctx_list, menu);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class MainListsFragment extends ParentFragment {
         this.scrollView = view.findViewById(R.id.scrollView);
         this.lvMediaLists = view.findViewById(R.id.lvMediaLists);
         this.lvMediaObjects = view.findViewById(R.id.lvMediaObjects);
-        this.lvMediaObjects.setContextMenu(R.menu.list_menu);
+        this.lvMediaObjects.setContextMenu(R.menu.ctx_list);
 
         this.txtListTitle = view.findViewById(R.id.txtListsTitle);
         this.txtListDeadline = view.findViewById(R.id.txtListsDeadline);

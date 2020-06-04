@@ -16,49 +16,69 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_alignParentTop="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/cmdSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_margin="3dp">
+            </androidx.appcompat.widget.SearchView>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <Spinner
         android:id="@+id/spItems"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.04"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_below="@+id/appBarLayout"/>
 
     <TextView
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/separatorColor"
-        app:layout_constraintTop_toBottomOf="@id/spItems"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_below="@+id/spItems"/>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvCategoriesOrTags"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/separator"
+        android:layout_above="@+id/lvMedia"
         app:itemIcon="@drawable/icon_tag"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/background_selected"
         app:listItemDivider="@drawable/background_divider"
         app:iconColor="@color/textColorPrimary"
         android:padding="4dp"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@id/separator"
-        app:layout_constraintBottom_toTopOf="@+id/controls"
-        app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="@string/categories_and_tags"/>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvMedia"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="6"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_above="@+id/bottomSeparator"
         app:itemIcon="@mipmap/ic_launcher_round"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/background_selected"
@@ -66,10 +86,6 @@
         app:iconColor="@color/textColorPrimary"
         app:readOnly="true"
         android:padding="4dp"
-        app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@id/separator"
-        app:layout_constraintBottom_toTopOf="@+id/controls"
-        app:layout_constraintStart_toEndOf="@+id/lvCategoriesOrTags"
         android:contentDescription="@string/main_navigation_media"/>
 
     <TextView
@@ -77,17 +93,14 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/separatorColor"
-        app:layout_constraintTop_toBottomOf="@id/lvMedia"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_above="@+id/controls"/>
 
     <ScrollView
         android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        app:layout_constraintTop_toBottomOf="@id/bottomSeparator"
-        app:layout_constraintBottom_toTopOf="@+id/navigationView"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_above="@+id/navigationView">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,13 +127,11 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/controls"
-        app:layout_constraintHeight_percent="0.08"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:menu="@menu/navigation_bottom"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

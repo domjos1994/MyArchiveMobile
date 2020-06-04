@@ -29,7 +29,7 @@
         android:id="@+id/lvCustomFields"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
+        android:layout_weight="6"
         app:itemIcon="@drawable/icon_field"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/background_selected"
@@ -48,7 +48,7 @@
         android:contentDescription="@string/customFields"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:padding="4dp">
         <TableLayout
             android:layout_width="match_parent"
@@ -87,14 +87,14 @@
                     android:textColor="@color/textColorPrimary"
                     android:layout_width="0dp"
                     android:layout_weight="5"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="48dp"/>
                 <CheckBox
                     android:id="@+id/chkCustomFieldMovies"
                     android:text="@string/main_navigation_media_movies"
                     android:textColor="@color/textColorPrimary"
                     android:layout_width="0dp"
                     android:layout_weight="5"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="48dp"/>
             </TableRow>
             <TableRow>
                 <CheckBox
@@ -103,14 +103,14 @@
                     android:textColor="@color/textColorPrimary"
                     android:layout_width="0dp"
                     android:layout_weight="5"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="48dp"/>
                 <CheckBox
                     android:id="@+id/chkCustomFieldGames"
                     android:text="@string/main_navigation_media_games"
                     android:textColor="@color/textColorPrimary"
                     android:layout_width="0dp"
                     android:layout_weight="5"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="48dp"/>
             </TableRow>
             <EditText
                 android:id="@+id/txtCustomFieldDescriptions"
@@ -132,5 +132,5 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/controls"/>
+        app:menu="@menu/navigation_bottom"/>
 </LinearLayout>
