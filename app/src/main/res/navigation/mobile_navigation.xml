@@ -53,6 +53,12 @@
         tools:layout="@layout/main_fragment_books" />
 
     <fragment
+        android:id="@+id/navMainMediaFileTree"
+        android:name="de.domjos.myarchivemobile.fragments.MainFileTreeFragment"
+        android:label="@string/file_tree"
+        tools:layout="@layout/main_fragment_file_tree" />
+
+    <fragment
         android:id="@+id/navMainMediaGames"
         android:name="de.domjos.myarchivemobile.fragments.MainGamesFragment"
         android:label="@string/main_navigation_media_games"

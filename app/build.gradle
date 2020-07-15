@@ -73,6 +73,9 @@ dependencies {
     // file-picker
     implementation 'com.github.angads25:filepicker:1.1.1'
 
+    // tree-view
+    implementation 'com.github.bmelnychuk:atv:1.2.7'
+
     implementation "androidx.appcompat:appcompat:$propAndroidVersion"
     implementation "com.google.android.material:material:1.0.0"
 

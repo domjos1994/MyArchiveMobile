@@ -54,6 +54,8 @@ import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
 import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
+import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
@@ -372,6 +374,182 @@ public class Database extends SQLiteOpenHelper {
         }
         cursor.close();
         return games;
+    }
+
+    public long insertOrUpdateTreeNode(TreeNode treeNode) {
+        SQLiteStatement statement = this.getBaseStatement(treeNode, Arrays.asList("title", "description", "category", "gallery", "system", "parent"));
+        statement.bindString(1, treeNode.getTitle());
+        statement.bindString(2, treeNode.getDescription());
+        if(treeNode.getCategory() != null) {
+            if(treeNode.getCategory().getId() == 0) {
+                treeNode.getCategory().setId(this.insertOrUpdateBaseObject(treeNode.getCategory(), "categories", "", 0));
+            }
+            statement.bindLong(3, treeNode.getCategory().getId());
+        } else {
+            statement.bindNull(3);
+        }
+        statement.bindLong(4, treeNode.isGallery() ? 1 : 0);
+        statement.bindLong(5, treeNode.isSystem() ? 1 : 0);
+        if(treeNode.getParent() != null) {
+            statement.bindLong(6, treeNode.getParent().getId());
+        } else {
+            statement.bindNull(6);
+        }
+
+        if(treeNode.getId() == 0) {
+            treeNode.setId(statement.executeInsert());
+        } else {
+            statement.execute();
+        }
+        statement.close();
+
+        for(BaseDescriptionObject tag : treeNode.getTags()) {
+            tag.setId(this.insertOrUpdateBaseObject(tag, "tags", "file_tree", treeNode.getId()));
+        }
+        return treeNode.getId();
+    }
+
+    public TreeNode getRoot() {
+        return this.getRoot("");
+    }
+
+    public TreeNode getRoot(String where) {
+        TreeNode root = null;
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM file_tree WHERE parent is null" + (where.trim().isEmpty() ? "" : " and " + where.trim()), new String[]{});
+        while (cursor.moveToNext()) {
+            root = this.getTreeNodeFromCursor(cursor);
+        }
+        cursor.close();
+        if(root != null) {
+            this.addChildren(root);
+        }
+        return root;
+    }
+
+    public TreeNode getNodeByName(String name) {
+        TreeNode treeNode = null;
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM file_tree WHERE title=?", new String[]{name});
+        while (cursor.moveToNext()) {
+            treeNode = this.getTreeNodeFromCursor(cursor);
+        }
+        cursor.close();
+        return treeNode;
+    }
+
+    public TreeNode getNodeById(long id) {
+        TreeNode treeNode = null;
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM file_tree WHERE id=?", new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            treeNode = this.getTreeNodeFromCursor(cursor);
+        }
+        cursor.close();
+        return treeNode;
+    }
+
+    public byte[] loadImage(long id, String table, String column) {
+        byte[] content = null;
+        Cursor cursor = this.getReadableDatabase().rawQuery(String.format("SELECT %s FROM %s WHERE id=?", column, table), new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            content = cursor.getBlob(cursor.getColumnIndex(column));
+        }
+        cursor.close();
+        return content;
+    }
+
+    private void addChildren(TreeNode root) {
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM file_tree WHERE parent=?", new String[]{String.valueOf(root.getId())});
+        while (cursor.moveToNext()) {
+            TreeNode child = this.getTreeNodeFromCursor(cursor);
+            child.setParent(root);
+            this.addChildren(child);
+            root.getChildren().add(child);
+        }
+        cursor.close();
+    }
+
+    private TreeNode getTreeNodeFromCursor(Cursor cursor) {
+        TreeNode treeNode = new TreeNode();
+        treeNode.setId(cursor.getLong(cursor.getColumnIndex("id")));
+        treeNode.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+        treeNode.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+        treeNode.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+        long category = cursor.getLong(cursor.getColumnIndex("category"));
+        if(category != 0) {
+            treeNode.setCategory(this.getBaseObjects(Database.CATEGORIES, "", category, "").get(0));
+        }
+        treeNode.setGallery(cursor.getInt(cursor.getColumnIndex("gallery")) == 1);
+        treeNode.setSystem(cursor.getInt(cursor.getColumnIndex("system")) == 1);
+        treeNode.setTags(this.getBaseObjects(Database.TAGS, "file_tree", 0, ""));
+        for(TreeFile file : this.getTreeNodeFiles("parent=" + treeNode.getId())) {
+            file.setParent(treeNode);
+            treeNode.getFiles().add(file);
+        }
+        return treeNode;
+    }
+
+    public void insertOrUpdateTreeNodeFiles(TreeFile treeFile) {
+        SQLiteStatement statement = this.getBaseStatement(treeFile, Arrays.asList("title", "description", "category", "parent", "internalId", "internalTable", "internalColumn", "pathToFile", "embeddedContent"));
+        statement.bindString(1, treeFile.getTitle());
+        statement.bindString(2, treeFile.getDescription());
+        if(treeFile.getCategory() != null) {
+            if(treeFile.getCategory().getId() == 0) {
+                treeFile.getCategory().setId(this.insertOrUpdateBaseObject(treeFile.getCategory(), "categories", "", 0));
+            }
+            statement.bindLong(3, treeFile.getCategory().getId());
+        } else {
+            statement.bindNull(3);
+        }
+        if(treeFile.getParent() != null) {
+            statement.bindLong(4, treeFile.getParent().getId());
+        } else {
+            statement.bindNull(4);
+        }
+        statement.bindLong(5, treeFile.getInternalId());
+        statement.bindString(6, treeFile.getInternalTable());
+        statement.bindString(7, treeFile.getInternalColumn());
+        statement.bindString(8, treeFile.getPathToFile());
+        if(treeFile.getEmbeddedContent() != null) {
+            statement.bindBlob(9, treeFile.getEmbeddedContent());
+        } else {
+            statement.bindNull(9);
+        }
+
+        if(treeFile.getId() == 0) {
+            treeFile.setId(statement.executeInsert());
+        } else {
+            statement.execute();
+        }
+        statement.close();
+
+        for(BaseDescriptionObject tag : treeFile.getTags()) {
+            tag.setId(this.insertOrUpdateBaseObject(tag, "tags", "file_tree_file", treeFile.getId()));
+        }
+    }
+
+    public List<TreeFile> getTreeNodeFiles(String where) {
+        List<TreeFile> treeFiles = new LinkedList<>();
+
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM file_tree_file" + this.where(where), new String[]{});
+        while (cursor.moveToNext()) {
+            TreeFile treeFile = new TreeFile();
+            treeFile.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            treeFile.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+            treeFile.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+            long category = cursor.getLong(cursor.getColumnIndex("category"));
+            if(category != 0) {
+                treeFile.setCategory(this.getBaseObjects(Database.CATEGORIES, "", category, "").get(0));
+            }
+            treeFile.setInternalId(cursor.getLong(cursor.getColumnIndex("internalId")));
+            treeFile.setInternalTable(cursor.getString(cursor.getColumnIndex("internalTable")));
+            treeFile.setInternalColumn(cursor.getString(cursor.getColumnIndex("internalColumn")));
+            treeFile.setPathToFile(cursor.getString(cursor.getColumnIndex("pathToFile")));
+            treeFile.setEmbeddedContent(cursor.getBlob(cursor.getColumnIndex("embeddedContent")));
+            treeFile.setTags(this.getBaseObjects(Database.TAGS, "file_tree_file", 0, ""));
+            treeFiles.add(treeFile);
+        }
+        cursor.close();
+
+        return treeFiles;
     }
 
     public void insertOrUpdateLibraryObject(LibraryObject libraryObject, BaseMediaObject baseMediaObject) {
@@ -782,6 +960,30 @@ public class Database extends SQLiteOpenHelper {
         return person.getId();
     }
 
+    public List<Person> getPersons(String where) throws ParseException {
+        List<Person> people = new LinkedList<>();
+
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM persons" + this.where(where), null);
+        while (cursor.moveToNext()) {
+            Person person = new Person();
+            person.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            person.setFirstName(cursor.getString(cursor.getColumnIndex("firstName")));
+            person.setLastName(cursor.getString(cursor.getColumnIndex("lastName")));
+            int index = cursor.getColumnIndex("birthDate");
+            String dt = cursor.getString(index);
+            if(dt!=null) {
+                person.setBirthDate(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+            }
+            try {
+                person.setImage(cursor.getBlob(cursor.getColumnIndex("image")));
+            } catch (Exception ignored) {}
+            person.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+            people.add(person);
+        }
+        cursor.close();
+        return people;
+    }
+
     public List<Person> getPersons(String foreignTable, long id) throws ParseException {
         List<Person> people = new LinkedList<>();
         if(foreignTable.trim().isEmpty()) {
@@ -879,6 +1081,25 @@ public class Database extends SQLiteOpenHelper {
             statement.executeInsert();
             statement.close();
         }
+    }
+
+    public List<Company> getCompanies(String where) throws ParseException {
+        List<Company> companies = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM companies" + this.where(where), null);
+        while (cursor.moveToNext()) {
+            Company company = new Company();
+            company.setId(cursor.getLong(cursor.getColumnIndex("id")));
+            company.setTitle(cursor.getString(cursor.getColumnIndex(Database.TITLE)));
+            String dt = cursor.getString(cursor.getColumnIndex("foundation"));
+            if(dt!=null) {
+                company.setFoundation(!dt.isEmpty() ? ConvertHelper.convertStringToDate(dt, Database.DATE_FORMAT) : null);
+            }
+            company.setCover(cursor.getBlob(cursor.getColumnIndex(Database.COVER)));
+            company.setDescription(cursor.getString(cursor.getColumnIndex(Database.DESCRIPTION)));
+            companies.add(company);
+        }
+        cursor.close();
+        return companies;
     }
 
     public List<Company> getCompanies(String foreignTable, long id) throws ParseException {
@@ -1223,6 +1444,23 @@ public class Database extends SQLiteOpenHelper {
                 src.transferFrom(dst, 0, dst.size());
             }
         }
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for(String media : new String[]{"albums", "songs", "movies", "games", "books"}) {
+            for(String sub : new String[]{"", "_tags", "_persons", "_companies", "_customfields"}) {
+                db.execSQL(String.format("DELETE FROM %s%s", media, sub), new Object[]{});
+            }
+        }
+        db.execSQL("DELETE FROM filters");
+        db.execSQL("DELETE FROM media_lists");
+        db.execSQL("DELETE FROM lists");
+        db.execSQL("DELETE FROM library");
+        db.execSQL("DELETE FROM companies");
+        db.execSQL("DELETE FROM persons");
+        db.execSQL("DELETE FROM categories");
+        db.execSQL("DELETE FROM tags");
     }
 
     private void updateDatabase(String content, int oldVersion, int newVersion, SQLiteDatabase database) {

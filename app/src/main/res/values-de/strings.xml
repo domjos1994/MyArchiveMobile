@@ -198,4 +198,16 @@
     <string name="sys_reload_summary">Daten laden…</string>
     <string name="sys_next">Vor</string>
     <string name="sys_previous">Zurück</string>
+
+    <string name="file_tree">Datei-Baum</string>
+    <string name="file_tree_system">System</string>
+    <string name="file_tree_gallery">Galerie</string>
+    <string name="file_tree_data">Daten</string>
+    <string name="file_tree_embed">Einbetten</string>
+    <string name="file_tree_node_add">Neuer Knoten</string>
+    <string name="file_tree_file_add">Neues Dokument</string>
+    <string name="file_tree_load">Lade Daten!</string>
+    <string name="file_tree_load_db">Initialisiere Datenbank (%s)…</string>
+    <string name="file_tree_load_tree">Initialisiere Datei-Baum…</string>
+    <string name="file_tree_load_files">Lade Dateien…</string>
 </resources>

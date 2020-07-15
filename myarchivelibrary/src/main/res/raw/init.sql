@@ -383,6 +383,54 @@ CREATE TABLE IF NOT EXISTS albums_customFields(
     FOREIGN KEY(customFields) REFERENCES customFields(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS file_tree(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category INTEGER DEFAULT 0,
+    gallery INTEGER DEFAULT 0,
+    system INTEGER DEFAULT 0,
+    parent INTEGER DEFAULT 0,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(parent) REFERENCES file_tree(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(category) REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS file_tree_tags(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    file_tree INTEGER NOT NULL,
+    tags INTEGER NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(file_tree) REFERENCES file_tree(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(tags) REFERENCES tags(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS file_tree_file(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category INTEGER DEFAULT 0,
+    parent INTEGER DEFAULT 0,
+    internalId INTEGER DEFAULT 0,
+    internalTable VARCHAR(255) DEFAULT '',
+    internalColumn VARCHAR(255) DEFAULT '',
+    pathToFile TEXT,
+    embeddedContent BLOB DEFAULT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(parent) REFERENCES file_tree(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(category) REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS file_tree_file_tags(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    file_tree_file INTEGER NOT NULL,
+    tags INTEGER NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(file_tree_file) REFERENCES file_tree_file(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(tags) REFERENCES tags(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE VIEW IF NOT EXISTS media AS
         SELECT books.id as id, books.title as title, originalTitle, books.description as description,
             'books' as type, cover, categories.title as category, group_concat(tags.title) as tags,

@@ -201,4 +201,16 @@
     <string name="sys_reload_summary">Reload data…</string>
     <string name="sys_next">Next</string>
     <string name="sys_previous">Previous</string>
+
+    <string name="file_tree">File-Tree</string>
+    <string name="file_tree_system">System</string>
+    <string name="file_tree_gallery">Gallery</string>
+    <string name="file_tree_data">Data</string>
+    <string name="file_tree_embed">Embed</string>
+    <string name="file_tree_node_add">Add Node</string>
+    <string name="file_tree_file_add">Add File</string>
+    <string name="file_tree_load">Load Data!</string>
+    <string name="file_tree_load_db">Init Database (%s)…</string>
+    <string name="file_tree_load_tree">Init File-Tree…</string>
+    <string name="file_tree_load_files">Load Files…</string>
 </resources>

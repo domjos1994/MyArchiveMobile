@@ -46,6 +46,10 @@
                 android:id="@+id/navMainMediaGames"
                 android:icon="@drawable/icon_game"
                 android:title="@string/main_navigation_media_games" />
+            <item
+                android:id="@+id/navMainMediaFileTree"
+                android:icon="@drawable/icon_file"
+                android:title="@string/file_tree" />
         </menu>
     </item>
 

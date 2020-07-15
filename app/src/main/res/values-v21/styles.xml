@@ -64,4 +64,9 @@
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
     </style>
+
+    <style name="TreeNodeStyleDivided">
+        <item name="android:showDividers">middle</item>
+        <item name="android:divider">@color/textColorPrimary</item>
+    </style>
 </resources>

@@ -59,10 +59,10 @@ import de.domjos.myarchivelibrary.services.TextService;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
-import de.domjos.myarchivemobile.tasks.ExportTask;
-import de.domjos.myarchivemobile.tasks.ImportTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Settings;
+import de.domjos.myarchivemobile.tasks.ExportTask;
+import de.domjos.myarchivemobile.tasks.ImportTask;
 
 import static android.app.Activity.RESULT_OK;
 
