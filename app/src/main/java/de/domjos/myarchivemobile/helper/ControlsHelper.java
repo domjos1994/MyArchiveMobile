@@ -469,7 +469,7 @@ public class ControlsHelper {
     public static void loadAd(Context context) {
         if(MainActivity.GLOBALS.getSettings().showAd()) {
             InterstitialAd interstitialAd = new InterstitialAd(context);
-            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
+            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
             // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
             interstitialAd.loadAd(new AdRequest.Builder().build());
             interstitialAd.setAdListener(new AdListener() {
