@@ -107,4 +107,15 @@ public final class Settings {
     public String getMovieDBKey() {
         return this.userPreferences.getString("txtMovieDBKey", "");
     }
+
+    public boolean showAd() {
+        int intentChanges = this.getSetting("showAd", 0);
+        if(intentChanges == 2) {
+            this.setSetting("showAd", 0);
+            return true;
+        } else {
+            this.setSetting("showAd", ++intentChanges);
+            return false;
+        }
+    }
 }

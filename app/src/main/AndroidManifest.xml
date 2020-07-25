@@ -44,6 +44,11 @@
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
         tools:targetApi="q">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4983888966373182~8019149807"/>
+
+
         <activity
             android:name=".activities.LogActivity"
             android:label="@string/log"

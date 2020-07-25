@@ -17,13 +17,25 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -31,27 +43,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-
-import de.domjos.myarchivelibrary.services.AudioDBWebservice;
-import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
-import de.domjos.myarchivelibrary.services.IGDBWebservice;
-import de.domjos.myarchivelibrary.services.MovieDBWebservice;
-import de.domjos.myarchivemobile.dialogs.MediaDialog;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -62,7 +55,12 @@ import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchivelibrary.database.Database;
+import de.domjos.myarchivelibrary.services.AudioDBWebservice;
+import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
+import de.domjos.myarchivelibrary.services.IGDBWebservice;
+import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.helper.CheckNetwork;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -194,6 +192,8 @@ public final class MainActivity extends AbstractActivity {
         // init globals
         try {
             this.initGlobals();
+
+            MobileAds.initialize(MainActivity.this, initializationStatus -> ControlsHelper.loadAd(MainActivity.this));
 
             if(MainActivity.INIT_WITH_EXAMPLE_DATA) {
                 MainActivity.GLOBALS.getDatabase().insertExampleData();

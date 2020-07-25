@@ -44,6 +44,9 @@ import androidx.fragment.app.Fragment;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
@@ -461,6 +464,21 @@ public class ControlsHelper {
             }
         }
         return key;
+    }
+
+    public static void loadAd(Context context) {
+        if(MainActivity.GLOBALS.getSettings().showAd()) {
+            InterstitialAd interstitialAd = new InterstitialAd(context);
+            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
+            // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
+            interstitialAd.loadAd(new AdRequest.Builder().build());
+            interstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    interstitialAd.show();
+                }
+            });
+        }
     }
 
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

@@ -213,4 +213,7 @@
     <string name="file_tree_load_db">Init Database (%s)…</string>
     <string name="file_tree_load_tree">Init File-Tree…</string>
     <string name="file_tree_load_files">Load Files…</string>
+
+    <string name="ad_mob_key" translatable="false">ca-app-pub-4983888966373182/6514496441</string>
+    <string name="ad_mob_key_testing" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
 </resources>
