@@ -109,11 +109,12 @@
                 android:layout_weight="10"
                 android:contentDescription="@string/file_tree_embed"/>
         </TableRow>
-        <TableRow android:id="@+id/rowFileButtons">
+        <TableRow
+            android:id="@+id/rowFileButtons">
             <ImageButton
                 android:id="@+id/cmdImageAdd"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:layout_weight="5"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
@@ -123,7 +124,7 @@
             <CheckBox
                 android:id="@+id/chkImageEmbed"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:layout_weight="5"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
@@ -132,11 +133,12 @@
                 android:textStyle="bold"
                 android:autofillHints="@string/file_tree_embed" />
         </TableRow>
-        <TableRow android:id="@+id/rowNodeGallery">
+        <TableRow
+            android:id="@+id/rowNodeGallery">
             <CheckBox
                 android:id="@+id/chkNodeGallery"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:layout_weight="10"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
@@ -150,7 +152,7 @@
     <LinearLayout
         android:id="@+id/controls"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:weightSum="12"
         android:background="@color/colorAccent">

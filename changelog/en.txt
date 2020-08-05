@@ -1,3 +1,2 @@
-- Notifications-Icon only white now visible
-- Bug at the FileSystem-Permissions in newer Android-Versions
 - better design for api
+- File-Tree

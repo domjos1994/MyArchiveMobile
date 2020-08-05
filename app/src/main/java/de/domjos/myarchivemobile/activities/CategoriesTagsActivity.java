@@ -25,11 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -251,14 +251,16 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.lvItems.getAdapter().clear();
         LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(this, new BaseDescriptionObject(), null, search, this.lvItems, table);
         task.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) o -> {
-            for(BaseDescriptionObject baseDescriptionObject : o) {
-                de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
-                String title = baseDescriptionObject.getTitle();
-                current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
-                current.setDescription(baseDescriptionObject.getDescription());
-                current.setId(baseDescriptionObject.getId());
-                current.setObject(baseDescriptionObject);
-                this.lvItems.getAdapter().add(current);
+            if(o != null) {
+                for(BaseDescriptionObject baseDescriptionObject : o) {
+                    de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
+                    String title = baseDescriptionObject.getTitle();
+                    current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);
+                    current.setDescription(baseDescriptionObject.getDescription());
+                    current.setId(baseDescriptionObject.getId());
+                    current.setObject(baseDescriptionObject);
+                    this.lvItems.getAdapter().add(current);
+                }
             }
         });
         task.execute();
