@@ -37,7 +37,7 @@ ext.propMultiDex = true
 ext.propMinify = false
 ext.propShrink = false
 
-ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/github.properties"
+ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/credentials/github.properties"
 ext.propCustomWidgetsVersion = "3.4.0"
 
 buildscript {
