@@ -63,10 +63,10 @@ dependencies {
     implementation 'com.opencsv:opencsv:4.6'
 
     // import own libraries
-    implementation "de.domjos:customwidgets:$propCustomWidgetsVersion"
+    implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
 
     // android
-    implementation "androidx.appcompat:appcompat:$propAndroidVersion"
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
     implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:$propLifeCycleExtVersion"
 }

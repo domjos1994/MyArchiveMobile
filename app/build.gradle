@@ -76,23 +76,23 @@ dependencies {
     // tree-view
     implementation 'com.github.bmelnychuk:atv:1.2.7'
 
-    implementation "androidx.appcompat:appcompat:$propAndroidVersion"
-    implementation "com.google.android.material:material:1.0.0"
-    implementation 'com.google.android.gms:play-services-ads:19.2.0'
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
+    implementation "com.google.android.material:material:1.2.1"
+    implementation 'com.google.android.gms:play-services-ads:19.4.0'
 
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 
-    implementation "androidx.navigation:navigation-fragment:$propAndroidNavVersion"
-    implementation "androidx.navigation:navigation-ui:$propAndroidNavVersion"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.navigation:navigation-fragment:2.3.0"
+    implementation "androidx.navigation:navigation-ui:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:$propLifeCycleExtVersion"
 
     // import own libraries
-    implementation "de.domjos:customwidgets:$propCustomWidgetsVersion"
+    implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
     implementation project(path: ':myarchivelibrary')
 
     // test libraries
     implementation 'androidx.preference:preference:1.1.1'
-    testImplementation "junit:junit:$propJUnitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$propJUnitExtVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspressoVersion"
+    testImplementation "junit:junit:4.13"
+    androidTestImplementation "androidx.test.ext:junit:1.1.2"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
 }

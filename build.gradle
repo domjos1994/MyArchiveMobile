@@ -24,21 +24,18 @@ ext.propJavaVersion = "8"
 
 ext.propCompVersion = 29
 ext.propMinVersion = 20
-ext.propAndroidVersion = "1.1.0"
-ext.propAndroidNavVersion = "2.2.2"
-
-ext.propJUnitVersion = '4.13'
-ext.propJUnitExtVersion = "1.1.1"
-ext.propEspressoVersion = "3.2.0"
-
-ext.propDatabaseVersion = "2.1.0"
 
 ext.propMultiDex = true
 ext.propMinify = false
 ext.propShrink = false
 
-ext.propCustomWidgetsPropertiesPath = "../Libraries/customwidgets/credentials/github.properties"
-ext.propCustomWidgetsVersion = "3.4.0"
+// android libraries
+ext.propDatabaseVersion = "2.1.0"
+ext.propAppCompatVersion = "1.2.0"
+ext.propLifeCycleExtVersion = "2.2.0"
+
+// other libraries
+ext.propCustomWidgetsVersion = "3.5.0"
 
 buildscript {
     repositories {
@@ -51,21 +48,10 @@ buildscript {
     }
 }
 
-def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(new File(projectDir, ext.propCustomWidgetsPropertiesPath)))
-
 allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/domjos1994/Customwidgets")
-            credentials {
-                username = githubProperties['gpr.usr']
-                password = githubProperties['gpr.key']
-            }
-        }
     }
 
     gradle.projectsEvaluated {
