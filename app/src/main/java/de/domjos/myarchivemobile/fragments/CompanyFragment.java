@@ -58,7 +58,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.cmdCompanySearch.setOnClickListener(event -> {
             try {
                 this.company = this.getMediaObject();
-                WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                 this.abstractPagerAdapter.setMediaObject(wikiDataCompanyTask.execute(this.company).get().get(0));
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());

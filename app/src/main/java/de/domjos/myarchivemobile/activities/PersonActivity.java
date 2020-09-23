@@ -95,7 +95,7 @@ public final class PersonActivity extends AbstractActivity {
                 try {
                     Person person = (Person) baseDescriptionObject.getObject();
                     if(person != null) {
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                         wikiDataPersonTask.after((AbstractTask.PostExecuteListener<List<Person>>) o -> {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
                             reload();

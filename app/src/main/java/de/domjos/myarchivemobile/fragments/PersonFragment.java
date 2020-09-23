@@ -59,7 +59,7 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.cmdPersonSearch.setOnClickListener(event -> {
             try {
                 this.person = this.getMediaObject();
-                WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                 this.abstractPagerAdapter.setMediaObject(wikiDataPersonTask.execute(this.person).get().get(0));
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());

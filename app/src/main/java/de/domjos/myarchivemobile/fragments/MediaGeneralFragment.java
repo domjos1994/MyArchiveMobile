@@ -173,7 +173,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.cmdMediaGeneralSearch.setOnClickListener(view1 -> {
             Activity ctx = this.requireActivity();
             try {
-                int icon = R.mipmap.ic_launcher_round;
+                int icon = R.drawable.icon_notification;
                 boolean notifications = MainActivity.GLOBALS.getSettings().isNotifications();
                 String search = this.txtMediaGeneralCode.getText().toString();
 
@@ -351,25 +351,25 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
                 String description = intent.getStringExtra("description");
                 long id = intent.getLongExtra("id", 0);
                 if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
-                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description, MainActivity.GLOBALS.getSettings().getMovieDBKey());
+                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings().getMovieDBKey());
                     List<Movie> movies = theMovieDBTask.execute(id).get();
                     if(movies != null && !movies.isEmpty()) {
                         this.abstractPagerAdapter.setMediaObject(movies.get(0));
                     }
                 } else if(Objects.requireNonNull(type).equals(this.getString(R.string.album))) {
-                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                    TheAudioDBTask theMovieDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                     List<Album> movies = theMovieDBTask.execute(id).get();
                     if(movies != null && !movies.isEmpty()) {
                         this.abstractPagerAdapter.setMediaObject(movies.get(0));
                     }
                 } else if(Objects.requireNonNull(type).equals(this.getString(R.string.book))) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, description, MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
+                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                     List<Book> books = googleBooksTask.execute("").get();
                     if(books != null && !books.isEmpty()) {
                         this.abstractPagerAdapter.setMediaObject(books.get(0));
                     }
                 } else if(Objects.requireNonNull(type).equals(this.getString(R.string.game))) {
-                    IGDBTask igdbTask = new IGDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getIGDBKey());
+                    IGDBTask igdbTask = new IGDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getIGDBKey());
                     List<Game> games = igdbTask.execute(id).get();
                     if(games != null && !games.isEmpty()) {
                         this.abstractPagerAdapter.setMediaObject(games.get(0));

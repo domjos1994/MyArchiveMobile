@@ -36,7 +36,6 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -46,9 +45,9 @@ import de.domjos.myarchivelibrary.tasks.EANDataMovieTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.MoviePagerAdapter;
+import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
-import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MainMoviesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvMovies;
@@ -242,7 +241,7 @@ public class MainMoviesFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_movies))) {
                 String[] code = codes.split("\n");
-                EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round, MainActivity.GLOBALS.getSettings().getEANDataKey());
+                EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Movie> movies = eanDataService.execute(code).get();
                 for(Movie movie : movies) {
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);

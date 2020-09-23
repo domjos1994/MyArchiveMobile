@@ -39,7 +39,7 @@ public class ExportTask extends StatusTask<Void, Void> {
     private List<BaseMediaObject> baseMediaObjects;
 
     public ExportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, List<BaseMediaObject> baseMediaObjects) {
-        super(activity, R.string.api_task_export, R.string.api_task_export_content, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.not_export, pbProgress, lblMessage);
+        super(activity, R.string.api_task_export, R.string.api_task_export_content, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, pbProgress, lblMessage);
 
         this.path = path;
         this.baseMediaObjects = baseMediaObjects;

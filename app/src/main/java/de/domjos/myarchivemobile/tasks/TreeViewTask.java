@@ -31,7 +31,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
     private String search;
 
     public TreeViewTask(Activity activity, ProgressBar progressBar, TextView status, boolean initDatabase, boolean loadFiles, boolean system, com.unnamed.b.atv.model.TreeNode root, TreeNode parent, String search) {
-        super(activity, R.string.file_tree_load, R.string.file_tree_load, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_tree, progressBar, status);
+        super(activity, R.string.file_tree_load, R.string.file_tree_load, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, progressBar, status);
 
         this.initDatabase = initDatabase;
         this.loadFiles = loadFiles;

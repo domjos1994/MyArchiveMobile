@@ -95,7 +95,7 @@ public final class CompanyActivity extends AbstractActivity {
                 try {
                     Company company = (Company) baseDescriptionObject.getObject();
                     if(company != null) {
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.mipmap.ic_launcher_round);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                         wikiDataCompanyTask.after((AbstractTask.PostExecuteListener<List<Company>>) o -> {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
                             reload();

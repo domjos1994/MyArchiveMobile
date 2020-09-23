@@ -149,7 +149,7 @@ public class MediaDialog extends DialogFragment {
                 this.setCancelable(false);
                 if(this.currentObject != null) {
                     if(this.multiple) {
-                        int icon = R.mipmap.ic_launcher_round;
+                        int icon = R.drawable.icon_notification;
                         boolean notification = MainActivity.GLOBALS.getSettings().isNotifications();
 
                         try {
@@ -346,7 +346,7 @@ public class MediaDialog extends DialogFragment {
         private TitleWebservice<? extends  BaseMediaObject> titleWebservice;
 
         SearchTask(Activity activity, boolean showNotifications, TitleWebservice<? extends BaseMediaObject> titleWebservice) {
-            super(activity, R.string.sys_search, R.string.sys_search, showNotifications, R.mipmap.ic_launcher_round);
+            super(activity, R.string.sys_search, R.string.sys_search, showNotifications, R.drawable.icon_notification);
             this.titleWebservice = titleWebservice;
         }
 
