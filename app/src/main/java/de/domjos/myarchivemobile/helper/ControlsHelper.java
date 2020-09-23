@@ -393,7 +393,10 @@ public class ControlsHelper {
         }
         dialogProperties.extensions = extensions.toArray(new String[]{});
 
-        return new FilePickerDialog(activity, dialogProperties, R.style.filePickerStyle);
+        FilePickerDialog filePickerDialog = new FilePickerDialog(activity, dialogProperties, R.style.filePickerStyle);
+        LinearLayout linearLayout = filePickerDialog.findViewById(R.id.footer);
+
+        return filePickerDialog;
     }
 
     public static void changeScreenIfEditMode(Map<SwipeRefreshDeleteList, Integer> lists, View view, Activity activity, boolean editMode) {

@@ -19,7 +19,8 @@
 <resources>
     <color name="colorPrimary">#454545</color>
     <color name="colorPrimaryDark">#272727</color>
-    <color name="colorAccent">#383838</color>
+    <color name="colorAccent">#eee</color>
+    <color name="colorGradient">#383838</color>
 
     <color name="hintColor">#999</color>
     <color name="textColorPrimary">#FFFFFF</color>

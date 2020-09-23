@@ -23,6 +23,7 @@
         android:color="@android:color/white"/>
     <gradient
         android:angle="135"
+        android:centerColor="@color/colorGradient"
         android:endColor="@color/colorPrimaryDark"
         android:startColor="@color/colorPrimary"
         android:type="linear" />

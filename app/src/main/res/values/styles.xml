@@ -59,6 +59,7 @@
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
         <item name="buttonBarPositiveButtonStyle">@style/dialogButton</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:buttonStyle">@style/button</item>
     </style>
 
     <style name="dialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
