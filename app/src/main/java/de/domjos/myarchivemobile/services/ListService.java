@@ -57,9 +57,7 @@ public class ListService extends JobService {
             for(MediaList mediaList : this.database.getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("list"))) {
                 this.checkListObject(mediaList);
             }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
-        } finally {
+        } catch (Exception ignored) {} finally {
             this.database.close();
         }
         return false;

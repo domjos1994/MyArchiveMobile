@@ -70,9 +70,7 @@ public class LibraryService extends JobService {
             for(Game object : this.database.getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
-        } finally {
+        } catch (Exception ignored) {} finally {
             this.database.close();
         }
         return false;
