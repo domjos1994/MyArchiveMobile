@@ -101,10 +101,10 @@ public class MainFileTreeFragment extends ParentFragment {
             if(((CustomTreeNode)value).getTreeItem() instanceof TreeNode) {
                 this.node = (TreeNode) ((CustomTreeNode)value).getTreeItem();
             }
+
             ((CustomTreeNodeHolder) this.lastNode.getViewHolder()).select();
             boolean system = ((CustomTreeNodeHolder) this.lastNode.getViewHolder()).isSystem();
             this.navigationView.setVisibility(system ? View.GONE : View.VISIBLE);
-
             if(((CustomTreeNode) value).getTreeItem() instanceof TreeNode) {
                 try {
                     TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, false, true, system, node, this.node, this.search);

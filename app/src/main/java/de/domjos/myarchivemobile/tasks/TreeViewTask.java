@@ -70,6 +70,17 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 treeFile.setParent(this.parent);
                 CustomTreeNode customTreeNode = new CustomTreeNode(treeFile, this.getContext());
                 com.unnamed.b.atv.model.TreeNode node = new com.unnamed.b.atv.model.TreeNode(customTreeNode).setViewHolder(new CustomTreeNodeHolder(this.getContext()).system(this.system));
+
+                for(com.unnamed.b.atv.model.TreeNode tmp : this.node.getChildren()) {
+                    if(tmp.getValue() instanceof CustomTreeNode && node.getValue() instanceof CustomTreeNode) {
+                        CustomTreeNode tmpNode = (CustomTreeNode) tmp.getValue();
+                        CustomTreeNode nodeNode = (CustomTreeNode) node.getValue();
+                        if(tmpNode.getTreeItem().toString().equals(nodeNode.getTreeItem().toString())) {
+                            this.node.deleteChild(tmp);
+                            break;
+                        }
+                    }
+                }
                 this.node.addChild(node);
             }
         }
