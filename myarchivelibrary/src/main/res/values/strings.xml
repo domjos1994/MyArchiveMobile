@@ -25,6 +25,13 @@
     <string name="service_type_books">Books</string>
     <string name="service_type_games">Games</string>
 
+    <string name="from_file">Get from file \'codes.txt\'</string>
+    <string name="to_file">Save to file \'codes.txt\'</string>
+
+    <string name="export_not_exists">File doesn\'t exist!</string>
+    <string name="export_success">Export/Import form/to Download-Folder successfully!</string>
+
+
     <string name="service_google_search" translatable="false">Google Books</string>
     <string name="service_google_search_content">Search in Google Books…</string>
 

@@ -24,6 +24,11 @@
     <string name="service_type_books">Bücher</string>
     <string name="service_type_games">Spiele</string>
 
+    <string name="from_file">Aus Datei \'codes.txt\' holen</string>
+    <string name="to_file">In Datei \'codes.txt\' speichern</string>
+    <string name="export_not_exists">Datei existiert nicht!</string>
+    <string name="export_success">Export/Import von/zum Download-Ordner erfolgreich!</string>
+
     <string name="service_google_search_content">In Google Books suchen…</string>
 
     <string name="service_ean_data_search_content">In EANData suchen…</string>

@@ -19,7 +19,11 @@ package de.domjos.myarchivelibrary.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Environment;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -33,11 +37,17 @@ import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.R;
 
 /**
@@ -154,6 +164,53 @@ public class ScanActivity extends AbstractActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.controls, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String name = "codes.txt";
+        String folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        File apiFile = new File(folder + File.separatorChar + name);
+
+        int itemId = item.getItemId();
+        if (itemId == R.id.menGetFromFile) {
+            if(!apiFile.exists()) {
+                MessageHelper.printMessage(this.getString(R.string.export_not_exists), R.drawable.icon_export, this);
+            } else {
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(apiFile);
+                    String content = ConvertHelper.convertStreamToString(fileInputStream);
+                    fileInputStream.close();
+                    this.txtScannerCodes.setText(content);
+                    MessageHelper.printMessage(this.getString(R.string.export_success), R.drawable.icon_export, this);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.drawable.icon_export, this);
+                }
+
+            }
+        } else if (itemId == R.id.menSaveToFile) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(apiFile);
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+                outputStreamWriter.write(this.txtScannerCodes.getText().toString());
+                outputStreamWriter.close();
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                MessageHelper.printMessage(this.getString(R.string.export_success), R.drawable.icon_export, this);
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.drawable.icon_export, this);
+            }
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     private void finishAction() {
