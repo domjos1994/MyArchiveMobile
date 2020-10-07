@@ -28,6 +28,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -77,6 +78,8 @@ import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.settings.Globals;
 
+import static android.content.Intent.ACTION_SEND;
+import static android.content.Intent.ACTION_SEND_MULTIPLE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -507,6 +510,17 @@ public class ControlsHelper {
                 }
             }
         } catch (Exception ignored) {}
+    }
+
+    public static Uri getDataFromOtherApp(Activity activity) {
+        Intent intent = activity.getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if(action != null && (action.equals(ACTION_SEND) || action.equals(ACTION_SEND_MULTIPLE)) && type != null) {
+            return intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        }
+        return null;
     }
 
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

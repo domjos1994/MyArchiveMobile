@@ -55,6 +55,7 @@ public class TreeViewDialog extends DialogFragment {
     private final static String TYPE = "type";
     private final static String SYSTEM = "system";
     private final static String PARENT = "parent";
+    private final static String PATH = "path";
 
     public final static String NODE = "node";
     public final static String FILE = "file";
@@ -116,6 +117,20 @@ public class TreeViewDialog extends DialogFragment {
         args.putString(TreeViewDialog.TYPE, type);
         args.putBoolean(TreeViewDialog.SYSTEM, false);
         args.putLong(TreeViewDialog.PARENT, parent);
+
+        TreeViewDialog fragment = new TreeViewDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static TreeViewDialog newInstance(String type, String path, long id) {
+
+        Bundle args = new Bundle();
+
+        args.putLong(TreeViewDialog.PARENT, id);
+        args.putString(TreeViewDialog.TYPE, type);
+        args.putBoolean(TreeViewDialog.SYSTEM, false);
+        args.putString(TreeViewDialog.PATH, path);
 
         TreeViewDialog fragment = new TreeViewDialog();
         fragment.setArguments(args);
@@ -329,6 +344,9 @@ public class TreeViewDialog extends DialogFragment {
             system = this.getArguments().getBoolean(TreeViewDialog.SYSTEM);
             id = this.getArguments().getLong(TreeViewDialog.ID);
             node = Objects.equals(this.requireArguments().getString(TreeViewDialog.TYPE), TreeViewDialog.NODE);
+            if(this.requireArguments().containsKey(TreeViewDialog.PATH)) {
+                this.path = this.requireArguments().getString(TreeViewDialog.PATH);
+            }
         }
 
         this.controls.setVisibility(system ? View.GONE : View.VISIBLE);
@@ -344,6 +362,11 @@ public class TreeViewDialog extends DialogFragment {
             } else {
                 this.file = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("id=" + id).get(0);
                 this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                if(this.path != null) {
+                    if(!this.path.isEmpty()) {
+                        this.file.setPathToFile(this.path);
+                    }
+                }
             }
         } else {
             if(node) {
@@ -352,6 +375,9 @@ public class TreeViewDialog extends DialogFragment {
             } else {
                 this.file = new TreeFile();
                 this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                if(!this.path.isEmpty()) {
+                    this.file.setPathToFile(this.path);
+                }
             }
         }
 

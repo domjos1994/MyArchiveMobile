@@ -42,6 +42,9 @@ public class MainFileTreeFragment extends ParentFragment {
     private TreeNode node;
     private String search;
 
+    private String path;
+    private boolean data = false;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_file_tree, container, false);
@@ -107,7 +110,7 @@ public class MainFileTreeFragment extends ParentFragment {
 
             ((CustomTreeNodeHolder) this.lastNode.getViewHolder()).select();
             boolean system = ((CustomTreeNodeHolder) this.lastNode.getViewHolder()).isSystem();
-            this.navigationView.setVisibility(system ? View.GONE : View.VISIBLE);
+            this.navigationView.setVisibility(system || this.data ? View.GONE : View.VISIBLE);
             if(((CustomTreeNode) value).getTreeItem() instanceof TreeNode) {
                 try {
                     TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, false, false, true, system, node, this.node, this.search);
@@ -131,11 +134,26 @@ public class MainFileTreeFragment extends ParentFragment {
                 system = treeNode.isSystem();
             }
 
-            TreeViewDialog treeViewDialog = TreeViewDialog.newInstance((BaseDescriptionObject) ((CustomTreeNode) value).getTreeItem(), system);
-            treeViewDialog.addPreExecute(this::reset);
-            treeViewDialog.show(this.requireActivity());
+            if(this.data && !system) {
+                TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.path, ((BaseDescriptionObject) ((CustomTreeNode) value).getTreeItem()).getId());
+                treeViewDialog.addPreExecute(()->System.exit(0));
+                treeViewDialog.show(this.requireActivity());
+            } else {
+                TreeViewDialog treeViewDialog = TreeViewDialog.newInstance((BaseDescriptionObject) ((CustomTreeNode) value).getTreeItem(), system);
+                treeViewDialog.addPreExecute(this::reset);
+                treeViewDialog.show(this.requireActivity());
+            }
             return true;
         };
+
+        Bundle bundle = this.getArguments();
+        if(bundle!=null) {
+            if(bundle.containsKey("uri")) {
+                this.path = bundle.getString("uri");
+                this.data = true;
+                this.navigationView.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void initTreeView(boolean firstStart, boolean checkDatabase, String search) {

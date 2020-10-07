@@ -18,11 +18,18 @@
 package de.domjos.myarchivemobile.activities;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
@@ -199,6 +206,8 @@ public final class MainActivity extends AbstractActivity {
             if(MainActivity.INIT_WITH_EXAMPLE_DATA) {
                 MainActivity.GLOBALS.getDatabase().insertExampleData();
             }
+
+            this.selectFileTreeFragment();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
@@ -347,6 +356,15 @@ public final class MainActivity extends AbstractActivity {
         }
     }
 
+    private void selectFileTreeFragment() {
+        Uri uri = ControlsHelper.getDataFromOtherApp(this);
+        if(uri != null) {
+            Bundle args = new Bundle();
+            args.putString("uri", MainActivity.getFilePath(this, uri));
+            this.navController.navigate(R.id.navMainMediaFileTree, args);
+        }
+    }
+
     private void initGlobals() {
         MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
@@ -394,5 +412,89 @@ public final class MainActivity extends AbstractActivity {
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, act);
         }
+    }
+
+    private static String getFilePath(Context context, Uri uri) {
+        try {
+            String selection = null;
+            String[] selectionArgs = null;
+            // Uri is different in versions after KITKAT (Android 4.4), we need to
+            if (DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
+                if (isExternalStorageDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                } else if (isDownloadsDocument(uri)) {
+                    final String id = DocumentsContract.getDocumentId(uri);
+                    uri = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
+                } else if (isMediaDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+                    if ("image".equals(type)) {
+                        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video".equals(type)) {
+                        uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio".equals(type)) {
+                        uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+                    selection = "_id=?";
+                    selectionArgs = new String[]{
+                            split[1]
+                    };
+                }
+            }
+            if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+
+                if (isGooglePhotosUri(uri)) {
+                    return uri.getLastPathSegment();
+                }
+
+                String[] projection = {
+                        MediaStore.Images.Media.DATA
+                };
+                Cursor cursor;
+                try {
+                    String path = uri.getPath();
+                    if(path != null) {
+                        if(path.startsWith("/media")) {
+                            path = path.replace("/media", Environment.getExternalStorageDirectory().getAbsolutePath());
+                            return path;
+                        }
+                    }
+                    cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+                    int column_index = Objects.requireNonNull(cursor).getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    if (cursor.moveToFirst()) {
+                        return cursor.getString(column_index);
+                    }
+                    cursor.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+                return uri.getPath();
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 }
