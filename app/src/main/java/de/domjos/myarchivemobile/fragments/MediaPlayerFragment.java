@@ -18,6 +18,7 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ScaleGestureDetector;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -49,8 +49,8 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
     private String path;
     private BaseMediaObject baseMediaObject;
 
-    private LinearLayout zoomArea;
-    private ImageButton cmdZoomMinus, cmdZoomPlus, cmdNext, cmdStop, cmdPlay, cmdPrevious;
+    private ImageButton cmdZoomMinus;
+    private ImageButton cmdZoomPlus;
     private TextView lblZoom, lblCurrent;
     private ImageView ivCurrent;
     private VideoView vvCurrent;
@@ -69,13 +69,12 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.zoomArea = view.findViewById(R.id.zoomArea);
         this.cmdZoomMinus = view.findViewById(R.id.cmdPdfZoomMinus);
         this.cmdZoomPlus = view.findViewById(R.id.cmdPdfZoomPlus);
-        this.cmdNext = view.findViewById(R.id.cmdNext);
-        this.cmdStop = view.findViewById(R.id.cmdStop);
-        this.cmdPlay = view.findViewById(R.id.cmdPlay);
-        this.cmdPrevious = view.findViewById(R.id.cmdPrevious);
+        ImageButton cmdNext = view.findViewById(R.id.cmdNext);
+        ImageButton cmdStop = view.findViewById(R.id.cmdStop);
+        ImageButton cmdPlay = view.findViewById(R.id.cmdPlay);
+        ImageButton cmdPrevious = view.findViewById(R.id.cmdPrevious);
         this.lblZoom = view.findViewById(R.id.lblPdfZoom);
         this.lblCurrent = view.findViewById(R.id.lblCurrent);
 
@@ -99,9 +98,9 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             timer.schedule(task, 1000, 1000);
         });
 
-        this.cmdNext.setOnClickListener(event -> {
+        cmdNext.setOnClickListener(event -> {
             if(this.type == Type.Book) {
-                if(this.current < this.max) {
+                if(this.current < (this.max-1)) {
                     this.openPDF(++this.current);
                 }
             } else {
@@ -111,9 +110,9 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             }
         });
 
-        this.cmdPrevious.setOnClickListener(event -> {
+        cmdPrevious.setOnClickListener(event -> {
             if(this.type == Type.Book) {
-                if (this.current > 1) {
+                if (this.current > 0) {
                     this.openPDF(--this.current);
                 }
             } else {
@@ -123,9 +122,9 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             }
         });
 
-        this.cmdPlay.setOnClickListener(event -> {
+        cmdPlay.setOnClickListener(event -> {
             if(this.type == Type.Book) {
-                this.openPDF(1);
+                this.openPDF(0);
             } else {
                 if(this.path.toLowerCase().endsWith("mp4") || this.path.toLowerCase().endsWith("avi")) {
                     this.vvCurrent.setVideoPath(this.path);
@@ -142,7 +141,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
             }
         });
 
-        this.cmdStop.setOnClickListener(event -> {
+        cmdStop.setOnClickListener(event -> {
             if(this.type == Type.Book) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     if(this.pdfReaderHelper != null) {
@@ -167,13 +166,15 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
         if(this.baseMediaObject instanceof Book) {
             this.type = Type.Book;
             this.path = ((Book) baseMediaObject).getPath();
-            this.zoomArea.setVisibility(View.VISIBLE);
+            this.cmdZoomMinus.setVisibility(View.VISIBLE);
+            this.cmdZoomPlus.setVisibility(View.VISIBLE);
             this.ivCurrent.setVisibility(View.VISIBLE);
             this.vvCurrent.setVisibility(View.GONE);
         } else if(this.baseMediaObject instanceof Movie) {
             this.type = Type.Movie;
             this.path = ((Movie) baseMediaObject).getPath();
-            this.zoomArea.setVisibility(View.GONE);
+            this.cmdZoomMinus.setVisibility(View.INVISIBLE);
+            this.cmdZoomPlus.setVisibility(View.INVISIBLE);
             this.ivCurrent.setVisibility(View.GONE);
             this.vvCurrent.setVisibility(View.VISIBLE);
         }
@@ -197,14 +198,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
     }
 
     @Override
-    public void changeMode(boolean editMode) {
-        this.cmdZoomMinus.setEnabled(editMode);
-        this.cmdZoomPlus.setEnabled(editMode);
-        this.cmdNext.setEnabled(editMode);
-        this.cmdPrevious.setEnabled(editMode);
-        this.cmdStop.setEnabled(editMode);
-        this.cmdPlay.setEnabled(editMode);
-    }
+    public void changeMode(boolean editMode) {}
 
     @Override
     public Validator initValidation(Validator validator) {
@@ -213,14 +207,19 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
 
     private void openPDF(int page) {
         try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 this.pdfReaderHelper = new PDFReaderHelper(this.path);
                 this.pdfReaderHelper.openPage(page);
                 this.current = this.pdfReaderHelper.getCurrentPageNumber();
                 this.max = this.pdfReaderHelper.getPagesCount();
-                String content = this.current + " / " + this.max;
+                String content = this.current + 1 + " / " + this.max;
                 this.lblCurrent.setText(content);
                 this.ivCurrent.setImageBitmap(this.pdfReaderHelper.getPage());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    this.ivCurrent.setBackgroundColor(this.getResources().getColor(android.R.color.white, this.requireContext().getTheme()));
+                } else {
+                    this.ivCurrent.setBackgroundColor(this.requireContext().getResources().getColor(android.R.color.white));
+                }
 
                 this.mScaleFactor = 1.0f;
                 this.scale(this.mScaleFactor);

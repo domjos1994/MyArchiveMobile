@@ -21,26 +21,76 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/controls">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/ivCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/media_general"/>
+            <VideoView
+                android:id="@+id/vvCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/media_general"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </ScrollView>
     <LinearLayout
-        android:id="@+id/zoomArea"
+        android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/background_label"
         android:orientation="horizontal"
-        android:weightSum="10">
+        android:weightSum="20">
+        <ImageButton
+            android:id="@+id/cmdPrevious"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_height"
+            android:layout_weight="2"
+            android:layout_margin="4dp"
+            android:contentDescription="@string/sys_search"
+            app:srcCompat="@drawable/icon_previous"
+            android:background="@null"/>
+        <ImageButton
+            android:id="@+id/cmdStop"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_height"
+            android:layout_weight="2"
+            android:layout_margin="4dp"
+            android:contentDescription="@string/sys_search"
+            app:srcCompat="@drawable/icon_stop"
+            android:background="@null"/>
         <ImageButton
             android:id="@+id/cmdPdfZoomMinus"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/spinner_height"
             android:layout_weight="2"
+            android:layout_margin="4dp"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_zoom_minus"
-            style="@style/imageButton"/>
+            android:background="@null"/>
+        <TextView
+            android:id="@+id/lblCurrent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
         <TextView
             android:id="@+id/lblPdfZoom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="4"
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="14sp"
@@ -48,74 +98,29 @@
         <ImageButton
             android:id="@+id/cmdPdfZoomPlus"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/spinner_height"
             android:layout_weight="2"
+            android:layout_margin="4dp"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_zoom_plus"
-            style="@style/imageButton"/>
-    </LinearLayout>
-    <ImageView
-        android:id="@+id/ivCurrent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/zoomArea"
-        android:layout_above="@+id/controls"
-        android:contentDescription="@string/media_general"/>
-    <VideoView
-        android:id="@+id/vvCurrent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/zoomArea"
-        android:layout_above="@+id/controls"
-        android:contentDescription="@string/media_general"
-        android:visibility="gone"/>
-    <LinearLayout
-        android:id="@+id/controls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:weightSum="10">
-        <ImageButton
-            android:id="@+id/cmdPrevious"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/sys_search"
-            app:srcCompat="@drawable/icon_previous"
-            style="@style/imageButton"/>
-        <ImageButton
-            android:id="@+id/cmdStop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/sys_search"
-            app:srcCompat="@drawable/icon_stop"
-            style="@style/imageButton"/>
-        <TextView
-            android:id="@+id/lblCurrent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:background="@null"/>
         <ImageButton
             android:id="@+id/cmdPlay"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="@dimen/spinner_height"
+            android:layout_weight="2"
+            android:layout_margin="4dp"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_play"
-            style="@style/imageButton"/>
+            android:background="@null"/>
         <ImageButton
             android:id="@+id/cmdNext"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="@dimen/spinner_height"
+            android:layout_weight="2"
+            android:layout_margin="4dp"
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_next"
-            style="@style/imageButton"/>
+            android:background="@null"/>
     </LinearLayout>
 </RelativeLayout>
