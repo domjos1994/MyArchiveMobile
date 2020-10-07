@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -60,8 +61,9 @@ public class ImportTask extends StatusTask<Void, List<String>> {
     private Map<String, Spinner> cells;
     private WeakReference<TextView> lblState;
     private List<String> results;
+    private long listId;
 
-    public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells) {
+    public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells, long listId) {
         super(
                 activity,
                 R.string.api_task_import,
@@ -76,6 +78,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
         this.cells = cells;
         this.lblState = new WeakReference<>(lblState);
         this.results = new LinkedList<>();
+        this.listId = listId;
     }
 
     @Override
@@ -127,22 +130,21 @@ public class ImportTask extends StatusTask<Void, List<String>> {
 
             if(!this.webservice) {
                 String mandatory = this.getContext().getString(R.string.api_task_import_msg_not_success_mandatory);
-                String line = String.valueOf(i);
                 String message = this.getContext().getString(R.string.api_task_import_msg_not_success);
 
                 if(mediaObject.getTitle() == null) {
-                    this.results.add(String.format(message, line, mandatory));
+                    this.results.add(String.format(message, i, mandatory));
                     i++;
                     continue;
                 } else {
                     if(mediaObject.getTitle().trim().isEmpty()) {
-                        this.results.add(String.format(message, line, mandatory));
+                        this.results.add(String.format(message, i, mandatory));
                         i++;
                         continue;
                     }
                 }
                 if(mediaObject.getOriginalTitle() == null) {
-                    this.results.add(String.format(message, line, mandatory));
+                    this.results.add(String.format(message, i, mandatory));
                     i++;
                     continue;
                 }
@@ -189,7 +191,8 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
+                    this.addObjectToList(book);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
             } else if(this.movies) {
                 if(mediaObject instanceof Movie) {
@@ -214,7 +217,8 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
+                    this.addObjectToList(movie);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
             } else if(this.music) {
                 if(mediaObject instanceof Album) {
@@ -239,7 +243,8 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
+                    this.addObjectToList(album);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
             } else {
                 if(mediaObject instanceof Game) {
@@ -264,10 +269,28 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                     } catch (Exception ignored) {}
 
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), String.valueOf(i)));
+                    this.addObjectToList(game);
+                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
             }
             i++;
+        }
+    }
+
+    private void addObjectToList(BaseMediaObject object) {
+        if(this.listId != 0) {
+            if(object instanceof Album) {
+                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.ALBUMS);
+            }
+            if(object instanceof Book) {
+                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.BOOKS);
+            }
+            if(object instanceof Game) {
+                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.GAMES);
+            }
+            if(object instanceof Movie) {
+                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.MOVIES);
+            }
         }
     }
 

@@ -82,12 +82,14 @@
         <item>@string/album_number</item>
         <item>@string/customFields</item>
     </string-array>
+    <string name="api_list">Add to List</string>
+    <string name="api_list_new">Create new List</string>
     <string name="api_task_import">Import File!</string>
     <string name="api_task_import_data">Get Data!</string>
     <string name="api_task_import_webservice">Finalize Data by Webservice!</string>
     <string name="api_task_import_content">Import Data from File to Database!</string>
-    <string name="api_task_import_msg_success">Line %s successfully imported!</string>
-    <string name="api_task_import_msg_not_success">Line %s not successfully imported: %s</string>
+    <string name="api_task_import_msg_success">Line %d successfully imported!</string>
+    <string name="api_task_import_msg_not_success">Line %d not successfully imported: %s</string>
     <string name="api_task_import_msg_not_success_mandatory">Title is a mandatory field!</string>
     <string name="api_task_export">Export Data!</string>
     <string name="api_task_export_content">Export Data from Database to File!</string>

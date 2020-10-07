@@ -68,12 +68,12 @@ import de.domjos.myarchivelibrary.model.media.music.Song;
  */
 public class Database extends SQLiteOpenHelper {
     private final static String TYPE = "type";
-    private final static String ALBUMS = "albums";
+    public final static String ALBUMS = "albums";
     private final static String PATH = "path";
     private final static String LENGTH = "length";
-    private final static String MOVIES = "movies";
-    private final static String BOOKS = "books";
-    private final static String GAMES = "games";
+    public final static String MOVIES = "movies";
+    public final static String BOOKS = "books";
+    public final static String GAMES = "games";
     private final static String DEAD_LINE = "deadLine";
     private final static String DATE_FORMAT = "yyyy-MM-dd";
     private final static String DESCRIPTION = "description";
@@ -641,7 +641,18 @@ public class Database extends SQLiteOpenHelper {
         return mp;
     }
 
-    public void insertOrUpdateMediaList(MediaList mediaList) {
+    public void addMediaToList(long list, long media, String type) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM media_lists WHERE list=" + list + " AND media=" + media + " AND type='" + type + "'");
+        SQLiteStatement statement = db.compileStatement("INSERT INTO media_lists(list, media, type) VALUES(?, ?, ?)");
+        statement.bindLong(1, list);
+        statement.bindLong(2, media);
+        statement.bindString(3, type);
+        statement.executeInsert();
+        statement.close();
+    }
+
+    public long insertOrUpdateMediaList(MediaList mediaList) {
         SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaList, Arrays.asList(Database.TITLE, Database.DEAD_LINE, Database.DESCRIPTION));
         sqLiteStatement.bindString(1, mediaList.getTitle());
         if(mediaList.getDeadLine() != null) {
@@ -684,6 +695,7 @@ public class Database extends SQLiteOpenHelper {
             sqLiteStatement.executeInsert();
             sqLiteStatement.close();
         }
+        return mediaList.getId();
     }
 
     public List<MediaList> getMediaLists(String where, int number, int offset) throws ParseException {

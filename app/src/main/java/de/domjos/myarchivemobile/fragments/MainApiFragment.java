@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -55,6 +56,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivelibrary.services.TextService;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
@@ -78,8 +80,10 @@ public class MainApiFragment extends ParentFragment {
     private final static String FORMAT = "format";
 
     private TableLayout tblCells;
+    private TableRow rowList, rowListNew;
     private CheckBox chkApiBooks, chkApiGames, chkApiMusic, chkApiMovies, chkApiWebService, chkApiDelete;
-    private EditText txtApiName, txtApiPath;
+    private EditText txtApiName, txtApiPath, txtApiListNew;
+    private Spinner spApiList;
     private String[] typeArray, formatArray;
     private Map<String, Spinner> mpCells = new LinkedHashMap<>();
     private ProgressBar pbProgress;
@@ -127,8 +131,16 @@ public class MainApiFragment extends ParentFragment {
         this.chkApiWebService = root.findViewById(R.id.chkApiWebService);
         this.chkApiDelete = root.findViewById(R.id.chkApiDelete);
 
+        this.rowList = root.findViewById(R.id.listRow);
+        this.rowListNew = root.findViewById(R.id.listRowNew);
+        this.txtApiListNew = root.findViewById(R.id.txtApiListNew);
+        this.spApiList = root.findViewById(R.id.spApiList);
+        this.rowList.setVisibility(View.GONE);
+        this.rowListNew.setVisibility(View.GONE);
+
         try {
             this.loadFromSettings(spApiFormat, spApiType);
+            this.reloadLists();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
@@ -141,6 +153,13 @@ public class MainApiFragment extends ParentFragment {
                 formatAdapter.clear();
                 if(spApiType.getSelectedItem().toString().equals(typeArray[0])) { // export
                     formatAdapter.add("pdf");
+                    rowList.setVisibility(View.GONE);
+                    rowListNew.setVisibility(View.GONE);
+                    txtApiName.setVisibility(View.VISIBLE);
+                } else {
+                    rowList.setVisibility(View.VISIBLE);
+                    rowListNew.setVisibility(View.VISIBLE);
+                    txtApiName.setVisibility(View.GONE);
                 }
 
                 formatAdapter.add("txt");
@@ -319,7 +338,8 @@ public class MainApiFragment extends ParentFragment {
                 MainApiFragment.this.getActivity(),
                 this.txtApiPath.getText().toString(),
                 this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
-                this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(), this.mpCells);
+                this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(),
+                this.mpCells, this.createList());
         importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
             String logPath = "";
             try {
@@ -337,6 +357,27 @@ public class MainApiFragment extends ParentFragment {
             saveSettings(spApiFormat, spApiType);
         });
         importTask.execute();
+    }
+
+    private long createList() {
+        try {
+            if(this.txtApiListNew.getText().toString().trim().isEmpty()) {
+                Object object = this.spApiList.getSelectedItem();
+                if(object != null) {
+                    if(object instanceof MediaList) {
+                        MediaList mediaList = (MediaList) object;
+                        return mediaList.getId();
+                    }
+                }
+            } else {
+                MediaList mediaList = new MediaList();
+                mediaList.setTitle(this.txtApiListNew.getText().toString());
+                return MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
+        }
+        return 0;
     }
 
     @Override
@@ -467,6 +508,23 @@ public class MainApiFragment extends ParentFragment {
             spinner.setSelection(adapter.getPosition(this.getString(R.string.media_companies)));
         } else {
             spinner.setSelection(adapter.getPosition(this.getString(R.string.customFields)));
+        }
+    }
+
+    private void reloadLists() {
+        try {
+            ArrayAdapter<MediaList> mediaListAdapter = new ArrayAdapter<>(this.requireContext(), R.layout.spinner_item);
+            mediaListAdapter.setDropDownViewResource(R.layout.spinner_item);
+            List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("", 1, 0);
+            mediaListAdapter.addAll(mediaLists);
+            MediaList mediaList = new MediaList();
+            mediaList.setTitle("");
+            mediaList.setId(0);
+            mediaListAdapter.insert(mediaList, 0);
+            this.spApiList.setAdapter(mediaListAdapter);
+            mediaListAdapter.notifyDataSetChanged();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
         }
     }
 }

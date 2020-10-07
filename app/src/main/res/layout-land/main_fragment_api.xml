@@ -84,6 +84,53 @@
                 tools:targetApi="o" />
         </TableRow>
 
+        <TableRow
+            android:id="@+id/listRow">
+            <TextView
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:text="@string/api_list"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:labelFor="@+id/spApiList"/>
+            <Spinner
+                android:id="@+id/spApiList"
+                android:contentDescription="@string/api_list"
+                android:autofillHints="@string/api_list"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                tools:targetApi="o" />
+        </TableRow>
+        <TableRow
+            android:id="@+id/listRowNew">
+            <TextView
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:text="@string/api_list_new"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:padding="2dp"
+                android:labelFor="@+id/spApiListNew"/>
+            <EditText
+                android:id="@+id/txtApiListNew"
+                android:contentDescription="@string/api_list"
+                android:autofillHints="@string/api_list"
+                android:inputType="text"
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                tools:targetApi="o" />
+        </TableRow>
+
         <TableRow>
             <CheckBox
                 android:id="@+id/chkApiBooks"
