@@ -2,22 +2,20 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/windowBackground"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
     <TableLayout
-        android:layout_above="@+id/controls"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:weightSum="10">
-
+        android:weightSum="20">
         <TableRow>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="@string/sys_title"
@@ -29,7 +27,7 @@
                 android:id="@+id/txtTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="14"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
                 android:inputType="text"
@@ -39,7 +37,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="@string/media_general_category"
@@ -51,7 +49,7 @@
                 android:id="@+id/txtCategory"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="14"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
                 android:inputType="text"
@@ -61,7 +59,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="@string/media_general_tags"
@@ -73,7 +71,7 @@
                 android:id="@+id/txtTags"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="14"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
                 android:inputType="text"
@@ -83,7 +81,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="@string/sys_description"
@@ -95,19 +93,82 @@
                 android:id="@+id/txtDescription"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="14"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="2dp"
                 android:inputType="textMultiLine"
                 android:autofillHints="@string/sys_description" />
         </TableRow>
-        <TableRow android:id="@+id/rowFileIV">
-            <ImageView
-                android:id="@+id/ivImage"
+        <TableRow
+            android:id="@+id/rowNodeGallery">
+            <CheckBox
+                android:id="@+id/chkNodeGallery"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="10"
-                android:contentDescription="@string/file_tree_embed"/>
+                android:layout_height="48dp"
+                android:layout_weight="20"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="2dp"
+                android:text="@string/file_tree_gallery"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:autofillHints="@string/file_tree_gallery"
+                android:textColor="@color/colorAccent"/>
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:id="@+id/rowFileIV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/header"
+        android:orientation="horizontal">
+        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+            android:id="@+id/ivImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/file_tree_embed"
+            android:scaleType="center"
+            app:quickScaleEnabled="true"/>
+        <VideoView
+            android:id="@+id/vvVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:contentDescription="@string/file_tree_embed"/>
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="20">
+        <TableRow
+            android:id="@+id/rowPDF">
+            <ImageButton
+                android:id="@+id/cmdFileDocumentPrevious"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_height"
+                android:layout_weight="3"
+                android:background="@null"
+                app:srcCompat="@drawable/icon_previous"
+                android:contentDescription="@string/calendar_last_month"/>
+            <TextView
+                android:id="@+id/lblFileDocumentState"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_height"
+                android:layout_weight="14"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+            <ImageButton
+                android:id="@+id/cmdFileDocumentNext"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_height"
+                android:layout_weight="3"
+                android:background="@null"
+                app:srcCompat="@drawable/icon_next"
+                android:contentDescription="@string/calendar_next_month"/>
         </TableRow>
         <TableRow
             android:id="@+id/rowFileButtons">
@@ -120,7 +181,8 @@
                 android:gravity="center_vertical"
                 app:srcCompat="@drawable/icon_file"
                 android:layout_margin="2dp"
-                android:contentDescription="@string/file_tree_embed"/>
+                android:contentDescription="@string/file_tree_embed"
+                style="@style/button"/>
             <CheckBox
                 android:id="@+id/chkImageEmbed"
                 android:layout_width="0dp"
@@ -131,63 +193,44 @@
                 android:text="@string/file_tree_embed"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:autofillHints="@string/file_tree_embed" />
+                android:autofillHints="@string/file_tree_embed"
+                android:textColor="@color/colorAccent"/>
         </TableRow>
         <TableRow
-            android:id="@+id/rowNodeGallery">
-            <CheckBox
-                android:id="@+id/chkNodeGallery"
+            android:id="@+id/controls">
+            <ImageButton
+                android:id="@+id/cmdDelete"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="10"
+                android:layout_weight="6"
+                android:layout_height="@dimen/spinner_height"
                 android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/icon_delete"
+                android:background="@null"
                 android:layout_margin="2dp"
-                android:text="@string/file_tree_gallery"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:autofillHints="@string/file_tree_gallery" />
+                android:contentDescription="@string/file_tree_embed"/>
+            <ImageButton
+                android:id="@+id/cmdSave"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:layout_height="@dimen/spinner_height"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/icon_save"
+                android:background="@null"
+                android:layout_margin="2dp"
+                android:contentDescription="@string/file_tree_embed"/>
+            <ImageButton
+                android:id="@+id/cmdCancel"
+                android:layout_width="0dp"
+                android:layout_weight="6"
+                android:layout_height="@dimen/spinner_height"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/icon_cancel"
+                android:background="@null"
+                android:layout_margin="2dp"
+                android:contentDescription="@string/file_tree_embed"/>
         </TableRow>
     </TableLayout>
-
-    <LinearLayout
-        android:id="@+id/controls"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:weightSum="12"
-        android:background="@color/colorAccent">
-        <ImageButton
-            android:id="@+id/cmdDelete"
-            android:layout_width="0dp"
-            android:layout_weight="4"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icon_delete"
-            android:background="@null"
-            android:layout_margin="2dp"
-            android:contentDescription="@string/file_tree_embed"/>
-        <ImageButton
-            android:id="@+id/cmdSave"
-            android:layout_width="0dp"
-            android:layout_weight="4"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icon_save"
-            android:background="@null"
-            android:layout_margin="2dp"
-            android:contentDescription="@string/file_tree_embed"/>
-        <ImageButton
-            android:id="@+id/cmdCancel"
-            android:layout_width="0dp"
-            android:layout_weight="4"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icon_cancel"
-            android:background="@null"
-            android:layout_margin="2dp"
-            android:contentDescription="@string/file_tree_embed"/>
-    </LinearLayout>
 </RelativeLayout>

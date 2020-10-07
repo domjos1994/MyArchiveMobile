@@ -204,7 +204,7 @@
     <string name="sys_next">Next</string>
     <string name="sys_previous">Previous</string>
 
-    <string name="file_tree">File-Tree</string>
+    <string name="file_tree">Documents</string>
     <string name="file_tree_system">System</string>
     <string name="file_tree_gallery">Gallery</string>
     <string name="file_tree_data">Data</string>

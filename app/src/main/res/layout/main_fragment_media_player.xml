@@ -29,15 +29,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <ImageView
+            <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
                 android:id="@+id/ivCurrent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/media_general"/>
+                android:layout_height="match_parent"
+                android:contentDescription="@string/file_tree_embed"
+                android:scaleType="center"
+                app:quickScaleEnabled="true"/>
             <VideoView
                 android:id="@+id/vvCurrent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:contentDescription="@string/media_general"
                 android:visibility="gone"/>
         </LinearLayout>
@@ -49,7 +51,7 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/background_label"
         android:orientation="horizontal"
-        android:weightSum="20">
+        android:weightSum="12">
         <ImageButton
             android:id="@+id/cmdPrevious"
             android:layout_width="0dp"
@@ -68,15 +70,6 @@
             android:contentDescription="@string/sys_search"
             app:srcCompat="@drawable/icon_stop"
             android:background="@null"/>
-        <ImageButton
-            android:id="@+id/cmdPdfZoomMinus"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/spinner_height"
-            android:layout_weight="2"
-            android:layout_margin="4dp"
-            android:contentDescription="@string/sys_search"
-            app:srcCompat="@drawable/icon_zoom_minus"
-            android:background="@null"/>
         <TextView
             android:id="@+id/lblCurrent"
             android:layout_width="0dp"
@@ -86,24 +79,6 @@
             android:gravity="center"
             android:textSize="14sp"
             android:textStyle="bold"/>
-        <TextView
-            android:id="@+id/lblPdfZoom"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
-        <ImageButton
-            android:id="@+id/cmdPdfZoomPlus"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/spinner_height"
-            android:layout_weight="2"
-            android:layout_margin="4dp"
-            android:contentDescription="@string/sys_search"
-            app:srcCompat="@drawable/icon_zoom_plus"
-            android:background="@null"/>
         <ImageButton
             android:id="@+id/cmdPlay"
             android:layout_width="0dp"

@@ -46,7 +46,7 @@ public class MainFileTreeFragment extends ParentFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_file_tree, container, false);
         this.initControls(root);
-        this.initTreeView(true, "");
+        this.initTreeView(true, false, "");
 
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
@@ -59,6 +59,9 @@ public class MainFileTreeFragment extends ParentFragment {
                     TreeViewDialog nodeDialog = TreeViewDialog.newInstance(TreeViewDialog.NODE, this.node.getId());
                     nodeDialog.addPreExecute(this::reset);
                     nodeDialog.show(this.requireActivity());
+                    break;
+                case R.id.cmdReload:
+                    this.initTreeView(true, true, "");
                     break;
             }
 
@@ -107,7 +110,7 @@ public class MainFileTreeFragment extends ParentFragment {
             this.navigationView.setVisibility(system ? View.GONE : View.VISIBLE);
             if(((CustomTreeNode) value).getTreeItem() instanceof TreeNode) {
                 try {
-                    TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, false, true, system, node, this.node, this.search);
+                    TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, false, false, true, system, node, this.node, this.search);
                     treeViewTask.execute().get();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
@@ -135,10 +138,10 @@ public class MainFileTreeFragment extends ParentFragment {
         };
     }
 
-    private void initTreeView(boolean firstStart, String search) {
+    private void initTreeView(boolean firstStart, boolean checkDatabase, String search) {
         com.unnamed.b.atv.model.TreeNode node = com.unnamed.b.atv.model.TreeNode.root();
 
-        TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, firstStart, false, false, node, null, search);
+        TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, firstStart, checkDatabase, false, false, node, null, search);
         treeViewTask.after((AbstractTask.PostExecuteListener<com.unnamed.b.atv.model.TreeNode>) o -> {
             this.androidTreeView = new AndroidTreeView(this.requireActivity(), o);
             this.androidTreeView.setDefaultNodeClickListener(this.treeNodeClickListener);
@@ -154,12 +157,12 @@ public class MainFileTreeFragment extends ParentFragment {
     private void reset() {
         this.androidTreeView = null;
         this.treeContainer.removeAllViews();
-        this.initTreeView(false, "");
+        this.initTreeView(false, false, "");
     }
 
     private void reset(String search) {
         this.androidTreeView = null;
         this.treeContainer.removeAllViews();
-        this.initTreeView(false, search);
+        this.initTreeView(false, false, search);
     }
 }

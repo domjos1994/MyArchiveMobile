@@ -25,15 +25,16 @@ import de.domjos.myarchivemobile.custom.CustomTreeNode;
 import de.domjos.myarchivemobile.custom.CustomTreeNodeHolder;
 
 public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeNode> {
-    private boolean initDatabase, loadFiles, system;
+    private boolean initDatabase, checkDatabase, loadFiles, system;
     private TreeNode parent;
     private com.unnamed.b.atv.model.TreeNode node;
     private String search;
 
-    public TreeViewTask(Activity activity, ProgressBar progressBar, TextView status, boolean initDatabase, boolean loadFiles, boolean system, com.unnamed.b.atv.model.TreeNode root, TreeNode parent, String search) {
+    public TreeViewTask(Activity activity, ProgressBar progressBar, TextView status, boolean initDatabase, boolean checkDatabase, boolean loadFiles, boolean system, com.unnamed.b.atv.model.TreeNode root, TreeNode parent, String search) {
         super(activity, R.string.file_tree_load, R.string.file_tree_load, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, progressBar, status);
 
         this.initDatabase = initDatabase;
+        this.checkDatabase = checkDatabase;
         this.loadFiles = loadFiles;
         this.system = system;
         this.parent = parent;
@@ -243,60 +244,62 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
                 }
             } else {
-                for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("")) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + person.getId() + " AND internalTable='persons' AND internalColumn='image'");
-                    if(treeFiles.isEmpty()) {
-                        TreeFile treeFile = new TreeFile();
-                        treeFile.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()));
-                        treeFile.setDescription(person.getDescription());
-                        treeFile.setParent(MainActivity.GLOBALS.getDatabase().getNodeByName(this.getContext().getString(R.string.media_persons)));
-                        treeFile.setInternalId(person.getId());
-                        treeFile.setInternalTable("persons");
-                        treeFile.setInternalColumn("image");
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
+                if(this.checkDatabase) {
+                    for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("")) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + person.getId() + " AND internalTable='persons' AND internalColumn='image'");
+                        if(treeFiles.isEmpty()) {
+                            TreeFile treeFile = new TreeFile();
+                            treeFile.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()));
+                            treeFile.setDescription(person.getDescription());
+                            treeFile.setParent(MainActivity.GLOBALS.getDatabase().getNodeByName(this.getContext().getString(R.string.media_persons)));
+                            treeFile.setInternalId(person.getId());
+                            treeFile.setInternalTable("persons");
+                            treeFile.setInternalColumn("image");
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                            this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
+                        }
                     }
-                }
 
-                status = 0;
-                for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("")) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + company.getId() + " AND internalTable='companies' AND internalColumn='cover'");
-                    if(treeFiles.isEmpty()) {
-                        this.addFileIfNotExists(company, "companies", this.getContext().getString(R.string.media_companies));
+                    status = 0;
+                    for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("")) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + company.getId() + " AND internalTable='companies' AND internalColumn='cover'");
+                        if(treeFiles.isEmpty()) {
+                            this.addFileIfNotExists(company, "companies", this.getContext().getString(R.string.media_companies));
+                        }
+                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
                     }
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
-                }
-                status = 0;
-                for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("", -1, 0)) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + book.getId() + " AND internalTable='books' AND internalColumn='cover'");
-                    if(treeFiles.isEmpty()) {
-                        this.addFileIfNotExists(book, "books", this.getContext().getString(R.string.main_navigation_media_books));
+                    status = 0;
+                    for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + book.getId() + " AND internalTable='books' AND internalColumn='cover'");
+                        if(treeFiles.isEmpty()) {
+                            this.addFileIfNotExists(book, "books", this.getContext().getString(R.string.main_navigation_media_books));
+                        }
+                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
                     }
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
-                }
-                status = 0;
-                for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies("", -1, 0)) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + movie.getId() + " AND internalTable='movies' AND internalColumn='cover'");
-                    if(treeFiles.isEmpty()) {
-                        this.addFileIfNotExists(movie, "movies", this.getContext().getString(R.string.main_navigation_media_movies));
+                    status = 0;
+                    for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + movie.getId() + " AND internalTable='movies' AND internalColumn='cover'");
+                        if(treeFiles.isEmpty()) {
+                            this.addFileIfNotExists(movie, "movies", this.getContext().getString(R.string.main_navigation_media_movies));
+                        }
+                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
                     }
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
-                }
-                status = 0;
-                for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums("", -1, 0)) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + album.getId() + " AND internalTable='albums' AND internalColumn='cover'");
-                    if(treeFiles.isEmpty()) {
-                        this.addFileIfNotExists(album, "albums", this.getContext().getString(R.string.main_navigation_media_music));
+                    status = 0;
+                    for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + album.getId() + " AND internalTable='albums' AND internalColumn='cover'");
+                        if(treeFiles.isEmpty()) {
+                            this.addFileIfNotExists(album, "albums", this.getContext().getString(R.string.main_navigation_media_music));
+                        }
+                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
                     }
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
-                }
-                status = 0;
-                for(Game game : MainActivity.GLOBALS.getDatabase().getGames("", -1, 0)) {
-                    List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + game.getId() + " AND internalTable='games' AND internalColumn='cover'");
-                    if(treeFiles.isEmpty()) {
-                        this.addFileIfNotExists(game, "games", this.getContext().getString(R.string.main_navigation_media_games));
+                    status = 0;
+                    for(Game game : MainActivity.GLOBALS.getDatabase().getGames("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + game.getId() + " AND internalTable='games' AND internalColumn='cover'");
+                        if(treeFiles.isEmpty()) {
+                            this.addFileIfNotExists(game, "games", this.getContext().getString(R.string.main_navigation_media_games));
+                        }
+                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
                     }
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
                 }
             }
             this.publishProgress(new TaskStatus(0, ""));

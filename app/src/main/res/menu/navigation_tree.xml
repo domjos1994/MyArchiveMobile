@@ -10,4 +10,9 @@
         android:id="@+id/cmdAddFile"
         android:title="@string/file_tree_file_add"
         android:icon="@drawable/icon_file"/>
+
+    <item
+        android:id="@+id/cmdReload"
+        android:title="@string/sys_reload"
+        android:icon="@drawable/icon_refresh" />
 </menu>

@@ -2,6 +2,8 @@ package de.domjos.myarchivemobile.dialogs;
 
 import android.app.Dialog;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,31 +13,41 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.VideoView;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
+import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
+import de.domjos.myarchivemobile.helper.PDFReaderHelper;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class TreeViewDialog extends DialogFragment {
@@ -51,19 +63,31 @@ public class TreeViewDialog extends DialogFragment {
     private String path;
 
     private LinearLayout controls;
-    private TableRow rowFileIV, rowFileButtons, rowNodeGallery;
+    private TableRow rowNodeGallery, rowFileButtons, rowPdf;
+    private View rowFileIV;
 
     private EditText txtTitle, txtDescription;
     private AutoCompleteTextView txtCategory;
     private MultiAutoCompleteTextView txtTags;
-    private ImageView ivImage;
+    private SubsamplingScaleImageView ivImage;
+    private VideoView vvVideo;
     private ImageButton cmdImageAdd;
     private CheckBox chkImageEmbed, chkNodeGallery;
+
+    private ImageButton cmdFileDocumentPrevious, cmdFileDocumentNext;
+    private TextView lblFileDocumentState;
+
+    private int current, max;
+    private PDFReaderHelper helper;
 
     private ImageButton cmdDelete, cmdSave, cmdCancel;
 
     private TreeNode node;
     private TreeFile file;
+
+    private static final List<String> image_extensions = Arrays.asList("jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP");
+    private static final List<String> video_extensions = Arrays.asList("mp4", "3gp");
+    private static final List<String> document_extensions = Collections.singletonList("pdf");
 
     public static TreeViewDialog newInstance(BaseDescriptionObject item, boolean system) {
 
@@ -103,6 +127,12 @@ public class TreeViewDialog extends DialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(STYLE_NO_FRAME, R.style.AppTheme);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.main_fragment_file_tree_dialog, container, false);
         Dialog dialog = Objects.requireNonNull(this.getDialog());
@@ -111,8 +141,38 @@ public class TreeViewDialog extends DialogFragment {
         this.controlView();
         this.load();
 
+        List<String> extensions = new LinkedList<>();
+        extensions.addAll(TreeViewDialog.image_extensions);
+        extensions.addAll(TreeViewDialog.video_extensions);
+        extensions.addAll(TreeViewDialog.document_extensions);
+
+        this.cmdFileDocumentNext.setOnClickListener(view -> {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if(this.current != (this.max - 1)) {
+                        this.current++;
+                        this.loadPage(this.current);
+                    }
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
+            }
+        });
+
+        this.cmdFileDocumentPrevious.setOnClickListener(view -> {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if(this.current > 0) {
+                        this.current--;
+                        this.loadPage(this.current);
+                    }
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
+            }
+        });
+
         this.cmdImageAdd.setOnClickListener(event -> {
-            List<String> extensions = Arrays.asList("jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP");
             FilePickerDialog filePickerDialog = ControlsHelper.openFilePicker(false, false, extensions, this.getActivity());
             filePickerDialog.setDialogSelectionListener(files -> {
                 if(files != null) {
@@ -125,11 +185,11 @@ public class TreeViewDialog extends DialogFragment {
                     this.path = "";
                 }
 
-                if(this.path.isEmpty()) {
-                    this.ivImage.setImageDrawable(null);
-                } else {
-                    this.ivImage.setImageBitmap(BitmapFactory.decodeFile(this.path));
+                if(this.file == null) {
+                    this.file = new TreeFile();
                 }
+                this.file.setPathToFile(this.path);
+                this.loadView();
             });
             filePickerDialog.show();
         });
@@ -192,6 +252,7 @@ public class TreeViewDialog extends DialogFragment {
 
                 if(this.path != null) {
                     if(!this.path.isEmpty()) {
+                        this.file.setPathToFile(this.path);
                         if(this.chkImageEmbed.isChecked()) {
                             try {
                                 File file = new File(this.path);
@@ -204,8 +265,6 @@ public class TreeViewDialog extends DialogFragment {
                             } catch (Exception ex) {
                                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
                             }
-                        } else {
-                            this.file.setPathToFile(this.path);
                         }
                     }
                 }
@@ -233,6 +292,7 @@ public class TreeViewDialog extends DialogFragment {
         this.rowFileIV = view.findViewById(R.id.rowFileIV);
         this.rowFileButtons = view.findViewById(R.id.rowFileButtons);
         this.rowNodeGallery = view.findViewById(R.id.rowNodeGallery);
+        this.rowPdf = view.findViewById(R.id.rowPDF);
 
         this.txtTitle = view.findViewById(R.id.txtTitle);
         this.txtDescription = view.findViewById(R.id.txtDescription);
@@ -240,15 +300,25 @@ public class TreeViewDialog extends DialogFragment {
         this.txtCategory = view.findViewById(R.id.txtCategory);
 
         this.ivImage = view.findViewById(R.id.ivImage);
+        this.vvVideo = view.findViewById(R.id.vvVideo);
+        MediaController mediaController = new MediaController(this.requireActivity());
+        mediaController.setAnchorView(this.vvVideo);
+        this.vvVideo.setMediaController(mediaController);
+
         this.cmdImageAdd = view.findViewById(R.id.cmdImageAdd);
         this.chkImageEmbed = view.findViewById(R.id.chkImageEmbed);
 
         this.chkNodeGallery = view.findViewById(R.id.chkNodeGallery);
 
         this.controls = view.findViewById(R.id.controls);
+
         this.cmdDelete = view.findViewById(R.id.cmdDelete);
         this.cmdSave = view.findViewById(R.id.cmdSave);
         this.cmdCancel = view.findViewById(R.id.cmdCancel);
+
+        this.cmdFileDocumentNext = view.findViewById(R.id.cmdFileDocumentNext);
+        this.cmdFileDocumentPrevious = view.findViewById(R.id.cmdFileDocumentPrevious);
+        this.lblFileDocumentState = view.findViewById(R.id.lblFileDocumentState);
     }
 
     private void controlView() {
@@ -282,6 +352,43 @@ public class TreeViewDialog extends DialogFragment {
             } else {
                 this.file = new TreeFile();
                 this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+            }
+        }
+
+        if(node) {
+            this.rowPdf.setVisibility(View.GONE);
+        } else {
+            if(this.file.getPathToFile().trim().isEmpty()) {
+                this.rowPdf.setVisibility(View.GONE);
+                this.rowFileIV.setVisibility(View.GONE);
+                if(this.file.getInternalId() != 0) {
+                    this.rowFileIV.setVisibility(View.VISIBLE);
+                    this.ivImage.setVisibility(View.VISIBLE);
+                    this.vvVideo.setVisibility(View.GONE);
+                }
+            } else {
+                this.rowFileIV.setVisibility(View.VISIBLE);
+                this.rowPdf.setVisibility(View.GONE);
+                if(checkExtension(this.file, TreeViewDialog.document_extensions)) {
+                    this.rowPdf.setVisibility(View.VISIBLE);
+                    this.ivImage.setVisibility(View.VISIBLE);
+                    this.vvVideo.setVisibility(View.GONE);
+                } else {
+                    boolean image = checkExtension(this.file, TreeViewDialog.image_extensions);
+                    if(image) {
+                        this.ivImage.setVisibility(View.VISIBLE);
+                        this.vvVideo.setVisibility(View.GONE);
+                    } else {
+                        boolean video = checkExtension(this.file, TreeViewDialog.video_extensions);
+
+                        this.ivImage.setVisibility(View.GONE);
+                        if(video) {
+                            this.vvVideo.setVisibility(View.VISIBLE);
+                        } else {
+                            this.vvVideo.setVisibility(View.GONE);
+                        }
+                    }
+                }
             }
         }
 
@@ -322,18 +429,92 @@ public class TreeViewDialog extends DialogFragment {
             if(this.file.getInternalId() != 0) {
                 byte[] content = MainActivity.GLOBALS.getDatabase().loadImage(this.file.getInternalId(), this.file.getInternalTable(), this.file.getInternalColumn());
                 if(content != null) {
-                    this.ivImage.setImageBitmap(BitmapFactory.decodeByteArray(content, 0, content.length));
+                    this.ivImage.setImage(ImageSource.cachedBitmap(BitmapFactory.decodeByteArray(content, 0, content.length)));
                 }
                 this.cmdImageAdd.setVisibility(View.GONE);
                 this.chkImageEmbed.setVisibility(View.GONE);
-            } else if(!this.file.getPathToFile().trim().isEmpty()) {
-                this.ivImage.setImageBitmap(BitmapFactory.decodeFile(this.file.getPathToFile()));
             } else {
-                if(this.file.getEmbeddedContent() != null) {
-                    this.chkImageEmbed.setChecked(true);
-                    this.ivImage.setImageBitmap(BitmapFactory.decodeByteArray(this.file.getEmbeddedContent(), 0, this.file.getEmbeddedContent().length));
+                this.loadView();
+            }
+        }
+    }
+
+    private void loadView() {
+        this.helper = null;
+        this.chkImageEmbed.setChecked(this.file.getEmbeddedContent() != null);
+        this.ivImage.setBackground(null);
+        try {
+            if(this.checkExtension(this.file, TreeViewDialog.document_extensions)) {
+                this.ivImage.setBackgroundColor(this.getResources().getColor(R.color.colorAccent));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (this.file.getEmbeddedContent() != null) {
+                        File file = File.createTempFile(this.file.getTitle(), this.file.getTitle());
+                        ConvertHelper.convertByteArrayToFile(this.file.getEmbeddedContent(), file);
+                        file.deleteOnExit();
+
+                        this.helper = new PDFReaderHelper(file.getAbsolutePath());
+                    } else {
+                        this.helper = new PDFReaderHelper(this.file.getPathToFile());
+                    }
+                    this.loadPage(0);
+                } else {
+                    IntentHelper.startPDFIntent(this.requireActivity(), this.file.getPathToFile());
+                }
+            }
+            if(this.checkExtension(this.file, TreeViewDialog.image_extensions)) {
+                if (this.file.getEmbeddedContent() != null) {
+                    this.ivImage.setImage(ImageSource.cachedBitmap(ConvertHelper.convertByteArrayToBitmap(this.file.getEmbeddedContent())));
+                } else {
+                    this.ivImage.setImage(ImageSource.cachedBitmap(ConvertHelper.convertUriToBitmap(this.requireContext(), Uri.fromFile(new File(this.file.getPathToFile())))));
+                }
+            }
+            if(this.checkExtension(this.file, TreeViewDialog.video_extensions)) {
+                if (this.file.getEmbeddedContent() != null) {
+                    File file = File.createTempFile(this.file.getTitle(), this.file.getTitle());
+                    ConvertHelper.convertByteArrayToFile(this.file.getEmbeddedContent(), file);
+                    file.deleteOnExit();
+
+                    this.vvVideo.setVideoPath(file.getAbsolutePath());
+                } else {
+                    this.vvVideo.setVideoPath(this.file.getPathToFile());
+                }
+                this.vvVideo.start();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void loadPage(int i) {
+        try {
+            if(this.helper != null) {
+                this.current = i;
+                this.helper.openPage(i);
+                this.max = this.helper.getPagesCount();
+                this.ivImage.setImage(ImageSource.cachedBitmap(this.helper.getPage()));
+                this.updateLabel();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
+        }
+    }
+
+    private void updateLabel() {
+        String text = (this.current + 1) + " / " + this.max;
+        this.lblFileDocumentState.setText(text);
+    }
+
+    private boolean checkExtension(TreeFile file, List<String> extensions) {
+        boolean state = false;
+        if(!file.getPathToFile().trim().isEmpty()) {
+            for(String extension : extensions) {
+                if(file.getPathToFile().trim().endsWith("." + extension)) {
+                    state = true;
+                    break;
                 }
             }
         }
+        return state;
     }
 }
