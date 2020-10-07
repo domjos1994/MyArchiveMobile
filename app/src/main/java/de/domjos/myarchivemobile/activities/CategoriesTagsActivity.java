@@ -182,6 +182,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.bottomNavigationView.getMenu().findItem(R.id.cmdEdit).setVisible(false);
 
         this.changeMode(false, false);
+        ControlsHelper.checkNetwork(this);
     }
 
     @Override

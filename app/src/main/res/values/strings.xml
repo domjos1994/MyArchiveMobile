@@ -168,6 +168,8 @@
     <string name="settings_general_media_count">Number of shown Media-Items</string>
     <string name="settings_general_media_count_summary">Set the Number of shown Media-Items</string>
     <string name="settings_general_media_count_default" translatable="false">100</string>
+    <string name="settings_general_internet">Message for no Internet!</string>
+    <string name="settings_general_internet_summary">Disable Message if no Internet-Connection!</string>
     <string name="settings_services">Webservices</string>
     <string name="settings_services_summary">Settings for The Web-Services!\nOnly change them if you know what you do!</string>
     <string name="settings_services_google_books">Google-Books-Key</string>
@@ -218,4 +220,6 @@
 
     <string name="ad_mob_key" translatable="false">ca-app-pub-4983888966373182/6514496441</string>
     <string name="ad_mob_key_testing" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+
+    <string name="no_internet_settings">Open Settings</string>
 </resources>

@@ -84,6 +84,7 @@ public final class LogActivity extends AbstractActivity {
 
             String encodedHTML = Base64.encodeToString(("<html><body>" + this.getContent() + "</body></html>").getBytes(), Base64.NO_PADDING);
             txtLogContent.loadData(encodedHTML, "text/html", "base64");
+            ControlsHelper.checkNetwork(this);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
         }

@@ -178,6 +178,7 @@ public final class PersonActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_person);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
+        ControlsHelper.checkNetwork(this);
     }
 
     @Override

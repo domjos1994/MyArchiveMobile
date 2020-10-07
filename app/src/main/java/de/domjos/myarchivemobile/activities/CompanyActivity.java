@@ -178,6 +178,7 @@ public final class CompanyActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_people);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
+        ControlsHelper.checkNetwork(this);
     }
 
     @Override

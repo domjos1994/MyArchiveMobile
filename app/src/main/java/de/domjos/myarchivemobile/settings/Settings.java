@@ -80,6 +80,11 @@ public final class Settings {
         return this.userPreferences.getBoolean("swtNotifications", true);
     }
 
+    public boolean isNoInternet() {
+        return this.userPreferences.getBoolean("swtInternet", false);
+    }
+
+
     public boolean isDebugMode() {
         return this.userPreferences.getBoolean("swtDebugMode", false);
     }

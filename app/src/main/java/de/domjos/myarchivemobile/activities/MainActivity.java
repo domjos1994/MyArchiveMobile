@@ -140,6 +140,7 @@ public final class MainActivity extends AbstractActivity {
                 this.menu.findItem(R.id.menMainScanner).setVisible(isMediaFragment && MainActivity.GLOBALS.isNetwork());
                 this.cmdSearch.setVisibility(isApiFragment ? View.GONE : View.VISIBLE);
                 this.cmdSearchWeb.setVisibility(!(isMediaFragment || isHomeFragment) ? View.GONE : View.VISIBLE);
+                ControlsHelper.checkNetwork(this);
             }
         });
     }
@@ -201,6 +202,8 @@ public final class MainActivity extends AbstractActivity {
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
+
+        ControlsHelper.checkNetwork(this);
     }
 
     private void setTextColorForMenuItem(MenuItem menuItem) {

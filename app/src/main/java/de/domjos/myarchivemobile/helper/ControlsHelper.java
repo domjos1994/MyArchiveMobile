@@ -23,11 +23,13 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +50,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -482,6 +485,28 @@ public class ControlsHelper {
                 }
             });
         }
+    }
+
+    public static void checkNetwork(Activity activity) {
+        try {
+            de.domjos.myarchivemobile.settings.Settings settings;
+            if(MainActivity.GLOBALS.getSettings() != null) {
+                settings = MainActivity.GLOBALS.getSettings();
+            } else {
+                settings =new de.domjos.myarchivemobile.settings.Settings(activity);
+            }
+            if(!settings.isNoInternet()) {
+                if (!MainActivity.GLOBALS.isNetwork()) {
+                    View rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+                    Snackbar snackbar = Snackbar.make(rootView, R.string.api_webservice_no_network_title, Snackbar.LENGTH_LONG);
+                    snackbar.setAction(R.string.no_internet_settings, view -> {
+                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                        activity.startActivity(intent);
+                    });
+                    snackbar.show();
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

@@ -166,6 +166,8 @@
     <string name="settings_general_debug_summary">Debug-Modus aktivieren!</string>
     <string name="settings_general_media_count">Anzahl angezeigter Medien</string>
     <string name="settings_general_media_count_summary">Die Anzahl der angezeigen Medien setzen</string>
+    <string name="settings_general_internet">Nachricht, wenn kein Internet!</string>
+    <string name="settings_general_internet_summary">Deaktiviere die Benachrichtigung, wenn keine Internet-Verbindung besteht!</string>
     <string name="settings_services">Webservices</string>
     <string name="settings_services_summary">Einstellungen für die Internet-Dienste!\nBitte nur ändern, wenn Sie auch wissen, was Sie tun!</string>
     <string name="settings_services_google_books">Google-Books-Schlüssel</string>
@@ -212,4 +214,6 @@
     <string name="file_tree_load_db">Initialisiere Datenbank (%s)…</string>
     <string name="file_tree_load_tree">Initialisiere Datei-Baum…</string>
     <string name="file_tree_load_files">Lade Dateien…</string>
+
+    <string name="no_internet_settings">Einstellungen öffnen</string>
 </resources>
