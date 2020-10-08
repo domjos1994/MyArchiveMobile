@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,6 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -47,13 +45,15 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainListsFragment extends ParentFragment {
     private ScrollView scrollView;
-    private EditText txtListTitle, txtListDescription, txtListDeadline;
+    private EditText txtListTitle, txtListDescription;
+    private CustomDatePickerField txtListDeadline;
 
     private SwipeRefreshDeleteList lvMediaLists, lvMediaObjects;
     private BottomNavigationView bottomNavigationView;
@@ -196,24 +196,16 @@ public class MainListsFragment extends ParentFragment {
 
     private void setObject(MediaList mediaList) {
         this.txtListTitle.setText(mediaList.getTitle());
-        if(mediaList.getDeadLine() != null) {
-            this.txtListDeadline.setText(ConvertHelper.convertDateToString(mediaList.getDeadLine(), this.getString(R.string.sys_date_format)));
-        } else  {
-            this.txtListDeadline.setText("");
-        }
+        this.txtListDeadline.setDate(mediaList.getDeadLine());
         this.txtListDescription.setText(mediaList.getDescription());
 
         this.reloadMediaObjects();
     }
 
-    private MediaList getObject() throws ParseException {
+    private MediaList getObject() {
         MediaList mediaList = new MediaList();
         mediaList.setTitle(this.txtListTitle.getText().toString());
-        if(!this.txtListDeadline.getText().toString().isEmpty()) {
-            mediaList.setDeadLine(ConvertHelper.convertStringToDate(this.txtListDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
-        } else {
-            mediaList.setDeadLine(null);
-        }
+        mediaList.setDeadLine(this.txtListDeadline.getDate());
         mediaList.setDescription(this.txtListDescription.getText().toString());
 
         for(int i = 0; i<=this.lvMediaObjects.getAdapter().getItemCount()-1; i++) {

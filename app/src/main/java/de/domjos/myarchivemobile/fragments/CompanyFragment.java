@@ -34,9 +34,11 @@ import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
 public class CompanyFragment extends AbstractFragment<Company> {
-    private EditText txtCompanyTitle, txtCompanyFoundation, txtCompanyDescription;
+    private EditText txtCompanyTitle, txtCompanyDescription;
+    private CustomDatePickerField txtCompanyFoundation;
     private ImageButton cmdCompanySearch;
     private Company company;
     private Validator validator;
@@ -74,11 +76,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.company = company;
 
         this.txtCompanyTitle.setText(this.company.getTitle());
-        if(this.company.getFoundation() != null) {
-            this.txtCompanyFoundation.setText(ConvertHelper.convertDateToString(this.company.getFoundation(), this.getString(R.string.sys_date_format)));
-        } else {
-            this.txtCompanyFoundation.setText("");
-        }
+        this.txtCompanyFoundation.setDate(this.company.getFoundation());
         this.txtCompanyDescription.setText(this.company.getDescription());
     }
 
@@ -87,9 +85,7 @@ public class CompanyFragment extends AbstractFragment<Company> {
         try {
             this.company.setTitle(this.txtCompanyTitle.getText().toString());
             this.company.setDescription(this.txtCompanyDescription.getText().toString());
-            if(!this.txtCompanyFoundation.getText().toString().isEmpty()) {
-                this.company.setFoundation(ConvertHelper.convertStringToDate(this.txtCompanyFoundation.getText().toString(), this.getString(R.string.sys_date_format)));
-            }
+            this.company.setFoundation(this.txtCompanyFoundation.getDate());
         } catch (Exception ignored) {}
 
         return this.company;

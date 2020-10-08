@@ -78,10 +78,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:targetApi="o" />
-            <EditText
+            <de.domjos.myarchivemobile.custom.CustomDatePickerField
                 android:id="@+id/txtListsDeadline"
                 android:hint="@string/library_deadline"
-                android:inputType="date"
+                app:showTime="false"
+                app:dateFormat="@string/date_format"
                 android:autofillHints="@string/library_deadline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

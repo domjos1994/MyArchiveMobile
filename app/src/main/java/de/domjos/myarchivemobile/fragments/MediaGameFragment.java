@@ -34,9 +34,11 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
 public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaGameLength, txtMediaGameLastPlayed;
+    private EditText txtMediaGameLength;
+    private CustomDatePickerField txtMediaGameLastPlayed;
     private Spinner spMediaGameType;
     private CustomSpinnerAdapter<String> typeAdapter;
 
@@ -74,7 +76,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
                 this.spMediaGameType.setSelection(this.typeAdapter.getPosition(this.game.getType().name()));
             }
             if(this.game.getLastPlayed() != null) {
-                this.txtMediaGameLastPlayed.setText(ConvertHelper.convertDateToString(this.game.getLastPlayed(), this.getString(R.string.sys_date_format)));
+                this.txtMediaGameLastPlayed.setDate(this.game.getLastPlayed());
             } else {
                 this.txtMediaGameLastPlayed.setText("");
             }
@@ -89,13 +91,7 @@ public class MediaGameFragment extends AbstractFragment<BaseMediaObject> {
             }
         } catch (Exception ignored) {}
         this.game.setType(Game.Type.valueOf(this.spMediaGameType.getSelectedItem().toString()));
-        try {
-            if(!this.txtMediaGameLastPlayed.getText().toString().isEmpty()) {
-                this.game.setLastPlayed(ConvertHelper.convertStringToDate(this.txtMediaGameLastPlayed.getText().toString(), this.getString(R.string.sys_date_format)));
-            }
-        } catch (Exception ex) {
-            this.game.setLastPlayed(null);
-        }
+        this.game.setLastPlayed(this.txtMediaGameLastPlayed.getDate());
         return this.game;
     }
 

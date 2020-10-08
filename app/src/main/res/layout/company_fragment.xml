@@ -55,13 +55,14 @@
                 app:srcCompat="@drawable/icon_search"/>
         </LinearLayout>
 
-        <EditText
+        <de.domjos.myarchivemobile.custom.CustomDatePickerField
             android:id="@+id/txtCompanyFoundation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"
             android:hint="@string/media_companies_foundation"
             android:autofillHints="@string/media_companies_foundation"
+            app:showTime="false"
+            app:dateFormat="@string/date_format"
             tools:targetApi="o" />
 
         <EditText

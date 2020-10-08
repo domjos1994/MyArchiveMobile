@@ -48,13 +48,14 @@ import de.domjos.myarchivelibrary.model.media.LibraryObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
 import de.domjos.myarchivemobile.tasks.LoadingTask;
 
 public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
-    private EditText txtLibraryDeadline, txtLibraryReturnedAt;
+    private CustomDatePickerField txtLibraryDeadline, txtLibraryReturnedAt;
     private AutoCompleteTextView txtLibraryPerson;
     private CustomAutoCompleteAdapter<Person> arrayAdapter;
     private ScrollView scrollView;
@@ -208,16 +209,8 @@ public class MainLibraryFragment extends ParentFragment {
         } else {
             this.txtLibraryPerson.setText("");
         }
-        if(libraryObject.getDeadLine() != null) {
-            this.txtLibraryDeadline.setText(ConvertHelper.convertDateToString(libraryObject.getDeadLine(), this.getString(R.string.sys_date_format)));
-        } else {
-            this.txtLibraryDeadline.setText("");
-        }
-        if(libraryObject.getReturned() != null) {
-            this.txtLibraryReturnedAt.setText(ConvertHelper.convertDateToString(libraryObject.getReturned(), this.getString(R.string.sys_date_format)));
-        } else {
-            this.txtLibraryReturnedAt.setText("");
-        }
+        this.txtLibraryDeadline.setDate(libraryObject.getDeadLine());
+        this.txtLibraryReturnedAt.setDate(libraryObject.getReturned());
     }
 
     private LibraryObject getObject() throws ParseException {
@@ -232,12 +225,8 @@ public class MainLibraryFragment extends ParentFragment {
                 }
             }
         }
-        if(!this.txtLibraryDeadline.getText().toString().isEmpty()) {
-            libraryObject.setDeadLine(ConvertHelper.convertStringToDate(this.txtLibraryDeadline.getText().toString(), this.getString(R.string.sys_date_format)));
-        }
-        if(!this.txtLibraryReturnedAt.getText().toString().isEmpty()) {
-            libraryObject.setReturned(ConvertHelper.convertStringToDate(this.txtLibraryReturnedAt.getText().toString(), this.getString(R.string.sys_date_format)));
-        }
+        libraryObject.setDeadLine(this.txtLibraryDeadline.getDate());
+        libraryObject.setReturned(this.txtLibraryReturnedAt.getDate());
         return libraryObject;
     }
 

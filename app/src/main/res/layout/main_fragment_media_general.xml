@@ -46,7 +46,7 @@
                 tools:targetApi="o" />
 
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralTitleSearch"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,13 +67,14 @@
             android:layout_height="wrap_content"
             tools:targetApi="o" />
 
-        <EditText
+        <de.domjos.myarchivemobile.custom.CustomDatePickerField
             android:id="@+id/txtMediaGeneralReleaseDate"
             android:hint="@string/media_general_releaseDate"
             android:autofillHints="@string/media_general_releaseDate"
-            android:inputType="date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:showTime="false"
+            app:dateFormat="@string/date_format"
             tools:targetApi="o" />
 
         <LinearLayout
@@ -91,7 +92,7 @@
                 android:layout_height="wrap_content"
                 tools:targetApi="o" />
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralCodeSearch"
                 android:contentDescription="@string/media_general_code"
                 app:srcCompat="@drawable/icon_search"
@@ -101,7 +102,7 @@
                 android:layout_height="wrap_content"
                 tools:ignore="VectorDrawableCompat" />
             <ImageButton
-    style="@style/imageButton"
+                style="@style/imageButton"
                 android:id="@+id/cmdMediaGeneralCodeScan"
                 android:contentDescription="@string/media_general_code"
                 app:srcCompat="@drawable/icon_scan"

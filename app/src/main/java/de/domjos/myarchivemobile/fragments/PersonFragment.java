@@ -27,16 +27,17 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
 public class PersonFragment extends AbstractFragment<Person> {
-    private EditText txtPersonFirstName, txtPersonLastName, txtPersonBirthDate, txtPersonDescription;
+    private EditText txtPersonFirstName, txtPersonLastName, txtPersonDescription;
+    private CustomDatePickerField txtPersonBirthDate;
     private ImageButton cmdPersonSearch;
     private Person person;
     private Validator validator;
@@ -76,11 +77,7 @@ public class PersonFragment extends AbstractFragment<Person> {
 
         this.txtPersonFirstName.setText(this.person.getFirstName());
         this.txtPersonLastName.setText(this.person.getLastName());
-        if(this.person.getBirthDate() != null) {
-            this.txtPersonBirthDate.setText(ConvertHelper.convertDateToString(this.person.getBirthDate(), this.getString(R.string.sys_date_format)));
-        } else {
-            this.txtPersonBirthDate.setText("");
-        }
+        this.txtPersonBirthDate.setDate(this.person.getBirthDate());
         this.txtPersonDescription.setText(this.person.getDescription());
     }
 
@@ -90,9 +87,7 @@ public class PersonFragment extends AbstractFragment<Person> {
             this.person.setFirstName(this.txtPersonFirstName.getText().toString());
             this.person.setLastName(this.txtPersonLastName.getText().toString());
             this.person.setDescription(this.txtPersonDescription.getText().toString());
-            if(!this.txtPersonBirthDate.getText().toString().isEmpty()) {
-                this.person.setBirthDate(ConvertHelper.convertStringToDate(this.txtPersonBirthDate.getText().toString(), this.getString(R.string.sys_date_format)));
-            }
+            this.person.setBirthDate(this.txtPersonBirthDate.getDate());
         } catch (Exception ignored) {}
 
         return this.person;

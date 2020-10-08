@@ -65,14 +65,16 @@ import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import de.domjos.myarchivemobile.settings.Settings;
 
 import static android.app.Activity.RESULT_OK;
 
 public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle, txtMediaGeneralReleaseDate;
+    private EditText txtMediaGeneralTitle, txtMediaGeneralOriginalTitle;
     private EditText txtMediaGeneralCode, txtMediaGeneralPrice, txtMediaGeneralDescription;
+    private CustomDatePickerField txtMediaGeneralReleaseDate;
     private AutoCompleteTextView txtMediaGeneralCategory;
     private MultiAutoCompleteTextView txtMediaGeneralTags;
     private ImageButton cmdMediaGeneralScan, cmdMediaGeneralSearch, cmdMediaGeneralTitleSearch;
@@ -262,7 +264,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaGeneralTitle.setText(this.baseMediaObject.getTitle());
         this.txtMediaGeneralOriginalTitle.setText(this.baseMediaObject.getOriginalTitle());
         if(this.baseMediaObject.getReleaseDate() != null) {
-            this.txtMediaGeneralReleaseDate.setText(ConvertHelper.convertDateToString(this.baseMediaObject.getReleaseDate(), this.getString(R.string.sys_date_format)));
+            this.txtMediaGeneralReleaseDate.setDate(this.baseMediaObject.getReleaseDate());
         } else {
             this.txtMediaGeneralReleaseDate.setText("");
         }
@@ -287,7 +289,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         try {
             this.baseMediaObject.setTitle(this.txtMediaGeneralTitle.getText().toString());
             this.baseMediaObject.setOriginalTitle(this.txtMediaGeneralOriginalTitle.getText().toString());
-            this.baseMediaObject.setReleaseDate(ConvertHelper.convertStringToDate(this.txtMediaGeneralReleaseDate.getText().toString(), this.getString(R.string.sys_date_format)));
+            this.baseMediaObject.setReleaseDate(this.txtMediaGeneralReleaseDate.getDate());
             this.baseMediaObject.setCode(this.txtMediaGeneralCode.getText().toString());
             this.baseMediaObject.setPrice(ConvertHelper.convertStringToDouble(this.txtMediaGeneralPrice.getText().toString()));
             this.baseMediaObject.setDescription(this.txtMediaGeneralDescription.getText().toString());

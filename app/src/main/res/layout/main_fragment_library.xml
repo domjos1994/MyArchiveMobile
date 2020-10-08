@@ -103,23 +103,25 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10"
                 android:orientation="horizontal">
-                <EditText
+                <de.domjos.myarchivemobile.custom.CustomDatePickerField
                     android:id="@+id/txtLibraryDeadLine"
                     android:hint="@string/library_deadline"
                     android:autofillHints="@string/library_deadline"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="5"
-                    android:inputType="date"
+                    app:showTime="false"
+                    app:dateFormat="@string/date_format"
                     tools:targetApi="o"/>
-                <EditText
+                <de.domjos.myarchivemobile.custom.CustomDatePickerField
                     android:id="@+id/txtLibraryReturnedAt"
                     android:hint="@string/library_returnedAt"
                     android:autofillHints="@string/library_returnedAt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="5"
-                    android:inputType="date"
+                    app:showTime="false"
+                    app:dateFormat="@string/date_format"
                     tools:targetApi="o"/>
             </LinearLayout>
         </LinearLayout>

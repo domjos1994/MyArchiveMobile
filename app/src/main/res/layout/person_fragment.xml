@@ -63,11 +63,12 @@
                 app:srcCompat="@drawable/icon_search"/>
         </LinearLayout>
 
-        <EditText
+        <de.domjos.myarchivemobile.custom.CustomDatePickerField
             android:id="@+id/txtPersonBirthDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"
+            app:showTime="false"
+            app:dateFormat="@string/date_format"
             android:hint="@string/media_persons_birthDate"
             android:autofillHints="@string/media_persons_birthDate"
             tools:targetApi="o" />

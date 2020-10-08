@@ -40,10 +40,12 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaMovieLength, txtMediaMoviePath, txtMediaMovieLastSeen;
+    private EditText txtMediaMovieLength, txtMediaMoviePath;
+    private CustomDatePickerField txtMediaMovieLastSeen;
     private ImageButton cmdMediaMoviePath;
     private Spinner spMediaMovieType;
     private CustomSpinnerAdapter<String> typeAdapter;
@@ -98,11 +100,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
             if(this.movie.getType() != null) {
                 this.spMediaMovieType.setSelection(this.typeAdapter.getPosition(this.movie.getType().name()));
             }
-            if(this.movie.getLastSeen() != null) {
-                this.txtMediaMovieLastSeen.setText(ConvertHelper.convertDateToString(this.movie.getLastSeen(), this.getString(R.string.sys_date_format)));
-            } else {
-                this.txtMediaMovieLastSeen.setText("");
-            }
+            this.txtMediaMovieLastSeen.setDate(this.movie.getLastSeen());
         }
     }
 
@@ -113,13 +111,7 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
         }
         this.movie.setPath(this.txtMediaMoviePath.getText().toString());
         this.movie.setType(Movie.Type.valueOf(this.spMediaMovieType.getSelectedItem().toString()));
-        try {
-            if(!this.txtMediaMovieLastSeen.getText().toString().isEmpty()) {
-                this.movie.setLastSeen(ConvertHelper.convertStringToDate(this.txtMediaMovieLastSeen.getText().toString(), this.getString(R.string.sys_date_format)));
-            }
-        } catch (Exception ex) {
-            this.movie.setLastSeen(null);
-        }
+        this.movie.setLastSeen(this.txtMediaMovieLastSeen.getDate());
         return this.movie;
     }
 

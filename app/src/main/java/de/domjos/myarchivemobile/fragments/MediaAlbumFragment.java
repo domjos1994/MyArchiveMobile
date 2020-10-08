@@ -28,15 +28,16 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
+import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
 public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
-    private EditText txtMediaAlbumNumberOfDisks, txtMediaAlbumLastHeard;
+    private EditText txtMediaAlbumNumberOfDisks;
+    private CustomDatePickerField txtMediaAlbumLastHeard;
     private Spinner spMediaAlbumType;
     private CustomSpinnerAdapter<String> typeAdapter;
 
@@ -73,11 +74,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
             if(this.album.getType() != null) {
                 this.spMediaAlbumType.setSelection(this.typeAdapter.getPosition(this.album.getType().name()));
             }
-            if(this.album.getLastHeard() != null) {
-                this.txtMediaAlbumLastHeard.setText(ConvertHelper.convertDateToString(this.album.getLastHeard(), this.getString(R.string.sys_date_format)));
-            } else {
-                this.txtMediaAlbumLastHeard.setText("");
-            }
+            this.txtMediaAlbumLastHeard.setDate(this.album.getLastHeard());
         }
     }
 
@@ -87,13 +84,7 @@ public class MediaAlbumFragment extends AbstractFragment<BaseMediaObject> {
             this.album.setNumberOfDisks(Integer.parseInt(this.txtMediaAlbumNumberOfDisks.getText().toString()));
         }
         this.album.setType(Album.Type.valueOf(this.spMediaAlbumType.getSelectedItem().toString()));
-        try {
-            if(!this.txtMediaAlbumLastHeard.getText().toString().isEmpty()) {
-                this.album.setLastHeard(ConvertHelper.convertStringToDate(this.txtMediaAlbumLastHeard.getText().toString(), this.getString(R.string.sys_date_format)));
-            }
-        } catch (Exception ex) {
-            this.album.setLastHeard(null);
-        }
+        this.album.setLastHeard(this.txtMediaAlbumLastHeard.getDate());
         return this.album;
     }
 

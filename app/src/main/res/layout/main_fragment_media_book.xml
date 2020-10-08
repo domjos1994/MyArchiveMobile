@@ -85,11 +85,12 @@
             android:layout_height="wrap_content"
             tools:targetApi="o" />
 
-        <EditText
+        <de.domjos.myarchivemobile.custom.CustomDatePickerField
             android:id="@+id/txtMediaBookLastRead"
             android:hint="@string/book_last_read"
             android:autofillHints="@string/book_last_read"
-            android:inputType="date"
+            app:showTime="false"
+            app:dateFormat="@string/date_format"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:targetApi="o" />
