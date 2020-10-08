@@ -283,7 +283,8 @@ public class ControlsHelper {
         }
 
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
-        String fullWhere = where.trim().isEmpty() ? extendedWhere : where + " AND (" + extendedWhere + ")";
+        String fullWhere = where.trim().isEmpty() ? extendedWhere : (extendedWhere.trim().isEmpty() ? where : where + " AND (" + extendedWhere + ")");
+
         if(mediaFilter.isBooks()) {
             mp.put(new Book(), fullWhere);
         }
