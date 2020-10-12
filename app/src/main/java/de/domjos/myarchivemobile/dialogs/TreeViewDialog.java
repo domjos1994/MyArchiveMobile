@@ -375,8 +375,10 @@ public class TreeViewDialog extends DialogFragment {
             } else {
                 this.file = new TreeFile();
                 this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
-                if(!this.path.isEmpty()) {
-                    this.file.setPathToFile(this.path);
+                if(this.path != null) {
+                    if(!this.path.isEmpty()) {
+                        this.file.setPathToFile(this.path);
+                    }
                 }
             }
         }
