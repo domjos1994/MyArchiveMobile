@@ -12,6 +12,11 @@
         android:icon="@drawable/icon_file"/>
 
     <item
+        android:id="@+id/cmdView"
+        android:title="@string/file_tree_view"
+        android:icon="@drawable/icon_view" />
+
+    <item
         android:id="@+id/cmdReload"
         android:title="@string/sys_reload"
         android:icon="@drawable/icon_refresh" />

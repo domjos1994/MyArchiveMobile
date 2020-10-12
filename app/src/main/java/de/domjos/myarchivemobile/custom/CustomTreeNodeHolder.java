@@ -46,7 +46,11 @@ public class CustomTreeNodeHolder extends TreeNode.BaseNodeViewHolder<CustomTree
         }
         this.tvValue.setTextColor(this.unselectedColor);
 
-        ImageView iv = (ImageView) view.findViewById(R.id.iv);
+        ImageView iv = view.findViewById(R.id.iv);
+        iv.setMinimumHeight(32);
+        iv.setMinimumWidth(32);
+        iv.setMaxHeight(32);
+        iv.setMaxWidth(32);
         iv.setImageDrawable(value.getDrawable());
 
         return view;

@@ -1,7 +1,10 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -19,6 +22,7 @@ import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomTreeNode;
 import de.domjos.myarchivemobile.custom.CustomTreeNodeHolder;
 import de.domjos.myarchivemobile.dialogs.TreeViewDialog;
@@ -39,7 +43,8 @@ public class MainFileTreeFragment extends ParentFragment {
     private com.unnamed.b.atv.model.TreeNode.TreeNodeClickListener treeNodeClickListener;
 
     private com.unnamed.b.atv.model.TreeNode lastNode;
-    private TreeNode node;
+    private TreeNode node, cpNode;
+    private TreeFile file, cpFile;
     private String search;
 
     private String path;
@@ -65,6 +70,9 @@ public class MainFileTreeFragment extends ParentFragment {
                     break;
                 case R.id.cmdReload:
                     this.initTreeView(true, true, "");
+                    break;
+                case R.id.cmdView:
+                    this.viewItem();
                     break;
             }
 
@@ -93,11 +101,78 @@ public class MainFileTreeFragment extends ParentFragment {
 
     }
 
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+
+        menu.setHeaderTitle("Context Menu");
+
+        MenuInflater inflater = super.requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_tree, menu);
+        if(this.cpNode != null || this.cpFile != null) {
+            menu.findItem(R.id.ctxPaste).setEnabled(true);
+        } else {
+            menu.findItem(R.id.ctxPaste).setEnabled(false);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.ctxCopy:
+                this.selectItem(false);
+                break;
+            case R.id.ctxCut:
+                this.selectItem(true);
+                break;
+            case R.id.ctxPaste:
+                this.pasteItem();
+                break;
+        }
+        return true;
+    }
+
+    private void selectItem(boolean move) {
+        if(this.node != null) {
+            if(this.node.getId() != 0) {
+                if(!move) {
+                    this.node.setId(0);
+                }
+                this.cpNode = this.node;
+            }
+        }
+        if(this.file != null) {
+            if(this.file.getId() != 0) {
+                if(!move) {
+                    this.file.setId(0);
+                }
+                this.cpFile = this.file;
+            }
+        }
+    }
+
+    private void pasteItem() {
+        if(this.node != null && (this.cpNode != null || this.cpFile != null)) {
+            if (this.node.getId() != 0) {
+                if(this.cpNode != null) {
+                    this.cpNode.setParent(this.node);
+                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(this.cpNode);
+                }
+                if(this.cpFile != null) {
+                    this.cpFile.setParent(this.node);
+                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(this.cpFile);
+                }
+                this.reset("");
+            }
+        }
+    }
+
     private void initControls(View view) {
         this.treeContainer = view.findViewById(R.id.treeContainer);
         this.navigationView = view.findViewById(R.id.navigationView);
         this.pbProgress = view.findViewById(R.id.pbProgress);
         this.lblMessage = view.findViewById(R.id.lblMessage);
+        this.registerForContextMenu(this.treeContainer);
 
         this.treeNodeClickListener = (node, value) -> {
             if(this.lastNode != null) {
@@ -105,7 +180,12 @@ public class MainFileTreeFragment extends ParentFragment {
             }
             this.lastNode = node;
             if(((CustomTreeNode)value).getTreeItem() instanceof TreeNode) {
+                this.file = null;
                 this.node = (TreeNode) ((CustomTreeNode)value).getTreeItem();
+            }
+            if(((CustomTreeNode)value).getTreeItem() instanceof TreeFile) {
+                this.node = null;
+                this.file = (TreeFile) ((CustomTreeNode)value).getTreeItem();
             }
 
             ((CustomTreeNodeHolder) this.lastNode.getViewHolder()).select();
@@ -156,6 +236,32 @@ public class MainFileTreeFragment extends ParentFragment {
         }
     }
 
+    private void viewItem() {
+        boolean system = false;
+        BaseDescriptionObject tmp;
+        if(this.file != null) {
+            tmp = this.file;
+            if(this.file.getParent() != null) {
+                system = this.file.getParent().isSystem();
+            }
+        } else if(this.node != null) {
+            tmp = this.node;
+            system =  this.node.isSystem();
+        } else {
+            return;
+        }
+
+        if(this.data && !system) {
+            TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.path, tmp.getId());
+            treeViewDialog.addPreExecute(()->System.exit(0));
+            treeViewDialog.show(this.requireActivity());
+        } else {
+            TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(tmp, system);
+            treeViewDialog.addPreExecute(this::reset);
+            treeViewDialog.show(this.requireActivity());
+        }
+    }
+
     private void initTreeView(boolean firstStart, boolean checkDatabase, String search) {
         com.unnamed.b.atv.model.TreeNode node = com.unnamed.b.atv.model.TreeNode.root();
 
@@ -163,7 +269,7 @@ public class MainFileTreeFragment extends ParentFragment {
         treeViewTask.after((AbstractTask.PostExecuteListener<com.unnamed.b.atv.model.TreeNode>) o -> {
             this.androidTreeView = new AndroidTreeView(this.requireActivity(), o);
             this.androidTreeView.setDefaultNodeClickListener(this.treeNodeClickListener);
-            this.androidTreeView.setDefaultNodeLongClickListener(this.treeNodeLongClickListener);
+            //this.androidTreeView.setDefaultNodeLongClickListener(this.treeNodeLongClickListener);
             this.androidTreeView.setDefaultAnimation(true);
             this.androidTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided);
             this.treeContainer.addView(this.androidTreeView.getView());
