@@ -112,7 +112,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-    public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content, int number, int offset) {
+    public List<BaseMediaObject> getObjectList(Map<DatabaseObject, String> content, int number, int offset, String orderBy) {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
 
         StringBuilder builder = new StringBuilder();
@@ -125,7 +125,11 @@ public class Database extends SQLiteOpenHelper {
         }
         builder.replace(builder.length() - 3, builder.length(), "");
 
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()) + " LIMIT " + number + " OFFSET " + offset, new String[]{});
+        if(orderBy.trim().isEmpty()) {
+            orderBy = "";
+        }
+
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()) + orderBy + " LIMIT " + number + " OFFSET " + offset, new String[]{});
         while (cursor.moveToNext()) {
             BaseMediaObject baseMediaObject = null;
             switch (cursor.getString(cursor.getColumnIndex("type"))) {
@@ -722,7 +726,7 @@ public class Database extends SQLiteOpenHelper {
         if(mediaFilters!=null && !mediaFilters.isEmpty()) {
             mediaFilter.setId(mediaFilters.get(0).getId());
         }
-        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", Database.CATEGORIES, Database.TAGS, Database.BOOKS, Database.MOVIES, "music", Database.GAMES, "customFields"));
+        SQLiteStatement sqLiteStatement = this.getBaseStatement(mediaFilter, Arrays.asList(Database.TITLE, "search", Database.CATEGORIES, Database.TAGS, Database.BOOKS, Database.MOVIES, "music", Database.GAMES, "customFields", "list"));
         sqLiteStatement.bindString(1, mediaFilter.getTitle());
         sqLiteStatement.bindString(2, mediaFilter.getSearch());
         sqLiteStatement.bindString(3, mediaFilter.getCategories());
@@ -732,6 +736,11 @@ public class Database extends SQLiteOpenHelper {
         sqLiteStatement.bindLong(7, mediaFilter.isMusic() ? 1 : 0);
         sqLiteStatement.bindLong(8, mediaFilter.isGames() ? 1 : 0);
         sqLiteStatement.bindString(9, mediaFilter.getCustomFields());
+        if(mediaFilter.getMediaList() != null) {
+            sqLiteStatement.bindLong(10, mediaFilter.getMediaList().getId());
+        } else {
+            sqLiteStatement.bindNull(10);
+        }
         sqLiteStatement.execute();
         sqLiteStatement.close();
     }
@@ -751,6 +760,17 @@ public class Database extends SQLiteOpenHelper {
             mediaFilter.setMusic(cursor.getInt(cursor.getColumnIndex("music")) == 1);
             mediaFilter.setGames(cursor.getInt(cursor.getColumnIndex(Database.GAMES)) == 1);
             mediaFilter.setCustomFields(cursor.getString(cursor.getColumnIndex("customFields")));
+            try {
+                int id = cursor.getInt(cursor.getColumnIndex("list"));
+                if(id != 0) {
+                    List<MediaList> lists = this.getMediaLists("ID=" + id, -1, 0);
+                    if(lists != null) {
+                        if(!lists.isEmpty()) {
+                            mediaFilter.setMediaList(lists.get(0));
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
             mediaFilters.add(mediaFilter);
         }
         cursor.close();
@@ -830,7 +850,7 @@ public class Database extends SQLiteOpenHelper {
         mp.put(new Movie(), moviesWhere);
         mp.put(new Game(), gamesWhere);
         mp.put(new Album(), albumsWhere);
-        return this.getObjectList(mp, number, offset);
+        return this.getObjectList(mp, number, offset, "");
     }
 
     public void deleteItem(DatabaseObject databaseObject) {

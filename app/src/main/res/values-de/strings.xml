@@ -167,6 +167,17 @@
     <string name="settings_general_debug_summary">Debug-Modus aktivieren!</string>
     <string name="settings_general_media_count">Anzahl angezeigter Medien</string>
     <string name="settings_general_media_count_summary">Die Anzahl der angezeigen Medien setzen</string>
+    <string name="settings_general_media_order">Sortierung</string>
+    <string name="settings_general_media_order_summary">Medien sortieren nach…</string>
+    <string name="settings_general_media_order_default">Medien-Typ und Titel</string>
+    <string name="settings_general_media_order_creation">Erstelldatum</string>
+    <string-array name="settings_general_media_order_items">
+        <item>ID</item>
+        <item>@string/settings_general_media_order_default</item>
+        <item>@string/sys_title</item>
+        <item>@string/media_general_releaseDate</item>
+        <item>@string/settings_general_media_order_creation</item>
+    </string-array>
     <string name="settings_general_internet">Nachricht, wenn kein Internet!</string>
     <string name="settings_general_internet_summary">Deaktiviere die Benachrichtigung, wenn keine Internet-Verbindung besteht!</string>
     <string name="settings_services">Webservices</string>

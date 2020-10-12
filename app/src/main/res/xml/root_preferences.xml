@@ -55,6 +55,13 @@
             app:key="txtMediaCount"
             app:summary="@string/settings_general_media_count_summary"
             app:title="@string/settings_general_media_count" />
+        <androidx.preference.ListPreference
+            app:key="txtOrderBy"
+            android:defaultValue="@string/settings_general_media_order_default"
+            android:title="@string/settings_general_media_order"
+            android:summary="@string/settings_general_media_order_summary"
+            android:entries="@array/settings_general_media_order_items"
+            android:entryValues="@array/settings_general_media_order_items"/>
     </de.domjos.myarchivemobile.custom.CustomPreferenceCategory>
 
     <de.domjos.myarchivemobile.custom.CustomPreferenceCategory

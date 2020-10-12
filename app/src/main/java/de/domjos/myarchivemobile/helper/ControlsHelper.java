@@ -324,7 +324,7 @@ public class ControlsHelper {
 
     private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp, String key) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key))) {
+        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key), ControlsHelper.returnOrderBy(context))) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                 try {
@@ -376,6 +376,24 @@ public class ControlsHelper {
         }
 
         return baseDescriptionObjects;
+    }
+
+    private static String returnOrderBy(Context context) {
+        String orderBy = "";
+        String item = MainActivity.GLOBALS.getSettings().getOrderBy();
+        if(item != null) {
+            if(item.equals("ID")) {
+                orderBy = " ORDER BY id";
+            }
+            if(item.equals(context.getString(R.string.sys_title))) {
+                orderBy = " ORDER BY title";
+            } else if(item.equals(context.getString(R.string.media_general_releaseDate))) {
+                orderBy = " ORDER BY releaseDate";
+            } else if(item.equals(context.getString(R.string.settings_general_media_order_creation))) {
+                orderBy = " ORDER BY timestamp";
+            }
+        }
+        return orderBy;
     }
 
     private static BaseDescriptionObject setItem(Context context, BaseMediaObject baseMediaObject) {

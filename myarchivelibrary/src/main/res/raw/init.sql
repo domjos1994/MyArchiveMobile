@@ -329,7 +329,9 @@ CREATE TABLE IF NOT EXISTS filters(
     movies INTEGER DEFAULT 1,
     music INTEGER DEFAULT 1,
     games INTEGER DEFAULT 1,
-    customFields VARCHAR(255) DEFAULT ''
+    customFields VARCHAR(255) DEFAULT '',
+    list INTEGER DEFAULT 0,
+    FOREIGN KEY(list) references lists(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -434,7 +436,8 @@ CREATE TABLE IF NOT EXISTS file_tree_file_tags(
 CREATE VIEW IF NOT EXISTS media AS
         SELECT books.id as id, books.title as title, originalTitle, books.description as description,
             'books' as type, cover, categories.title as category, group_concat(tags.title) as tags,
-            group_concat(DISTINCT customFields.title || ':' || books_customFields.value) as customFields
+            group_concat(DISTINCT customFields.title || ':' || books_customFields.value) as customFields,
+            books.releaseDate as releaseDate, books.timestamp as timestamp
             FROM (((((books
                 LEFT JOIN categories ON categories.ID=books.category)
                 LEFT JOIN books_tags ON books_tags.books=books.id)
@@ -445,7 +448,8 @@ CREATE VIEW IF NOT EXISTS media AS
 	UNION
 	    SELECT movies.id as id, movies.title as title, originalTitle, movies.description as description,
 	        'movies' as type, cover, categories.title as category, group_concat(tags.title) as tags,
-            group_concat(DISTINCT customFields.title || ':' || movies_customFields.value) as customFields
+            group_concat(DISTINCT customFields.title || ':' || movies_customFields.value) as customFields,
+            movies.releaseDate as releaseDate, movies.timestamp as timestamp
 	        FROM (((((movies
 	            LEFT JOIN categories ON categories.ID=movies.category)
 	            LEFT JOIN movies_tags ON movies_tags.movies=movies.id)
@@ -456,7 +460,8 @@ CREATE VIEW IF NOT EXISTS media AS
 	UNION
 	    SELECT albums.id as id, albums.title as title, originalTitle, albums.description as description,
 	        'albums' as type, cover, categories.title as category, group_concat(tags.title) as tags,
-            group_concat(DISTINCT customFields.title || ':' || albums_customFields.value) as customFields
+            group_concat(DISTINCT customFields.title || ':' || albums_customFields.value) as customFields,
+            albums.releaseDate as releaseDate, albums.timestamp as timestamp
 	        FROM (((((albums
 	            LEFT JOIN categories ON categories.ID=albums.category)
 	            LEFT JOIN albums_tags ON albums_tags.albums=albums.id)
@@ -467,7 +472,8 @@ CREATE VIEW IF NOT EXISTS media AS
 	UNION
 	    SELECT games.id as id, games.title as title, originalTitle, games.description as description,
 	        'games' as type, cover, categories.title as category, group_concat(tags.title) as tags,
-            group_concat(DISTINCT customFields.title || ':' || games_customFields.value) as customFields
+            group_concat(DISTINCT customFields.title || ':' || games_customFields.value) as customFields,
+            games.releaseDate as releaseDate, games.timestamp as timestamp
 	        FROM (((((games
 	            LEFT JOIN categories ON categories.ID=games.category)
 	            LEFT JOIN games_tags ON games_tags.games=games.id)

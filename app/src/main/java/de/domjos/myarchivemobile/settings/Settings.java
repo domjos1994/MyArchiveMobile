@@ -113,6 +113,10 @@ public final class Settings {
         return this.userPreferences.getString("txtMovieDBKey", "");
     }
 
+    public String getOrderBy() {
+        return this.userPreferences.getString("txtOrderBy", this.context.getString(R.string.settings_general_media_order_default));
+    }
+
     public boolean showAd() {
         int intentChanges = this.getSetting("showAd", 0);
         if(intentChanges == 2) {

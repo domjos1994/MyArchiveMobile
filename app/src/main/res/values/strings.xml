@@ -169,6 +169,17 @@
     <string name="settings_general_media_count">Number of shown Media-Items</string>
     <string name="settings_general_media_count_summary">Set the Number of shown Media-Items</string>
     <string name="settings_general_media_count_default" translatable="false">100</string>
+    <string name="settings_general_media_order">Order</string>
+    <string name="settings_general_media_order_summary">Order Media by…</string>
+    <string name="settings_general_media_order_default">Media-Type and Title</string>
+    <string name="settings_general_media_order_creation">Creation-Date</string>
+    <string-array name="settings_general_media_order_items">
+        <item>ID</item>
+        <item>@string/settings_general_media_order_default</item>
+        <item>@string/sys_title</item>
+        <item>@string/media_general_releaseDate</item>
+        <item>@string/settings_general_media_order_creation</item>
+    </string-array>
     <string name="settings_general_internet">Message for no Internet!</string>
     <string name="settings_general_internet_summary">Disable Message if no Internet-Connection!</string>
     <string name="settings_services">Webservices</string>
