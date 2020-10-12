@@ -39,7 +39,6 @@ public class MainFileTreeFragment extends ParentFragment {
 
     private BottomNavigationView navigationView;
 
-    private com.unnamed.b.atv.model.TreeNode.TreeNodeLongClickListener treeNodeLongClickListener;
     private com.unnamed.b.atv.model.TreeNode.TreeNodeClickListener treeNodeClickListener;
 
     private com.unnamed.b.atv.model.TreeNode lastNode;
@@ -201,31 +200,6 @@ public class MainFileTreeFragment extends ParentFragment {
             }
         };
 
-        this.treeNodeLongClickListener = (node, value) -> {
-            boolean system = false;
-            CustomTreeNode customTreeNode = ((CustomTreeNode) value);
-            if(customTreeNode.getTreeItem() instanceof TreeFile) {
-                TreeFile treeFile = (TreeFile) customTreeNode.getTreeItem();
-                if(treeFile.getParent() != null) {
-                    system = treeFile.getParent().isSystem();
-                }
-            } else {
-                TreeNode treeNode = (TreeNode) customTreeNode.getTreeItem();
-                system = treeNode.isSystem();
-            }
-
-            if(this.data && !system) {
-                TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.path, ((BaseDescriptionObject) ((CustomTreeNode) value).getTreeItem()).getId());
-                treeViewDialog.addPreExecute(()->System.exit(0));
-                treeViewDialog.show(this.requireActivity());
-            } else {
-                TreeViewDialog treeViewDialog = TreeViewDialog.newInstance((BaseDescriptionObject) ((CustomTreeNode) value).getTreeItem(), system);
-                treeViewDialog.addPreExecute(this::reset);
-                treeViewDialog.show(this.requireActivity());
-            }
-            return true;
-        };
-
         Bundle bundle = this.getArguments();
         if(bundle!=null) {
             if(bundle.containsKey("uri")) {
@@ -269,7 +243,6 @@ public class MainFileTreeFragment extends ParentFragment {
         treeViewTask.after((AbstractTask.PostExecuteListener<com.unnamed.b.atv.model.TreeNode>) o -> {
             this.androidTreeView = new AndroidTreeView(this.requireActivity(), o);
             this.androidTreeView.setDefaultNodeClickListener(this.treeNodeClickListener);
-            //this.androidTreeView.setDefaultNodeLongClickListener(this.treeNodeLongClickListener);
             this.androidTreeView.setDefaultAnimation(true);
             this.androidTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided);
             this.treeContainer.addView(this.androidTreeView.getView());

@@ -109,13 +109,11 @@ public class MainListsFragment extends ParentFragment {
                 case R.id.cmdAdd:
                     if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
                         this.changeMode(true, false);
-                        this.setObject(new MediaList());
-                        this.mediaList = null;
                     } else {
                         changeMode(false, false);
-                        this.setObject(new MediaList());
-                        this.mediaList = null;
                     }
+                    this.setObject(new MediaList());
+                    this.mediaList = null;
                     break;
                 case R.id.cmdEdit:
                     if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {

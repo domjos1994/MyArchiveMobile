@@ -147,6 +147,26 @@
             android:autofillHints="@string/customFields"
             tools:targetApi="o"
             android:visibility="gone"/>
+        <TableRow
+            android:id="@+id/rowList"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="@string/filter_list"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/textColorPrimary"
+                android:labelFor="@+id/spFilterList" />
+            <Spinner
+                android:id="@+id/spFilterList"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="8"
+                android:text="@string/main_navigation_media_games"
+                android:textColor="@color/textColorPrimary" />
+        </TableRow>
     </TableLayout>
 
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList

@@ -18,6 +18,7 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -85,7 +86,9 @@ public class MainHomeFragment extends ParentFragment {
     private MultiAutoCompleteTextView txtFilterCustomFields;
     private ImageButton cmdFilterExpand, cmdFilterSave, cmdFilterDelete;
     private CheckBox chkFilterBooks, chkFilterMovies, chkFilterMusic, chkFilterGames;
-    private TableRow rowName, rowMedia1, rowMedia2;
+    private Spinner spFilterList;
+    private CustomSpinnerAdapter<MediaList> filterListAdapter;
+    private TableRow rowName, rowMedia1, rowMedia2, rowList;
 
     private SwipeRefreshDeleteList lvMedia;
     private String search;
@@ -285,13 +288,34 @@ public class MainHomeFragment extends ParentFragment {
         this.txtFilterCustomFields.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
 
+        this.spFilterList = view.findViewById(R.id.spFilterList);
+        this.filterListAdapter = new CustomSpinnerAdapter<>(this.requireContext());
+        this.spFilterList.setAdapter(this.filterListAdapter);
+        this.filterListAdapter.notifyDataSetChanged();
+        this.reloadFilterListList();
+
         this.rowName = view.findViewById(R.id.rowName);
         this.rowMedia1 = view.findViewById(R.id.rowMedia1);
         this.rowMedia2 = view.findViewById(R.id.rowMedia2);
+        this.rowList = view.findViewById(R.id.rowList);
 
         this.arrayAdapter = new CustomSpinnerAdapter<>(this.requireContext());
         this.spFilter.setAdapter(this.arrayAdapter);
         this.arrayAdapter.notifyDataSetChanged();
+    }
+
+    private void reloadFilterListList() {
+        try {
+            this.filterListAdapter.clear();
+            MediaList emptyMediaList = new MediaList();
+            emptyMediaList.setId(0);
+            this.filterListAdapter.add(emptyMediaList);
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", -1, 0)) {
+                this.filterListAdapter.add(mediaList);
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
+        }
     }
 
     private void initFilterActions() {
@@ -359,6 +383,15 @@ public class MainHomeFragment extends ParentFragment {
                 setTempFilter();
             }
         });
+        this.spFilterList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                setTempFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
 
         this.cmdFilterExpand.setOnClickListener(view -> {
             boolean noFilterSelected = this.spFilter.getSelectedItem().toString().equals(this.getString(R.string.filter_no_filter));
@@ -419,6 +452,7 @@ public class MainHomeFragment extends ParentFragment {
             this.rowName.setVisibility(View.GONE);
             this.rowMedia1.setVisibility(View.GONE);
             this.rowMedia2.setVisibility(View.GONE);
+            this.rowList.setVisibility(View.GONE);
             this.txtFilterSearch.setVisibility(View.GONE);
             this.txtFilterCategories.setVisibility(View.GONE);
             this.txtFilterTags.setVisibility(View.GONE);
@@ -437,6 +471,7 @@ public class MainHomeFragment extends ParentFragment {
             this.rowName.setVisibility(View.VISIBLE);
             this.rowMedia1.setVisibility(View.VISIBLE);
             this.rowMedia2.setVisibility(View.VISIBLE);
+            this.rowList.setVisibility(View.VISIBLE);
             this.txtFilterSearch.setVisibility(View.VISIBLE);
             this.txtFilterCategories.setVisibility(View.VISIBLE);
             this.txtFilterTags.setVisibility(View.VISIBLE);
@@ -522,6 +557,17 @@ public class MainHomeFragment extends ParentFragment {
         this.chkFilterMusic.setChecked(mediaFilter.isMusic());
         this.chkFilterGames.setChecked(mediaFilter.isGames());
         this.txtFilterCustomFields.setText(mediaFilter.getCustomFields());
+        MediaList mediaList = mediaFilter.getMediaList();
+        if(mediaList != null) {
+            for(int position = 0; position <= this.filterListAdapter.getCount() - 1; position++) {
+                if(mediaList.getId() == Objects.requireNonNull(this.filterListAdapter.getItem(position)).getId()) {
+                    this.spFilterList.setSelection(position);
+                    break;
+                }
+            }
+        } else {
+            this.spFilterList.setSelection(0);
+        }
     }
 
     private void getObject(MediaFilter mediaFilter) {
@@ -536,6 +582,14 @@ public class MainHomeFragment extends ParentFragment {
         mediaFilter.setMovies(chkFilterMovies.isChecked());
         mediaFilter.setMusic(chkFilterMusic.isChecked());
         mediaFilter.setGames(chkFilterGames.isChecked());
+        mediaFilter.setMediaList(null);
+        MediaList mediaList = this.filterListAdapter.getItem(this.spFilterList.getSelectedItemPosition());
+        if(mediaList != null) {
+            if(mediaList.getId() != 0) {
+                mediaFilter.setMediaList(mediaList);
+            }
+        }
+
         mediaFilter.setCustomFields(txtFilterCustomFields.getText().toString());
     }
 
@@ -554,7 +608,7 @@ public class MainHomeFragment extends ParentFragment {
             String searchString = "";
             if(this.search != null) {
                 if(!this.search.isEmpty()) {
-                    searchString = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+                    searchString = "(title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%')";
                 }
             } else {
                 searchString = "";
@@ -624,6 +678,11 @@ public class MainHomeFragment extends ParentFragment {
     @Override
     public void select() {
 
+    }
+
+    @Override
+    public void onActivityResult(int result, int request, Intent intent) {
+        this.reloadFilterListList();
     }
 
     private void showAnimation(FloatingActionButton fab) {

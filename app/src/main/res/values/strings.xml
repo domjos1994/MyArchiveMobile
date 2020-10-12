@@ -96,6 +96,7 @@
 
     <string name="filter_no_filter">No Filter</string>
     <string name="filter_temp">Temporary Settings</string>
+    <string name="filter_list">List</string>
 
     <string name="add_media">Add Media</string>
 

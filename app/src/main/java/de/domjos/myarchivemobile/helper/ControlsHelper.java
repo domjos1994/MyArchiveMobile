@@ -248,10 +248,11 @@ public class ControlsHelper {
                 }
 
                 Map<DatabaseObject, String> mp = new LinkedHashMap<>();
-                mp.put(new Book(), "id in (" + TextUtils.join(", ", bookIds) + ")");
-                mp.put(new Movie(), "id in (" + TextUtils.join(", ", movieIds) + ")");
-                mp.put(new Album(), "id in (" + TextUtils.join(", ", musicIds) + ")");
-                mp.put(new Game(), "id in (" + TextUtils.join(", ", gameIds) + ")");
+                final String s = extendedWhere.trim().isEmpty() ? "" : " AND (" + extendedWhere + ")";
+                mp.put(new Book(), "id in (" + TextUtils.join(", ", bookIds) + ")" + s);
+                mp.put(new Movie(), "id in (" + TextUtils.join(", ", movieIds) + ")" + s);
+                mp.put(new Album(), "id in (" + TextUtils.join(", ", musicIds) + ")" + s);
+                mp.put(new Game(), "id in (" + TextUtils.join(", ", gameIds) + ")" + s);
                 return ControlsHelper.getAllMediaItems(context, mp, key);
             }
         } else {
@@ -285,17 +286,38 @@ public class ControlsHelper {
         Map<DatabaseObject, String> mp = new LinkedHashMap<>();
         String fullWhere = where.trim().isEmpty() ? extendedWhere : (extendedWhere.trim().isEmpty() ? where : where + " AND (" + extendedWhere + ")");
 
+        String bookWhere = "", movieWhere = "", musicWhere = "", gameWhere = "";
+        if(mediaFilter.getMediaList() != null) {
+            List<Long> bookIds = new LinkedList<>(), movieIds = new LinkedList<>(), musicIds = new LinkedList<>(), gameIds = new LinkedList<>();
+            for (BaseMediaObject baseMediaObject : mediaFilter.getMediaList().getBaseMediaObjects()) {
+                if (baseMediaObject instanceof Book) {
+                    bookIds.add(baseMediaObject.getId());
+                } else if (baseMediaObject instanceof Movie) {
+                    movieIds.add(baseMediaObject.getId());
+                } else if (baseMediaObject instanceof Album) {
+                    musicIds.add(baseMediaObject.getId());
+                } else {
+                    gameIds.add(baseMediaObject.getId());
+                }
+            }
+
+            bookWhere =  "id in (" + TextUtils.join(", ", bookIds) + ")";
+            movieWhere =  "id in (" + TextUtils.join(", ", movieIds) + ")";
+            musicWhere =  "id in (" + TextUtils.join(", ", musicIds) + ")";
+            gameWhere =  "id in (" + TextUtils.join(", ", gameIds) + ")";
+        }
+
         if(mediaFilter.isBooks()) {
-            mp.put(new Book(), fullWhere);
+            mp.put(new Book(), bookWhere.trim().isEmpty() ? fullWhere : (fullWhere.trim().isEmpty() ? bookWhere : fullWhere + " AND " + bookWhere));
         }
         if(mediaFilter.isMovies()) {
-            mp.put(new Movie(), fullWhere);
+            mp.put(new Movie(), movieWhere.trim().isEmpty() ? fullWhere : (fullWhere.trim().isEmpty() ? movieWhere : fullWhere + " AND " + movieWhere));
         }
         if(mediaFilter.isMusic()) {
-            mp.put(new Album(), fullWhere);
+            mp.put(new Album(), musicWhere.trim().isEmpty() ? fullWhere : (fullWhere.trim().isEmpty() ? musicWhere : fullWhere + " AND " + musicWhere));
         }
         if(mediaFilter.isGames()) {
-            mp.put(new Game(), fullWhere);
+            mp.put(new Game(), gameWhere.trim().isEmpty() ? fullWhere : (fullWhere.trim().isEmpty() ? gameWhere : fullWhere + " AND " + gameWhere));
         }
         return ControlsHelper.getAllMediaItems(context, mp, key);
     }
