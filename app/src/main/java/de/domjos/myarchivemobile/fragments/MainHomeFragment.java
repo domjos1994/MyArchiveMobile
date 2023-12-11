@@ -178,7 +178,7 @@ public class MainHomeFragment extends ParentFragment {
                 AlertDialog.Builder b = new AlertDialog.Builder(requireActivity());
                 b.setTitle(getString(R.string.media_persons));
                 List<String> personsString = new LinkedList<>();
-                List<Person> people = MainActivity.GLOBALS.getDatabase().getPersons("", 0);
+                List<Person> people = MainActivity.GLOBALS.getDatabase(this.getActivity()).getPersons("", 0);
                 for(Person person : people) {
                     personsString.add(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
                 }
@@ -190,7 +190,7 @@ public class MainHomeFragment extends ParentFragment {
                             libraryObject.setDeadLine(new Date());
                             libraryObject.setNumberOfDays(7);
                             libraryObject.setPerson(people.get(i));
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
+                            MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) baseDescriptionObject.getObject());
                         }
                         MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_add)), R.mipmap.ic_launcher_round, this.getActivity());
                     });
@@ -206,7 +206,7 @@ public class MainHomeFragment extends ParentFragment {
                 AlertDialog.Builder b = new AlertDialog.Builder(requireActivity());
                 b.setTitle(getString(R.string.lists));
                 List<String> listString = new LinkedList<>();
-                List<MediaList> lists = MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"));
+                List<MediaList> lists = MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"));
                 for(MediaList list : lists) {
                     listString.add(list.getTitle());
                 }
@@ -217,7 +217,7 @@ public class MainHomeFragment extends ParentFragment {
                         for(BaseDescriptionObject baseDescriptionObject : objectList) {
                             mediaList.getBaseMediaObjects().add((BaseMediaObject) baseDescriptionObject.getObject());
                         }
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
                         MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.sys_add)), R.mipmap.ic_launcher_round, this.getActivity());
                         reloadFilter();
                     }));
@@ -241,16 +241,16 @@ public class MainHomeFragment extends ParentFragment {
         this.lvMedia.setOnDeleteListener(listObject -> {
             BaseMediaObject baseMediaObject = (BaseMediaObject) listObject.getObject();
             if(baseMediaObject instanceof Book) {
-                MainActivity.GLOBALS.getDatabase().deleteItem((Book) baseMediaObject);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((Book) baseMediaObject);
             }
             if(baseMediaObject instanceof Movie) {
-                MainActivity.GLOBALS.getDatabase().deleteItem((Movie) baseMediaObject);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((Movie) baseMediaObject);
             }
             if(baseMediaObject instanceof Game) {
-                MainActivity.GLOBALS.getDatabase().deleteItem((Game) baseMediaObject);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((Game) baseMediaObject);
             }
             if(baseMediaObject instanceof Album) {
-                MainActivity.GLOBALS.getDatabase().deleteItem((Album) baseMediaObject);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((Album) baseMediaObject);
             }
             reload(this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition()));
         });
@@ -280,7 +280,7 @@ public class MainHomeFragment extends ParentFragment {
 
         this.txtFilterCustomFields = view.findViewById(R.id.txtFilterCustomFields);
         this.txtFilterCustomFields.setTokenizer(new CommaTokenizer());
-        List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("");
+        List<CustomField> customFields = MainActivity.GLOBALS.getDatabase(this.getActivity()).getCustomFields("");
         CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtFilterCustomFields);
         for(CustomField customField : customFields) {
             arrayAdapter.add(customField.getTitle());
@@ -310,7 +310,7 @@ public class MainHomeFragment extends ParentFragment {
             MediaList emptyMediaList = new MediaList();
             emptyMediaList.setId(0);
             this.filterListAdapter.add(emptyMediaList);
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", -1, 0)) {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", -1, 0)) {
                 this.filterListAdapter.add(mediaList);
             }
         } catch (Exception ex) {
@@ -407,14 +407,14 @@ public class MainHomeFragment extends ParentFragment {
         this.cmdFilterDelete.setOnClickListener(view -> {
             MediaFilter mediaFilter = this.arrayAdapter.getItem(this.spFilter.getSelectedItemPosition());
             if(mediaFilter!=null) {
-                MainActivity.GLOBALS.getDatabase().deleteItem(mediaFilter);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(mediaFilter);
                 this.reloadFilter();
             }
         });
         this.cmdFilterSave.setOnClickListener(view -> {
             this.getObject(this.tempFilter);
             if(!this.tempFilter.getTitle().equals(this.getString(R.string.filter_temp)) && !this.tempFilter.getTitle().equals(this.getString(R.string.filter_no_filter))) {
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateFilter(this.tempFilter);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateFilter(this.tempFilter);
                 this.reloadFilter();
                 this.setObject(this.tempFilter);
             }
@@ -526,7 +526,7 @@ public class MainHomeFragment extends ParentFragment {
         this.arrayAdapter.add(gamesFilter);
 
         try {
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
                 MediaFilter listFilter = new MediaFilter();
                 listFilter.setTitle("[" + mediaList.getTitle() + "]");
                 listFilter.setMediaList(mediaList);
@@ -537,7 +537,7 @@ public class MainHomeFragment extends ParentFragment {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
 
-        for(MediaFilter filter : MainActivity.GLOBALS.getDatabase().getFilters("")) {
+        for(MediaFilter filter : MainActivity.GLOBALS.getDatabase(this.getActivity()).getFilters("")) {
             this.arrayAdapter.add(filter);
         }
     }

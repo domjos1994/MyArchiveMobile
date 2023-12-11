@@ -114,22 +114,22 @@ public class LoadingTask<T> extends ExtendedStatusTask<Void, T> {
                     return ControlsHelper.getAllMediaItems(this.getContext(), mediaFilter, this.searchString, key);
                 }
                 if(this.test instanceof Person) {
-                    return MainActivity.GLOBALS.getDatabase().getPersons(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase(this.getContext()).getPersons(this.searchString);
                 }
                 if(this.test instanceof Company) {
-                    return MainActivity.GLOBALS.getDatabase().getCompanies(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase(this.getContext()).getCompanies(this.searchString);
                 }
                 if(this.test instanceof MediaList) {
-                    return MainActivity.GLOBALS.getDatabase().getMediaLists(this.searchString, -1, MainActivity.GLOBALS.getOffset(key));
+                    return MainActivity.GLOBALS.getDatabase(this.getContext()).getMediaLists(this.searchString, -1, MainActivity.GLOBALS.getOffset(key));
                 }
                 if(this.test instanceof CustomField) {
-                    return MainActivity.GLOBALS.getDatabase().getCustomFields(this.searchString);
+                    return MainActivity.GLOBALS.getDatabase(this.getContext()).getCustomFields(this.searchString);
                 }
                 if(this.test instanceof de.domjos.myarchivelibrary.model.base.BaseDescriptionObject) {
                     if(this.key.equals(this.getContext().getString(R.string.media_general_tags).toLowerCase())) {
-                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, this.searchString);
+                        return MainActivity.GLOBALS.getDatabase(this.getContext()).getBaseObjects("tags", "", 0, this.searchString);
                     } else {
-                        return MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, this.searchString);
+                        return MainActivity.GLOBALS.getDatabase(this.getContext()).getBaseObjects("categories", "", 0, this.searchString);
                     }
                 }
             }

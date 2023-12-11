@@ -122,7 +122,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         if(this.container != null) {
             this.container.removeAllViews();
         }
-        this.customFields = MainActivity.GLOBALS.getDatabase().getCustomFields(String.format("%s=1", table));
+        this.customFields = MainActivity.GLOBALS.getDatabase(this.getActivity()).getCustomFields(String.format("%s=1", table));
         if(!this.customFields.isEmpty()) {
             for(CustomField customField : this.customFields) {
                 if(customField.getType().equals(this.getString(R.string.customFields_type_values_text))) {

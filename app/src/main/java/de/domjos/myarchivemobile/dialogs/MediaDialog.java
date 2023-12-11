@@ -165,7 +165,7 @@ public class MediaDialog extends DialogFragment {
                                     theMovieDBTask = new TheMovieDBTask(this.activity, notification, icon, description, key);
                                     theMovieDBTask.after((AbstractTask.PostExecuteListener<List<Movie>>) o -> {
                                         if(o != null && !o.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(o.get(0));
+                                            MainActivity.GLOBALS.getDatabase(this.activity).insertOrUpdateMovie(o.get(0));
                                         }
                                         cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
@@ -177,7 +177,7 @@ public class MediaDialog extends DialogFragment {
                                     theAudioDBTask = new TheAudioDBTask(this.activity, notification, icon);
                                     theAudioDBTask.after((AbstractTask.PostExecuteListener<List<Album>>) o -> {
                                         if(o != null && !o.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(o.get(0));
+                                            MainActivity.GLOBALS.getDatabase(this.activity).insertOrUpdateAlbum(o.get(0));
                                         }
                                         cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
@@ -190,7 +190,7 @@ public class MediaDialog extends DialogFragment {
                                     googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
                                     googleBooksTask.after((AbstractTask.PostExecuteListener<List<Book>>) o -> {
                                         if(o != null && !o.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(o.get(0));
+                                            MainActivity.GLOBALS.getDatabase(this.activity).insertOrUpdateBook(o.get(0));
                                         }
                                         cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));
@@ -203,7 +203,7 @@ public class MediaDialog extends DialogFragment {
                                     igdbTask = new IGDBTask(this.activity, notification, icon, key);
                                     igdbTask.after((AbstractTask.PostExecuteListener<List<Game>>) o -> {
                                         if(o != null && !o.isEmpty()) {
-                                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(o.get(0));
+                                            MainActivity.GLOBALS.getDatabase(this.activity).insertOrUpdateGame(o.get(0));
                                         }
                                         cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
                                         cmdSave.setTag(getString(R.string.sys_save));

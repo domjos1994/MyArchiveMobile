@@ -17,6 +17,8 @@
 
 package de.domjos.myarchivemobile.settings;
 
+import android.content.Context;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,7 +49,10 @@ public final class Globals {
         this.page = new LinkedHashMap<>();
     }
 
-    public Database getDatabase() {
+    public Database getDatabase(Context context) {
+        if(this.database == null) {
+            this.database = new Database(context);
+        }
         return this.database;
     }
 

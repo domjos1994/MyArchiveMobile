@@ -73,7 +73,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
 
         this.lvCustomFields.setOnDeleteListener(listObject -> {
             this.customField = (CustomField) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(this.customField);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(this.customField);
             this.customField = null;
             this.setObject(new CustomField());
             this.changeMode(false, false);
@@ -107,7 +107,7 @@ public class MainCustomFieldsFragment extends ParentFragment {
                                     customField.setId(this.customField.getId());
                                 }
                                 if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
+                                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateCustomField(customField);
                                     this.changeMode(false, false);
                                     this.customField = null;
                                     this.setObject(new CustomField());

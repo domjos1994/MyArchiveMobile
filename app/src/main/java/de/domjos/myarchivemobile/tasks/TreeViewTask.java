@@ -53,7 +53,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
 
         if(!this.loadFiles) {
             this.publishProgress(new TaskStatus(0, this.getContext().getString(R.string.file_tree_load_tree)));
-            TreeNode root = MainActivity.GLOBALS.getDatabase().getRoot(where);
+            TreeNode root = MainActivity.GLOBALS.getDatabase(this.getContext()).getRoot(where);
             CustomTreeNode customTreeNode = new CustomTreeNode(root, this.getContext());
             com.unnamed.b.atv.model.TreeNode treeNode = new com.unnamed.b.atv.model.TreeNode(customTreeNode).setViewHolder(new CustomTreeNodeHolder(this.getContext()));
             this.addChildren(root, treeNode);
@@ -66,7 +66,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 }
             }
             this.publishProgress(new TaskStatus(0, this.getContext().getString(R.string.file_tree_load_files)));
-            List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("parent=" + this.parent.getId() + (where.trim().isEmpty() ? "" : " and " + where.trim()));
+            List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("parent=" + this.parent.getId() + (where.trim().isEmpty() ? "" : " and " + where.trim()));
             for(TreeFile treeFile : treeFiles) {
                 treeFile.setParent(this.parent);
                 CustomTreeNode customTreeNode = new CustomTreeNode(treeFile, this.getContext());
@@ -95,21 +95,21 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
             int status = 0;
             this.publishProgress(new TaskStatus(status, this.getContext().getString(R.string.file_tree_load_db)));
 
-            TreeNode treeNode = MainActivity.GLOBALS.getDatabase().getRoot();
+            TreeNode treeNode = MainActivity.GLOBALS.getDatabase(this.getContext()).getRoot();
             BaseDescriptionObject systemCategory = new BaseDescriptionObject();
             systemCategory.setTitle(this.getContext().getString(R.string.file_tree_system));
 
             if(treeNode == null) {
                 TreeNode root = new TreeNode();
                 root.setTitle(this.getContext().getString(R.string.file_tree));
-                root.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(root));
+                root.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(root));
 
                 TreeNode app = new TreeNode();
                 app.setTitle(this.getContext().getString(R.string.app_name));
                 app.setSystem(true);
                 app.setParent(root);
                 app.setCategory(systemCategory);
-                app.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(app));
+                app.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(app));
 
                 TreeNode persons = new TreeNode();
                 persons.setTitle(this.getContext().getString(R.string.media_persons));
@@ -117,9 +117,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 persons.setGallery(true);
                 persons.setParent(app);
                 persons.setCategory(systemCategory);
-                persons.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(persons));
+                persons.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(persons));
 
-                for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("")) {
+                for(Person person : MainActivity.GLOBALS.getDatabase(this.getContext()).getPersons("")) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()));
                     treeFile.setDescription(person.getDescription());
@@ -127,7 +127,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(person.getId());
                     treeFile.setInternalTable("persons");
                     treeFile.setInternalColumn("image");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
                 }
 
@@ -138,9 +138,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 companies.setGallery(true);
                 companies.setParent(app);
                 companies.setCategory(systemCategory);
-                companies.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(companies));
+                companies.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(companies));
 
-                for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("")) {
+                for(Company company : MainActivity.GLOBALS.getDatabase(this.getContext()).getCompanies("")) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(company.getTitle());
                     treeFile.setDescription(company.getDescription());
@@ -148,7 +148,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(company.getId());
                     treeFile.setInternalTable("companies");
                     treeFile.setInternalColumn("cover");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
                 }
 
@@ -158,7 +158,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 media.setGallery(true);
                 media.setParent(app);
                 media.setCategory(systemCategory);
-                media.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(media));
+                media.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(media));
 
                 status = 0;
                 TreeNode books = new TreeNode();
@@ -167,9 +167,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 books.setGallery(true);
                 books.setParent(media);
                 books.setCategory(systemCategory);
-                books.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(books));
+                books.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(books));
 
-                for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("", -1, 0)) {
+                for(Book book : MainActivity.GLOBALS.getDatabase(this.getContext()).getBooks("", -1, 0)) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(book.getTitle());
                     treeFile.setDescription(book.getDescription());
@@ -177,7 +177,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(book.getId());
                     treeFile.setInternalTable("books");
                     treeFile.setInternalColumn("cover");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
                 }
 
@@ -188,9 +188,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 movies.setGallery(true);
                 movies.setParent(media);
                 movies.setCategory(systemCategory);
-                movies.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(movies));
+                movies.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(movies));
 
-                for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies("", -1, 0)) {
+                for(Movie movie : MainActivity.GLOBALS.getDatabase(this.getContext()).getMovies("", -1, 0)) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(movie.getTitle());
                     treeFile.setDescription(movie.getDescription());
@@ -198,7 +198,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(movie.getId());
                     treeFile.setInternalTable("movies");
                     treeFile.setInternalColumn("cover");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
                 }
 
@@ -209,9 +209,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 albums.setGallery(true);
                 albums.setParent(media);
                 albums.setCategory(systemCategory);
-                albums.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(albums));
+                albums.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(albums));
 
-                for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums("", -1, 0)) {
+                for(Album album : MainActivity.GLOBALS.getDatabase(this.getContext()).getAlbums("", -1, 0)) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(album.getTitle());
                     treeFile.setDescription(album.getDescription());
@@ -219,7 +219,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(album.getId());
                     treeFile.setInternalTable("albums");
                     treeFile.setInternalColumn("cover");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
                 }
 
@@ -230,9 +230,9 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 games.setGallery(true);
                 games.setParent(media);
                 games.setCategory(systemCategory);
-                games.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(games));
+                games.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(games));
 
-                for(Game game : MainActivity.GLOBALS.getDatabase().getGames("", -1, 0)) {
+                for(Game game : MainActivity.GLOBALS.getDatabase(this.getContext()).getGames("", -1, 0)) {
                     TreeFile treeFile = new TreeFile();
                     treeFile.setTitle(game.getTitle());
                     treeFile.setDescription(game.getDescription());
@@ -240,61 +240,61 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalId(game.getId());
                     treeFile.setInternalTable("games");
                     treeFile.setInternalColumn("cover");
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                     this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
                 }
             } else {
                 if(this.checkDatabase) {
-                    for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("")) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + person.getId() + " AND internalTable='persons' AND internalColumn='image'");
+                    for(Person person : MainActivity.GLOBALS.getDatabase(this.getContext()).getPersons("")) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + person.getId() + " AND internalTable='persons' AND internalColumn='image'");
                         if(treeFiles.isEmpty()) {
                             TreeFile treeFile = new TreeFile();
                             treeFile.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()));
                             treeFile.setDescription(person.getDescription());
-                            treeFile.setParent(MainActivity.GLOBALS.getDatabase().getNodeByName(this.getContext().getString(R.string.media_persons)));
+                            treeFile.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeByName(this.getContext().getString(R.string.media_persons)));
                             treeFile.setInternalId(person.getId());
                             treeFile.setInternalTable("persons");
                             treeFile.setInternalColumn("image");
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+                            MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
                             this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
                         }
                     }
 
                     status = 0;
-                    for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("")) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + company.getId() + " AND internalTable='companies' AND internalColumn='cover'");
+                    for(Company company : MainActivity.GLOBALS.getDatabase(this.getContext()).getCompanies("")) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + company.getId() + " AND internalTable='companies' AND internalColumn='cover'");
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(company, "companies", this.getContext().getString(R.string.media_companies));
                         }
                         this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
                     }
                     status = 0;
-                    for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("", -1, 0)) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + book.getId() + " AND internalTable='books' AND internalColumn='cover'");
+                    for(Book book : MainActivity.GLOBALS.getDatabase(this.getContext()).getBooks("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + book.getId() + " AND internalTable='books' AND internalColumn='cover'");
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(book, "books", this.getContext().getString(R.string.main_navigation_media_books));
                         }
                         this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
                     }
                     status = 0;
-                    for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies("", -1, 0)) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + movie.getId() + " AND internalTable='movies' AND internalColumn='cover'");
+                    for(Movie movie : MainActivity.GLOBALS.getDatabase(this.getContext()).getMovies("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + movie.getId() + " AND internalTable='movies' AND internalColumn='cover'");
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(movie, "movies", this.getContext().getString(R.string.main_navigation_media_movies));
                         }
                         this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
                     }
                     status = 0;
-                    for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums("", -1, 0)) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + album.getId() + " AND internalTable='albums' AND internalColumn='cover'");
+                    for(Album album : MainActivity.GLOBALS.getDatabase(this.getContext()).getAlbums("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + album.getId() + " AND internalTable='albums' AND internalColumn='cover'");
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(album, "albums", this.getContext().getString(R.string.main_navigation_media_music));
                         }
                         this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
                     }
                     status = 0;
-                    for(Game game : MainActivity.GLOBALS.getDatabase().getGames("", -1, 0)) {
-                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("internalId=" + game.getId() + " AND internalTable='games' AND internalColumn='cover'");
+                    for(Game game : MainActivity.GLOBALS.getDatabase(this.getContext()).getGames("", -1, 0)) {
+                        List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("internalId=" + game.getId() + " AND internalTable='games' AND internalColumn='cover'");
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(game, "games", this.getContext().getString(R.string.main_navigation_media_games));
                         }
@@ -312,7 +312,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
         TreeFile treeFile = new TreeFile();
         treeFile.setTitle(obj.getTitle());
         treeFile.setDescription(obj.getDescription());
-        treeFile.setParent(MainActivity.GLOBALS.getDatabase().getNodeByName(name));
+        treeFile.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeByName(name));
         treeFile.setInternalId(obj.getId());
         treeFile.setInternalTable(table);
         treeFile.setInternalColumn("cover");
@@ -321,7 +321,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
             treeFile.setCategory(baseMediaObject.getCategory());
             treeFile.setTags(baseMediaObject.getTags());
         }
-        MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
+        MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(treeFile);
     }
 
     private void addChildren(TreeNode dbRoot, com.unnamed.b.atv.model.TreeNode viewRoot) {

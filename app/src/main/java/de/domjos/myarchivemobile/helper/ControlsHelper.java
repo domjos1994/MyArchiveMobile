@@ -47,9 +47,6 @@ import androidx.fragment.app.Fragment;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -106,7 +103,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Album) currentObject.getObject();
                         } else {
-                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -118,7 +115,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Movie) currentObject.getObject();
                         } else {
-                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -130,7 +127,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Game) currentObject.getObject();
                         } else {
-                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -142,7 +139,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Book) currentObject.getObject();
                         } else {
-                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -210,16 +207,16 @@ public class ControlsHelper {
         try {
             baseDescriptionObject.setId(((BaseMediaObject)baseDescriptionObject.getObject()).getId());
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.book))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.movie))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.album))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getAlbums("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getAlbums("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.game))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getGames("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getGames("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
         } catch (Exception ignored) {}
         return null;
@@ -230,7 +227,7 @@ public class ControlsHelper {
 
         if(mediaFilter.isList()) {
             try {
-                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("id=" + mediaFilter.getMediaList().getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase(context).getMediaLists("id=" + mediaFilter.getMediaList().getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 mediaFilter.setMediaList(mediaLists==null ? mediaFilter.getMediaList() : mediaLists.get(0));
             } catch (Exception ignored) {}
             if(mediaFilter.getMediaList() != null) {
@@ -324,7 +321,7 @@ public class ControlsHelper {
 
     private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp, String key) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key), ControlsHelper.returnOrderBy(context))) {
+        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase(context).getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key), ControlsHelper.returnOrderBy(context))) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                 try {
@@ -499,7 +496,7 @@ public class ControlsHelper {
             long id = fragment.getArguments().getLong("id");
             if( id != 0) {
                 key = key.replace(Globals.RESET, "");
-                int page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
+                int page = MainActivity.GLOBALS.getDatabase(fragment.getContext()).getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
                 MainActivity.GLOBALS.setPage(page, key);
                 ControlsHelper.fromHome = false;
             } else {
@@ -510,21 +507,6 @@ public class ControlsHelper {
             }
         }
         return key;
-    }
-
-    public static void loadAd(Context context) {
-        if(MainActivity.GLOBALS.getSettings().showAd()) {
-            InterstitialAd interstitialAd = new InterstitialAd(context);
-            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
-            // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
-            interstitialAd.loadAd(new AdRequest.Builder().build());
-            interstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    interstitialAd.show();
-                }
-            });
-        }
     }
 
     public static void checkNetwork(Activity activity) {

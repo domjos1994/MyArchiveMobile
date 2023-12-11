@@ -20,8 +20,9 @@ package de.domjos.myarchivelibrary.services;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.Json;
 import com.google.api.services.books.Books;
 import com.google.api.services.books.model.Volume;
 import com.google.api.services.books.model.Volumes;
@@ -56,7 +57,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
     }
 
     public Book execute() throws IOException {
-        Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
+        Books books = new Books.Builder(new NetHttpTransport(), new GsonFactory(), null).setApplicationName("MyArchive").build();
         Books.Volumes.List list;
         if(!this.code.isEmpty()) {
             list = books.volumes().list("isbn:" + this.code).setProjection("full");
@@ -78,7 +79,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
 
     public List<BaseMediaObject> getMedia(String search) throws IOException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-        Books books = new Books.Builder(new NetHttpTransport(), AndroidJsonFactory.getDefaultInstance(), null).setApplicationName("MyArchive").build();
+        Books books = new Books.Builder(new NetHttpTransport(), new GsonFactory(), null).setApplicationName("MyArchive").build();
         Books.Volumes.List list = books.volumes().list("intitle:" + search).setProjection("full");
         if(!this.key.isEmpty()) {
             list.setKey(this.key);

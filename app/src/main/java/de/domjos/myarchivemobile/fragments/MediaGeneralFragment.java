@@ -114,7 +114,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
         this.txtMediaGeneralCategory = view.findViewById(R.id.txtMediaGeneralCategory);
         CustomAutoCompleteAdapter<String> categoryAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaGeneralCategory);
-        for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("categories", "", 0, "")) {
+        for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase(this.getActivity()).getBaseObjects("categories", "", 0, "")) {
             categoryAdapter.add(baseDescriptionObject.getTitle());
         }
         this.txtMediaGeneralCategory.setAdapter(categoryAdapter);
@@ -123,7 +123,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
         this.txtMediaGeneralTags = view.findViewById(R.id.txtMediaGeneralTags);
         this.txtMediaGeneralTags.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         CustomAutoCompleteAdapter<String> tagAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaGeneralTags);
-        for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase().getBaseObjects("tags", "", 0, "")) {
+        for(BaseDescriptionObject baseDescriptionObject : MainActivity.GLOBALS.getDatabase(this.getActivity()).getBaseObjects("tags", "", 0, "")) {
             tagAdapter.add(baseDescriptionObject.getTitle());
         }
         this.txtMediaGeneralTags.setAdapter(tagAdapter);

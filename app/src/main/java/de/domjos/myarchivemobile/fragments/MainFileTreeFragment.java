@@ -155,11 +155,11 @@ public class MainFileTreeFragment extends ParentFragment {
             if (this.node.getId() != 0) {
                 if(this.cpNode != null) {
                     this.cpNode.setParent(this.node);
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(this.cpNode);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateTreeNode(this.cpNode);
                 }
                 if(this.cpFile != null) {
                     this.cpFile.setParent(this.node);
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(this.cpFile);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateTreeNodeFiles(this.cpFile);
                 }
                 this.reset("");
             }

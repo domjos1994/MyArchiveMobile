@@ -68,7 +68,7 @@ public class MainGamesFragment extends ParentFragment {
         this.lvGames.setOnReloadListener(MainGamesFragment.this::reload);
         this.lvGames.setOnDeleteListener(listObject -> {
             Game game = (Game) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(game);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(game);
             this.changeMode(false, false);
             this.gamePagerAdapter.setMediaObject(new Game());
         });
@@ -82,7 +82,7 @@ public class MainGamesFragment extends ParentFragment {
             for(BaseDescriptionObject baseDescriptionObject : list) {
                 Game game = (Game) baseDescriptionObject.getObject();
                 game.setLastPlayed(new Date());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
             }
         });
 
@@ -123,7 +123,7 @@ public class MainGamesFragment extends ParentFragment {
                                 game.setId(((Game) this.currentObject.getObject()).getId());
                             }
                             if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
                                 this.changeMode(false, false);
                                 this.gamePagerAdapter.setMediaObject(new Game());
                                 this.currentObject = null;
@@ -244,7 +244,7 @@ public class MainGamesFragment extends ParentFragment {
                 EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Game> games = eanDataService.execute(code).get();
                 for(Game game : games) {
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
                 }
                 this.reload();
             }

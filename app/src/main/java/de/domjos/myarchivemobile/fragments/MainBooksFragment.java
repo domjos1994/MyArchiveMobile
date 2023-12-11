@@ -69,7 +69,7 @@ public class MainBooksFragment extends ParentFragment {
         this.lvBooks.setOnReloadListener(MainBooksFragment.this::reload);
         this.lvBooks.setOnDeleteListener(listObject -> {
             Book book = (Book) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(book);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(book);
             this.changeMode(false, false);
             this.bookPagerAdapter.setMediaObject(new Book());
         });
@@ -83,7 +83,7 @@ public class MainBooksFragment extends ParentFragment {
             for(BaseDescriptionObject baseDescriptionObject : list) {
                 Book book = (Book) baseDescriptionObject.getObject();
                 book.setLastRead(new Date());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
             }
         });
 
@@ -124,7 +124,7 @@ public class MainBooksFragment extends ParentFragment {
                                 book.setId(((Book) this.currentObject.getObject()).getId());
                             }
                             if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
                                 this.changeMode(false, false);
                                 this.bookPagerAdapter.setMediaObject(new Book());
                                 this.currentObject = null;
@@ -247,7 +247,7 @@ public class MainBooksFragment extends ParentFragment {
                 GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, "", MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
                 List<Book> books = googleBooksTask.execute(code).get();
                 for(Book book : books) {
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
                 }
                 this.reload();
             }

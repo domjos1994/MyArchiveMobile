@@ -68,7 +68,7 @@ public class MainMoviesFragment extends ParentFragment {
         this.lvMovies.setOnReloadListener(MainMoviesFragment.this::reload);
         this.lvMovies.setOnDeleteListener(listObject -> {
             Movie movie = (Movie) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(movie);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(movie);
             this.changeMode(false, false);
             this.moviePagerAdapter.setMediaObject(new Movie());
         });
@@ -82,7 +82,7 @@ public class MainMoviesFragment extends ParentFragment {
             for(BaseDescriptionObject baseDescriptionObject : list) {
                 Movie movie = (Movie) baseDescriptionObject.getObject();
                 movie.setLastSeen(new Date());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMovie(movie);
             }
         });
 
@@ -123,7 +123,7 @@ public class MainMoviesFragment extends ParentFragment {
                                 movie.setId(((Movie) this.currentObject.getObject()).getId());
                             }
                             if(this.validator.checkDuplicatedEntry(movie.getTitle(), movie.getId(), this.lvMovies.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMovie(movie);
                                 this.changeMode(false, false);
                                 this.moviePagerAdapter.setMediaObject(new Movie());
                                 this.currentObject = null;
@@ -244,7 +244,7 @@ public class MainMoviesFragment extends ParentFragment {
                 EANDataMovieTask eanDataService = new EANDataMovieTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Movie> movies = eanDataService.execute(code).get();
                 for(Movie movie : movies) {
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMovie(movie);
                 }
                 this.reload();
             }

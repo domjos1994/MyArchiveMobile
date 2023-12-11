@@ -76,7 +76,7 @@ public class MainListsFragment extends ParentFragment {
 
         this.lvMediaLists.setOnDeleteListener(listObject -> {
             this.mediaList = (MediaList) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(this.mediaList);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(this.mediaList);
             this.mediaList = null;
             this.setObject(new MediaList());
             this.changeMode(false, false);
@@ -90,7 +90,7 @@ public class MainListsFragment extends ParentFragment {
                 for(int i = 0; i<=this.mediaList.getBaseMediaObjects().size()-1; i++) {
                     if(((BaseMediaObject) listObject.getObject()).getId()==this.mediaList.getBaseMediaObjects().get(i).getId()) {
                         this.mediaList.getBaseMediaObjects().remove(i);
-                        MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(this.mediaList);
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(this.mediaList);
                         break;
                     }
                 }
@@ -129,7 +129,7 @@ public class MainListsFragment extends ParentFragment {
                                     mediaList.setId(this.mediaList.getId());
                                 }
                                 if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
                                     this.changeMode(false, false);
                                     this.setObject(new MediaList());
                                     this.mediaList = null;
@@ -246,7 +246,7 @@ public class MainListsFragment extends ParentFragment {
                         for (int j = 0; j <= checkedItems.length - 1; j++) {
                             if (checkedItems[j]) {
                                 mediaList.getBaseMediaObjects().add((BaseMediaObject) Objects.requireNonNull(arrayList.get(arrayList.keySet().toArray(new String[]{})[j])).getObject());
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
                             }
                         }
                     });

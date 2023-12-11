@@ -97,7 +97,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
         this.lvItems.setOnReloadListener(CategoriesTagsActivity.this::reload);
 
-        this.lvItems.setOnDeleteListener(listObject -> MainActivity.GLOBALS.getDatabase().deleteItem((BaseDescriptionObject) listObject.getObject(), this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags)) ? "tags" : "categories"));
+        this.lvItems.setOnDeleteListener(listObject -> MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).deleteItem((BaseDescriptionObject) listObject.getObject(), this.spItems.getSelectedItem().toString().equals(this.getString(R.string.media_general_tags)) ? "tags" : "categories"));
 
         this.lvMedia.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             Intent intent = new Intent();
@@ -129,7 +129,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                                 baseDescriptionObject.setId(this.baseDescriptionObject.getId());
                             }
                             if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
+                                MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
                                 this.changeMode(false, false);
                                 this.setObject(new BaseDescriptionObject());
                                 this.baseDescriptionObject = null;
@@ -247,7 +247,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             table = "categories";
         }
         String empty = this.getString(R.string.sys_empty);
-        Database database = MainActivity.GLOBALS.getDatabase();
+        Database database = MainActivity.GLOBALS.getDatabase(this.getApplicationContext());
 
         this.lvItems.getAdapter().clear();
         LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(this, new BaseDescriptionObject(), null, search, this.lvItems, table);
@@ -299,7 +299,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 table = "categories";
             }
             if(baseDescriptionObject!=null) {
-                List<BaseMediaObject> mediaObjectList = MainActivity.GLOBALS.getDatabase().getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags"));
+                List<BaseMediaObject> mediaObjectList = MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("tags"));
                 if(!mediaObjectList.isEmpty()) {
                     for(BaseMediaObject baseMediaObject : mediaObjectList) {
                         this.lvMedia.getAdapter().add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.getApplicationContext()));

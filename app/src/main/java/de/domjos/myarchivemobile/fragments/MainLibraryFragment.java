@@ -89,7 +89,7 @@ public class MainLibraryFragment extends ParentFragment {
 
         this.lvMediaHistory.setOnDeleteListener(listObject -> {
             long id = ((LibraryObject) listObject.getObject()).getId();
-            MainActivity.GLOBALS.getDatabase().deleteItem((LibraryObject) listObject.getObject());
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((LibraryObject) listObject.getObject());
             BaseMediaObject baseMediaObject = (BaseMediaObject) this.currentObject.getObject();
             for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
                 if(baseMediaObject.getLibraryObjects().get(i).getId()==id) {
@@ -131,7 +131,7 @@ public class MainLibraryFragment extends ParentFragment {
                             if(this.libraryObject != null) {
                                 libraryObject.setId(this.libraryObject.getId());
                             }
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+                            MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
 
                             if(this.libraryObject != null) {
                                 if(this.libraryObject.getId() != 0) {
@@ -235,7 +235,7 @@ public class MainLibraryFragment extends ParentFragment {
             this.lvMediaHistory.getAdapter().clear();
             if(this.currentObject != null) {
                 DatabaseObject databaseObject = (DatabaseObject) this.currentObject.getObject();
-                for(LibraryObject libraryObject : MainActivity.GLOBALS.getDatabase().getLibraryObjects("type='" + databaseObject.getTable() + "' AND media=" + databaseObject.getId())) {
+                for(LibraryObject libraryObject : MainActivity.GLOBALS.getDatabase(this.getActivity()).getLibraryObjects("type='" + databaseObject.getTable() + "' AND media=" + databaseObject.getId())) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(String.format("%s %s", libraryObject.getPerson().getFirstName(), libraryObject.getPerson().getLastName()).trim());
                     String description = "";
@@ -310,7 +310,7 @@ public class MainLibraryFragment extends ParentFragment {
 
         try {
             this.arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtLibraryPerson);
-            for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
+            for(Person person : MainActivity.GLOBALS.getDatabase(this.getActivity()).getPersons("", 0)) {
                 arrayAdapter.add(person);
             }
             this.txtLibraryPerson.setAdapter(arrayAdapter);

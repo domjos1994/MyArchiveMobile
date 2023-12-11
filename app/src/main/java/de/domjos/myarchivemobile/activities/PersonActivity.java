@@ -80,7 +80,7 @@ public final class PersonActivity extends AbstractActivity {
         this.lvPersons.setOnReloadListener(PersonActivity.this::reload);
         this.lvPersons.setOnDeleteListener(listObject -> {
             Person person = (Person) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(person);
+            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).deleteItem(person);
             this.changeMode(false, false);
             this.personPagerAdapter.setMediaObject(new Person());
         });
@@ -97,7 +97,7 @@ public final class PersonActivity extends AbstractActivity {
                     if(person != null) {
                         WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                         wikiDataPersonTask.after((AbstractTask.PostExecuteListener<List<Person>>) o -> {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
+                            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(o.get(0), "", 0);
                             reload();
                         });
                         wikiDataPersonTask.execute(person);
@@ -133,7 +133,7 @@ public final class PersonActivity extends AbstractActivity {
                                 person.setId(this.person.getId());
                             }
                             if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
+                                MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(person, "", 0);
                                 this.changeMode(false, false);
                                 this.person = null;
                                 this.reload();

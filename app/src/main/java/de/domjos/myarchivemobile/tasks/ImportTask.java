@@ -190,7 +190,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                         }
                     } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateBook(book);
                     this.addObjectToList(book);
                     this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
@@ -216,7 +216,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                         }
                     } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateMovie(movie);
                     this.addObjectToList(movie);
                     this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
@@ -242,7 +242,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                         }
                     } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateAlbum(album);
                     this.addObjectToList(album);
                     this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
@@ -268,7 +268,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                         }
                     } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                    MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateGame(game);
                     this.addObjectToList(game);
                     this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
                 }
@@ -280,16 +280,16 @@ public class ImportTask extends StatusTask<Void, List<String>> {
     private void addObjectToList(BaseMediaObject object) {
         if(this.listId != 0) {
             if(object instanceof Album) {
-                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.ALBUMS);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).addMediaToList(this.listId, object.getId(), Database.ALBUMS);
             }
             if(object instanceof Book) {
-                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.BOOKS);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).addMediaToList(this.listId, object.getId(), Database.BOOKS);
             }
             if(object instanceof Game) {
-                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.GAMES);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).addMediaToList(this.listId, object.getId(), Database.GAMES);
             }
             if(object instanceof Movie) {
-                MainActivity.GLOBALS.getDatabase().addMediaToList(this.listId, object.getId(), Database.MOVIES);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).addMediaToList(this.listId, object.getId(), Database.MOVIES);
             }
         }
     }
@@ -599,7 +599,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                 }
                 break;
             case 17:
-                List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("title='" + cell + "'");
+                List<CustomField> customFields = MainActivity.GLOBALS.getDatabase(this.getContext()).getCustomFields("title='" + cell + "'");
                 CustomField customField = null;
                 if(customFields != null) {
                     if(!customFields.isEmpty()) {
@@ -615,7 +615,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                     customField.setMovies(true);
                     customField.setGames(true);
                     customField.setType(this.getContext().getString(R.string.customFields_type_values_text));
-                    customField.setId(MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField));
+                    customField.setId(MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateCustomField(customField));
                 }
                 mediaObject.getCustomFieldValues().put(customField, value);
                 break;

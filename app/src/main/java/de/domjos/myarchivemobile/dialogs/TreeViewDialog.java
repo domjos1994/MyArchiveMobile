@@ -212,10 +212,10 @@ public class TreeViewDialog extends DialogFragment {
         this.cmdCancel.setOnClickListener(event -> this.dismiss());
         this.cmdDelete.setOnClickListener(event -> {
             if(this.node != null) {
-                MainActivity.GLOBALS.getDatabase().deleteItem(this.node);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).deleteItem(this.node);
             }
             if(this.file != null) {
-                MainActivity.GLOBALS.getDatabase().deleteItem(this.file);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).deleteItem(this.file);
             }
             this.dismiss();
         });
@@ -241,7 +241,7 @@ public class TreeViewDialog extends DialogFragment {
                 }
 
                 this.node.setGallery(this.chkNodeGallery.isChecked());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNode(this.node);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNode(this.node);
             }
             if(this.file != null) {
                 this.file.setTitle(this.txtTitle.getText().toString());
@@ -283,7 +283,7 @@ public class TreeViewDialog extends DialogFragment {
                         }
                     }
                 }
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(this.file);
+                MainActivity.GLOBALS.getDatabase(this.getContext()).insertOrUpdateTreeNodeFiles(this.file);
             }
             this.dismiss();
         });
@@ -357,11 +357,11 @@ public class TreeViewDialog extends DialogFragment {
         long parent = this.getArguments().getLong(TreeViewDialog.PARENT);
         if(id != 0) {
             if(node) {
-                this.node = MainActivity.GLOBALS.getDatabase().getNodeById(id);
-                this.node.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                this.node = MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeById(id);
+                this.node.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeById(parent));
             } else {
-                this.file = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("id=" + id).get(0);
-                this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                this.file = MainActivity.GLOBALS.getDatabase(this.getContext()).getTreeNodeFiles("id=" + id).get(0);
+                this.file.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeById(parent));
                 if(this.path != null) {
                     if(!this.path.isEmpty()) {
                         this.file.setPathToFile(this.path);
@@ -371,10 +371,10 @@ public class TreeViewDialog extends DialogFragment {
         } else {
             if(node) {
                 this.node = new TreeNode();
-                this.node.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                this.node.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeById(parent));
             } else {
                 this.file = new TreeFile();
-                this.file.setParent(MainActivity.GLOBALS.getDatabase().getNodeById(parent));
+                this.file.setParent(MainActivity.GLOBALS.getDatabase(this.getContext()).getNodeById(parent));
                 if(this.path != null) {
                     if(!this.path.isEmpty()) {
                         this.file.setPathToFile(this.path);
@@ -455,7 +455,7 @@ public class TreeViewDialog extends DialogFragment {
             }
 
             if(this.file.getInternalId() != 0) {
-                byte[] content = MainActivity.GLOBALS.getDatabase().loadImage(this.file.getInternalId(), this.file.getInternalTable(), this.file.getInternalColumn());
+                byte[] content = MainActivity.GLOBALS.getDatabase(this.getContext()).loadImage(this.file.getInternalId(), this.file.getInternalTable(), this.file.getInternalColumn());
                 if(content != null) {
                     this.ivImage.setImage(ImageSource.cachedBitmap(BitmapFactory.decodeByteArray(content, 0, content.length)));
                 }

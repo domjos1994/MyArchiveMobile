@@ -64,7 +64,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
         try {
             this.txtMediaPersons.setTokenizer(new CommaTokenizer());
             CustomAutoCompleteAdapter<String> personsAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaPersons);
-            for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
+            for(Person person : MainActivity.GLOBALS.getDatabase(this.getActivity()).getPersons("", 0)) {
                 personsAdapter.add(person.getFirstName() + " " + person.getLastName());
             }
             this.txtMediaPersons.setAdapter(personsAdapter);
@@ -76,7 +76,7 @@ public class MediaPersonsCompaniesFragment extends AbstractFragment<BaseMediaObj
         try {
             this.txtMediaCompanies.setTokenizer(new CommaTokenizer());
             CustomAutoCompleteAdapter<String> companiesAdapter = new CustomAutoCompleteAdapter<>(this.requireActivity(), this.txtMediaCompanies);
-            for(Company company : MainActivity.GLOBALS.getDatabase().getCompanies("", 0)) {
+            for(Company company : MainActivity.GLOBALS.getDatabase(this.getActivity()).getCompanies("", 0)) {
                 companiesAdapter.add(company.getTitle());
             }
             this.txtMediaPersons.setAdapter(companiesAdapter);

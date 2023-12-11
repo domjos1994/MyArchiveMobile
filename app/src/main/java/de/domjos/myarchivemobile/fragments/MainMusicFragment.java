@@ -68,7 +68,7 @@ public class MainMusicFragment extends ParentFragment {
         this.lvAlbums.setOnReloadListener(MainMusicFragment.this::reload);
         this.lvAlbums.setOnDeleteListener(listObject -> {
             Album album = (Album) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(album);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(album);
             this.changeMode(false, false);
             this.albumPagerAdapter.setMediaObject(new Album());
         });
@@ -82,7 +82,7 @@ public class MainMusicFragment extends ParentFragment {
             for(BaseDescriptionObject baseDescriptionObject : list) {
                 Album album = (Album) baseDescriptionObject.getObject();
                 album.setLastHeard(new Date());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateAlbum(album);
             }
         });
 
@@ -123,7 +123,7 @@ public class MainMusicFragment extends ParentFragment {
                                 album.setId(((Album) this.currentObject.getObject()).getId());
                             }
                             if(this.validator.checkDuplicatedEntry(album.getTitle(), album.getId(), this.lvAlbums.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateAlbum(album);
                                 this.changeMode(false, false);
                                 this.albumPagerAdapter.setMediaObject(new Album());
                                 this.currentObject = null;
@@ -245,7 +245,7 @@ public class MainMusicFragment extends ParentFragment {
                 EANDataAlbumTask eanDataService = new EANDataAlbumTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getEANDataKey());
                 List<Album> albums = eanDataService.execute(code).get();
                 for(Album album : albums) {
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateAlbum(album);
                 }
                 this.reload();
             }

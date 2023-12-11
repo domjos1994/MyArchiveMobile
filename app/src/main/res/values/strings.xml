@@ -89,7 +89,7 @@
     <string name="api_task_import_webservice">Finalize Data by Webservice!</string>
     <string name="api_task_import_content">Import Data from File to Database!</string>
     <string name="api_task_import_msg_success">Line %d successfully imported!</string>
-    <string name="api_task_import_msg_not_success">Line %d not successfully imported: %s</string>
+    <string name="api_task_import_msg_not_success">Line %1$d not successfully imported: %2$s</string>
     <string name="api_task_import_msg_not_success_mandatory">Title is a mandatory field!</string>
     <string name="api_task_export">Export Data!</string>
     <string name="api_task_export_content">Export Data from Database to File!</string>

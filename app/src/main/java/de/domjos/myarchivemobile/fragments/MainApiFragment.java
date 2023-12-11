@@ -228,16 +228,16 @@ public class MainApiFragment extends ParentFragment {
                             String path = this.txtApiPath.getText().toString() + File.separatorChar  + this.txtApiName.getText().toString() + "." + spApiFormat.getSelectedItem().toString();
                             List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
                             if(chkApiBooks.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiMovies.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiMusic.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             if(chkApiGames.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
                             ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, this.lblState, this.lblMessage, baseMediaObjects);
                             exportTask.after(o -> {
@@ -319,19 +319,19 @@ public class MainApiFragment extends ParentFragment {
 
     private void exportToDatabase() throws Exception {
         String path = this.txtApiPath.getText().toString() + File.separatorChar  + this.txtApiName.getText().toString() + ".db";
-        MainActivity.GLOBALS.getDatabase().copyDatabase(path);
+        MainActivity.GLOBALS.getDatabase(this.getActivity()).copyDatabase(path);
     }
 
     private void importToDatabase() throws Exception {
         String path = this.txtApiPath.getText().toString();
-        MainActivity.GLOBALS.getDatabase().getDatabase(path);
+        MainActivity.GLOBALS.getDatabase(this.getActivity()).getDatabase(path);
         MainApiFragment.triggerRebirth(this.requireContext());
     }
 
     private void fillAndExecuteImportTask(Spinner spApiFormat, Spinner spApiType) {
         if(this.chkApiDelete.isChecked()) {
             this.lblMessage.setText(R.string.api_delete);
-            MainActivity.GLOBALS.getDatabase().deleteAll();
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteAll();
         }
 
         ImportTask importTask = new ImportTask(
@@ -372,7 +372,7 @@ public class MainApiFragment extends ParentFragment {
             } else {
                 MediaList mediaList = new MediaList();
                 mediaList.setTitle(this.txtApiListNew.getText().toString());
-                return MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                return MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
@@ -385,7 +385,7 @@ public class MainApiFragment extends ParentFragment {
         try {
             String path = this.txtApiPath.getText().toString();
             if(resultCode == RESULT_OK && requestCode == 965) {
-                MainActivity.GLOBALS.getDatabase().getDatabase(path);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).getDatabase(path);
                 MainApiFragment.triggerRebirth(this.requireContext());
             }
         } catch (Exception ex) {
@@ -515,7 +515,7 @@ public class MainApiFragment extends ParentFragment {
         try {
             ArrayAdapter<MediaList> mediaListAdapter = new ArrayAdapter<>(this.requireContext(), R.layout.spinner_item);
             mediaListAdapter.setDropDownViewResource(R.layout.spinner_item);
-            List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("", 1, 0);
+            List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", 1, 0);
             mediaListAdapter.addAll(mediaLists);
             MediaList mediaList = new MediaList();
             mediaList.setTitle("");

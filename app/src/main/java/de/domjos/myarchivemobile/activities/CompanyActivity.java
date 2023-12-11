@@ -80,7 +80,7 @@ public final class CompanyActivity extends AbstractActivity {
         this.lvCompanies.setOnReloadListener(CompanyActivity.this::reload);
         this.lvCompanies.setOnDeleteListener(listObject -> {
             Company company = (Company) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(company);
+            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).deleteItem(company);
             this.changeMode(false, false);
             this.companyPagerAdapter.setMediaObject(new Company());
         });
@@ -97,7 +97,7 @@ public final class CompanyActivity extends AbstractActivity {
                     if(company != null) {
                         WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
                         wikiDataCompanyTask.after((AbstractTask.PostExecuteListener<List<Company>>) o -> {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
+                            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateCompany(o.get(0), "", 0);
                             reload();
                         });
                         wikiDataCompanyTask.execute(company);
@@ -133,7 +133,7 @@ public final class CompanyActivity extends AbstractActivity {
                                 company.setId(this.company.getId());
                             }
                             if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
+                                MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateCompany(company, "", 0);
                                 this.changeMode(false, false);
                                 this.company = null;
                                 this.reload();
