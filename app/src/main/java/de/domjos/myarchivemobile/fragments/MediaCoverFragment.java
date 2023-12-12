@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -35,37 +33,41 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.helper.LifecycleObserver;
 
 public class MediaCoverFragment<T> extends AbstractFragment<T> {
     private ImageButton cmdMediaCoverPhoto, cmdMediaCoverGallery;
     private ImageView ivMediaCover;
+    private LifecycleObserver lifecycleObserver;
 
     private T object;
 
-    private ActivityResultLauncher<Void> cameraLauncher;
-    private ActivityResultLauncher<PickVisualMediaRequest> pickLauncher;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        this.lifecycleObserver = new LifecycleObserver(
+                this.requireActivity().getActivityResultRegistry(),
+                this.requireContext(),(bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            }
+        }, (bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            } else {
+                this.lifecycleObserver.startGallery();
+            }
+        });
+        this.getLifecycle().addObserver(this.lifecycleObserver);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.main_fragment_media_cover, container, false);
-    }
-
-    private void initCallBacks() {
-        this.pickLauncher = IntentHelper.startGalleryIntent(this.requireActivity(), (bmp) -> {
-            if(bmp != null) {
-                this.ivMediaCover.setImageBitmap(bmp);
-            }
-        });
-        this.cameraLauncher = IntentHelper.startCameraIntent(this.requireActivity(), (bmp) -> {
-            if(bmp != null) {
-                this.ivMediaCover.setImageBitmap(bmp);
-            } else {
-                pickLauncher.launch(new PickVisualMediaRequest());
-            }
-        });
     }
 
     @Override
@@ -74,11 +76,10 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.cmdMediaCoverGallery = view.findViewById(R.id.cmdMediaCoverGallery);
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
-        this.cmdMediaCoverGallery.setOnClickListener(view1 -> this.pickLauncher.launch(new PickVisualMediaRequest()));
-        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> this.cameraLauncher.launch(null));
+        this.cmdMediaCoverGallery.setOnClickListener(view1 -> this.lifecycleObserver.startGallery());
+        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> this.lifecycleObserver.startCamera());
 
         this.changeMode(false);
-        this.initCallBacks();
     }
 
     @Override
