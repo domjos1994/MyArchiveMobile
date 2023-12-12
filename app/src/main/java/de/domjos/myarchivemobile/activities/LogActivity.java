@@ -17,14 +17,14 @@
 
 package de.domjos.myarchivemobile.activities;
 
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchiveservices.customTasks.CustomAsyncTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public final class LogActivity extends AbstractActivity {
@@ -63,8 +64,7 @@ public final class LogActivity extends AbstractActivity {
             dialog.setDialogSelectionListener(files -> {
                 if(files != null && files.length != 0) {
                     try {
-                        String content = this.getContent();
-                        this.writeToFile(files[0], content);
+                        this.getContent(item -> this.writeToFile(files[0], item));
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
                     }
@@ -81,10 +81,11 @@ public final class LogActivity extends AbstractActivity {
 
             WebView txtLogContent = this.findViewById(R.id.txtLogContent);
 
-
-            String encodedHTML = Base64.encodeToString(("<html><body>" + this.getContent() + "</body></html>").getBytes(), Base64.NO_PADDING);
-            txtLogContent.loadData(encodedHTML, "text/html", "base64");
-            ControlsHelper.checkNetwork(this);
+            this.getContent(item -> {
+                String encodedHTML = Base64.encodeToString(("<html><body>" + item + "</body></html>").getBytes(), Base64.NO_PADDING);
+                txtLogContent.loadData(encodedHTML, "text/html", "base64");
+                ControlsHelper.checkNetwork(this);
+            });
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
         }
@@ -93,47 +94,29 @@ public final class LogActivity extends AbstractActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isDebugMode());
         menu.findItem(R.id.menMainScanner).setVisible(false);
         return true;
     }
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
-        Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
-        }
-        if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
-        }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        ControlsHelper.onOptionsItemsSelected(item, this);
         return super.onOptionsItemSelected(item);
     }
 
-    public static class Task extends AsyncTask<Void, Void, List<String>> {
+    public static class Task extends CustomAsyncTask<Void, Void, List<String>> {
+        private final OnFinish onFinish;
+
+        public Task(OnFinish onFinish) {
+            super();
+
+            this.onFinish = onFinish;
+        }
 
         @Override
-        protected List<String> doInBackground(Void... voids) {
+        protected List<String> doInBackground(Void voids) {
             List<String> content = new LinkedList<>();
             try {
                 Process process = Runtime.getRuntime().exec("logcat -d");
@@ -144,22 +127,34 @@ public final class LogActivity extends AbstractActivity {
                     }
                 }
             } catch (IOException ex) {
-                this.cancel(true);
+                this.shutDown();
             }
             return content;
         }
+
+        @Override
+        protected void onPostExecute(List<String> items) {
+            super.onPostExecute(items);
+
+            StringBuilder content = new StringBuilder();
+            for(String line : items) {
+                content.append(line);
+                content.append("\n");
+            }
+            if(items.size() != 0) {
+                this.onFinish.onUpdate(items.get(0));
+            }
+        }
+
+        @FunctionalInterface
+        public interface OnFinish {
+            void onUpdate(String result);
+        }
     }
 
-    private String getContent() throws ExecutionException, InterruptedException {
-        Task task = new Task();
-        List<String> items = task.execute().get();
-
-        StringBuilder content = new StringBuilder();
-        for(String line : items) {
-            content.append(line);
-            content.append("\n");
-        }
-        return content.toString();
+    private void getContent(Task.OnFinish onFinish) throws ExecutionException, InterruptedException {
+        Task task = new Task(onFinish);
+        task.execute();
     }
 
     private void writeToFile(String folder, String data) {

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_task_export">Exportiere Daten!</string>
+    <string name="api_task_export_content">Exportiere Daten in Datei aus Datenbank!</string>
+    <string name="api_task_import">Importiere Datei!</string>
+    <string name="api_task_import_data">Daten abrufen!</string>
+    <string name="api_task_import_webservice">Daten über das Internet vervollständigen!</string>
+    <string name="api_task_import_content">Importiere Daten aus Datei in Datenbank!</string>
+    <string name="api_task_import_msg_success">Zeile %d erfolgreich importiert!</string>
+    <string name="api_task_import_msg_not_success">Zeile %d nicht erfolgreich importiert: %s</string>
+    <string name="api_task_import_msg_not_success_mandatory">Der Titel ist ein Pflichtfeld!</string>
+    <string-array name="api_cells">
+        <item>@string/sys_title</item>
+        <item>@string/media_general_originalTitle</item>
+        <item>@string/media_general_releaseDate</item>
+        <item>@string/media_general_price</item>
+        <item>@string/media_general_code</item>
+        <item>@string/media_general_category</item>
+        <item>@string/media_general_tags</item>
+        <item>@string/media_persons</item>
+        <item>@string/media_companies</item>
+        <item>@string/media_rating_own</item>
+        <item>@string/media_rating_web</item>
+        <item>@string/sys_description</item>
+        <item>@string/book_edition</item>
+        <item>@string/book_numberOfPages</item>
+        <item>@string/book_topics</item>
+        <item>@string/movie_length</item>
+        <item>@string/album_number</item>
+        <item>@string/customFields</item>
+    </string-array>
+
+    <string name="customFields_type_values_text">Text-Feld</string>
+
+    <string name="sys_title">Titel</string>
+    <string name="sys_description">Beschreibung</string>
+    <string name="sys_reload">Laden</string>
+    <string name="sys_reload_summary">Daten laden…</string>
+    <string name="sys_date_format">dd.MM.yyyy</string>
+
+    <string name="main_navigation_media">Medien</string>
+    <string name="main_navigation_media_books">Bücher</string>
+    <string name="main_navigation_media_movies">Filme</string>
+    <string name="main_navigation_media_music">Musik</string>
+    <string name="main_navigation_media_games">Spiele</string>
+
+    <string name="media_general">Generell</string>
+    <string name="media_general_originalTitle">Original-Titel</string>
+    <string name="media_general_releaseDate">Release-Datum</string>
+    <string name="media_general_price">Preis</string>
+    <string name="media_general_code">Code</string>
+    <string name="media_general_category">Kategorie</string>
+    <string name="media_general_tags">Tags</string>
+    <string name="media_persons">Personen</string>
+    <string name="media_persons_firstName">Vorname</string>
+    <string name="media_persons_lastName">Nachname</string>
+    <string name="media_persons_birthDate">Geburtsdatum</string>
+    <string name="media_companies">Firmen</string>
+    <string name="media_companies_foundation">Gründung</string>
+    <string name="media_rating_own">Eigene Bewertung</string>
+    <string name="media_rating_web">Web Bewertung</string>
+
+    <string name="book">Book</string>
+    <string name="book_type">Typ</string>
+    <string name="book_edition">Edition</string>
+    <string name="book_numberOfPages">Anzahl Seiten</string>
+    <string name="book_topics">Themen</string>
+
+    <string name="movie">Film</string>
+    <string name="movie_type">Typ</string>
+    <string name="movie_length">Länge</string>
+
+    <string name="album">Album</string>
+    <string name="album_number">Nummer</string>
+
+    <string name="game">Spiel</string>
+
+    <string name="customFields">Benutzerdefiniertes Feld</string>
+
+    <string name="file_tree">Dokumente</string>
+    <string name="file_tree_system">System</string>
+    <string name="file_tree_gallery">Galerie</string>
+    <string name="file_tree_data">Daten</string>
+    <string name="file_tree_embed">Einbetten</string>
+    <string name="file_tree_node_add">Neuer Knoten</string>
+    <string name="file_tree_file_add">Neues Dokument</string>
+    <string name="file_tree_load">Lade Daten!</string>
+    <string name="file_tree_load_db">Initialisiere Datenbank (%s)…</string>
+    <string name="file_tree_load_tree">Initialisiere Datei-Baum…</string>
+    <string name="file_tree_load_files">Lade Dateien…</string>
+    <string name="file_tree_view">Anzeigen</string>
+    <string name="file_tree_context_copy">Kopieren</string>
+    <string name="file_tree_context_move">Ausschneiden</string>
+    <string name="file_tree_context_paste">Einfügen</string>
+
+    <string name="filter_no_filter">Kein Filter!</string>
+
+    <string name="settings_general_media_order_creation">Reihenfolge Erstellung</string>
+
+    <string name="library_lendOut">Ausgeliehen</string>
+</resources>

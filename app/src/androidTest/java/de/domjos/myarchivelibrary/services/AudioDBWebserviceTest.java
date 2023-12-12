@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchiveservices.services.AudioDBWebservice;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.Matchers.lessThan;

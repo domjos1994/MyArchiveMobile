@@ -20,8 +20,6 @@ package de.domjos.myarchivemobile.helper;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.net.NetworkRequest;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -30,7 +28,7 @@ import java.util.Objects;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
 public class CheckNetwork {
-    private Context context;
+    private final Context context;
 
     public CheckNetwork(Context context) {
         this.context = context;
@@ -39,50 +37,28 @@ public class CheckNetwork {
     public void registerNetworkCallback(NetworkListener networkListener) {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if(networkListener != null) {
-                    MainActivity.GLOBALS.setNetwork(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
-                    networkListener.hasConnections(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+            if (networkListener != null) {
+                MainActivity.GLOBALS.setNetwork(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+                networkListener.hasConnections(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+            }
+
+            Objects.requireNonNull(connectivityManager).registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    MainActivity.GLOBALS.setNetwork(true);
+                    if (networkListener != null) {
+                        networkListener.hasConnections(true);
+                    }
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Objects.requireNonNull(connectivityManager).registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback(){
-                        @Override
-                        public void onAvailable(@NonNull Network network) {
-                            MainActivity.GLOBALS.setNetwork(true);
-                            if(networkListener != null) {
-                                networkListener.hasConnections(true);
-                            }
-                        }
-                        @Override
-                        public void onLost(@NonNull Network network) {
-                            MainActivity.GLOBALS.setNetwork(false);
-                            if(networkListener != null) {
-                                networkListener.hasConnections(false);
-                            }
-                        }
-                    });
-                } else {
-                    Objects.requireNonNull(connectivityManager).registerNetworkCallback(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback(){
-                        @Override
-                        public void onAvailable(@NonNull Network network) {
-                            MainActivity.GLOBALS.setNetwork(true);
-                            if(networkListener != null) {
-                                networkListener.hasConnections(true);
-                            }
-                        }
-                        @Override
-                        public void onLost(@NonNull Network network) {
-                            MainActivity.GLOBALS.setNetwork(false);
-                            if(networkListener != null) {
-                                networkListener.hasConnections(false);
-                            }
-                        }
-                    });
+                @Override
+                public void onLost(@NonNull Network network) {
+                    MainActivity.GLOBALS.setNetwork(false);
+                    if (networkListener != null) {
+                        networkListener.hasConnections(false);
+                    }
                 }
-            } else {
-                MainActivity.GLOBALS.setNetwork(true);
-            }
+            });
         }catch (Exception e){
             MainActivity.GLOBALS.setNetwork(true);
         }

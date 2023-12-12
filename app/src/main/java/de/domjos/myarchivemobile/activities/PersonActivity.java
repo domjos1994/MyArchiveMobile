@@ -17,10 +17,10 @@
 
 package de.domjos.myarchivemobile.activities;
 
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -34,17 +34,17 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
+import de.domjos.myarchiveservices.mediaTasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.PersonPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
 
 public final class PersonActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvPersons;
@@ -95,54 +95,52 @@ public final class PersonActivity extends AbstractActivity {
                 try {
                     Person person = (Person) baseDescriptionObject.getObject();
                     if(person != null) {
-                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
-                        wikiDataPersonTask.after((AbstractTask.PostExecuteListener<List<Person>>) o -> {
+                        WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(), R.drawable.icon_notification);
+                        wikiDataPersonTask.after((CustomAbstractTask.PostExecuteListener<List<Person>>) o -> {
                             MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(o.get(0), "", 0);
                             reload();
                         });
-                        wikiDataPersonTask.execute(person);
+                        wikiDataPersonTask.execute(new Person[]{person});
                     }
                 } catch (Exception ignored) {}
             }
         });
 
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.personPagerAdapter.setMediaObject(new Person());
-                        this.person = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.person = null;
-                        this.reload();
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.personPagerAdapter.setMediaObject(new Person());
+                    this.person = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.person = null;
+                    this.reload();
+                }
+            }
+            if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.person != null) {
+                        this.changeMode(true, true);
+                        this.personPagerAdapter.setMediaObject(this.person);
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.person != null) {
-                            this.changeMode(true, true);
-                            this.personPagerAdapter.setMediaObject(this.person);
+                } else {
+                    if(this.validator.getState()) {
+                        Person person = this.personPagerAdapter.getMediaObject();
+                        if(this.person!=null) {
+                            person.setId(this.person.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(person, "", 0);
+                            this.changeMode(false, false);
+                            this.person = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Person person = this.personPagerAdapter.getMediaObject();
-                            if(this.person!=null) {
-                                person.setId(this.person.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(person, "", 0);
-                                this.changeMode(false, false);
-                                this.person = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -184,40 +182,15 @@ public final class PersonActivity extends AbstractActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isDebugMode());
         menu.findItem(R.id.menMainScanner).setVisible(false);
         return true;
     }
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
-        Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
-        }
-        if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
-        }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        ControlsHelper.onOptionsItemsSelected(item, this);
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,8 +221,15 @@ public final class PersonActivity extends AbstractActivity {
         }
         try {
             this.lvPersons.getAdapter().clear();
-            LoadingTask<Person> loadingTask = new LoadingTask<>(PersonActivity.this, new Person(), null, search, this.lvPersons, "persons");
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Person>>) persons -> {
+            LoadingTask<Person> loadingTask = new LoadingTask<>(
+                PersonActivity.this, new Person(), null, search, this.lvPersons, "persons",
+                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(),
+                R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext()),
+                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getMediaCount(),
+                MainActivity.GLOBALS.getOffset("companies"),
+                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getOrderBy()
+            );
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<Person>>) persons -> {
                 for(Person person : persons) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());
@@ -267,7 +247,7 @@ public final class PersonActivity extends AbstractActivity {
         }
     }
 
-    protected void changeMode(boolean editMode, boolean selected) {
+    private void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, bottomNavigationView);
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();

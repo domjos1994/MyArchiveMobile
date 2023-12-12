@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -48,7 +47,8 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 
 public class MainListsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -104,45 +104,35 @@ public class MainListsFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                    } else {
-                        changeMode(false, false);
-                    }
-                    this.setObject(new MediaList());
-                    this.mediaList = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(mediaList != null) {
-                            this.changeMode(true, true);
-                            this.setObject(mediaList);
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, null, null, (item) -> {
+            this.changeMode(Objects.equals(item.getTitle(), this.getString(R.string.sys_add)), false);
+            this.setObject(new MediaList());
+            this.mediaList = null;
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(mediaList != null) {
+                    this.changeMode(true, true);
+                    this.setObject(mediaList);
+                }
+            } else {
+                try {
+                    if(this.validator.getState()) {
+                        MediaList mediaList = this.getObject();
+                        if(this.mediaList != null) {
+                            mediaList.setId(this.mediaList.getId());
                         }
-                    } else {
-                        try {
-                            if(this.validator.getState()) {
-                                MediaList mediaList = this.getObject();
-                                if(this.mediaList != null) {
-                                    mediaList.setId(this.mediaList.getId());
-                                }
-                                if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
-                                    this.changeMode(false, false);
-                                    this.setObject(new MediaList());
-                                    this.mediaList = null;
-                                    this.reload();
-                                }
-                            }
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateMediaList(mediaList);
+                            this.changeMode(false, false);
+                            this.setObject(new MediaList());
+                            this.mediaList = null;
+                            this.reload();
                         }
                     }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                }
             }
-            return true;
         });
 
         this.changeMode(false, false);
@@ -161,8 +151,15 @@ public class MainListsFragment extends ParentFragment {
             }
 
             this.lvMediaLists.getAdapter().clear();
-            LoadingTask<MediaList> loadingTask = new LoadingTask<>(this.getActivity(), new MediaList(), null, "", this.lvMediaLists, Globals.LISTS);
-            loadingTask.after((AbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
+            LoadingTask<MediaList> loadingTask = new LoadingTask<>(
+                    this.getActivity(), new MediaList(), null, "", this.lvMediaLists, Globals.LISTS,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset(Globals.LISTS),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+            );
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
                 for(MediaList mediaList : mediaLists) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(mediaList.getTitle());

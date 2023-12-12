@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.helper;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.TextUtils;
 
 import java.util.Arrays;
@@ -36,24 +35,19 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
-import de.domjos.myarchivelibrary.services.PDFService;
+import de.domjos.myarchiveservices.services.PDFService;
 import de.domjos.myarchivemobile.R;
 
 public class PDFWriterHelper {
-    private PDFService pdfService;
-    private Context context;
+    private final PDFService pdfService;
+    private final Context context;
 
     private final int headerColor, rowColor;
 
     public PDFWriterHelper(String file, Context context) {
         this.context = context;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            this.headerColor = context.getColor(R.color.colorPrimaryDark);
-            this.rowColor = context.getColor(R.color.colorPrimary);
-        } else {
-            this.headerColor = context.getResources().getColor(R.color.colorPrimaryDark);
-            this.rowColor = context.getResources().getColor(R.color.colorPrimary);
-        }
+        this.headerColor = context.getColor(R.color.colorPrimaryDark);
+        this.rowColor = context.getColor(R.color.colorPrimary);
 
         this.pdfService = new PDFService(file, R.mipmap.ic_launcher_round, context);
 

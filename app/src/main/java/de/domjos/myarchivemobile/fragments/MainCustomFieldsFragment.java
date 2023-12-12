@@ -33,9 +33,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -44,7 +44,8 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 
 public class MainCustomFieldsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -80,47 +81,35 @@ public class MainCustomFieldsFragment extends ParentFragment {
             this.reload();
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.setObject(new CustomField());
-                        this.customField = null;
-                    } else {
-                        changeMode(false, false);
-                        this.setObject(new CustomField());
-                        this.customField = null;
-                    }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(customField != null) {
-                            this.changeMode(true, true);
-                            setObject(customField);
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, null, null, (item) -> {
+            this.changeMode(Objects.equals(item.getTitle(), this.getString(R.string.sys_add)), false);
+            this.setObject(new CustomField());
+            this.customField = null;
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(customField != null) {
+                    this.changeMode(true, true);
+                    setObject(customField);
+                }
+            } else {
+                try {
+                    if(this.validator.getState()) {
+                        CustomField customField = this.getObject();
+                        if(this.customField != null) {
+                            customField.setId(this.customField.getId());
                         }
-                    } else {
-                        try {
-                            if(this.validator.getState()) {
-                                CustomField customField = this.getObject();
-                                if(this.customField != null) {
-                                    customField.setId(this.customField.getId());
-                                }
-                                if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateCustomField(customField);
-                                    this.changeMode(false, false);
-                                    this.customField = null;
-                                    this.setObject(new CustomField());
-                                    this.reload();
-                                }
-                            }
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateCustomField(customField);
+                            this.changeMode(false, false);
+                            this.customField = null;
+                            this.setObject(new CustomField());
+                            this.reload();
                         }
                     }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                }
             }
-            return true;
         });
 
         this.changeMode(false, false);
@@ -139,8 +128,15 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            LoadingTask<CustomField> loadingTask = new LoadingTask<>(this.getActivity(), new CustomField(), null, this.search, this.lvCustomFields, "customFields");
-            loadingTask.after((AbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
+            LoadingTask<CustomField> loadingTask = new LoadingTask<>(
+                    this.getActivity(), new CustomField(), null, this.search, this.lvCustomFields, "customFields",
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset("companies"),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+            );
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
                 for(CustomField customField : customFields) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(customField.getTitle());

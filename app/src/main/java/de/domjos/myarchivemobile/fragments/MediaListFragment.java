@@ -145,8 +145,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
 
             if(orientation == Configuration.ORIENTATION_PORTRAIT) {
                 if(this.isEmpty()) {
-                    if(this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.lvMedia.getLayoutParams();
+                    if(this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams layoutParams) {
                         layoutParams.weight = 9;
                         this.lvMedia.setLayoutParams(layoutParams);
 
@@ -154,8 +153,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
                         this.lvLibrary.setVisibility(View.GONE);
                     }
                 } else {
-                    if(this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.lvMedia.getLayoutParams();
+                    if(this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams layoutParams) {
                         layoutParams.weight = 4;
                         this.lvMedia.setLayoutParams(layoutParams);
 
@@ -180,8 +178,7 @@ public class MediaListFragment extends AbstractFragment<List<BaseDescriptionObje
         int orientation = this.requireContext().getResources().getConfiguration().orientation;
 
         if(orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.lvMedia.getLayoutParams();
+            if (this.lvMedia.getLayoutParams() instanceof LinearLayout.LayoutParams layoutParams) {
                 layoutParams.weight = 9;
                 this.lvMedia.setLayoutParams(layoutParams);
 

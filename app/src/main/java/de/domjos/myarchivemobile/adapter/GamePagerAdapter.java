@@ -31,14 +31,15 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.*;
 
+/** @noinspection rawtypes*/
 public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
-    private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
+    private MediaGeneralFragment mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaGameFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
-    private Runnable runnable;
+    private final Runnable runnable;
     private boolean first = true;
 
     public GamePagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
@@ -74,22 +75,15 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.mediaGeneralFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
-                return this.mediaGameFragment;
-            case 4:
-                return this.mediaRatingFragment;
-            case 5:
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.mediaGeneralFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaPersonsCompaniesFragment;
+            case 3 -> this.mediaGameFragment;
+            case 4 -> this.mediaRatingFragment;
+            case 5 -> this.mediaCustomFieldFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -98,26 +92,33 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
         switch (position) {
-            case 0:
+            case 0 -> {
                 this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
                 return this.mediaGeneralFragment;
-            case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+            }
+            case 1 -> {
+                this.mediaCoverFragment = (MediaCoverFragment<BaseMediaObject>) createdFragment;
                 return this.mediaCoverFragment;
-            case 2:
+            }
+            case 2 -> {
                 this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
                 return this.mediaPersonsCompaniesFragment;
-            case 3:
+            }
+            case 3 -> {
                 this.mediaGameFragment = (MediaGameFragment) createdFragment;
                 return this.mediaGameFragment;
-            case 4:
+            }
+            case 4 -> {
                 this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
                 return this.mediaRatingFragment;
-            case 5:
+            }
+            case 5 -> {
                 this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
                 return this.mediaCustomFieldFragment;
-            default:
+            }
+            default -> {
                 return new Fragment();
+            }
         }
     }
 

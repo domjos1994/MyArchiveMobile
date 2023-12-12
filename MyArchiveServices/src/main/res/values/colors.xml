@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#454545</color>
+    <color name="colorPrimaryDark">#272727</color>
+    <color name="colorAccent">#eee</color>
+    <color name="colorGradient">#383838</color>
+
+    <color name="hintColor">#999</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="separatorColor">@color/textColorPrimary</color>
+
+    <color name="selected_colorPrimary">#5b6696</color>
+    <color name="selected_colorPrimaryDark">#708090</color>
+    <color name="selected_colorAccent">#6873a3</color>
+
+    <color name="windowBackground">#292929</color>
+</resources>

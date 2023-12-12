@@ -53,18 +53,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaList;
-import de.domjos.myarchivelibrary.services.TextService;
+import de.domjos.myarchiveservices.services.TextService;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Settings;
-import de.domjos.myarchivemobile.tasks.ExportTask;
-import de.domjos.myarchivemobile.tasks.ImportTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.ExportTask;
+import de.domjos.myarchiveservices.tasks.ImportTask;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -85,7 +85,7 @@ public class MainApiFragment extends ParentFragment {
     private EditText txtApiName, txtApiPath, txtApiListNew;
     private Spinner spApiList;
     private String[] typeArray, formatArray;
-    private Map<String, Spinner> mpCells = new LinkedHashMap<>();
+    private final Map<String, Spinner> mpCells = new LinkedHashMap<>();
     private ProgressBar pbProgress;
     private TextView lblState, lblMessage;
 
@@ -222,40 +222,42 @@ public class MainApiFragment extends ParentFragment {
             try {
                 if(spApiType.getSelectedItem().toString().equals(this.typeArray[0])) { // export
                     switch (spApiFormat.getSelectedItemPosition()) {
-                        case 0:
-                        case 1:
-                        case 2:
-                            String path = this.txtApiPath.getText().toString() + File.separatorChar  + this.txtApiName.getText().toString() + "." + spApiFormat.getSelectedItem().toString();
+                        case 0, 1, 2 -> {
+                            String path = this.txtApiPath.getText().toString() + File.separatorChar + this.txtApiName.getText().toString() + "." + spApiFormat.getSelectedItem().toString();
                             List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-                            if(chkApiBooks.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                            if (chkApiBooks.isChecked()) {
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getBooks("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
-                            if(chkApiMovies.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                            if (chkApiMovies.isChecked()) {
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getMovies("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
-                            if(chkApiMusic.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                            if (chkApiMusic.isChecked()) {
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getAlbums("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
-                            if(chkApiGames.isChecked()) {
-                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
+                            if (chkApiGames.isChecked()) {
+                                baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase(this.getActivity()).getGames("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
-                            ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, this.lblState, this.lblMessage, baseMediaObjects);
+                            ExportTask exportTask = new ExportTask(
+                                    this.getActivity(), path, this.pbProgress, this.lblState,
+                                    this.lblMessage, baseMediaObjects,
+                                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                                    R.drawable.icon_notification
+                            );
                             exportTask.after(o -> {
                                 MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
                                 saveSettings(spApiFormat, spApiType);
                             });
                             exportTask.execute();
-                            break;
-                        case 3:
+                        }
+                        case 3 -> {
                             this.exportToDatabase();
                             MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.api)), R.mipmap.ic_launcher_round, this.getActivity());
                             this.saveSettings(spApiFormat, spApiType);
-                            break;
+                        }
                     }
                 } else {
                     switch (spApiFormat.getSelectedItemPosition()) {
-                        case 0:
-                        case 1:
+                        case 0, 1 -> {
                             int selected = 0;
                             if (chkApiBooks.isChecked()) {
                                 selected += 1;
@@ -269,14 +271,15 @@ public class MainApiFragment extends ParentFragment {
                             if (chkApiGames.isChecked()) {
                                 selected += 1;
                             }
-                            if(selected == 1) {
-                                if(chkApiWebService.isChecked()) {
-                                    if(!MainActivity.GLOBALS.isNetwork()) {
+                            if (selected == 1) {
+                                if (chkApiWebService.isChecked()) {
+                                    if (!MainActivity.GLOBALS.isNetwork()) {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
                                         builder.setTitle(R.string.api_webservice_no_network_title);
                                         builder.setMessage(R.string.api_webservice_no_network_content);
                                         builder.setIcon(R.mipmap.ic_launcher_round);
-                                        builder.setNegativeButton(R.string.api_webservice_no_network_no, (dialogInterface, i) -> {});
+                                        builder.setNegativeButton(R.string.api_webservice_no_network_no, (dialogInterface, i) -> {
+                                        });
                                         builder.setPositiveButton(R.string.api_webservice_no_network_yes, (dialogInterface, i) -> fillAndExecuteImportTask(spApiFormat, spApiType));
                                         builder.show();
                                     } else {
@@ -286,12 +289,12 @@ public class MainApiFragment extends ParentFragment {
                                     fillAndExecuteImportTask(spApiFormat, spApiType);
                                 }
                             }
-                            break;
-                        case 2:
+                        }
+                        case 2 -> {
                             this.importToDatabase();
                             MessageHelper.printMessage(String.format(this.getString(R.string.sys_success), this.getString(R.string.api)), R.mipmap.ic_launcher_round, this.getActivity());
                             this.saveSettings(spApiFormat, spApiType);
-                            break;
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -339,8 +342,10 @@ public class MainApiFragment extends ParentFragment {
                 this.txtApiPath.getText().toString(),
                 this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
                 this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(),
-                this.mpCells, this.createList());
-        importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
+                this.mpCells, this.createList(),
+                MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()));
+        importTask.after((CustomAbstractTask.PostExecuteListener<List<String>>) o -> {
             String logPath = "";
             try {
                 File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -364,8 +369,7 @@ public class MainApiFragment extends ParentFragment {
             if(this.txtApiListNew.getText().toString().trim().isEmpty()) {
                 Object object = this.spApiList.getSelectedItem();
                 if(object != null) {
-                    if(object instanceof MediaList) {
-                        MediaList mediaList = (MediaList) object;
+                    if(object instanceof MediaList mediaList) {
                         return mediaList.getId();
                     }
                 }
@@ -404,7 +408,7 @@ public class MainApiFragment extends ParentFragment {
 
     @SuppressWarnings("unchecked")
     private void loadFromSettings(Spinner spFormat, Spinner spType) {
-        Settings settings = MainActivity.GLOBALS.getSettings();
+        Settings settings = MainActivity.GLOBALS.getSettings(this.requireContext());
         this.chkApiBooks.setChecked(settings.getSetting(MainApiFragment.BOOKS, false));
         this.chkApiMovies.setChecked(settings.getSetting(MainApiFragment.MOVIES, false));
         this.chkApiMusic.setChecked(settings.getSetting(MainApiFragment.MUSIC, false));
@@ -430,7 +434,7 @@ public class MainApiFragment extends ParentFragment {
     }
 
     private void saveSettings(Spinner spFormat, Spinner spType) {
-        Settings settings = MainActivity.GLOBALS.getSettings();
+        Settings settings = MainActivity.GLOBALS.getSettings(this.requireContext());
         settings.setSetting(MainApiFragment.BOOKS, this.chkApiBooks.isChecked());
         settings.setSetting(MainApiFragment.MOVIES, this.chkApiMovies.isChecked());
         settings.setSetting(MainApiFragment.MUSIC, this.chkApiMusic.isChecked());

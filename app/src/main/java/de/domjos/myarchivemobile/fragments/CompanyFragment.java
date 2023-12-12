@@ -27,15 +27,15 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
+import de.domjos.myarchiveservices.mediaTasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
+/** @noinspection unchecked*/
 public class CompanyFragment extends AbstractFragment<Company> {
     private EditText txtCompanyTitle, txtCompanyDescription;
     private CustomDatePickerField txtCompanyFoundation;
@@ -50,7 +50,6 @@ public class CompanyFragment extends AbstractFragment<Company> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.txtCompanyTitle = view.findViewById(R.id.txtCompanyTitle);
         this.txtCompanyFoundation = view.findViewById(R.id.txtCompanyFoundation);
@@ -60,8 +59,9 @@ public class CompanyFragment extends AbstractFragment<Company> {
         this.cmdCompanySearch.setOnClickListener(event -> {
             try {
                 this.company = this.getMediaObject();
-                WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
-                this.abstractPagerAdapter.setMediaObject(wikiDataCompanyTask.execute(this.company).get().get(0));
+                WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification);
+                wikiDataCompanyTask.after(companies -> abstractPagerAdapter.setMediaObject(companies.get(0)));
+                wikiDataCompanyTask.execute(new Company[] {this.company});
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }

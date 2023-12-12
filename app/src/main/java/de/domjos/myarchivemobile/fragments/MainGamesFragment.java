@@ -35,19 +35,19 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.tasks.EANDataGameTask;
+import de.domjos.myarchiveservices.mediaTasks.EANDataGameTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.GamePagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 
 public class MainGamesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvGames;
@@ -86,56 +86,48 @@ public class MainGamesFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdNext:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) + 1, Globals.GAMES);
-                    this.reload();
-                    break;
-                case R.id.cmdPrevious:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) - 1, Globals.GAMES);
-                    this.reload();
-                    break;
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.gamePagerAdapter.setMediaObject(new Game());
-                        this.currentObject = null;
-                    } else {
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, (item) -> {
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.GAMES) + 1, Globals.GAMES);
+            this.reload();
+        }, (item) -> {
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.GAMES) - 1, Globals.GAMES);
+            this.reload();
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_add))) {
+                this.changeMode(true, false);
+                this.gamePagerAdapter.setMediaObject(new Game());
+                this.currentObject = null;
+            } else {
+                this.changeMode(false, false);
+                this.gamePagerAdapter.setMediaObject(new Game());
+                currentObject = null;
+                this.reload();
+            }
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(this.currentObject != null) {
+                    this.changeMode(true, true);
+                    this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
+                }
+            } else {
+                if(this.validator.getState()) {
+                    Game game = this.gamePagerAdapter.getMediaObject();
+                    if(this.currentObject!=null) {
+                        game.setId(((Game) this.currentObject.getObject()).getId());
+                    }
+                    if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
                         this.changeMode(false, false);
                         this.gamePagerAdapter.setMediaObject(new Game());
-                        currentObject = null;
+                        this.currentObject = null;
                         this.reload();
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.currentObject != null) {
-                            this.changeMode(true, true);
-                            this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
-                        }
-                    } else {
-                        if(this.validator.getState()) {
-                            Game game = this.gamePagerAdapter.getMediaObject();
-                            if(this.currentObject!=null) {
-                                game.setId(((Game) this.currentObject.getObject()).getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
-                                this.changeMode(false, false);
-                                this.gamePagerAdapter.setMediaObject(new Game());
-                                this.currentObject = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
-                        }
-                    }
-                    break;
+                } else {
+                    MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                }
             }
-            return true;
         });
 
         this.reload();
@@ -169,7 +161,7 @@ public class MainGamesFragment extends ParentFragment {
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game(), Globals.GAMES));
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
         this.validator = this.gamePagerAdapter.initValidator();
         viewPager.setAdapter(this.gamePagerAdapter);
 
@@ -199,9 +191,16 @@ public class MainGamesFragment extends ParentFragment {
             this.lvGames.getAdapter().clear();
             String key = this.returnKey();
             key = ControlsHelper.setThePage(this, "games", key);
-            LoadingTask<Game> loadingTask = new LoadingTask<>(this.getActivity(), new Game(), null, searchQuery, this.lvGames, key);
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+                    this.getActivity(), new BaseDescriptionObject(), null, searchQuery, this.lvGames, key,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset(key),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+            );
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) games -> {
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) games -> {
                 for(BaseDescriptionObject baseDescriptionObject : games) {
                     lvGames.getAdapter().add(baseDescriptionObject);
                 }
@@ -241,11 +240,13 @@ public class MainGamesFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_games))) {
                 String[] code = codes.split("\n");
-                EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings().getEANDataKey());
-                List<Game> games = eanDataService.execute(code).get();
-                for(Game game : games) {
-                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
-                }
+                EANDataGameTask eanDataService = new EANDataGameTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings(this.requireContext()).getEANDataKey());
+                eanDataService.after(games -> {
+                    for(Game game : games) {
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateGame(game);
+                    }
+                });
+                eanDataService.execute(code[0]);
                 this.reload();
             }
         } catch (Exception ex) {

@@ -16,17 +16,17 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.custom.CustomTreeNode;
-import de.domjos.myarchivemobile.custom.CustomTreeNodeHolder;
+import de.domjos.myarchiveservices.treeNode.CustomTreeNode;
+import de.domjos.myarchiveservices.treeNode.CustomTreeNodeHolder;
 import de.domjos.myarchivemobile.dialogs.TreeViewDialog;
-import de.domjos.myarchivemobile.tasks.TreeViewTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.TreeViewTask;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -55,25 +55,21 @@ public class MainFileTreeFragment extends ParentFragment {
         this.initControls(root);
         this.initTreeView(true, false, "");
 
-        this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAddFile:
-                    TreeViewDialog fileDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.node.getId());
-                    fileDialog.addPreExecute(this::reset);
-                    fileDialog.show(this.requireActivity());
-                    break;
-                case R.id.cmdAddNode:
-                    TreeViewDialog nodeDialog = TreeViewDialog.newInstance(TreeViewDialog.NODE, this.node.getId());
-                    nodeDialog.addPreExecute(this::reset);
-                    nodeDialog.show(this.requireActivity());
-                    break;
-                case R.id.cmdReload:
-                    this.initTreeView(true, true, "");
-                    break;
-                case R.id.cmdView:
-                    this.viewItem();
-                    break;
+        this.navigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAddFile) {
+                TreeViewDialog fileDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.node.getId());
+                fileDialog.addPreExecute(this::reset);
+                fileDialog.show(this.requireActivity());
             }
+            if(menuItem.getItemId() == R.id.cmdAddNode) {
+                TreeViewDialog nodeDialog = TreeViewDialog.newInstance(TreeViewDialog.NODE, this.node.getId());
+                nodeDialog.addPreExecute(this::reset);
+                nodeDialog.show(this.requireActivity());
+            }
+            if(menuItem.getItemId() == R.id.cmdReload)
+                this.initTreeView(true, true, "");
+            if(menuItem.getItemId() == R.id.cmdView)
+                this.viewItem();
 
             return true;
         });
@@ -108,26 +104,14 @@ public class MainFileTreeFragment extends ParentFragment {
 
         MenuInflater inflater = super.requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_tree, menu);
-        if(this.cpNode != null || this.cpFile != null) {
-            menu.findItem(R.id.ctxPaste).setEnabled(true);
-        } else {
-            menu.findItem(R.id.ctxPaste).setEnabled(false);
-        }
+        menu.findItem(R.id.ctxPaste).setEnabled(this.cpNode != null || this.cpFile != null);
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.ctxCopy:
-                this.selectItem(false);
-                break;
-            case R.id.ctxCut:
-                this.selectItem(true);
-                break;
-            case R.id.ctxPaste:
-                this.pasteItem();
-                break;
-        }
+        if(item.getItemId()==R.id.ctxCopy) this.selectItem(false);
+        if(item.getItemId()==R.id.ctxCut) this.selectItem(true);
+        if(item.getItemId()==R.id.ctxPaste) this.pasteItem();
         return true;
     }
 
@@ -192,8 +176,14 @@ public class MainFileTreeFragment extends ParentFragment {
             this.navigationView.setVisibility(system || this.data ? View.GONE : View.VISIBLE);
             if(((CustomTreeNode) value).getTreeItem() instanceof TreeNode) {
                 try {
-                    TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, false, false, true, system, node, this.node, this.search);
-                    treeViewTask.execute().get();
+                    TreeViewTask treeViewTask = new TreeViewTask(
+                            this.requireActivity(), this.pbProgress, this.lblMessage,
+                            false, false, true, system,
+                            node, this.node, this.search,
+                            MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                            R.drawable.icon_notification,
+                            MainActivity.GLOBALS.getDatabase(this.requireContext()));
+                    treeViewTask.execute();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
                 }
@@ -225,22 +215,27 @@ public class MainFileTreeFragment extends ParentFragment {
             return;
         }
 
+        TreeViewDialog treeViewDialog;
         if(this.data && !system) {
-            TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.path, tmp.getId());
+            treeViewDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.path, tmp.getId());
             treeViewDialog.addPreExecute(()->System.exit(0));
-            treeViewDialog.show(this.requireActivity());
         } else {
-            TreeViewDialog treeViewDialog = TreeViewDialog.newInstance(tmp, system);
+            treeViewDialog = TreeViewDialog.newInstance(tmp, system);
             treeViewDialog.addPreExecute(this::reset);
-            treeViewDialog.show(this.requireActivity());
         }
+        treeViewDialog.show(this.requireActivity());
     }
 
     private void initTreeView(boolean firstStart, boolean checkDatabase, String search) {
         com.unnamed.b.atv.model.TreeNode node = com.unnamed.b.atv.model.TreeNode.root();
 
-        TreeViewTask treeViewTask = new TreeViewTask(this.requireActivity(), this.pbProgress, this.lblMessage, firstStart, checkDatabase, false, false, node, null, search);
-        treeViewTask.after((AbstractTask.PostExecuteListener<com.unnamed.b.atv.model.TreeNode>) o -> {
+        TreeViewTask treeViewTask = new TreeViewTask(
+                this.requireActivity(), this.pbProgress, this.lblMessage, firstStart,
+                checkDatabase, false, false, node, null, search,
+                MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                R.drawable.icon_notification,
+                MainActivity.GLOBALS.getDatabase(this.requireContext()));
+        treeViewTask.after((CustomAbstractTask.PostExecuteListener<com.unnamed.b.atv.model.TreeNode>) o -> {
             this.androidTreeView = new AndroidTreeView(this.requireActivity(), o);
             this.androidTreeView.setDefaultNodeClickListener(this.treeNodeClickListener);
             this.androidTreeView.setDefaultAnimation(true);

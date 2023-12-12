@@ -18,3 +18,5 @@
 include ':app', ':myarchivelibrary'
 
 rootProject.name='MyArchiveMobile'
+
+include ':MyArchiveServices'

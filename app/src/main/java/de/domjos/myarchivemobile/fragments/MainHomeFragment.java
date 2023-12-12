@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -71,7 +70,8 @@ import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 
 public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
@@ -163,13 +163,13 @@ public class MainHomeFragment extends ParentFragment {
 
         cmdPrevious.setOnClickListener(view -> {
             this.changePage = true;
-            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.HOME) - 1, Globals.HOME);
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.HOME) - 1, Globals.HOME);
             this.reload(search, true);
         });
 
         cmdNext.setOnClickListener(view -> {
             this.changePage = true;
-            MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.HOME) + 1, Globals.HOME);
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.HOME) + 1, Globals.HOME);
             this.reload(search, true);
         });
 
@@ -206,7 +206,7 @@ public class MainHomeFragment extends ParentFragment {
                 AlertDialog.Builder b = new AlertDialog.Builder(requireActivity());
                 b.setTitle(getString(R.string.lists));
                 List<String> listString = new LinkedList<>();
-                List<MediaList> lists = MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"));
+                List<MediaList> lists = MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("home"));
                 for(MediaList list : lists) {
                     listString.add(list.getTitle());
                 }
@@ -526,7 +526,7 @@ public class MainHomeFragment extends ParentFragment {
         this.arrayAdapter.add(gamesFilter);
 
         try {
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase(this.getActivity()).getMediaLists("", MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
                 MediaFilter listFilter = new MediaFilter();
                 listFilter.setTitle("[" + mediaList.getTitle() + "]");
                 listFilter.setMediaList(mediaList);
@@ -617,8 +617,15 @@ public class MainHomeFragment extends ParentFragment {
 
             this.lvMedia.getAdapter().clear();
             String key = this.returnKey();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key);
-            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+                    this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset(key),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+            );
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 if(baseDescriptionObjects != null) {
                     for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                         lvMedia.getAdapter().add(baseDescriptionObject);

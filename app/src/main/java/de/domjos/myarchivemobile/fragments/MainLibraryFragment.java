@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -51,7 +50,8 @@ import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 
 public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
@@ -102,64 +102,55 @@ public class MainLibraryFragment extends ParentFragment {
             this.libraryObject = null;
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            LibraryObject libraryObject;
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        libraryObject = new LibraryObject();
-                        libraryObject.setDeadLine(new Date());
-                        this.setObject(libraryObject);
-                        this.libraryObject = null;
-                    } else {
-                        changeMode(false, false);
-                        setObject(new LibraryObject());
-                        this.libraryObject = null;
-                        reloadLibraryObjects();
-                    }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.libraryObject != null) {
-                            this.changeMode(true, true);
-                            setObject(this.libraryObject);
-                        }
-                    } else {
-                        try {
-                            libraryObject = this.getObject();
-                            if(this.libraryObject != null) {
-                                libraryObject.setId(this.libraryObject.getId());
-                            }
-                            MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
-
-                            if(this.libraryObject != null) {
-                                if(this.libraryObject.getId() != 0) {
-                                    BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                                    for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                        if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
-                                            baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
-                                }
-                            } else {
-                                ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
-                            }
-
-                            this.changeMode(false, false);
-                            this.libraryObject = null;
-                            this.reloadLibraryObjects();
-                            this.setObject(new LibraryObject());
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                        }
-                    }
-                    break;
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, null, null, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_add))) {
+                this.changeMode(true, false);
+                libraryObject = new LibraryObject();
+                libraryObject.setDeadLine(new Date());
+                this.setObject(libraryObject);
+                this.libraryObject = null;
+            } else {
+                changeMode(false, false);
+                setObject(new LibraryObject());
+                this.libraryObject = null;
+                reloadLibraryObjects();
             }
-            return true;
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(this.libraryObject != null) {
+                    this.changeMode(true, true);
+                    setObject(this.libraryObject);
+                }
+            } else {
+                try {
+                    libraryObject = this.getObject();
+                    libraryObject.setId(this.libraryObject.getId());
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+
+                    if(this.libraryObject != null) {
+                        if(this.libraryObject.getId() != 0) {
+                            BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
+                            for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                                if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                    baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
+                                    break;
+                                }
+                            }
+                        } else {
+                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
+                        }
+                    } else {
+                        ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
+                    }
+
+                    this.changeMode(false, false);
+                    this.libraryObject = null;
+                    this.reloadLibraryObjects();
+                    this.setObject(new LibraryObject());
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                }
+            }
         });
 
         this.changeMode(false, false);
@@ -180,8 +171,14 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY);
-            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+                    this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset("companies"),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy() );
+            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
                     baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());

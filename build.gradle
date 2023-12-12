@@ -33,6 +33,18 @@ ext.propShrink = false
 ext.propDatabaseVersion = "2.4.0"
 ext.propAppCompatVersion = "1.6.1"
 ext.propLifeCycleExtVersion = "2.2.0"
+ext.propNavigation = "2.7.5"
+ext.propMaterial = "1.10.0"
+ext.propATV = "1.2.7"
+
+// services
+ext.propApi = "2.2.0"
+ext.propApiServices = "v1-rev114-1.25.0"
+
+// test libraries
+ext.propJUnit = "4.13.2"
+ext.propJUnitExt = "1.1.5"
+ext.propEspresso = "3.5.1"
 
 // other libraries
 ext.propCustomWidgetsVersion = "3.5.0"

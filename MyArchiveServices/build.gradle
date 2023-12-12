@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'de.domjos.myarchiveservices'
+    compileSdk propCompVersion
+
+    defaultConfig {
+        minSdk propMinVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled propMinify
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = propJavaVersion
+        targetCompatibility = propJavaVersion
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // import own libraries
+    implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
+    implementation project(path: ':myarchivelibrary')
+
+    // tree-view
+    implementation "com.github.bmelnychuk:atv:$propATV"
+
+    // services
+    implementation "com.google.api-client:google-api-client-android:$propApi"
+    implementation "com.google.api-client:google-api-client:$propApi"
+    implementation "com.google.apis:google-api-services-books:$propApiServices"
+
+    // ui
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
+    implementation "com.google.android.material:material:$propMaterial"
+
+    testImplementation "junit:junit:$propJUnit"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExt"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspresso"
+}
