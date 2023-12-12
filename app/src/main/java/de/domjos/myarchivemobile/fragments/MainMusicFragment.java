@@ -17,7 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +30,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -47,7 +44,7 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.AlbumPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public class MainMusicFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvAlbums;
@@ -135,11 +132,6 @@ public class MainMusicFragment extends ParentFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.albumPagerAdapter.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
@@ -193,7 +185,7 @@ public class MainMusicFragment extends ParentFragment {
             this.lvAlbums.getAdapter().clear();
             String key = this.returnKey();
             key = ControlsHelper.setThePage(this, "albums", key);
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
                     this.getActivity(), new BaseDescriptionObject(), null, searchQuery, this.lvAlbums, key,
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
                     R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
@@ -202,7 +194,7 @@ public class MainMusicFragment extends ParentFragment {
                     MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
             );
             String finalKey = key;
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) albums -> {
+            loadingTask.after(albums -> {
                 for(BaseDescriptionObject baseDescriptionObject : albums) {
                     lvAlbums.getAdapter().add(baseDescriptionObject);
                 }

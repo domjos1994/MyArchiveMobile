@@ -31,6 +31,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -84,6 +86,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
     private Validator validator;
 
     private final static int SUGGESTIONS_REQUEST = 345;
+    private ActivityResultLauncher<Intent> scannerCallback;
 
     @Nullable
     @Override
@@ -136,7 +139,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
             Intent intent = new Intent(this.getActivity(), ScanActivity.class);
             intent.putExtra("parent", "");
             intent.putExtra("single", true);
-            startActivityForResult(intent, 234);
+            this.scannerCallback.launch(intent);
         });
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
@@ -164,7 +167,44 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
                     type = this.getString(R.string.game);
                     titleWebservice = new IGDBWebservice(ctx, 0, settings.getIGDBKey());
                 }
-                MediaDialog mediaDialog = MediaDialog.newInstance(search, type, Collections.singletonList(titleWebservice));
+                MediaDialog mediaDialog = MediaDialog.newInstance(search, type, Collections.singletonList(titleWebservice), (result) -> {
+                    String rType = result.getStringExtra("type");
+                    String description = result.getStringExtra("description");
+                    long id = result.getLongExtra("id", 0);
+                    if(Objects.requireNonNull(rType).equals(this.getString(R.string.movie))) {
+                        TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings(this.requireContext()).getMovieDBKey());
+                        theMovieDBTask.after(movies -> {
+                            if(movies != null && !movies.isEmpty()) {
+                                this.abstractPagerAdapter.setMediaObject(movies.get(0));
+                            }
+                        });
+                        theMovieDBTask.execute(new Long[] {id});
+                    } else if(Objects.requireNonNull(rType).equals(this.getString(R.string.album))) {
+                        TheAudioDBTask theAudioDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification);
+                        theAudioDBTask.after(albums -> {
+                            if(albums != null && !albums.isEmpty()) {
+                                this.abstractPagerAdapter.setMediaObject(albums.get(0));
+                            }
+                        });
+                        theAudioDBTask.execute(new Long[] {id});
+                    } else if(Objects.requireNonNull(rType).equals(this.getString(R.string.book))) {
+                        GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings(this.requireContext()).getGoogleBooksKey());
+                        googleBooksTask.after(books -> {
+                            if(books != null && !books.isEmpty()) {
+                                this.abstractPagerAdapter.setMediaObject(books.get(0));
+                            }
+                        });
+                        googleBooksTask.execute(new String[]{""});
+                    } else if(Objects.requireNonNull(rType).equals(this.getString(R.string.game))) {
+                        IGDBTask igdbTask = new IGDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings(this.requireContext()).getIGDBKey());
+                        igdbTask.after(games -> {
+                            if(games != null && !games.isEmpty()) {
+                                this.abstractPagerAdapter.setMediaObject(games.get(0));
+                            }
+                        });
+                        igdbTask.execute(new Long[] {id});
+                    }
+                });
                 mediaDialog.setTargetFragment(this, MediaGeneralFragment.SUGGESTIONS_REQUEST);
                 mediaDialog.show(this.getParentFragmentManager(), "dialog");
             } catch (Exception ex) {
@@ -194,7 +234,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
                                 wikiDataCompanyTask.after(book::setCompanies);
                                 wikiDataCompanyTask.execute(book.getCompanies().toArray(new Company[]{}));
 
-                                this.abstractPagerAdapter.setMediaObject(book);
+                                this.abstractPagerAdapter.setMediaObject((T) book);
                             }
                         });
                         googleBooksTask.execute(new String[] {this.txtMediaGeneralCode.getText().toString()});
@@ -210,7 +250,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
                                 wikiDataCompanyTask.after(movie::setCompanies);
                                 wikiDataCompanyTask.execute(movie.getCompanies().toArray(new Company[0]));
 
-                                this.abstractPagerAdapter.setMediaObject(movie);
+                                this.abstractPagerAdapter.setMediaObject((T) movie);
                             }
                         });
                         eanDataTask.execute(this.txtMediaGeneralCode.getText().toString());
@@ -226,7 +266,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
                                 wikiDataCompanyTask.after(album::setCompanies);
                                 wikiDataCompanyTask.execute(album.getCompanies().toArray(new Company[]{}));
 
-                                this.abstractPagerAdapter.setMediaObject(album);
+                                this.abstractPagerAdapter.setMediaObject((T) album);
                             }
                         }));
                         eanDataTask.execute(this.txtMediaGeneralCode.getText().toString());
@@ -242,7 +282,7 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
                                 wikiDataCompanyTask.after(game::setCompanies);
                                 wikiDataCompanyTask.execute(game.getCompanies().toArray(new Company[]{}));
 
-                                this.abstractPagerAdapter.setMediaObject(game);
+                                this.abstractPagerAdapter.setMediaObject((T) game);
                             }
                         });
                         eanDataTask.execute(this.txtMediaGeneralCode.getText().toString());
@@ -256,6 +296,19 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
         this.changeMode(false);
         this.validator = this.initValidation(this.validator);
         this.testConnection();
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.scannerCallback = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                (result) -> {
+                    if(result.getResultCode() == RESULT_OK) {
+                        assert result.getData() != null;
+                        this.txtMediaGeneralCode.setText(result.getData().getStringExtra("codes"));
+                    }
+                }
+        );
     }
 
     private void testConnection() {
@@ -350,57 +403,5 @@ public class MediaGeneralFragment<T extends BaseMediaObject> extends AbstractFra
             this.validator.addLengthValidator(this.txtMediaGeneralCode, 0, 13);
         }
         return this.validator;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        try {
-            if(resultCode == RESULT_OK && requestCode == 234) {
-                this.txtMediaGeneralCode.setText(intent.getStringExtra("codes"));
-            }
-
-            if(resultCode == RESULT_OK && requestCode == SUGGESTIONS_REQUEST) {
-                String type = intent.getStringExtra("type");
-                String description = intent.getStringExtra("description");
-                long id = intent.getLongExtra("id", 0);
-                if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
-                    TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings(this.requireContext()).getMovieDBKey());
-                    theMovieDBTask.after(movies -> {
-                        if(movies != null && !movies.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(movies.get(0));
-                        }
-                    });
-                    theMovieDBTask.execute(new Long[] {id});
-                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.album))) {
-                    TheAudioDBTask theAudioDBTask = new TheAudioDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification);
-                    theAudioDBTask.after(albums -> {
-                        if(albums != null && !albums.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(albums.get(0));
-                        }
-                    });
-                    theAudioDBTask.execute(new Long[] {id});
-                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.book))) {
-                    GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings(this.requireContext()).getGoogleBooksKey());
-                    googleBooksTask.after(books -> {
-                        if(books != null && !books.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(books.get(0));
-                        }
-                    });
-                    googleBooksTask.execute(new String[]{""});
-                } else if(Objects.requireNonNull(type).equals(this.getString(R.string.game))) {
-                    IGDBTask igdbTask = new IGDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, MainActivity.GLOBALS.getSettings(this.requireContext()).getIGDBKey());
-                    igdbTask.after(games -> {
-                        if(games != null && !games.isEmpty()) {
-                            this.abstractPagerAdapter.setMediaObject(games.get(0));
-                        }
-                    });
-                    igdbTask.execute(new Long[] {id});
-                }
-
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
-        }
     }
 }

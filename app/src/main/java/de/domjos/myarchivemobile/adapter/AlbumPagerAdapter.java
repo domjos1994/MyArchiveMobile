@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -165,16 +164,6 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         album.setNumberOfDisks(tmpAlbum.getNumberOfDisks());
         album.setLastHeard(tmpAlbum.getLastHeard());
         return album;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.mediaGeneralFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaAlbumFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

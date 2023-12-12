@@ -138,9 +138,4 @@ public class MediaBookFragment extends AbstractFragment<BaseMediaObject> {
     public Validator initValidation(Validator validator) {
         return validator;
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-
-    }
 }

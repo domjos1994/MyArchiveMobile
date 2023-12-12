@@ -17,9 +17,12 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
@@ -28,7 +31,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -43,8 +45,7 @@ import de.domjos.myarchiveservices.mediaTasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.PersonPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingPersons;
 
 public final class PersonActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvPersons;
@@ -56,6 +57,7 @@ public final class PersonActivity extends AbstractActivity {
     private Person person = null;
     private Validator validator;
     private boolean firstReload = true;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public PersonActivity() {
         super(R.layout.person_activity);
@@ -96,7 +98,7 @@ public final class PersonActivity extends AbstractActivity {
                     Person person = (Person) baseDescriptionObject.getObject();
                     if(person != null) {
                         WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(PersonActivity.this, MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(), R.drawable.icon_notification);
-                        wikiDataPersonTask.after((CustomAbstractTask.PostExecuteListener<List<Person>>) o -> {
+                        wikiDataPersonTask.after(o -> {
                             MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdatePerson(o.get(0), "", 0);
                             reload();
                         });
@@ -177,6 +179,11 @@ public final class PersonActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
         ControlsHelper.checkNetwork(this);
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
@@ -190,7 +197,9 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ControlsHelper.onOptionsItemsSelected(item, this);
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback
+        );
         return super.onOptionsItemSelected(item);
     }
 
@@ -221,15 +230,12 @@ public final class PersonActivity extends AbstractActivity {
         }
         try {
             this.lvPersons.getAdapter().clear();
-            LoadingTask<Person> loadingTask = new LoadingTask<>(
-                PersonActivity.this, new Person(), null, search, this.lvPersons, "persons",
+            LoadingPersons loadingTask = new LoadingPersons(
+                PersonActivity.this, this.lvPersons, search,
                 MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(),
-                R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext()),
-                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getMediaCount(),
-                MainActivity.GLOBALS.getOffset("companies"),
-                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getOrderBy()
+                R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext())
             );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<Person>>) persons -> {
+            loadingTask.after(persons -> {
                 for(Person person : persons) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(String.format("%s %s", person.getFirstName(), person.getLastName()).trim());

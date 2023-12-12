@@ -31,6 +31,7 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.InterruptedIOException;
@@ -61,8 +62,6 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
-import static android.app.Activity.RESULT_OK;
-
 public class MediaDialog extends DialogFragment {
     private Activity activity;
     private BaseDescriptionObject currentObject;
@@ -82,14 +81,16 @@ public class MediaDialog extends DialogFragment {
     private GoogleBooksTask googleBooksTask = null;
     private IGDBTask igdbTask = null;
     private SearchTask searchTask = null;
+    private ActivityResultCallback<Intent> onResult;
 
-    public static MediaDialog newInstance(String search, String type, List<TitleWebservice<? extends BaseMediaObject>> titleWebservices) {
+    public static MediaDialog newInstance(String search, String type, List<TitleWebservice<? extends BaseMediaObject>> titleWebservices, ActivityResultCallback<Intent> onResult) {
         MediaDialog mediaDialog = new MediaDialog();
         mediaDialog.setTitleWebservices(titleWebservices);
         Bundle args = new Bundle();
         args.putString("search", search);
         args.putString("type", type);
         mediaDialog.setArguments(args);
+        mediaDialog.onResult = onResult;
 
         return mediaDialog;
     }
@@ -224,7 +225,7 @@ public class MediaDialog extends DialogFragment {
                             intent.putExtra("id", ((BaseMediaObject) this.currentObject.getObject()).getId());
                             intent.putExtra("type", this.type);
                             intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
-                            Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
+                            onResult.onActivityResult(intent);
                             this.dismiss();
                         }
                     }

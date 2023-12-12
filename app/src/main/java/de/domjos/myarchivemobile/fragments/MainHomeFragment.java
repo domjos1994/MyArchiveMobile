@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -70,8 +69,7 @@ import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public class MainHomeFragment extends ParentFragment {
     private Animation fabOpen, fabClose, fabClock, fabAntiClock;
@@ -617,7 +615,7 @@ public class MainHomeFragment extends ParentFragment {
 
             this.lvMedia.getAdapter().clear();
             String key = this.returnKey();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
                     this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key,
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
                     R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
@@ -625,7 +623,7 @@ public class MainHomeFragment extends ParentFragment {
                     MainActivity.GLOBALS.getOffset(key),
                     MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
             );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+            loadingTask.after(baseDescriptionObjects -> {
                 if(baseDescriptionObjects != null) {
                     for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                         lvMedia.getAdapter().add(baseDescriptionObject);
@@ -685,11 +683,6 @@ public class MainHomeFragment extends ParentFragment {
     @Override
     public void select() {
 
-    }
-
-    @Override
-    public void onActivityResult(int result, int request, Intent intent) {
-        this.reloadFilterListList();
     }
 
     private void showAnimation(FloatingActionButton fab) {

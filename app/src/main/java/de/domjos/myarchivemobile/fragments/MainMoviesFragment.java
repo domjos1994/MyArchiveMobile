@@ -17,7 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
@@ -46,8 +44,7 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.MoviePagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public class MainMoviesFragment extends ParentFragment {
     private SwipeRefreshDeleteList lvMovies;
@@ -135,11 +132,6 @@ public class MainMoviesFragment extends ParentFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.moviePagerAdapter.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
@@ -192,7 +184,7 @@ public class MainMoviesFragment extends ParentFragment {
             this.lvMovies.getAdapter().clear();
             String key = this.returnKey();
             key = ControlsHelper.setThePage(this, "movies", key);
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<BaseDescriptionObject>(
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
                     this.getActivity(), new BaseDescriptionObject(), null, searchQuery, this.lvMovies, key,
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
                     R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
@@ -201,7 +193,7 @@ public class MainMoviesFragment extends ParentFragment {
                     MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
             );
             String finalKey = key;
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) movies -> {
+            loadingTask.after(movies -> {
                 for(BaseDescriptionObject baseDescriptionObject : movies) {
                     lvMovies.getAdapter().add(baseDescriptionObject);
                 }

@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -89,13 +88,6 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
         Company company = this.companyFragment.getMediaObject();
         company.setCover(this.mediaCoverFragment.getMediaObject().getCover());
         return company;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.companyFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaListFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @NonNull

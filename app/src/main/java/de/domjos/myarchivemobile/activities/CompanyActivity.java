@@ -17,9 +17,12 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
@@ -28,7 +31,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -42,9 +44,8 @@ import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchiveservices.mediaTasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingCompanies;
 
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
@@ -56,6 +57,7 @@ public final class CompanyActivity extends AbstractActivity {
     private Company company = null;
     private Validator validator;
     private boolean firstReload = true;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public CompanyActivity() {
         super(R.layout.company_activity);
@@ -96,7 +98,7 @@ public final class CompanyActivity extends AbstractActivity {
                     Company company = (Company) baseDescriptionObject.getObject();
                     if(company != null) {
                         WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(), R.drawable.icon_notification);
-                        wikiDataCompanyTask.after((CustomAbstractTask.PostExecuteListener<List<Company>>) o -> {
+                        wikiDataCompanyTask.after(o -> {
                             MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateCompany(o.get(0), "", 0);
                             reload();
                         });
@@ -177,6 +179,11 @@ public final class CompanyActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
         ControlsHelper.checkNetwork(this);
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
@@ -190,7 +197,9 @@ public final class CompanyActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ControlsHelper.onOptionsItemsSelected(item, this);
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback
+        );
         return super.onOptionsItemSelected(item);
     }
 
@@ -221,15 +230,12 @@ public final class CompanyActivity extends AbstractActivity {
         }
         try {
             this.lvCompanies.getAdapter().clear();
-            LoadingTask<Company> loadingTask = new LoadingTask<>(
-                    CompanyActivity.this, new Company(), null, search, this.lvCompanies, "companies",
+            LoadingCompanies loadingTask = new LoadingCompanies(
+                    CompanyActivity.this, this.lvCompanies, search,
                     MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(),
-                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext()),
-                    MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getMediaCount(),
-                    MainActivity.GLOBALS.getOffset("companies"),
-                    MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getOrderBy()
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext())
             );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<Company>>) companies -> {
+            loadingTask.after(companies -> {
                 for(Company company : companies) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(company.getTitle());

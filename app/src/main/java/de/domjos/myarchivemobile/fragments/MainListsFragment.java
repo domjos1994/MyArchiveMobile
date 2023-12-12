@@ -47,8 +47,7 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingMediaLists;
 
 public class MainListsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -151,15 +150,13 @@ public class MainListsFragment extends ParentFragment {
             }
 
             this.lvMediaLists.getAdapter().clear();
-            LoadingTask<MediaList> loadingTask = new LoadingTask<>(
-                    this.getActivity(), new MediaList(), null, "", this.lvMediaLists, Globals.LISTS,
+            LoadingMediaLists loadingTask = new LoadingMediaLists(
+                    this.getActivity(), this.lvMediaLists, "",
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
                     R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
-                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
-                    MainActivity.GLOBALS.getOffset(Globals.LISTS),
-                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+                    MainActivity.GLOBALS.getOffset(Globals.LISTS)
             );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<MediaList>>) mediaLists -> {
+            loadingTask.after(mediaLists -> {
                 for(MediaList mediaList : mediaLists) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(mediaList.getTitle());

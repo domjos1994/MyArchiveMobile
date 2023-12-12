@@ -35,7 +35,6 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 
-/** @noinspection unchecked*/
 public class CompanyFragment extends AbstractFragment<Company> {
     private EditText txtCompanyTitle, txtCompanyDescription;
     private CustomDatePickerField txtCompanyFoundation;
@@ -60,7 +59,9 @@ public class CompanyFragment extends AbstractFragment<Company> {
             try {
                 this.company = this.getMediaObject();
                 WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification);
-                wikiDataCompanyTask.after(companies -> abstractPagerAdapter.setMediaObject(companies.get(0)));
+                wikiDataCompanyTask.after(companies -> {
+                    abstractPagerAdapter.setMediaObject(companies.get(0));
+                });
                 wikiDataCompanyTask.execute(new Company[] {this.company});
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());

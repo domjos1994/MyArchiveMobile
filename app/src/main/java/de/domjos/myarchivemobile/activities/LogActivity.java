@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.Menu;
@@ -24,6 +25,8 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
@@ -36,7 +39,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -46,6 +48,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public final class LogActivity extends AbstractActivity {
     private ImageButton cmdSaveLogFile;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public LogActivity() {
         super(R.layout.log_activity);
@@ -86,9 +89,14 @@ public final class LogActivity extends AbstractActivity {
                 txtLogContent.loadData(encodedHTML, "text/html", "base64");
                 ControlsHelper.checkNetwork(this);
             });
+            this.initCallBacks();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, LogActivity.this);
         }
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
@@ -102,7 +110,9 @@ public final class LogActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ControlsHelper.onOptionsItemsSelected(item, this);
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback
+        );
         return super.onOptionsItemSelected(item);
     }
 
@@ -152,7 +162,7 @@ public final class LogActivity extends AbstractActivity {
         }
     }
 
-    private void getContent(Task.OnFinish onFinish) throws ExecutionException, InterruptedException {
+    private void getContent(Task.OnFinish onFinish) {
         Task task = new Task(onFinish);
         task.execute();
     }

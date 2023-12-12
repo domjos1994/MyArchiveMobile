@@ -28,47 +28,41 @@ import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Objects;
 
-import static android.app.Activity.RESULT_OK;
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class IntentHelper {
-    private final static int GALLERY_CODE = 999;
-    private final static int CAMERA_CODE = 998;
 
-
-    public static void startGalleryIntent(Activity activity) {
-        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        activity.startActivityForResult(i, IntentHelper.GALLERY_CODE);
-    }
-
-    public static Bitmap getGalleryIntentResult(int requestCode, int resultCode, Intent intent, Activity activity) throws IOException {
-        if(resultCode == RESULT_OK && requestCode == IntentHelper.GALLERY_CODE) {
-            Uri selectedImage = intent.getData();
-
-            if(selectedImage != null) {
-                ContentResolver resolver = activity.getContentResolver();
-                try (ParcelFileDescriptor parcelFileDescriptor = resolver.openFileDescriptor(selectedImage, "r")) {
-                    if(parcelFileDescriptor != null) {
-                        return BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
-                    }
+    public static ActivityResultLauncher<PickVisualMediaRequest> startGalleryIntent(ComponentActivity activity, Image onResult) {
+        return activity.registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                (result) -> {
+                    ContentResolver resolver = activity.getContentResolver();
+                    try (ParcelFileDescriptor parcelFileDescriptor = resolver.openFileDescriptor(result, "r")) {
+                        if(parcelFileDescriptor != null) {
+                            onResult.getImage(BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor())));
+                        }
+                    } catch (IOException ignored) {}
                 }
-            }
-        }
-        return null;
+        );
     }
 
 
-    public static void startCameraIntent(Activity activity) {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        activity.startActivityForResult(cameraIntent, IntentHelper.CAMERA_CODE);
+    public static ActivityResultLauncher<Void> startCameraIntent(ComponentActivity activity, Image onResult) {
+        return activity.registerForActivityResult(
+                new ActivityResultContracts.TakePicturePreview(),
+                result -> {
+                    if(result != null) onResult.getImage(result);
+                }
+        );
     }
 
-    public static Bitmap getCameraIntentResult(int requestCode, int resultCode, Intent intent) {
-        if(resultCode == RESULT_OK && requestCode == IntentHelper.CAMERA_CODE) {
-            return (Bitmap) Objects.requireNonNull(intent.getExtras()).get("data");
-        }
-        return null;
+    @FunctionalInterface
+    public interface Image {
+        void getImage(Bitmap bitmap);
     }
 
     public static void startPDFIntent(Activity activity, String path) {

@@ -37,7 +37,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -538,34 +538,33 @@ public class ControlsHelper {
         return null;
     }
 
-    public static void onOptionsItemsSelected(MenuItem item, Activity activity) {
-        int requestCode = 0;
-        Intent intent = null;
+    public static void onOptionsItemsSelected(
+            MenuItem item, Activity activity,
+            ActivityResultLauncher<Intent> person,
+            ActivityResultLauncher<Intent> company,
+            ActivityResultLauncher<Intent> categories,
+            ActivityResultLauncher<Intent> settings,
+            ActivityResultLauncher<Intent> log) {
+        Intent intent;
         if(item.getItemId() == R.id.menMainPersons) {
             intent = new Intent(activity, PersonActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+            person.launch(intent);
         }
         if(item.getItemId() == R.id.menMainCompanies) {
             intent = new Intent(activity, CompanyActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+            company.launch(intent);
         }
         if(item.getItemId() == R.id.menMainCategoriesAndTags) {
             intent = new Intent(activity, CategoriesTagsActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+            categories.launch(intent);
         }
         if(item.getItemId() == R.id.menMainSettings) {
             intent = new Intent(activity, SettingsActivity.class);
-            requestCode = MainActivity.SETTINGS_REQUEST;
+            settings.launch(intent);
         }
         if(item.getItemId() == R.id.menMainLog) {
             intent = new Intent(activity, LogActivity.class);
-        }
-
-        if(intent != null) {
-            ActivityResultContracts.StartActivityForResult contracts =
-                    new ActivityResultContracts.StartActivityForResult();
-            contracts.createIntent(activity, intent);
-            ((CompanyActivity)activity).startActivityForResult(intent, requestCode);
+            log.launch(intent);
         }
     }
 

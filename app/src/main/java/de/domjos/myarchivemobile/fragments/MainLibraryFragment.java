@@ -32,7 +32,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,8 +49,7 @@ import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
@@ -171,14 +169,14 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
                     this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY,
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
                     R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
                     MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
                     MainActivity.GLOBALS.getOffset("companies"),
                     MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy() );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+            loadingTask.after(baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
                     baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());

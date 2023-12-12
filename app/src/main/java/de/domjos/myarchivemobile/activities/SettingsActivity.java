@@ -17,11 +17,14 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -32,6 +35,7 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 public final class SettingsActivity extends AppCompatActivity {
 
+    private ActivityResultLauncher<Intent> emptyCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +48,11 @@ public final class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
@@ -57,7 +66,7 @@ public final class SettingsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ControlsHelper.onOptionsItemsSelected(item, this);
+        ControlsHelper.onOptionsItemsSelected(item, this, emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback);
         return super.onOptionsItemSelected(item);
     }
 

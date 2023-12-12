@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -170,17 +169,6 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
         book.setPath(tmpBook.getPath());
         book.setLastRead(tmpBook.getLastRead());
         return book;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.mediaGeneralFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaBookFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPlayerFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

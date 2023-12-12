@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,8 +43,7 @@ import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
+import de.domjos.myarchiveservices.tasks.LoadingCustomFields;
 
 public class MainCustomFieldsFragment extends ParentFragment {
     private ScrollView scrollView;
@@ -128,15 +126,12 @@ public class MainCustomFieldsFragment extends ParentFragment {
             }
 
             this.lvCustomFields.getAdapter().clear();
-            LoadingTask<CustomField> loadingTask = new LoadingTask<>(
-                    this.getActivity(), new CustomField(), null, this.search, this.lvCustomFields, "customFields",
+            LoadingCustomFields loadingTask = new LoadingCustomFields(
+                    this.getActivity(), this.lvCustomFields, this.search,
                     MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
-                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
-                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
-                    MainActivity.GLOBALS.getOffset("companies"),
-                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext())
             );
-            loadingTask.after((CustomAbstractTask.PostExecuteListener<List<CustomField>>) customFields -> {
+            loadingTask.after(customFields -> {
                 for(CustomField customField : customFields) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(customField.getTitle());

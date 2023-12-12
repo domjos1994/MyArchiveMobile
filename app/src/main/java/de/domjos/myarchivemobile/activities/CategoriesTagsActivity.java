@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 
@@ -37,17 +39,16 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
-import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchiveservices.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public final class CategoriesTagsActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvItems, lvMedia;
@@ -59,6 +60,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     private BaseDescriptionObject baseDescriptionObject;
     private String table = "tags";
     private Validator validator;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public CategoriesTagsActivity() {
         super(R.layout.categories_tags_activity);
@@ -147,7 +149,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.searchView = this.findViewById(R.id.cmdSearch);
 
         this.spItems = this.findViewById(R.id.spItems);
-        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<String>(this.getApplicationContext()) {
+        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<>(this.getApplicationContext()) {
             @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -178,6 +180,11 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
         this.changeMode(false, false);
         ControlsHelper.checkNetwork(this);
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
@@ -191,7 +198,9 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ControlsHelper.onOptionsItemsSelected(item, this);
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback
+        );
         return super.onOptionsItemSelected(item);
     }
 
@@ -220,7 +229,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         Database database = MainActivity.GLOBALS.getDatabase(this.getApplicationContext());
 
         this.lvItems.getAdapter().clear();
-        LoadingTask<BaseDescriptionObject> task = new LoadingTask<>(
+        LoadingBaseDescriptionObjects<BaseDescriptionObject> task = new LoadingBaseDescriptionObjects<>(
             this, new BaseDescriptionObject(), null, search, this.lvItems, table,
             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(),
             R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext()),
@@ -228,9 +237,9 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             MainActivity.GLOBALS.getOffset(table),
             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getOrderBy()
         );
-        task.after((CustomAbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) o -> {
+        task.after(o -> {
             if(o != null) {
-                for(BaseDescriptionObject baseDescriptionObject : o) {
+                for(de.domjos.customwidgets.model.BaseDescriptionObject baseDescriptionObject : o) {
                     de.domjos.customwidgets.model.BaseDescriptionObject current = new de.domjos.customwidgets.model.BaseDescriptionObject();
                     String title = baseDescriptionObject.getTitle();
                     current.setTitle(database.getObjects(table, baseDescriptionObject.getId(), MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("tags")).isEmpty() ? title + empty : title);

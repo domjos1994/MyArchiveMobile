@@ -17,8 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,10 +44,28 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
 
     private T object;
 
+    private ActivityResultLauncher<Void> cameraLauncher;
+    private ActivityResultLauncher<PickVisualMediaRequest> pickLauncher;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.main_fragment_media_cover, container, false);
+    }
+
+    private void initCallBacks() {
+        this.pickLauncher = IntentHelper.startGalleryIntent(this.requireActivity(), (bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            }
+        });
+        this.cameraLauncher = IntentHelper.startCameraIntent(this.requireActivity(), (bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            } else {
+                pickLauncher.launch(new PickVisualMediaRequest());
+            }
+        });
     }
 
     @Override
@@ -56,10 +74,11 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.cmdMediaCoverGallery = view.findViewById(R.id.cmdMediaCoverGallery);
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
-        this.cmdMediaCoverGallery.setOnClickListener(view1 -> IntentHelper.startGalleryIntent(this.requireActivity()));
-        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> IntentHelper.startCameraIntent(this.requireActivity()));
+        this.cmdMediaCoverGallery.setOnClickListener(view1 -> this.pickLauncher.launch(new PickVisualMediaRequest()));
+        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> this.cameraLauncher.launch(null));
 
         this.changeMode(false);
+        this.initCallBacks();
     }
 
     @Override
@@ -122,20 +141,5 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
     @Override
     public Validator initValidation(Validator validator) {
         return validator;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        try {
-            Bitmap bitmap = IntentHelper.getCameraIntentResult(requestCode, resultCode, intent);
-            if(bitmap!=null) {
-                this.ivMediaCover.setImageBitmap(bitmap);
-            } else {
-                bitmap = IntentHelper.getGalleryIntentResult(requestCode, resultCode, intent, this.getActivity());
-                if(bitmap != null) {
-                    this.ivMediaCover.setImageBitmap(bitmap);
-                }
-            }
-        } catch (Exception ignored) {}
     }
 }
