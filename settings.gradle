@@ -15,6 +15,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':MyArchiveLibrary', ':MyArchiveServices', ':MyArchiveDatabase'
+include ':app', ':myarchivelibrary', ':MyArchiveServices', ':MyArchiveDatabase'
 
 rootProject.name='MyArchiveMobile'

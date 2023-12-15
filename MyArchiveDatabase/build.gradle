@@ -4,10 +4,10 @@ plugins {
 
 android {
     namespace 'de.domjos.myarchivedatabase'
-    compileSdk 34
+    compileSdk propCompVersion
 
     defaultConfig {
-        minSdk 26
+        minSdk propMinVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -20,16 +20,23 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = propJavaVersion
+        targetCompatibility = propJavaVersion
     }
 }
 
 dependencies {
+    // ui
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
+    implementation "com.google.android.material:material:$propMaterial"
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    // room
+    implementation "androidx.room:room-runtime:$propRoom"
+    annotationProcessor "androidx.room:room-compiler:$propRoom"
+
+    // test
+    testImplementation "junit:junit:$propJUnit"
+    androidTestImplementation "androidx.room:room-testing:$propRoom"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExt"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspresso"
 }

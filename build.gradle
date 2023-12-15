@@ -41,6 +41,9 @@ ext.propATV = "1.2.7"
 ext.propApi = "2.2.0"
 ext.propApiServices = "v1-rev114-1.25.0"
 
+// room
+ext.propRoom = "2.6.1"
+
 // test libraries
 ext.propJUnit = "4.13.2"
 ext.propJUnitExt = "1.1.5"

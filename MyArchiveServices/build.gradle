@@ -30,7 +30,7 @@ dependencies {
 
     // import own libraries
     implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
-    implementation project(path: ':MyArchiveLibrary')
+    implementation project(path: ':myarchivelibrary')
 
     // tree-view
     implementation "com.github.bmelnychuk:atv:$propATV"
