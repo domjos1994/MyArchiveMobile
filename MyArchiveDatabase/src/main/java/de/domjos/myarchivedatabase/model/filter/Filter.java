@@ -10,16 +10,16 @@ public final class Filter extends BaseTitleObject {
     @ColumnInfo(name = "search")
     private String search;
 
-    @ColumnInfo(name = "albums")
+    @ColumnInfo(name = "searchInAlbums")
     private boolean albums;
 
-    @ColumnInfo(name = "books")
+    @ColumnInfo(name = "searchInBooks")
     private boolean books;
 
-    @ColumnInfo(name = "games")
+    @ColumnInfo(name = "searchInGames")
     private boolean games;
 
-    @ColumnInfo(name = "movies")
+    @ColumnInfo(name = "searchInMovies")
     private boolean movies;
 
     @ColumnInfo(name = "movies")

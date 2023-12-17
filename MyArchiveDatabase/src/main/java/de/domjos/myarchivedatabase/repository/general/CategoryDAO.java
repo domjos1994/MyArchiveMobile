@@ -12,6 +12,8 @@ import java.util.List;
 import de.domjos.myarchivedatabase.model.general.category.Category;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithAlbums;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithBooks;
+import de.domjos.myarchivedatabase.model.general.category.CategoryWithFileTree;
+import de.domjos.myarchivedatabase.model.general.category.CategoryWithFileTreeFile;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithGames;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithMovies;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithSongs;
@@ -75,4 +77,20 @@ public interface CategoryDAO {
     @Transaction
     @Query("SELECT * FROM categories WHERE id=:id")
     CategoryWithGames getCategoryWithGames(long id);
+
+    @Transaction
+    @Query("SELECT * FROM categories")
+    List<CategoryWithFileTree> getAllCategoriesWithFileTreeElements();
+
+    @Transaction
+    @Query("SELECT * FROM categories WHERE id=:id")
+    CategoryWithFileTree getCategoryWithFileTree(long id);
+
+    @Transaction
+    @Query("SELECT * FROM categories")
+    List<CategoryWithFileTreeFile> getAllCategoriesWithFileTreeFileElements();
+
+    @Transaction
+    @Query("SELECT * FROM categories WHERE id=:id")
+    CategoryWithFileTreeFile getCategoryWithFileTreeFile(long id);
 }

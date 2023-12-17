@@ -16,9 +16,13 @@ import java.util.List;
 
 import de.domjos.myarchivedatabase.AppDatabase;
 import de.domjos.myarchivedatabase.converter.DrawableConverter;
+import de.domjos.myarchivedatabase.model.fileTree.FileTree;
+import de.domjos.myarchivedatabase.model.fileTree.FileTreeFile;
 import de.domjos.myarchivedatabase.model.general.category.Category;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithAlbums;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithBooks;
+import de.domjos.myarchivedatabase.model.general.category.CategoryWithFileTree;
+import de.domjos.myarchivedatabase.model.general.category.CategoryWithFileTreeFile;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithGames;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithMovies;
 import de.domjos.myarchivedatabase.model.general.category.CategoryWithSongs;
@@ -27,6 +31,8 @@ import de.domjos.myarchivedatabase.model.media.book.Book;
 import de.domjos.myarchivedatabase.model.media.game.Game;
 import de.domjos.myarchivedatabase.model.media.movie.Movie;
 import de.domjos.myarchivedatabase.model.media.song.Song;
+import de.domjos.myarchivedatabase.repository.fileTree.FileTreeDAO;
+import de.domjos.myarchivedatabase.repository.fileTree.FileTreeFileDAO;
 import de.domjos.myarchivedatabase.repository.media.AlbumDAO;
 import de.domjos.myarchivedatabase.repository.media.BookDAO;
 import de.domjos.myarchivedatabase.repository.media.GameDAO;
@@ -42,6 +48,8 @@ public class CategoryDAOTest {
     private MovieDAO movieDAO;
     private BookDAO bookDAO;
     private GameDAO gameDAO;
+    private FileTreeDAO fileTreeDAO;
+    private FileTreeFileDAO fileTreeFileDAO;
     private AppDatabase appDatabase;
     private final String title = "Test-Category";
 
@@ -57,6 +65,8 @@ public class CategoryDAOTest {
         this.movieDAO = this.appDatabase.movieDAO();
         this.bookDAO = this.appDatabase.bookDAO();
         this.gameDAO = this.appDatabase.gameDAO();
+        this.fileTreeDAO = this.appDatabase.fileTreeDAO();
+        this.fileTreeFileDAO = this.appDatabase.fileTreeFileDAO();
     }
 
     @After
@@ -225,5 +235,51 @@ public class CategoryDAOTest {
         List<CategoryWithGames> categoriesWithGames = this.categoryDAO.getAllCategoriesWithGames();
         Assert.assertEquals(categoriesWithGames.size(), 0);
         this.gameDAO.deleteGames(game);
+    }
+
+    @Test
+    public void testInsertAndAddCategoryWithFileTree() {
+        // create category
+        Category category = new Category();
+        category.setTitle(this.title);
+        category.setId(this.categoryDAO.insertCategories(category)[0]);
+
+        // create Game
+        FileTree fileTree = new FileTree();
+        fileTree.setTitle(this.title);
+        fileTree.setCategory(category.getId());
+        fileTree.setId(this.fileTreeDAO.insertFileTreeElements(fileTree)[0]);
+
+        // call category with Games
+        CategoryWithFileTree categoryWithGames = this.categoryDAO.getCategoryWithFileTree(category.getId());
+        Assert.assertNotNull(categoryWithGames);
+
+        this.categoryDAO.deleteCategories(category);
+        List<CategoryWithFileTree> categoriesWithFileTrees = this.categoryDAO.getAllCategoriesWithFileTreeElements();
+        Assert.assertEquals(categoriesWithFileTrees.size(), 0);
+        this.fileTreeDAO.deleteFileTreeElements(fileTree);
+    }
+
+    @Test
+    public void testInsertAndAddCategoryWithFileTreeFile() {
+        // create category
+        Category category = new Category();
+        category.setTitle(this.title);
+        category.setId(this.categoryDAO.insertCategories(category)[0]);
+
+        // create Game
+        FileTreeFile fileTreeFile = new FileTreeFile();
+        fileTreeFile.setTitle(this.title);
+        fileTreeFile.setCategory(category.getId());
+        fileTreeFile.setId(this.fileTreeFileDAO.insertFileTreeFileElements(fileTreeFile)[0]);
+
+        // call category with Games
+        CategoryWithFileTree categoryWithGames = this.categoryDAO.getCategoryWithFileTree(category.getId());
+        Assert.assertNotNull(categoryWithGames);
+
+        this.categoryDAO.deleteCategories(category);
+        List<CategoryWithFileTreeFile> categoriesWithFileTreeFiles = this.categoryDAO.getAllCategoriesWithFileTreeFileElements();
+        Assert.assertEquals(categoriesWithFileTreeFiles.size(), 0);
+        this.fileTreeFileDAO.deleteFileTreeFileElements(fileTreeFile);
     }
 }

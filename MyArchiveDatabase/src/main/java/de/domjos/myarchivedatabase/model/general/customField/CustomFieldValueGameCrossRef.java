@@ -7,11 +7,11 @@ import androidx.room.Index;
 import de.domjos.myarchivedatabase.model.media.game.Game;
 
 @Entity(
-        primaryKeys = {"customFieldId", "gameId"},
-        indices = {@Index(value = {"customFieldId"}), @Index(value = {"gameId"})},
+        primaryKeys = {"customFieldValueId", "gameId"},
+        indices = {@Index(value = {"customFieldValueId"}), @Index(value = {"gameId"})},
         foreignKeys = {
                 @ForeignKey(
-                        entity = CustomField.class, parentColumns = {"id"}, childColumns = {"customFieldId"},
+                        entity = CustomFieldValue.class, parentColumns = {"id"}, childColumns = {"customFieldValueId"},
                         onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
@@ -20,21 +20,23 @@ import de.domjos.myarchivedatabase.model.media.game.Game;
                 )
         }
 )
-public final class CustomFieldGameCrossRef {
-    private long customFieldId;
+public final class CustomFieldValueGameCrossRef {
+    private long customFieldValueId;
     private long gameId;
 
-    public CustomFieldGameCrossRef() {
-        this.customFieldId = 0L;
+    public CustomFieldValueGameCrossRef() {
+        super();
+
+        this.customFieldValueId = 0L;
         this.gameId = 0L;
     }
 
-    public long getCustomFieldId() {
-        return this.customFieldId;
+    public long getCustomFieldValueId() {
+        return this.customFieldValueId;
     }
 
-    public void setCustomFieldId(long customFieldId) {
-        this.customFieldId = customFieldId;
+    public void setCustomFieldValueId(long customFieldValueId) {
+        this.customFieldValueId = customFieldValueId;
     }
 
     public long getGameId() {

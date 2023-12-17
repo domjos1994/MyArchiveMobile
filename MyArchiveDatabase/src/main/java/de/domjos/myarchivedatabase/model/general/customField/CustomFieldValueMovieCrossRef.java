@@ -7,11 +7,11 @@ import androidx.room.Index;
 import de.domjos.myarchivedatabase.model.media.movie.Movie;
 
 @Entity(
-        primaryKeys = {"customFieldId", "movieId"},
-        indices = {@Index(value = {"customFieldId"}), @Index(value = {"movieId"})},
+        primaryKeys = {"customFieldValueId", "movieId"},
+        indices = {@Index(value = {"customFieldValueId"}), @Index(value = {"movieId"})},
         foreignKeys = {
                 @ForeignKey(
-                        entity = CustomField.class, parentColumns = {"id"}, childColumns = {"customFieldId"},
+                        entity = CustomFieldValue.class, parentColumns = {"id"}, childColumns = {"customFieldValueId"},
                         onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
@@ -20,21 +20,23 @@ import de.domjos.myarchivedatabase.model.media.movie.Movie;
                 )
         }
 )
-public final class CustomFieldMovieCrossRef {
-    private long customFieldId;
+public final class CustomFieldValueMovieCrossRef {
+    private long customFieldValueId;
     private long movieId;
 
-    public CustomFieldMovieCrossRef() {
-        this.customFieldId = 0L;
+    public CustomFieldValueMovieCrossRef() {
+        super();
+
+        this.customFieldValueId = 0L;
         this.movieId = 0L;
     }
 
-    public long getCustomFieldId() {
-        return this.customFieldId;
+    public long getCustomFieldValueId() {
+        return this.customFieldValueId;
     }
 
-    public void setCustomFieldId(long customFieldId) {
-        this.customFieldId = customFieldId;
+    public void setCustomFieldValueId(long customFieldValueId) {
+        this.customFieldValueId = customFieldValueId;
     }
 
     public long getMovieId() {

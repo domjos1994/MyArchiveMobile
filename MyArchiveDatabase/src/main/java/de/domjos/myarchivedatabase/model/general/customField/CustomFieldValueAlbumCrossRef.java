@@ -1,6 +1,5 @@
 package de.domjos.myarchivedatabase.model.general.customField;
 
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -8,11 +7,11 @@ import androidx.room.Index;
 import de.domjos.myarchivedatabase.model.media.album.Album;
 
 @Entity(
-        primaryKeys = {"customFieldId", "albumId"},
-        indices = {@Index(value = {"customFieldId"}), @Index(value = {"albumId"})},
+        primaryKeys = {"customFieldValueId", "albumId"},
+        indices = {@Index(value = {"customFieldValueId"}), @Index(value = {"albumId"})},
         foreignKeys = {
                 @ForeignKey(
-                        entity = CustomField.class, parentColumns = {"id"}, childColumns = {"customFieldId"},
+                        entity = CustomFieldValue.class, parentColumns = {"id"}, childColumns = {"customFieldValueId"},
                         onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
@@ -21,25 +20,23 @@ import de.domjos.myarchivedatabase.model.media.album.Album;
                 )
         }
 )
-public final class CustomFieldAlbumCrossRef {
-    private long customFieldId;
+public final class CustomFieldValueAlbumCrossRef {
+    private long customFieldValueId;
     private long albumId;
 
-    @ColumnInfo(name = "value")
-    private String value;
+    public CustomFieldValueAlbumCrossRef() {
+        super();
 
-    public CustomFieldAlbumCrossRef() {
-        this.customFieldId = 0L;
+        this.customFieldValueId = 0L;
         this.albumId = 0L;
-        this.value = "";
     }
 
-    public long getCustomFieldId() {
-        return this.customFieldId;
+    public long getCustomFieldValueId() {
+        return this.customFieldValueId;
     }
 
-    public void setCustomFieldId(long customFieldId) {
-        this.customFieldId = customFieldId;
+    public void setCustomFieldValueId(long customFieldValueId) {
+        this.customFieldValueId = customFieldValueId;
     }
 
     public long getAlbumId() {
@@ -48,13 +45,5 @@ public final class CustomFieldAlbumCrossRef {
 
     public void setAlbumId(long albumId) {
         this.albumId = albumId;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }
