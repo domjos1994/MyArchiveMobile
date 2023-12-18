@@ -59,6 +59,7 @@ import de.domjos.myarchivedatabase.model.mediaList.MediaListMovieCrossRef;
 import de.domjos.myarchivedatabase.repository.FilterDAO;
 import de.domjos.myarchivedatabase.repository.LibraryDAO;
 import de.domjos.myarchivedatabase.repository.MediaListDAO;
+import de.domjos.myarchivedatabase.repository.ViewsDAO;
 import de.domjos.myarchivedatabase.repository.fileTree.FileTreeDAO;
 import de.domjos.myarchivedatabase.repository.fileTree.FileTreeFileDAO;
 import de.domjos.myarchivedatabase.repository.general.CategoryDAO;
@@ -72,6 +73,8 @@ import de.domjos.myarchivedatabase.repository.media.BookDAO;
 import de.domjos.myarchivedatabase.repository.media.GameDAO;
 import de.domjos.myarchivedatabase.repository.media.MovieDAO;
 import de.domjos.myarchivedatabase.repository.media.SongDAO;
+import de.domjos.myarchivedatabase.views.CustomFieldWithMediaAndValue;
+import de.domjos.myarchivedatabase.views.Media;
 
 @Database(entities = {
         Category.class, Tag.class, Person.class, Company.class, CustomField.class, CustomFieldValue.class,
@@ -90,6 +93,8 @@ import de.domjos.myarchivedatabase.repository.media.SongDAO;
         MediaListAlbumCrossRef.class, MediaListBookCrossRef.class, MediaListGameCrossRef.class, MediaListMovieCrossRef.class,
         FilterCategoryCrossRef.class, FilterTagCrossRef.class,
         FileTree.class, FileTreeFile.class, FileTreeTagCrossRef.class, FileTreeFileTagCrossRef.class
+}, views = {
+        CustomFieldWithMediaAndValue.class, Media.class
 }, version = 14, exportSchema = false)
 @TypeConverters({DateConverter.class, BitmapConverter.class, DrawableConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -110,5 +115,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract FilterDAO filterDAO();
     public abstract FileTreeDAO fileTreeDAO();
     public abstract FileTreeFileDAO fileTreeFileDAO();
+    public abstract ViewsDAO viewsDAO();
 }
 
