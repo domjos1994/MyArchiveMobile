@@ -18,3 +18,4 @@
 include ':app', ':myarchivelibrary', ':MyArchiveServices', ':MyArchiveDatabase'
 
 rootProject.name='MyArchiveMobile'
+include ':MyArchiveDBValidator'
