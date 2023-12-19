@@ -10,6 +10,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import de.domjos.myarchivedatabase.model.filter.Filter;
+import de.domjos.myarchivedatabase.model.filter.FilterWithTags;
 
 @Dao
 public interface FilterDAO {
@@ -22,6 +23,9 @@ public interface FilterDAO {
 
     @Query("SELECT * FROM filters WHERE title=:title")
     Filter getFilterByTitle(String title);
+
+    @Query("SELECT * FROM filters WHERE id=:id")
+    FilterWithTags getFilterWithTags(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertFilters(Filter... filters);

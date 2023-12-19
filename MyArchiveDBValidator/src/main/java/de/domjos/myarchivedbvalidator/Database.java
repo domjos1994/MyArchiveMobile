@@ -25,6 +25,9 @@ import java.util.Random;
 
 import de.domjos.myarchivedatabase.AppDatabase;
 import de.domjos.myarchivedatabase.converter.DrawableConverter;
+import de.domjos.myarchivedatabase.model.base.BaseDescriptionObject;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
 import de.domjos.myarchivedatabase.model.media.album.Album;
 import de.domjos.myarchivedbvalidator.exceptions.LengthMinMaxException;
 import de.domjos.myarchivedbvalidator.exceptions.TitleDuplicatedException;
@@ -38,13 +41,18 @@ import de.domjos.myarchivedbvalidator.validation.LengthValidator;
  * @version 1.0
  */
 public final class Database {
+    public final static String MEDIA_ALBUM = "album";
+    public final static String MEDIA_MOVIE = "movie";
+    public final static String MEDIA_BOOK = "book";
+    public final static String MEDIA_GAME = "game";
+    public final static String MEDIA_SONG = "song";
+    public final static String FILTER = "filter";
+    public final static String FILE_TREE = "file_tree";
+    public final static String FILE_TREE_FILE = "file_tree_file";
+
     private final static String TYPE = "type";
-    public final static String ALBUMS = "albums";
     private final static String PATH = "path";
     private final static String LENGTH = "length";
-    public final static String MOVIES = "movies";
-    public final static String BOOKS = "books";
-    public final static String GAMES = "games";
     private final static String DEAD_LINE = "deadLine";
     private final static String DATE_FORMAT = "yyyy-MM-dd";
     private final static String DESCRIPTION = "description";
@@ -147,6 +155,17 @@ public final class Database {
             throw new LengthMinMaxException(this.context, 0, 10000000);
         }
 
+        Category category = album.getCategoryItem();
+        if(category == null) {
+            album.setCategory(0L);
+        } else {
+            if(category.getId() == 0) {
+                category.setId(this.appDatabase.categoryDAO().insertCategories(category)[0]);
+                album.setCategoryItem(category);
+                album.setCategory(category.getId());
+            }
+        }
+        album.setId(this.appDatabase.albumDAO().insertAlbums(album)[0]);
 
 
 
@@ -1459,68 +1478,49 @@ public final class Database {
         db.execSQL("DELETE FROM tags");
     }
 
-    private void updateDatabase(String content, int oldVersion, int newVersion, SQLiteDatabase database) {
-        Map<Integer, String> queries = new LinkedHashMap<>();
-        oldVersion++;
-        for(int i = oldVersion; i<=newVersion; i++) {
-            boolean start = false;
-            StringBuilder versionQueries = new StringBuilder();
-            for(String line : content.split("\n")) {
-                if(!start && line.trim().equals("-- Version " + oldVersion)) {
-                    start = true;
-                    continue;
-                }
-                if(start) {
-                    if(!line.startsWith("--")) {
-                        versionQueries.append(line);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            queries.put(i, versionQueries.toString().trim());
-        }
-
-        for(int i = oldVersion; i<=newVersion; i++) {
-            String updateString = queries.get(i);
-            if(updateString != null) {
-                for(String updateQuery : updateString.split(";")) {
-                    try {
-                        database.execSQL(updateQuery);
-                    } catch (Exception ignored) {}
-                }
-            }
-        }
-    }
-
-    private static String readRawTextFile(Context ctx, int resId) {
-        InputStream inputStream = ctx.getResources().openRawResource(resId);
-        InputStreamReader inputReader = new InputStreamReader(inputStream);
-        BufferedReader bufferedReader = new BufferedReader(inputReader);
-
-        String line;
-        StringBuilder text = new StringBuilder();
-        try {
-            while (( line = bufferedReader.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
-            }
-        } catch (IOException e) {
-            return null;
-        } finally {
-            try {
-                bufferedReader.close();
-                inputReader.close();
-                inputStream.close();
-            } catch (Exception ignored) {}
-        }
-        return text.toString();
-    }
-
     private String where(String where) {
         if(!where.trim().isEmpty()) {
             return " WHERE " + where;
         }
         return "";
+    }
+
+    private void insertTag(long id, String type, Tag... tags) {
+        if(id != 0) {
+            switch (type.toLowerCase()) {
+                case Database.MEDIA_ALBUM ->
+                        this.appDatabase.albumDAO().getAlbumWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tag);
+                        });
+                case Database.MEDIA_BOOK ->
+                        this.appDatabase.bookDAO().getBookWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tag);
+                        });
+                case Database.MEDIA_GAME ->
+                        this.appDatabase.gameDAO().getGameWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tag);
+                        });
+                case Database.MEDIA_MOVIE ->
+                        this.appDatabase.movieDAO().getMovieWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tags);
+                        });
+                case Database.MEDIA_SONG ->
+                        this.appDatabase.songDAO().getSongWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tags);
+                        });
+                case Database.FILTER ->
+                        this.appDatabase.filterDAO().getFilterWithTags(id).getTags().forEach(tag -> {
+                            this.appDatabase.tagDAO().deleteTags(tags);
+                        });
+            }
+        }
+
+        for(Tag tag : tags) {
+            if(tag.getId() == 0) {
+                tag.setId(this.appDatabase.tagDAO().insertTags(tag)[0]);
+            } else {
+                this.appDatabase.tagDAO().updateTags(tag);
+            }
+        }
     }
 }

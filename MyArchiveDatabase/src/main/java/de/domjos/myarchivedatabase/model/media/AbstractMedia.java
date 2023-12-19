@@ -3,10 +3,20 @@ package de.domjos.myarchivedatabase.model.media;
 import android.graphics.drawable.Drawable;
 
 import androidx.room.ColumnInfo;
+import androidx.room.Ignore;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import de.domjos.myarchivedatabase.model.base.BaseDescriptionObject;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.customField.CustomField;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
 
 public class AbstractMedia extends BaseDescriptionObject {
     @ColumnInfo(name = "originalTitle")
@@ -36,6 +46,21 @@ public class AbstractMedia extends BaseDescriptionObject {
     @ColumnInfo(name = "rating_note")
     private String note;
 
+    @Ignore
+    private Category categoryItem;
+
+    @Ignore
+    private List<Tag> tags;
+
+    @Ignore
+    private List<Person> persons;
+
+    @Ignore
+    private List<Company> companies;
+
+    @Ignore
+    private Map<CustomField, String> customFields;
+
     public AbstractMedia() {
         super();
         this.originalTitle = "";
@@ -47,6 +72,12 @@ public class AbstractMedia extends BaseDescriptionObject {
         this.ratingWeb = 0.0;
         this.ratingOwn = 0.0;
         this.note = "";
+
+        this.categoryItem = null;
+        this.tags = new LinkedList<>();
+        this.persons = new LinkedList<>();
+        this.companies = new LinkedList<>();
+        this.customFields = new LinkedHashMap<>();
     }
 
     public String getOriginalTitle() {
@@ -119,5 +150,45 @@ public class AbstractMedia extends BaseDescriptionObject {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Category getCategoryItem() {
+        return categoryItem;
+    }
+
+    public void setCategoryItem(Category categoryItem) {
+        this.categoryItem = categoryItem;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
+    }
+
+    public List<Company> getCompanies() {
+        return companies;
+    }
+
+    public void setCompanies(List<Company> companies) {
+        this.companies = companies;
+    }
+
+    public Map<CustomField, String> getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(Map<CustomField, String> customFields) {
+        this.customFields = customFields;
     }
 }
