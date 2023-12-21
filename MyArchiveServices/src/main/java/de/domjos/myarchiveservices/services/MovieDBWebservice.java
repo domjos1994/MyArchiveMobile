@@ -34,12 +34,12 @@ import java.util.List;
 import java.util.Locale;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.movie.Movie;
+import de.domjos.myarchiveservices.R;
 
 public class MovieDBWebservice extends TitleWebservice<Movie> {
     private final static String NAME = "name";
@@ -103,8 +103,8 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         return 0.0;
     }
 
-    public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
-        List<BaseMediaObject> movies = new LinkedList<>();
+    public List<AbstractMedia> getMedia(String search) throws IOException, JSONException {
+        List<AbstractMedia> movies = new LinkedList<>();
         String url = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebservice.BASE_URL, key, Locale.getDefault().getLanguage(), URLEncoder.encode(search, StandardCharsets.UTF_8));
@@ -171,10 +171,10 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         } catch (Exception ignored) {}
     }
 
-    private static void getPoster(JSONObject resultObject, Movie movie) {
+    private void getPoster(JSONObject resultObject, Movie movie) {
         try {
             if(!resultObject.isNull("poster_path")) {
-                movie.setCover(getImage(resultObject.getString("poster_path")));
+                movie.setCover(setCover(resultObject.getString("poster_path"), CONTEXT));
             }
         }catch (Exception ignored) {}
     }
@@ -185,7 +185,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                 JSONArray genreArray = resultObject.getJSONArray("genres");
                 for(int i = 0; i<=genreArray.length()-1; i++) {
                     JSONObject genreObject = genreArray.getJSONObject(i);
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    Tag baseDescriptionObject = new Tag();
                     baseDescriptionObject.setTitle(genreObject.getString(MovieDBWebservice.NAME));
                     movie.getTags().add(baseDescriptionObject);
                 }
@@ -201,7 +201,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                     JSONObject companyObject = companyArray.getJSONObject(i);
                     Company company = new Company();
                     company.setTitle(companyObject.getString(MovieDBWebservice.NAME));
-                    company.setCover(getImage(companyObject.getString("logo_path")));
+                    company.setCover(setCover(companyObject.getString("logo_path"), CONTEXT));
                     movie.getCompanies().add(company);
                 }
             }
@@ -240,7 +240,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
                         person.setLastName(lastName);
                         person.setFirstName(firstName);
                     }
-                    person.setImage(getImage(castObject.getString("profile_path")));
+                    person.setImage(setCover(castObject.getString("profile_path"), CONTEXT));
                     movie.getPersons().add(person);
                 }
             }

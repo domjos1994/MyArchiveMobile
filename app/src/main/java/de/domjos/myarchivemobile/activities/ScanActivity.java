@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.myarchivelibrary.activities;
+package de.domjos.myarchivemobile.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,7 +48,7 @@ import java.util.List;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.myarchivelibrary.R;
+import de.domjos.myarchivemobile.R;
 
 /**
  * This sample performs continuous scanning, displaying the barcode and source image whenever

@@ -22,8 +22,8 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchiveservices.services.WikiDataWebservice;
 
@@ -39,7 +39,7 @@ public class WikiDataCompanyTask extends CustomAbstractTask<Company[], Void, Lis
 
         try {
             for(Company company : companies) {
-                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(company.getTitle());
+                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(company.getTitle(), context);
                 Company tmp = wikiDataWebService.getCompany();
                 if(tmp.getCover() == null) {
                     tmp.setCover(company.getCover());

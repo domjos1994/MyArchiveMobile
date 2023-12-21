@@ -4,15 +4,15 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
-import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
+import de.domjos.myarchivedatabase.model.fileTree.FileTree;
+import de.domjos.myarchivedatabase.model.fileTree.FileTreeFile;
 import de.domjos.myarchiveservices.R;
 
 public class CustomTreeNode extends com.unnamed.b.atv.model.TreeNode {
     private final Drawable drawable;
     private final Object treeItem;
 
-    public CustomTreeNode(TreeNode node, Context context, int icon) {
+    public CustomTreeNode(FileTree node, Context context, int icon) {
         super((node == null ? "" : node.getTitle() == null ? "" : node.getTitle()));
 
         if(node != null) {
@@ -27,7 +27,7 @@ public class CustomTreeNode extends com.unnamed.b.atv.model.TreeNode {
         this.treeItem = node;
     }
 
-    public CustomTreeNode(TreeFile file, Context context) {
+    public CustomTreeNode(FileTreeFile file, Context context) {
         super(file.getTitle());
 
         this.drawable = ConvertHelper.convertResourcesToDrawable(context, R.drawable.icon_file);

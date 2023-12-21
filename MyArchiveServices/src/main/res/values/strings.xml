@@ -39,6 +39,7 @@
     <string name="sys_reload">Reload</string>
     <string name="sys_reload_summary">Reload data…</string>
     <string name="sys_date_format">yyyy-MM-dd</string>
+    <string name="sys_no_internet">No Internet!</string>
 
     <string name="main_navigation_media">Media</string>
     <string name="main_navigation_media_books">Books</string>
@@ -100,4 +101,24 @@
     <string name="settings_general_media_order_creation">Order Creation</string>
 
     <string name="library_lendOut">Lend out</string>
+
+    <string name="service_type_movies">Movies</string>
+    <string name="service_type_music">Music</string>
+    <string name="service_type_books">Books</string>
+    <string name="service_type_games">Games</string>
+    <string name="service_ean_data_search">Search by EAN-Code…</string>
+    <string name="service_ean_data_search_content">Search Media by EAN-Code…</string>
+    <string name="service_google_search" translatable="false">Google Books</string>
+    <string name="service_google_search_content">Search in Google Books…</string>
+    <string name="service_wiki_data_search" translatable="false">WikiData</string>
+    <string name="service_wiki_data_search_content">Search in WikiData…</string>
+    <string name="service_ean_data_key" translatable="false">ACDEF0595E238EA3</string>
+    <string name="service_movie_db_search" translatable="false">TheMovieDB</string>
+    <string name="service_movie_db_key" translatable="false">cf20ff3c013ba0c8f8c2f05158a07316</string>
+    <string name="service_movie_db_search_content">Search in TheMovieDB…</string>
+    <string name="service_audio_db_search" translatable="false">TheAudioDB</string>
+    <string name="service_audio_db_search_content">Search in TheAudioDB…</string>
+    <string name="service_igdb_search" translatable="false">IGDB</string>
+    <string name="service_igdb_key" translatable="false">4a53e72aa5d2e25e620bb1cbb77a15f0</string>
+    <string name="service_igdb_search_content">Search in IGDB…</string>
 </resources>

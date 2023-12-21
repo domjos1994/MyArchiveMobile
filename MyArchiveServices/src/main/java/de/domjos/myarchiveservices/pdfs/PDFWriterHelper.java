@@ -18,23 +18,29 @@
 package de.domjos.myarchiveservices.pdfs;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.converter.BitmapConverter;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchivedatabase.model.media.book.Book;
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchivedatabase.model.media.movie.Movie;
 import de.domjos.myarchiveservices.services.PDFService;
 import de.domjos.myarchiveservices.R;
 
@@ -55,7 +61,7 @@ public class PDFWriterHelper {
         this.pdfService.addHeadPage(icon, this.context.getString(R.string.main_navigation_media), this.context.getString(R.string.app_name));
     }
 
-    public void addRow(BaseMediaObject baseMediaObject) {
+    public void addRow(AbstractMedia baseMediaObject) {
         this.addMediaObject(baseMediaObject);
 
         if(baseMediaObject instanceof Book) {
@@ -80,11 +86,33 @@ public class PDFWriterHelper {
         this.pdfService.close();
     }
 
-    private void addMediaObject(BaseMediaObject baseMediaObject) {
+    private void addMediaObject(AbstractMedia baseMediaObject) {
         this.pdfService.addParagraph(baseMediaObject.getTitle(), PDFService.H4, PDFService.CENTER, 20f);
 
         if(baseMediaObject.getCover() != null) {
-            this.pdfService.addImage(baseMediaObject.getCover(), PDFService.CENTER, 256f, 256f, 10f);
+            Drawable drawable = baseMediaObject.getCover();
+            Bitmap bitmap;
+
+            if(drawable == null) {
+                return;
+            }
+
+            if (drawable instanceof BitmapDrawable bitmapDrawable) {
+                if(bitmapDrawable.getBitmap() != null) {
+                    this.pdfService.addImage(BitmapConverter.toByte(bitmapDrawable.getBitmap()), PDFService.CENTER, 256f, 256f, 10f);
+                }
+            } else {
+                if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+                    bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+                } else {
+                    bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                }
+
+                Canvas canvas = new Canvas(bitmap);
+                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                drawable.draw(canvas);
+                this.pdfService.addImage(BitmapConverter.toByte(bitmap), PDFService.CENTER, 256f, 256f, 10f);
+            }
         }
 
         Map<String, Float> columns = new LinkedHashMap<>();
@@ -104,13 +132,13 @@ public class PDFWriterHelper {
         if(!baseMediaObject.getCode().trim().isEmpty()) {
             rows.add(Arrays.asList(this.context.getString(R.string.media_general_code), baseMediaObject.getCode()));
         }
-        if(baseMediaObject.getCategory() != null) {
-            rows.add(Arrays.asList(this.context.getString(R.string.media_general_category), baseMediaObject.getCategory().getTitle()));
+        if(baseMediaObject.getCategoryItem() != null) {
+            rows.add(Arrays.asList(this.context.getString(R.string.media_general_category), baseMediaObject.getCategoryItem().getTitle()));
         }
         if(baseMediaObject.getTags() != null && !baseMediaObject.getTags().isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
-            for(BaseDescriptionObject baseDescriptionObject : baseMediaObject.getTags()) {
-                stringBuilder.append(baseDescriptionObject.getTitle()).append(", ");
+            for(Tag tag : baseMediaObject.getTags()) {
+                stringBuilder.append(tag.getTitle()).append(", ");
             }
             rows.add(Arrays.asList(this.context.getString(R.string.media_general_tags), stringBuilder.toString()));
         }
@@ -124,13 +152,13 @@ public class PDFWriterHelper {
 
         List<List<String>> rows = new LinkedList<>();
         if(book.getType() != null) {
-            rows.add(Arrays.asList(this.context.getString(R.string.book_type), book.getType().toString()));
+            rows.add(Arrays.asList(this.context.getString(R.string.book_type), book.getType()));
         }
         if(!book.getEdition().trim().isEmpty()) {
             rows.add(Arrays.asList(this.context.getString(R.string.book_edition), book.getEdition()));
         }
         if(!book.getTopics().isEmpty()) {
-            rows.add(Arrays.asList(this.context.getString(R.string.book_topics), TextUtils.join(",", book.getTopics())));
+            rows.add(Arrays.asList(this.context.getString(R.string.book_topics), TextUtils.join(",", Collections.singleton(book.getTopics()))));
         }
         if(book.getNumberOfPages() != 0) {
             rows.add(Arrays.asList(this.context.getString(R.string.book_numberOfPages), String.valueOf(book.getNumberOfPages())));
@@ -145,7 +173,7 @@ public class PDFWriterHelper {
 
         List<List<String>> rows = new LinkedList<>();
         if(movie.getType() != null) {
-            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), movie.getType().toString()));
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), movie.getType()));
         }
         if(movie.getLength() != 0.0) {
             rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(movie.getLength())));
@@ -160,7 +188,7 @@ public class PDFWriterHelper {
 
         List<List<String>> rows = new LinkedList<>();
         if(game.getType() != null) {
-            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), game.getType().toString()));
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), game.getType()));
         }
         if(game.getLength() != 0.0) {
             rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(game.getLength())));
@@ -175,7 +203,7 @@ public class PDFWriterHelper {
 
         List<List<String>> rows = new LinkedList<>();
         if(album.getType() != null) {
-            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), album.getType().toString()));
+            rows.add(Arrays.asList(this.context.getString(R.string.movie_type), album.getType()));
         }
         if(album.getNumberOfDisks() != 0.0) {
             rows.add(Arrays.asList(this.context.getString(R.string.movie_length), String.valueOf(album.getNumberOfDisks())));

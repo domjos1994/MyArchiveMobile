@@ -33,12 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.book.Book;
+import de.domjos.myarchiveservices.R;
 
 public class GoogleBooksWebservice extends TitleWebservice<Book> {
     private final static String HTTP = "http://", HTTPS = "https://";
@@ -74,8 +74,8 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         return null;
     }
 
-    public List<BaseMediaObject> getMedia(String search) throws IOException {
-        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+    public List<AbstractMedia> getMedia(String search) throws IOException {
+        List<AbstractMedia> baseMediaObjects = new LinkedList<>();
         Books books = new Books.Builder(new NetHttpTransport(), new GsonFactory(), null).setApplicationName("MyArchive").build();
         Books.Volumes.List list = books.volumes().list("intitle:" + search).setProjection("full");
         if(!this.key.isEmpty()) {
@@ -161,7 +161,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
 
             if (info.getCategories() != null && !info.getCategories().isEmpty()) {
                 for (String category : info.getCategories()) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                    Tag baseDescriptionObject = new Tag();
                     baseDescriptionObject.setTitle(category);
                     book.getTags().add(baseDescriptionObject);
                 }
@@ -171,7 +171,7 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         return book;
     }
 
-    private static void setCover(Volume.VolumeInfo info, Book book) {
+    private void setCover(Volume.VolumeInfo info, Book book) {
         if(info.getImageLinks() != null) {
             Volume.VolumeInfo.ImageLinks imageLinks = info.getImageLinks();
             addCover(book, imageLinks.getSmall());
@@ -183,9 +183,9 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
         }
     }
 
-    private static void addCover(Book book, String link) {
+    private void addCover(Book book, String link) {
         if(book.getCover() == null && link != null && !link.isEmpty()) {
-            book.setCover(ConvertHelper.convertStringToByteArray(link.replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS)));
+            book.setCover(setCover(link.replace(GoogleBooksWebservice.HTTP, GoogleBooksWebservice.HTTPS), CONTEXT));
         }
     }
 

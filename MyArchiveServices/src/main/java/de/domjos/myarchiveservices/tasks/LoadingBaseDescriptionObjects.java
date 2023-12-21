@@ -10,19 +10,21 @@ import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.model.media.MediaFilter;
-import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.model.filter.Filter;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchivedatabase.model.media.book.Book;
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchivedatabase.model.media.movie.Movie;
+import de.domjos.myarchivedbvalidator.Database;
 import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomExtendedStatusTask;
 import de.domjos.myarchiveservices.helper.ControlsHelper;
 
 public class LoadingBaseDescriptionObjects<T> extends CustomExtendedStatusTask<Void, BaseDescriptionObject> {
     private final T test;
-    private final MediaFilter mediaFilter;
+    private final Filter mediaFilter;
     private final String searchString;
     private final WeakReference<SwipeRefreshDeleteList> lv;
     private final String key;
@@ -32,7 +34,7 @@ public class LoadingBaseDescriptionObjects<T> extends CustomExtendedStatusTask<V
     private final String orderBy;
 
     public LoadingBaseDescriptionObjects(
-            Activity activity, T test, MediaFilter mediaFilter, String searchString,
+            Activity activity, T test, Filter mediaFilter, String searchString,
             SwipeRefreshDeleteList lv, String key, boolean notification, int icon_notification,
             Database database, int mediaCount, int offset, String orderBy) {
         super(activity, R.string.sys_reload, R.string.sys_reload_summary, notification,
@@ -83,11 +85,11 @@ public class LoadingBaseDescriptionObjects<T> extends CustomExtendedStatusTask<V
                 return baseDescriptionObjects;
             } else {
                 if(this.test instanceof Book) {
-                    MediaFilter mediaFilter = new MediaFilter();
+                    Filter mediaFilter = new Filter();
                     mediaFilter.setBooks(true);
                     mediaFilter.setMovies(false);
                     mediaFilter.setGames(false);
-                    mediaFilter.setMusic(false);
+                    mediaFilter.setAlbums(false);
 
                     return ControlsHelper.getAllMediaItems(
                             this.getContext(), mediaFilter, this.searchString, this.key,
@@ -95,54 +97,63 @@ public class LoadingBaseDescriptionObjects<T> extends CustomExtendedStatusTask<V
                     );
                 }
                 if(this.test instanceof Movie) {
-                    MediaFilter mediaFilter = new MediaFilter();
+                    Filter mediaFilter = new Filter();
                     mediaFilter.setBooks(false);
                     mediaFilter.setMovies(true);
                     mediaFilter.setGames(false);
-                    mediaFilter.setMusic(false);
+                    mediaFilter.setAlbums(false);
                     return ControlsHelper.getAllMediaItems(
                             this.getContext(), mediaFilter, this.searchString, this.key,
                             this.database, this.mediaCount, this.offset, this.orderBy
                     );
                 }
                 if(this.test instanceof Album) {
-                    MediaFilter mediaFilter = new MediaFilter();
+                    Filter mediaFilter = new Filter();
                     mediaFilter.setBooks(false);
                     mediaFilter.setMovies(false);
                     mediaFilter.setGames(false);
-                    mediaFilter.setMusic(true);
+                    mediaFilter.setAlbums(true);
                     return ControlsHelper.getAllMediaItems(
                             this.getContext(), mediaFilter, this.searchString, this.key,
                             this.database, this.mediaCount, this.offset, this.orderBy
                     );
                 }
                 if(this.test instanceof Game) {
-                    MediaFilter mediaFilter = new MediaFilter();
+                    Filter mediaFilter = new Filter();
                     mediaFilter.setBooks(false);
                     mediaFilter.setMovies(false);
                     mediaFilter.setGames(true);
-                    mediaFilter.setMusic(false);
+                    mediaFilter.setAlbums(false);
                     return ControlsHelper.getAllMediaItems(
                             this.getContext(), mediaFilter, this.searchString, this.key,
                             this.database, this.mediaCount, this.offset, this.orderBy
                     );
                 }
-                if(this.test instanceof de.domjos.myarchivelibrary.model.base.BaseDescriptionObject) {
-                    List<de.domjos.myarchivelibrary.model.base.BaseDescriptionObject> data;
+                if(this.test instanceof BaseDescriptionObject) {
                     if(this.key.equals(this.getContext().getString(R.string.media_general_tags).toLowerCase())) {
-                        data = this.database.getBaseObjects("tags", "", 0, this.searchString);
+                        List<Tag> data = this.database.getTags(0, "");
+                        List<BaseDescriptionObject> objects = new LinkedList<>();
+                        data.forEach(item -> {
+                            BaseDescriptionObject obj = new BaseDescriptionObject();
+                            obj.setId(item.getId());
+                            obj.setTitle(item.getTitle());
+                            obj.setObject(item);
+                            objects.add(obj);
+                        });
+                        return objects;
                     } else {
-                        data = this.database.getBaseObjects("categories", "", 0, this.searchString);
+                        List<Category> data = new LinkedList<>();
+                        List<BaseDescriptionObject> objects = new LinkedList<>();
+                        data.forEach(item -> {
+                            BaseDescriptionObject obj = new BaseDescriptionObject();
+                            obj.setId(item.getId());
+                            obj.setTitle(item.getTitle());
+                            obj.setObject(item);
+                            objects.add(obj);
+                        });
+                        return objects;
                     }
-                    List<BaseDescriptionObject> objects = new LinkedList<>();
-                    data.forEach(item -> {
-                        BaseDescriptionObject obj = new BaseDescriptionObject();
-                        obj.setId(item.getId());
-                        obj.setTitle(item.getTitle());
-                        obj.setObject(item);
-                        objects.add(obj);
-                    });
-                    return objects;
+
                 }
             }
         } catch (Exception ex) {

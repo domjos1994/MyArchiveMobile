@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
 import de.domjos.myarchivedatabase.model.general.tag.Tag;
 import de.domjos.myarchivedatabase.model.media.album.Album;
 import de.domjos.myarchivedatabase.model.media.book.Book;
@@ -159,8 +161,43 @@ public class DatabaseTest {
 
         Assert.assertNotEquals(0, tags.size());
 
-        this.database.deleteTags("", 0);
+        this.database.deleteTags("", 0, tag);
         tags = this.database.getTags(0, "");
         Assert.assertEquals(0, tags.size());
+    }
+
+    @Test
+    public void testPersonInsert() {
+        Person person = new Person();
+        person.setFirstName("John");
+        person.setLastName("Doe");
+        this.database.insertPersons(0, "", person);
+
+        List<Person> persons = this.database.getPersons(0, "");
+        Assert.assertEquals(this.database.getMessages(), "", this.database.getMessages());
+        Assert.assertEquals(1, persons.size());
+
+        Assert.assertNotEquals(0, persons.size());
+
+        this.database.deletePersons("", 0, person);
+        persons = this.database.getPersons(0, "");
+        Assert.assertEquals(0, persons.size());
+    }
+
+    @Test
+    public void testCompanyInsert() {
+        Company company = new Company();
+        company.setTitle("Test");
+        this.database.insertCompanies(0, "", company);
+
+        List<Company> companies = this.database.getCompanies(0, "");
+        Assert.assertEquals(this.database.getMessages(), "", this.database.getMessages());
+        Assert.assertEquals(1, companies.size());
+
+        Assert.assertNotEquals(0, companies.size());
+
+        this.database.deleteCompanies("", 0, company);
+        companies = this.database.getCompanies(0, "");
+        Assert.assertEquals(0, companies.size());
     }
 }

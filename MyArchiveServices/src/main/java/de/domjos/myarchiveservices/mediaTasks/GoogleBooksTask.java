@@ -24,8 +24,8 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.media.books.Book;
+import de.domjos.myarchivedatabase.model.media.book.Book;
+import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchiveservices.services.GoogleBooksWebservice;
 

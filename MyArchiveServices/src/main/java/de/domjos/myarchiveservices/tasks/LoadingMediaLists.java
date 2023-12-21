@@ -5,14 +5,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.media.MediaList;
+import de.domjos.myarchivedatabase.model.mediaList.MediaList;
+import de.domjos.myarchivedbvalidator.Database;
 import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomExtendedStatusTask;
 
@@ -43,7 +43,7 @@ public class LoadingMediaLists extends CustomExtendedStatusTask<Void, MediaList>
                 baseDescriptionObject.setDescription(this.getContext().getString(R.string.sys_reload_summary));
                 this.lv.get().getAdapter().add(baseDescriptionObject);
             });
-            return this.database.getMediaLists(searchString, -1, offset);
+            return new ArrayList<>();
         } catch (Exception ex) {
             super.printException(ex);
         } finally {

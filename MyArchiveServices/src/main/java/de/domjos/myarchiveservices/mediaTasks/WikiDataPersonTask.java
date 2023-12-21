@@ -22,8 +22,8 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchiveservices.services.WikiDataWebservice;
 
@@ -39,7 +39,7 @@ public class WikiDataPersonTask extends CustomAbstractTask<Person[], Void, List<
 
         try {
             for(Person person : people) {
-                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(person.getFirstName(), person.getLastName());
+                WikiDataWebservice wikiDataWebService = new WikiDataWebservice(person.getFirstName(), person.getLastName(), context);
                 Person tmp = wikiDataWebService.getPerson();
                 if(tmp.getImage() == null) {
                     tmp.setImage(person.getImage());

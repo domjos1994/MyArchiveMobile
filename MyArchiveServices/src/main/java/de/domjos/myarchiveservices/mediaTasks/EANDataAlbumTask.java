@@ -22,8 +22,8 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
 import de.domjos.myarchiveservices.services.EANDataWebservice;
 

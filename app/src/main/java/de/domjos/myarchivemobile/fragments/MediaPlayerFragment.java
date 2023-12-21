@@ -40,7 +40,7 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
+import de.domjos.myarchivemobile.helper.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.helper.PDFReaderHelper;
 

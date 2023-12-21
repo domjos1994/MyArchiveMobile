@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import de.domjos.myarchivedatabase.model.fileTree.FileTree;
 import de.domjos.myarchiveservices.R;
 
 public class CustomTreeNodeHolder extends TreeNode.BaseNodeViewHolder<CustomTreeNode> {
@@ -38,8 +39,8 @@ public class CustomTreeNodeHolder extends TreeNode.BaseNodeViewHolder<CustomTree
         if(this.system) {
             this.unselectedColor = this.context.getResources().getColor(R.color.hintColor, context.getTheme());
         } else {
-            if(value.getTreeItem() instanceof de.domjos.myarchivelibrary.model.media.fileTree.TreeNode) {
-                if(((de.domjos.myarchivelibrary.model.media.fileTree.TreeNode)value.getTreeItem()).isSystem()) {
+            if(value.getTreeItem() instanceof FileTree) {
+                if(((FileTree)value.getTreeItem()).isSystem()) {
                     this.system = true;
                     this.unselectedColor = this.context.getResources().getColor(R.color.hintColor, context.getTheme());
                 }

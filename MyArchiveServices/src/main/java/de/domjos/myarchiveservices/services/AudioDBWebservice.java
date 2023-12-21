@@ -18,11 +18,14 @@
 package de.domjos.myarchiveservices.services;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -33,11 +36,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchiveservices.R;
 
 /** @noinspection CharsetObjectCanBeUsed*/
 public class AudioDBWebservice extends TitleWebservice<Album> {
@@ -70,8 +73,8 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         return album;
     }
 
-    public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
-        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+    public List<AbstractMedia> getMedia(String search) throws IOException, JSONException {
+        List<AbstractMedia> baseMediaObjects = new LinkedList<>();
         JSONObject jsonObject = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, StandardCharsets.UTF_8))));
@@ -139,17 +142,28 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         try {
             if(albumObject.has("strGenre") && !albumObject.isNull("strGenre")) {
                 String genre = albumObject.getString("strGenre");
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                Category baseDescriptionObject = new Category();
                 baseDescriptionObject.setTitle(genre);
-                album.setCategory(baseDescriptionObject);
+                album.setCategoryItem(baseDescriptionObject);
             }
         } catch (Exception ignored) {}
     }
 
-    private static byte[] setCover(JSONObject albumObject, String key) {
+    private Drawable setCover(JSONObject albumObject, String key) {
         try {
             if(albumObject.has(key) && !albumObject.isNull(key)) {
-                return ConvertHelper.convertStringToByteArray(albumObject.getString(key));
+                byte[] data = ConvertHelper.convertStringToByteArray(albumObject.getString(key));
+                if(data == null) {
+                    return null;
+                }
+                ByteArrayInputStream byteArrayOutputStream = new ByteArrayInputStream(data);
+                BitmapDrawable drawable = new BitmapDrawable(CONTEXT.getResources(), byteArrayOutputStream);
+                try {
+                    byteArrayOutputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return drawable;
             }
         } catch (Exception ignored) {}
         return null;

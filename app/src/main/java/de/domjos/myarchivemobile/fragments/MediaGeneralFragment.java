@@ -41,7 +41,7 @@ import java.util.*;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
-import de.domjos.myarchivelibrary.activities.ScanActivity;
+import de.domjos.myarchivemobile.activities.ScanActivity;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;

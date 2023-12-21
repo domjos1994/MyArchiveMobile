@@ -37,6 +37,7 @@
     <string name="sys_reload">Laden</string>
     <string name="sys_reload_summary">Daten laden…</string>
     <string name="sys_date_format">dd.MM.yyyy</string>
+    <string name="sys_no_internet">Kein Internet!</string>
 
     <string name="main_navigation_media">Medien</string>
     <string name="main_navigation_media_books">Bücher</string>
@@ -98,4 +99,16 @@
     <string name="settings_general_media_order_creation">Reihenfolge Erstellung</string>
 
     <string name="library_lendOut">Ausgeliehen</string>
+
+    <string name="service_type_movies">Filme</string>
+    <string name="service_type_music">Musik</string>
+    <string name="service_type_books">Bücher</string>
+    <string name="service_type_games">Spiele</string>
+    <string name="service_ean_data_search">Nach EAN-Code suchen…</string>
+    <string name="service_ean_data_search_content">Suche Medien über EAN-Code…</string>
+    <string name="service_google_search_content">In Google Books suchen…</string>
+    <string name="service_wiki_data_search_content">In WikiData suchen…</string>
+    <string name="service_movie_db_search_content">In TheMovieDB suchen…</string>
+    <string name="service_audio_db_search_content">In TheAudioDB suchen…</string>
+    <string name="service_igdb_search_content">In IGDB suchen…</string>
 </resources>

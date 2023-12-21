@@ -28,25 +28,27 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchivedatabase.model.media.movie.Movie;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchiveservices.R;
 
 public class EANDataWebservice extends JSONService {
     private final static String BASE_URL = "https://eandata.com/feed/?v=3&keycode=%s&mode=json&find=%s";
     private final static String KEY_CODE = "code";
     private final static String PRODUCT = "product";
 
-    private String key;
-    private String code;
+    private final String key;
+    private final String code;
+    private final Context context;
 
     public EANDataWebservice(String code, String key, Context context) {
         this.code = code;
+        this.context = context;
 
         if(!key.isEmpty()) {
             this.key = key;
@@ -133,13 +135,13 @@ public class EANDataWebservice extends JSONService {
     }
 
 
-    private void setBaseParams(BaseMediaObject baseMediaObject, JSONObject productObject) throws JSONException, ParseException {
+    private void setBaseParams(AbstractMedia baseMediaObject, JSONObject productObject) throws JSONException, ParseException {
         JSONObject attributesObject = productObject.getJSONObject("attributes");
         baseMediaObject.setTitle(this.getString(attributesObject, EANDataWebservice.PRODUCT));
         baseMediaObject.setPrice(this.getDouble(attributesObject, "price_new"));
-        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-        baseDescriptionObject.setTitle(this.getString(attributesObject, "category_text"));
-        baseMediaObject.setCategory(baseDescriptionObject);
+        Category category = new Category();
+        category.setTitle(this.getString(attributesObject, "category_text"));
+        baseMediaObject.setCategoryItem(category);
         baseMediaObject.setDescription(this.getString(attributesObject, "description"));
 
         String published = this.getString(attributesObject, "published");
@@ -158,18 +160,18 @@ public class EANDataWebservice extends JSONService {
 
         String img = this.getString(productObject, "image");
         if(!img.isEmpty()) {
-            baseMediaObject.setCover(ConvertHelper.convertStringToByteArray(img));
+            baseMediaObject.setCover(setCover(img, context));
         }
     }
 
-    private void setCompany(BaseMediaObject baseMediaObject, JSONObject baseObject) throws JSONException {
+    private void setCompany(AbstractMedia baseMediaObject, JSONObject baseObject) throws JSONException {
         if(baseObject.has("company") && !baseObject.isNull("company")) {
             JSONObject companyObject = baseObject.getJSONObject("company");
             Company company = new Company();
             company.setTitle(this.getString(companyObject, "name"));
             String url = this.getString(companyObject, "url");
             if(!url.isEmpty()) {
-                company.setCover(ConvertHelper.convertStringToByteArray(url));
+                company.setCover(setCover(url, context));
             }
             baseMediaObject.getCompanies().add(company);
         }

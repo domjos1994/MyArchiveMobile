@@ -10,8 +10,8 @@ import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.model.general.Company;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedbvalidator.Database;
 import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomExtendedStatusTask;
 
@@ -40,7 +40,7 @@ public class LoadingCompanies extends CustomExtendedStatusTask<Void, Company> {
                 baseDescriptionObject.setDescription(this.getContext().getString(R.string.sys_reload_summary));
                 this.lv.get().getAdapter().add(baseDescriptionObject);
             });
-            return this.database.getCompanies(this.searchString);
+            return this.database.getCompanies(0, "");
         } catch (Exception ex) {
             super.printException(ex);
         } finally {

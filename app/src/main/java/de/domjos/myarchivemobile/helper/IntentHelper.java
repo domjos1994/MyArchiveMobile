@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.myarchivelibrary.utils;
+package de.domjos.myarchivemobile.helper;
 
 import android.app.Activity;
 import android.content.ContentResolver;

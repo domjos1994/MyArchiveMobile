@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -36,16 +37,17 @@ import java.util.regex.Pattern;
 
 import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.CustomField;
-import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.model.media.games.Game;
-import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.model.media.music.Album;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.customField.CustomField;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.album.Album;
+import de.domjos.myarchivedatabase.model.media.book.Book;
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchivedatabase.model.media.movie.Movie;
+import de.domjos.myarchivedbvalidator.Database;
 import de.domjos.myarchiveservices.services.AudioDBWebservice;
 import de.domjos.myarchiveservices.services.GoogleBooksWebservice;
 import de.domjos.myarchiveservices.services.IGDBWebservice;
@@ -113,7 +115,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
         int i = 1;
         for(Map<String, String> row : rows) {
             publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_data)));
-            BaseMediaObject mediaObject;
+            AbstractMedia mediaObject;
             if(this.books) {
                 mediaObject = new Book();
             } else if(this.movies) {
@@ -197,7 +199,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                 } catch (Exception ignored) {
                 }
 
-                this.database.insertOrUpdateBook(book);
+                this.database.insertBook(book);
                 this.addObjectToList(book);
                 this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else if(this.movies) {
@@ -208,7 +210,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                         Movie webServiceMovie = null;
 
                         MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(movie.getTitle());
+                        List<AbstractMedia> baseMediaObjects = webservice.getMedia(movie.getTitle());
                         if (!baseMediaObjects.isEmpty()) {
                             webservice = new MovieDBWebservice(this.getContext(), baseMediaObjects.get(0).getId(), baseMediaObjects.get(0).getDescription(), "");
                             webServiceMovie = webservice.execute();
@@ -221,7 +223,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                 } catch (Exception ignored) {
                 }
 
-                this.database.insertOrUpdateMovie(movie);
+                this.database.insertMovie(movie);
                 this.addObjectToList(movie);
                 this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else if(this.music) {
@@ -232,7 +234,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                         Album webServiceAlbum = null;
 
                         AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(album.getTitle());
+                        List<AbstractMedia> baseMediaObjects = webservice.getMedia(album.getTitle());
                         if (!baseMediaObjects.isEmpty()) {
                             webservice = new AudioDBWebservice(this.getContext(), baseMediaObjects.get(0).getId());
                             webServiceAlbum = webservice.execute();
@@ -245,7 +247,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                 } catch (Exception ignored) {
                 }
 
-                this.database.insertOrUpdateAlbum(album);
+                this.database.insertAlbum(album);
                 this.addObjectToList(album);
                 this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else {
@@ -256,7 +258,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                         Game webServiceGame = null;
 
                         IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
-                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(game.getTitle());
+                        List<AbstractMedia> baseMediaObjects = webservice.getMedia(game.getTitle());
                         if (!baseMediaObjects.isEmpty()) {
                             webservice = new IGDBWebservice(this.getContext(), baseMediaObjects.get(0).getId(), "");
                             webServiceGame = webservice.execute();
@@ -269,7 +271,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                 } catch (Exception ignored) {
                 }
 
-                this.database.insertOrUpdateGame(game);
+                this.database.insertGame(game);
                 this.addObjectToList(game);
                 this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             }
@@ -277,26 +279,26 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
         }
     }
 
-    private void addObjectToList(BaseMediaObject object) {
+    private void addObjectToList(AbstractMedia object) {
         if(this.listId != 0) {
-            if(object instanceof Album) {
-                this.database.addMediaToList(this.listId, object.getId(), Database.ALBUMS);
-            }
-            if(object instanceof Book) {
-                this.database.addMediaToList(this.listId, object.getId(), Database.BOOKS);
-            }
-            if(object instanceof Game) {
-                this.database.addMediaToList(this.listId, object.getId(), Database.GAMES);
-            }
-            if(object instanceof Movie) {
-                this.database.addMediaToList(this.listId, object.getId(), Database.MOVIES);
-            }
+//            if(object instanceof Album) {
+//                this.database.addMediaToList(this.listId, object.getId(), Database.ALBUMS);
+//            }
+//            if(object instanceof Book) {
+//                this.database.addMediaToList(this.listId, object.getId(), Database.BOOKS);
+//            }
+//            if(object instanceof Game) {
+//                this.database.addMediaToList(this.listId, object.getId(), Database.GAMES);
+//            }
+//            if(object instanceof Movie) {
+//                this.database.addMediaToList(this.listId, object.getId(), Database.MOVIES);
+//            }
         }
     }
 
     private Book searchBookByTitle(Book book, Book webServiceBook) throws Exception {
         GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", "", "");
-        List<BaseMediaObject> baseMediaObjects = googleBooksWebservice.getMedia(book.getTitle());
+        List<AbstractMedia> baseMediaObjects = googleBooksWebservice.getMedia(book.getTitle());
         if(!baseMediaObjects.isEmpty()) {
             googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), "", baseMediaObjects.get(0).getDescription(), "");
             webServiceBook = googleBooksWebservice.execute();
@@ -304,7 +306,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
         return webServiceBook;
     }
 
-    private void mergeDataFromWebservice(BaseMediaObject importedObject, BaseMediaObject webServiceObject) {
+    private void mergeDataFromWebservice(AbstractMedia importedObject, AbstractMedia webServiceObject) {
         if(importedObject.getTitle().trim().isEmpty()) {
             importedObject.setTitle(webServiceObject.getTitle().trim());
         }
@@ -317,8 +319,8 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
         if(importedObject.getPrice() == 0.0) {
             importedObject.setPrice(webServiceObject.getPrice());
         }
-        if(importedObject.getCategory() == null) {
-            importedObject.setCategory(webServiceObject.getCategory());
+        if(importedObject.getCategoryItem() == null) {
+            importedObject.setCategoryItem(webServiceObject.getCategoryItem());
         }
         if(importedObject.getRatingOwn() == 0.0) {
             importedObject.setRatingOwn(webServiceObject.getRatingOwn());
@@ -499,7 +501,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
         return false;
     }
 
-    private void setValueToObject(BaseMediaObject mediaObject, String column, String value, String cell) {
+    private void setValueToObject(AbstractMedia mediaObject, String column, String value, String cell) {
         Map<String, Integer> columns = new LinkedHashMap<>();
         int i = 0;
         for(String item : this.getContext().getResources().getStringArray(R.array.api_cells)) {
@@ -514,13 +516,13 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
             case 3 -> mediaObject.setPrice(Double.parseDouble(value));
             case 4 -> mediaObject.setCode(this.validateCode(value));
             case 5 -> {
-                BaseDescriptionObject categoryObject = new BaseDescriptionObject();
+                Category categoryObject = new Category();
                 categoryObject.setTitle(value);
-                mediaObject.setCategory(categoryObject);
+                mediaObject.setCategoryItem(categoryObject);
             }
             case 6 -> {
                 for (String tag : this.convertStringToList(value)) {
-                    BaseDescriptionObject tagObject = new BaseDescriptionObject();
+                    Tag tagObject = new Tag();
                     tagObject.setTitle(tag);
                     mediaObject.getTags().add(tagObject);
                 }
@@ -561,7 +563,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
             case 14 -> {
                 if (mediaObject instanceof Book) {
                     for (String row : value.split("\n")) {
-                        ((Book) mediaObject).getTopics().add(row.trim());
+                        //((Book) mediaObject).getTopics().add(row.trim());
                     }
                 }
             }
@@ -579,7 +581,7 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                 }
             }
             case 17 -> {
-                List<CustomField> customFields = this.database.getCustomFields("title='" + cell + "'");
+                List<CustomField> customFields = new ArrayList<>();//this.database.getCustomFields("title='" + cell + "'");
                 CustomField customField = null;
                 if (customFields != null) {
                     if (!customFields.isEmpty()) {
@@ -594,9 +596,9 @@ public class ImportTask extends CustomStatusTask<Void, List<String>> {
                     customField.setMovies(true);
                     customField.setGames(true);
                     customField.setType(this.getContext().getString(R.string.customFields_type_values_text));
-                    customField.setId(this.database.insertOrUpdateCustomField(customField));
+                    //customField.setId(this.database.insertOrUpdateCustomField(customField));
                 }
-                mediaObject.getCustomFieldValues().put(customField, value);
+                mediaObject.getCustomFields().put(customField, value);
             }
         }
     }

@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import de.domjos.customwidgets.model.tasks.TaskStatus;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
 import de.domjos.myarchiveservices.services.TextService;
 import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomStatusTask;
@@ -35,10 +35,10 @@ public class ExportTask extends CustomStatusTask<Void, Void> {
     private final WeakReference<TextView> lblState;
     private final int max;
     private final String path;
-    private final List<BaseMediaObject> baseMediaObjects;
+    private final List<AbstractMedia> baseMediaObjects;
     private final int icon_notification;
 
-    public ExportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, List<BaseMediaObject> baseMediaObjects, boolean notification, int icon_notification) {
+    public ExportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, List<AbstractMedia> baseMediaObjects, boolean notification, int icon_notification) {
         super(activity, R.string.api_task_export, R.string.api_task_export_content, notification, icon_notification, pbProgress, lblMessage);
 
         this.path = path;
@@ -60,7 +60,7 @@ public class ExportTask extends CustomStatusTask<Void, Void> {
             int i = 0;
             if(this.path.toLowerCase().endsWith("pdf")) {
                 PDFWriterHelper pdfWriterHelper = new PDFWriterHelper(this.path, this.getContext(), this.icon_notification);
-                for(BaseMediaObject baseMediaObject : this.baseMediaObjects) {
+                for(AbstractMedia baseMediaObject : this.baseMediaObjects) {
                     pdfWriterHelper.addRow(baseMediaObject);
                     publishProgress(new TaskStatus(++i, "Import Row " + baseMediaObject.getTitle()));
                 }
@@ -69,7 +69,7 @@ public class ExportTask extends CustomStatusTask<Void, Void> {
                 TextService textService = new TextService(this.path);
                 textService.openWriter();
                 boolean header = false;
-                for(BaseMediaObject baseMediaObject : this.baseMediaObjects) {
+                for(AbstractMedia baseMediaObject : this.baseMediaObjects) {
                     if(!header) {
                         header = true;
                         textService.writeHeader(baseMediaObject);

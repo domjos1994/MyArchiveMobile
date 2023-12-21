@@ -96,7 +96,7 @@
                 android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name="de.domjos.myarchivelibrary.activities.ScanActivity"
+            android:name=".activities.ScanActivity"
             android:label="@string/scanner"
             android:parentActivityName=".activities.MainActivity">
             <meta-data

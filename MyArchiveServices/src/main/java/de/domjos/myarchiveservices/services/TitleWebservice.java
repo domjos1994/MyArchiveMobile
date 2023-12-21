@@ -18,17 +18,21 @@
 package de.domjos.myarchiveservices.services;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
+import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
 
-public abstract class TitleWebservice<T extends BaseMediaObject> extends JSONService {
+public abstract class TitleWebservice<T extends AbstractMedia> extends JSONService {
     final Context CONTEXT;
     final long SEARCH;
 
@@ -40,7 +44,7 @@ public abstract class TitleWebservice<T extends BaseMediaObject> extends JSONSer
 
     public abstract T execute() throws JSONException, IOException;
 
-    public abstract List<BaseMediaObject> getMedia(String search) throws IOException, JSONException;
+    public abstract List<AbstractMedia> getMedia(String search) throws IOException, JSONException;
 
     public abstract String getTitle();
 

@@ -16,8 +16,6 @@ import androidx.lifecycle.LifecycleOwner;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import de.domjos.myarchivelibrary.utils.IntentHelper;
-
 public class LifecycleObserver implements DefaultLifecycleObserver {
     private final ActivityResultRegistry mRegistry;
     private ActivityResultLauncher<PickVisualMediaRequest> pickLauncher;

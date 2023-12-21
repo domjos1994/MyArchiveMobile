@@ -17,6 +17,8 @@
 
 package de.domjos.myarchiveservices.services;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +29,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.person.Person;
 
 public class WikiDataWebservice extends JSONService {
     private final static String DATA_TYPE = "datatype", VALUE = "value", DATA_VALUE = "datavalue", TIME = "time";
@@ -37,15 +39,17 @@ public class WikiDataWebservice extends JSONService {
     private final String companyName;
     private String firstName;
     private String lastName;
+    private final Context context;
     private final static String DATE_FORMAT = "+yyyy-MM-dd'T'HH:mm:ss'Z'";
     private final String claimURL = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=%s&format=json&language=%s";
     private final List<String> personProps = Arrays.asList("P569", "P734", "P735", "P18");
     private final List<String> companyProps = Arrays.asList("P154", "P159", "P571", "P169");
     private final String LANGUAGE = Locale.getDefault().getLanguage().toLowerCase();
 
-    public WikiDataWebservice(String companyName) throws JSONException, IOException {
+    public WikiDataWebservice(String companyName, Context context) throws JSONException, IOException {
         this.companyName = companyName;
         String searchURL = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=%s&format=json&language=%s";
+        this.context = context;
 
         String url = String.format(searchURL, companyName.replace(" ", "%20"), LANGUAGE);
         String dataText = readUrl(new URL(url));
@@ -56,8 +60,8 @@ public class WikiDataWebservice extends JSONService {
         }
     }
 
-    public WikiDataWebservice(String firstName, String lastName) throws JSONException, IOException {
-        this(firstName + "+" + lastName);
+    public WikiDataWebservice(String firstName, String lastName, Context context) throws JSONException, IOException {
+        this(firstName + "+" + lastName, context);
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -92,7 +96,7 @@ public class WikiDataWebservice extends JSONService {
                         person.setBirthDate(ConvertHelper.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
                     } else if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("commonsMedia")) {
                         String image = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getString(WikiDataWebservice.VALUE);
-                        person.setImage(this.getImage(image));
+                        person.setImage(setCover(image, context));
                     }
                 }
                 if(person.getLastName().isEmpty()) {
@@ -129,7 +133,7 @@ public class WikiDataWebservice extends JSONService {
                         company.setFoundation(ConvertHelper.convertStringToDate(valID, WikiDataWebservice.DATE_FORMAT));
                     } else if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("commonsMedia")) {
                         String image = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getString(WikiDataWebservice.VALUE);
-                        company.setCover(this.getImage(image));
+                        company.setCover(this.setCover(image, context));
                     }
                 }
             }

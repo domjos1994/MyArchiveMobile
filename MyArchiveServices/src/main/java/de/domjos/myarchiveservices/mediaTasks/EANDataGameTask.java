@@ -22,9 +22,9 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchiveservices.R;
 import de.domjos.myarchiveservices.customTasks.CustomAbstractTask;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchiveservices.services.EANDataWebservice;
 
 public class EANDataGameTask extends CustomAbstractTask<String, Void, List<Game>> {

@@ -32,11 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.myarchivelibrary.R;
-import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.games.Game;
+import de.domjos.myarchivedatabase.model.general.category.Category;
+import de.domjos.myarchivedatabase.model.general.tag.Tag;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
+import de.domjos.myarchivedatabase.model.media.game.Game;
+import de.domjos.myarchiveservices.R;
 
 public class IGDBWebservice extends TitleWebservice<Game>  {
     private final static String USER_KEY = "user-key:", NAME = "name", ERROR = "ERROR";
@@ -60,8 +61,8 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
 
         game.setTitle(jsonObject.getString(IGDBWebservice.NAME));
         game.setOriginalTitle(this.getOriginalTitle(jsonObject));
-        game.setCover(this.getCover(jsonObject,"cover","covers"));
-        game.setCategory(this.getCategory(jsonObject));
+        game.setCover(this.setCover(jsonObject.getString("cover"), CONTEXT));
+        game.setCategoryItem(this.getCategory(jsonObject));
         game.setReleaseDate(this.getDate(jsonObject, "first_release_date"));
         game.setTags(this.getTags(jsonObject));
         game.setDescription(jsonObject.getString("summary"));
@@ -71,18 +72,18 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
         return game;
     }
 
-    public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
-        List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
+    public List<AbstractMedia> getMedia(String search) throws IOException, JSONException {
+        List<AbstractMedia> baseMediaObjects = new LinkedList<>();
         String content = readUrl(new URL(IGDBWebservice.BASE_URL + "/games?search=" + search + "&fields=name,first_release_date,cover"), Collections.singletonList(IGDBWebservice.USER_KEY + this.key));
         JSONArray jsonArray = new JSONArray(content);
         if(jsonArray.length() != 0) {
             for(int i = 0; i<=jsonArray.length()-1; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                BaseMediaObject baseMediaObject = new BaseMediaObject();
+                AbstractMedia baseMediaObject = new Game();
                 baseMediaObject.setId(jsonObject.getLong("id"));
                 baseMediaObject.setTitle(jsonObject.getString(IGDBWebservice.NAME));
                 baseMediaObject.setReleaseDate(this.getDate(jsonObject, "first_release_date"));
-                baseMediaObject.setCover(this.getCover(jsonObject, "cover", "covers"));
+                baseMediaObject.setCover(this.setCover(jsonObject.getString("cover"), CONTEXT));
                 baseMediaObjects.add(baseMediaObject);
             }
         }
@@ -154,8 +155,8 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
         return name.toString();
     }
 
-    private BaseDescriptionObject getCategory(JSONObject jsonObject) {
-        BaseDescriptionObject baseDescriptionObject = null;
+    private Category getCategory(JSONObject jsonObject) {
+        Category baseDescriptionObject = null;
         try {
             if(!jsonObject.isNull("genres")) {
                 JSONArray jsonArray = jsonObject.getJSONArray("genres");
@@ -163,7 +164,7 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
                     long id = jsonArray.getLong(0);
                     String content = readUrl(new URL(IGDBWebservice.BASE_URL + "/genres/" + id + "?fields=name"), Collections.singletonList(IGDBWebservice.USER_KEY + this.key));
                     JSONObject obj = new JSONArray(content).getJSONObject(0);
-                    baseDescriptionObject = new BaseDescriptionObject();
+                    baseDescriptionObject = new Category();
                     baseDescriptionObject.setTitle(obj.getString(IGDBWebservice.NAME));
                 }
             }
@@ -173,8 +174,8 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
         return baseDescriptionObject;
     }
 
-    private List<BaseDescriptionObject> getTags(JSONObject jsonObject) {
-        List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
+    private List<Tag> getTags(JSONObject jsonObject) {
+        List<Tag> baseDescriptionObjects = new LinkedList<>();
         try {
             if(!jsonObject.isNull("keywords")) {
                 JSONArray jsonArray = jsonObject.getJSONArray("keywords");
@@ -184,7 +185,7 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
                         max = 10;
                     }
                     for(int i = 0; i<=max-1; i++) {
-                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        Tag baseDescriptionObject = new Tag();
                         long id = jsonArray.getLong(i);
                         String content = readUrl(new URL(IGDBWebservice.BASE_URL + "/keywords/" + id + "?fields=name"), Collections.singletonList(IGDBWebservice.USER_KEY + this.key));
                         JSONObject obj = new JSONArray(content).getJSONObject(0);
@@ -215,7 +216,7 @@ public class IGDBWebservice extends TitleWebservice<Game>  {
                         company.setTitle(obj.getString(IGDBWebservice.NAME));
                         company.setDescription(obj.getString("description"));
                         company.setFoundation(this.getDate(obj, "start_date"));
-                        company.setCover(this.getCover(obj, "logo", "company_logos"));
+                        company.setCover(this.setCover(obj.getString("logo"),CONTEXT));
                         baseDescriptionObjects.add(company);
                     }
                 }

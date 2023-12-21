@@ -61,7 +61,6 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.myarchivelibrary.activities.ScanActivity;
 import de.domjos.myarchiveservices.services.AudioDBWebservice;
 import de.domjos.myarchiveservices.services.GoogleBooksWebservice;
 import de.domjos.myarchiveservices.services.IGDBWebservice;

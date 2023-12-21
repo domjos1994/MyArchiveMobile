@@ -93,9 +93,12 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$propLifeCycleExtVersion"
     implementation 'androidx.preference:preference:1.2.1'
 
+    // barcode
+    implementation ("com.journeyapps:zxing-android-embedded:3.5.0") {transitive = false}
+    implementation 'com.google.zxing:core:3.4.0'
+
     // import own libraries
     implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
-    implementation project(path: ':myarchivelibrary')
     implementation project(path: ':MyArchiveServices')
 
     // test libraries

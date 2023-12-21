@@ -17,16 +17,23 @@
 
 package de.domjos.myarchiveservices.services;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 abstract class JSONService {
 
@@ -108,5 +115,23 @@ abstract class JSONService {
         } else {
             return 0.0;
         }
+    }
+
+    public Drawable setCover(String content, Context context) {
+        try {
+            byte[] data = ConvertHelper.convertStringToByteArray(content);
+            if(data == null) {
+                return null;
+            }
+            ByteArrayInputStream byteArrayOutputStream = new ByteArrayInputStream(data);
+            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), byteArrayOutputStream);
+            try {
+                byteArrayOutputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return drawable;
+        } catch (Exception ignored) {}
+        return null;
     }
 }

@@ -37,10 +37,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.model.media.CustomField;
+import de.domjos.myarchivedatabase.model.general.company.Company;
+import de.domjos.myarchivedatabase.model.general.customField.CustomField;
+import de.domjos.myarchivedatabase.model.general.person.Person;
+import de.domjos.myarchivedatabase.model.media.AbstractMedia;
 
 public class TextService {
     private final String path;
@@ -90,19 +90,19 @@ public class TextService {
         this.csvWriter = this.getWriter();
     }
 
-    public void writeHeader(BaseMediaObject baseMediaObject) {
+    public void writeHeader(AbstractMedia baseMediaObject) {
         Map<String, String> mp = new LinkedHashMap<>();
         mp.put("title", baseMediaObject.getTitle());
         mp.put("originalTitle", baseMediaObject.getOriginalTitle());
         mp.put("price", String.valueOf(baseMediaObject.getPrice()));
         mp.put("code", baseMediaObject.getCode());
-        if(baseMediaObject.getCategory() != null) {
-            mp.put("category", baseMediaObject.getCategory().getTitle());
+        if(baseMediaObject.getCategoryItem() != null) {
+            mp.put("category", baseMediaObject.getCategoryItem().getTitle());
         }
         mp.put("description", baseMediaObject.getDescription());
         mp.put("ratingOwn", String.valueOf(baseMediaObject.getRatingOwn()));
         mp.put("ratingWeb", String.valueOf(baseMediaObject.getRatingWeb()));
-        mp.put("ratingNote", baseMediaObject.getRatingNote());
+        mp.put("ratingNote", baseMediaObject.getNote());
 
         StringBuilder persons = new StringBuilder();
         for(Person person : baseMediaObject.getPersons()) {
@@ -117,7 +117,7 @@ public class TextService {
         mp.put("companies", companies.toString());
 
         StringBuilder customFields = new StringBuilder();
-        for(Map.Entry<CustomField, String> customFieldValue : baseMediaObject.getCustomFieldValues().entrySet()) {
+        for(Map.Entry<CustomField, String> customFieldValue : baseMediaObject.getCustomFields().entrySet()) {
             customFields.append(String.format("%s: %s, ", customFieldValue.getKey().getTitle(), customFieldValue.getValue()));
         }
         mp.put("customFields", customFields.toString());
@@ -129,19 +129,19 @@ public class TextService {
         this.csvWriter.writeNext(new String[]{line});
     }
 
-    public void writeLine(BaseMediaObject baseMediaObject) {
+    public void writeLine(AbstractMedia baseMediaObject) {
         Map<String, String> mp = new LinkedHashMap<>();
         mp.put("title", baseMediaObject.getTitle());
         mp.put("originalTitle", baseMediaObject.getOriginalTitle());
         mp.put("price", String.valueOf(baseMediaObject.getPrice()));
         mp.put("code", baseMediaObject.getCode());
-        if(baseMediaObject.getCategory() != null) {
-            mp.put("category", baseMediaObject.getCategory().getTitle());
+        if(baseMediaObject.getCategoryItem() != null) {
+            mp.put("category", baseMediaObject.getCategoryItem().getTitle());
         }
         mp.put("description", baseMediaObject.getDescription());
         mp.put("ratingOwn", String.valueOf(baseMediaObject.getRatingOwn()));
         mp.put("ratingWeb", String.valueOf(baseMediaObject.getRatingWeb()));
-        mp.put("ratingNote", baseMediaObject.getRatingNote());
+        mp.put("ratingNote", baseMediaObject.getNote());
 
         StringBuilder persons = new StringBuilder();
         for(Person person : baseMediaObject.getPersons()) {
@@ -156,7 +156,7 @@ public class TextService {
         mp.put("companies", companies.toString());
 
         StringBuilder customFields = new StringBuilder();
-        for(Map.Entry<CustomField, String> customFieldValue : baseMediaObject.getCustomFieldValues().entrySet()) {
+        for(Map.Entry<CustomField, String> customFieldValue : baseMediaObject.getCustomFields().entrySet()) {
             customFields.append(String.format("%s: %s, ", customFieldValue.getKey().getTitle(), customFieldValue.getValue()));
         }
         mp.put("customFields", customFields.toString());

@@ -565,45 +565,40 @@ public final class Database {
                 if(id != 0) {
                     return this.appDatabase.albumDAO().getAlbumWithTags(id).getTags();
                 } else {
-                    this.appDatabase.albumDAO().getAllAlbumsWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.albumDAO().getAllAlbumsWithTags().forEach(tagItem ->
+                            tags.addAll(tagItem.getTags()));
                 }
             }
             case MEDIA_SONG -> {
                 if(id != 0) {
                     return this.appDatabase.songDAO().getSongWithTags(id).getTags();
                 } else {
-                    this.appDatabase.songDAO().getAllSongsWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.songDAO().getAllSongsWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             case MEDIA_BOOK -> {
                 if(id != 0) {
                     return this.appDatabase.bookDAO().getBookWithTags(id).getTags();
                 } else {
-                    this.appDatabase.bookDAO().getAllBooksWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.bookDAO().getAllBooksWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             case MEDIA_GAME -> {
                 if(id != 0) {
                     return this.appDatabase.gameDAO().getGameWithTags(id).getTags();
                 } else {
-                    this.appDatabase.gameDAO().getAllGamesWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.gameDAO().getAllGamesWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             case MEDIA_MOVIE -> {
                 if(id != 0) {
                     return this.appDatabase.movieDAO().getMovieWithTags(id).getTags();
                 } else {
-                    this.appDatabase.movieDAO().getAllMoviesWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.movieDAO().getAllMoviesWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             case FILTER -> {
@@ -615,18 +610,16 @@ public final class Database {
                 if(id != 0) {
                     return this.appDatabase.fileTreeDAO().getChildTreeElementWithTags(id).getTags();
                 } else {
-                    this.appDatabase.fileTreeDAO().getChildTreeElementsWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.fileTreeDAO().getChildTreeElementsWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             case FILE_TREE_FILE -> {
                 if(id != 0) {
                     return this.appDatabase.fileTreeFileDAO().getChildTreeFileElementWithTags(id).getTags();
                 } else {
-                    this.appDatabase.fileTreeFileDAO().getChildTreeFileElementsWithTags().forEach(tagItem -> {
-                        tags.addAll(tagItem.getTags());
-                    });
+                    this.appDatabase.fileTreeFileDAO().getChildTreeFileElementsWithTags().forEach(tagItem ->
+                        tags.addAll(tagItem.getTags()));
                 }
             }
             default -> {
@@ -636,7 +629,7 @@ public final class Database {
         return tags;
     }
     
-    public void insertTags(String type, long id, Tag... tags) {
+    public void deleteTags(String type, long id, Tag... tags) {
         if(id != 0) {
             this.deleteTags(type, id);
         }
@@ -646,70 +639,62 @@ public final class Database {
     
     public void deleteTags(String type, long id) {
         switch (type.toLowerCase()) {
-            case MEDIA_ALBUM -> {
+            case MEDIA_ALBUM ->
                 this.appDatabase.albumDAO().getAlbumWithTags(id).getTags().forEach(tag -> {
                     TagAlbumCrossRef tagAlbumCrossRef = new TagAlbumCrossRef();
                     tagAlbumCrossRef.setAlbumId(id);
                     tagAlbumCrossRef.setTagId(tag.getId());
                     this.appDatabase.albumDAO().deleteAlbumWithTag(tagAlbumCrossRef);
                 });
-            }
-            case MEDIA_SONG -> {
+            case MEDIA_SONG ->
                 this.appDatabase.songDAO().getSongWithTags(id).getTags().forEach(tag -> {
                     TagSongCrossRef tagSongCrossRef = new TagSongCrossRef();
                     tagSongCrossRef.setSongId(id);
                     tagSongCrossRef.setTagId(tag.getId());
                     this.appDatabase.songDAO().deleteSongWithTag(tagSongCrossRef);
                 });
-            }
-            case MEDIA_BOOK -> {
+            case MEDIA_BOOK ->
                 this.appDatabase.bookDAO().getBookWithTags(id).getTags().forEach(tag -> {
                     TagBookCrossRef tagBookCrossRef = new TagBookCrossRef();
                     tagBookCrossRef.setBookId(id);
                     tagBookCrossRef.setTagId(tag.getId());
                     this.appDatabase.bookDAO().deleteBookWithTag(tagBookCrossRef);
                 });
-            }
-            case MEDIA_GAME -> {
+            case MEDIA_GAME ->
                 this.appDatabase.gameDAO().getGameWithTags(id).getTags().forEach(tag -> {
                     TagGameCrossRef tagGameCrossRef = new TagGameCrossRef();
                     tagGameCrossRef.setGameId(id);
                     tagGameCrossRef.setTagId(tag.getId());
                     this.appDatabase.gameDAO().deleteGameWithTag(tagGameCrossRef);
                 });
-            }
-            case MEDIA_MOVIE -> {
+            case MEDIA_MOVIE ->
                 this.appDatabase.movieDAO().getMovieWithTags(id).getTags().forEach(tag -> {
                     TagMovieCrossRef tagMovieCrossRef = new TagMovieCrossRef();
                     tagMovieCrossRef.setMovieId(id);
                     tagMovieCrossRef.setTagId(tag.getId());
                     this.appDatabase.movieDAO().deleteMovieWithTag(tagMovieCrossRef);
                 });
-            }
-            case FILTER -> {
+            case FILTER ->
                 this.appDatabase.filterDAO().getFilterWithTags(id).getTags().forEach(tag -> {
                     FilterTagCrossRef tagFilterCrossRef = new FilterTagCrossRef();
                     tagFilterCrossRef.setFilterId(id);
                     tagFilterCrossRef.setTagId(tag.getId());
                     this.appDatabase.filterDAO().deleteFilterWithTags(tagFilterCrossRef);
                 });
-            }
-            case FILE_TREE -> {
+            case FILE_TREE ->
                 this.appDatabase.fileTreeFileDAO().getChildTreeFileElementWithTags(id).getTags().forEach(tag -> {
                     FileTreeTagCrossRef fileTreeTagCrossRef = new FileTreeTagCrossRef();
                     fileTreeTagCrossRef.setFileTreeId(id);
                     fileTreeTagCrossRef.setTagId(tag.getId());
                     this.appDatabase.fileTreeDAO().deleteFileTreeTagsElements(fileTreeTagCrossRef);
                 });
-            }
-            case FILE_TREE_FILE -> {
+            case FILE_TREE_FILE ->
                 this.appDatabase.fileTreeFileDAO().getChildTreeFileElementWithTags(id).getTags().forEach(tag -> {
                     FileTreeFileTagCrossRef fileTreeFileTagCrossRef = new FileTreeFileTagCrossRef();
                     fileTreeFileTagCrossRef.setFileTreeFileId(id);
                     fileTreeFileTagCrossRef.setTagId(tag.getId());
                     this.appDatabase.fileTreeFileDAO().deleteFileTreeFileTagsElements(fileTreeFileTagCrossRef);
                 });
-            }
         }
     }
 
@@ -823,45 +808,40 @@ public final class Database {
                 if(id != 0) {
                     return this.appDatabase.albumDAO().getAlbumWithPersons(id).getPersons();
                 } else {
-                    this.appDatabase.albumDAO().getAllAlbumsWithPersons().forEach(persons -> {
-                        people.addAll(persons.getPersons());
-                    });
+                    this.appDatabase.albumDAO().getAllAlbumsWithPersons().forEach(persons ->
+                        people.addAll(persons.getPersons()));
                 }
             }
             case MEDIA_SONG -> {
                 if(id != 0) {
                     return this.appDatabase.songDAO().getSongWithPersons(id).getPersons();
                 } else {
-                    this.appDatabase.songDAO().getAllSongsWithPersons().forEach(persons -> {
-                        people.addAll(persons.getPersons());
-                    });
+                    this.appDatabase.songDAO().getAllSongsWithPersons().forEach(persons ->
+                        people.addAll(persons.getPersons()));
                 }
             }
             case MEDIA_BOOK -> {
                 if(id != 0) {
                     return this.appDatabase.bookDAO().getBookWithPersons(id).getPersons();
                 } else {
-                    this.appDatabase.bookDAO().getAllBooks().forEach(books -> {
-                        people.addAll(books.getPersons());
-                    });
+                    this.appDatabase.bookDAO().getAllBooks().forEach(books ->
+                        people.addAll(books.getPersons()));
                 }
             }
             case MEDIA_GAME -> {
                 if(id != 0) {
                     return this.appDatabase.gameDAO().getGameWithPersons(id).getPersons();
                 } else {
-                    this.appDatabase.gameDAO().getAllGamesWithPersons().forEach(persons -> {
-                        people.addAll(persons.getPersons());
-                    });
+                    this.appDatabase.gameDAO().getAllGamesWithPersons().forEach(persons ->
+                        people.addAll(persons.getPersons()));
                 }
             }
             case MEDIA_MOVIE -> {
                 if (id != 0) {
                     return this.appDatabase.movieDAO().getMovieWithPersons(id).getPersons();
                 } else {
-                    this.appDatabase.movieDAO().getAllMoviesWithPersons().forEach(persons -> {
-                        people.addAll(persons.getPersons());
-                    });
+                    this.appDatabase.movieDAO().getAllMoviesWithPersons().forEach(persons ->
+                        people.addAll(persons.getPersons()));
                 }
             }
             default -> {
@@ -918,7 +898,7 @@ public final class Database {
         }
     }
 
-    public void insertCompanies(long id, String type, Company... companys) {
+    public void insertCompanies(long id, String type, Company... companies) {
         if(id != 0) {
             switch (type.toLowerCase()) {
                 case MEDIA_ALBUM ->
@@ -959,7 +939,7 @@ public final class Database {
             }
         }
 
-        for(Company company : companys) {
+        for(Company company : companies) {
             try {
                 LengthValidator companyFirstNameValidator = new LengthValidator(company.getTitle(), 2, false);
                 if(companyFirstNameValidator.validate()) {
@@ -1024,45 +1004,40 @@ public final class Database {
                 if(id != 0) {
                     return this.appDatabase.albumDAO().getAlbumWithCompanies(id).getCompanies();
                 } else {
-                    this.appDatabase.albumDAO().getAllAlbumsWithCompanies().forEach(companys -> {
-                        people.addAll(companys.getCompanies());
-                    });
+                    this.appDatabase.albumDAO().getAllAlbumsWithCompanies().forEach(companies ->
+                        people.addAll(companies.getCompanies()));
                 }
             }
             case MEDIA_SONG -> {
                 if(id != 0) {
                     return this.appDatabase.songDAO().getSongWithCompanies(id).getCompanies();
                 } else {
-                    this.appDatabase.songDAO().getAllSongsWithCompanies().forEach(companys -> {
-                        people.addAll(companys.getCompanies());
-                    });
+                    this.appDatabase.songDAO().getAllSongsWithCompanies().forEach(companies ->
+                        people.addAll(companies.getCompanies()));
                 }
             }
             case MEDIA_BOOK -> {
                 if(id != 0) {
                     return this.appDatabase.bookDAO().getBookWithCompanies(id).getCompanies();
                 } else {
-                    this.appDatabase.bookDAO().getAllBooks().forEach(books -> {
-                        people.addAll(books.getCompanies());
-                    });
+                    this.appDatabase.bookDAO().getAllBooks().forEach(books ->
+                        people.addAll(books.getCompanies()));
                 }
             }
             case MEDIA_GAME -> {
                 if(id != 0) {
                     return this.appDatabase.gameDAO().getGameWithCompanies(id).getCompanies();
                 } else {
-                    this.appDatabase.gameDAO().getAllGamesWithCompanies().forEach(companys -> {
-                        people.addAll(companys.getCompanies());
-                    });
+                    this.appDatabase.gameDAO().getAllGamesWithCompanies().forEach(companies ->
+                        people.addAll(companies.getCompanies()));
                 }
             }
             case MEDIA_MOVIE -> {
                 if (id != 0) {
                     return this.appDatabase.movieDAO().getMovieWithCompanies(id).getCompanies();
                 } else {
-                    this.appDatabase.movieDAO().getAllMoviesWithCompanies().forEach(companys -> {
-                        people.addAll(companys.getCompanies());
-                    });
+                    this.appDatabase.movieDAO().getAllMoviesWithCompanies().forEach(companies ->
+                        people.addAll(companies.getCompanies()));
                 }
             }
             default -> {
