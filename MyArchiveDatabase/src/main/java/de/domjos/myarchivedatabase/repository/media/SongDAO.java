@@ -24,6 +24,9 @@ public interface SongDAO {
     @Query("SELECT * FROM songs")
     List<Song> getAllSongs();
 
+    @Query("SELECT * FROM songs LIMIT :limit OFFSET :offset")
+    List<Song> getAllSongs(int limit, int offset);
+
     @Query("SELECT * FROM songs WHERE id=:id")
     Song getSong(long id);
 

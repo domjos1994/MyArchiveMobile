@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="validation_duplicated">Another Entry with the %1s %2s exists!</string>
-    <string name="validation_min">The value must be bigger than %d!</string>
-    <string name="validation_min_max">The value must be between %1d and %2d!</string>
+    <string name="validation_min">The value must be bigger than %f!</string>
+    <string name="validation_min_max">The value must be between %1f and %2f!</string>
 </resources>

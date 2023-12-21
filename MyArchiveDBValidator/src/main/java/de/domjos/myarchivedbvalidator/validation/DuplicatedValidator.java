@@ -9,6 +9,7 @@ import de.domjos.myarchivedatabase.model.media.album.Album;
 import de.domjos.myarchivedatabase.model.media.book.Book;
 import de.domjos.myarchivedatabase.model.media.game.Game;
 import de.domjos.myarchivedatabase.model.media.movie.Movie;
+import de.domjos.myarchivedatabase.model.media.song.Song;
 import de.domjos.myarchivedbvalidator.validation.Validator;
 
 public class DuplicatedValidator extends Validator {
@@ -25,6 +26,9 @@ public class DuplicatedValidator extends Validator {
         BaseTitleObject bto = ((BaseTitleObject) super.object);
         if(super.object instanceof Album) {
             return this.appDatabase.albumDAO().getAlbum(bto.getTitle())==null;
+        }
+        if(super.object instanceof Song) {
+            return this.appDatabase.songDAO().getSong(bto.getTitle())==null;
         }
         if(super.object instanceof Book) {
             return this.appDatabase.bookDAO().getBook(bto.getTitle())==null;

@@ -14,6 +14,7 @@ import de.domjos.myarchivedatabase.model.fileTree.FileTreeFile;
 import de.domjos.myarchivedatabase.model.fileTree.FileTreeFileTagCrossRef;
 import de.domjos.myarchivedatabase.model.fileTree.FileTreeFileWithParent;
 import de.domjos.myarchivedatabase.model.fileTree.FileTreeFileWithTags;
+import de.domjos.myarchivedatabase.model.fileTree.FileTreeWithTags;
 
 @Dao
 public interface FileTreeFileDAO {
@@ -31,6 +32,10 @@ public interface FileTreeFileDAO {
     @Transaction
     @Query("SELECT * FROM file_tree_file")
     List<FileTreeFileWithTags> getChildTreeFileElementsWithTags();
+
+    @Transaction
+    @Query("SELECT * FROM file_tree_file WHERE id=:id")
+    FileTreeFileWithTags getChildTreeFileElementWithTags(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertFileTreeFileElements(FileTreeFile... fileTreeFiles);

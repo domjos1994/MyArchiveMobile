@@ -23,6 +23,9 @@ public interface MovieDAO {
     @Query("SELECT * FROM movies")
     List<Movie> getAllMovies();
 
+    @Query("SELECT * FROM movies LIMIT :limit OFFSET :offset")
+    List<Movie> getAllMovies(int limit, int offset);
+
     @Query("SELECT * FROM movies WHERE id=:id")
     Movie getMovie(long id);
 

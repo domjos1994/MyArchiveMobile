@@ -25,6 +25,9 @@ public interface AlbumDAO {
     @Query("SELECT * FROM albums")
     List<Album> getAllAlbums();
 
+    @Query("SELECT * FROM albums LIMIT :limit OFFSET :offset")
+    List<Album> getAllAlbums(int limit, int offset);
+
     @Query("SELECT * FROM albums WHERE id=:id")
     Album getAlbum(long id);
 

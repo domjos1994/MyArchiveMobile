@@ -21,6 +21,14 @@ public class LengthValidator extends Validator {
         this.exactly = exactly;
     }
 
+    public LengthValidator(String value, int min, int max) {
+        super(value);
+
+        this.min = min;
+        this.max = max;
+        this.exactly = false;
+    }
+
     public LengthValidator(Number value, int min, int max) {
         super(value);
 
@@ -32,10 +40,11 @@ public class LengthValidator extends Validator {
     @Override
     public boolean validate() {
         if(super.object instanceof String) {
+            String item = ((String) super.object);
             if(!this.exactly) {
-                return ((String) super.object).length() <= this.max;
+                return item.length() >= this.min && item.length() <= this.max;
             } else {
-                return ((String) super.object).length() == this.max;
+                return item.length() == this.max;
             }
         } else {
             if(super.object instanceof Number number) {

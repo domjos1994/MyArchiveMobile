@@ -23,6 +23,9 @@ public interface BookDAO {
     @Query("SELECT * FROM books")
     List<Book> getAllBooks();
 
+    @Query("SELECT * FROM books LIMIT :limit OFFSET :offset")
+    List<Book> getAllBooks(int limit, int offset);
+
     @Query("SELECT * FROM books WHERE id=:id")
     Book getBook(long id);
 

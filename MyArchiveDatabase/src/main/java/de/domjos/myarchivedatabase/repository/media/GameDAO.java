@@ -23,6 +23,9 @@ public interface GameDAO {
     @Query("SELECT * FROM games")
     List<Game> getAllGames();
 
+    @Query("SELECT * FROM games LIMIT :limit OFFSET :offset")
+    List<Game> getAllGames(int limit, int offset);
+
     @Query("SELECT * FROM games WHERE id=:id")
     Game getGame(long id);
 

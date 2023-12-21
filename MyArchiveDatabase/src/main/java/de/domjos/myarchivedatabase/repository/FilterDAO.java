@@ -10,6 +10,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import de.domjos.myarchivedatabase.model.filter.Filter;
+import de.domjos.myarchivedatabase.model.filter.FilterTagCrossRef;
 import de.domjos.myarchivedatabase.model.filter.FilterWithTags;
 
 @Dao
@@ -35,4 +36,10 @@ public interface FilterDAO {
 
     @Delete
     void deleteFilters(Filter... filters);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertFilterWithTags(FilterTagCrossRef... filterTagCrossRefs);
+
+    @Delete
+    void deleteFilterWithTags(FilterTagCrossRef... filterTagCrossRefs);
 }

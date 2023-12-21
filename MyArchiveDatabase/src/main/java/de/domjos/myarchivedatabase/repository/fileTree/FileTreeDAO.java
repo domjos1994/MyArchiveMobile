@@ -35,6 +35,10 @@ public interface FileTreeDAO {
     @Query("SELECT * FROM file_tree")
     List<FileTreeWithTags> getChildTreeElementsWithTags();
 
+    @Transaction
+    @Query("SELECT * FROM file_tree WHERE id=:id")
+    FileTreeWithTags getChildTreeElementWithTags(long id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertFileTreeElements(FileTree... fileTrees);
 
