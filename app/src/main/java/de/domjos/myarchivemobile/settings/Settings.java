@@ -25,9 +25,9 @@ import androidx.preference.PreferenceManager;
 import de.domjos.myarchivemobile.R;
 
 public final class Settings {
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences userPreferences;
-    private Context context;
+    private final SharedPreferences sharedPreferences;
+    private final SharedPreferences userPreferences;
+    private final Context context;
 
     public Settings(Context context) {
         this.context = context;
@@ -115,16 +115,5 @@ public final class Settings {
 
     public String getOrderBy() {
         return this.userPreferences.getString("txtOrderBy", this.context.getString(R.string.settings_general_media_order_default));
-    }
-
-    public boolean showAd() {
-        int intentChanges = this.getSetting("showAd", 0);
-        if(intentChanges == 2) {
-            this.setSetting("showAd", 0);
-            return true;
-        } else {
-            this.setSetting("showAd", ++intentChanges);
-            return false;
-        }
     }
 }

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">MyArchiveMobile</string>
+
+    <string name="api_task_export">Export Data!</string>
+    <string name="api_task_export_content">Export Data from Database to File!</string>
+    <string name="api_task_import">Import File!</string>
+    <string name="api_task_import_data">Get Data!</string>
+    <string name="api_task_import_webservice">Finalize Data by Webservice!</string>
+    <string name="api_task_import_content">Import Data from File to Database!</string>
+    <string name="api_task_import_msg_success">Line %d successfully imported!</string>
+    <string name="api_task_import_msg_not_success">Line %1$d not successfully imported: %2$s</string>
+    <string name="api_task_import_msg_not_success_mandatory">Title is a mandatory field!</string>
+    <string-array name="api_cells">
+        <item>@string/sys_title</item>
+        <item>@string/media_general_originalTitle</item>
+        <item>@string/media_general_releaseDate</item>
+        <item>@string/media_general_price</item>
+        <item>@string/media_general_code</item>
+        <item>@string/media_general_category</item>
+        <item>@string/media_general_tags</item>
+        <item>@string/media_persons</item>
+        <item>@string/media_companies</item>
+        <item>@string/media_rating_own</item>
+        <item>@string/media_rating_web</item>
+        <item>@string/sys_description</item>
+        <item>@string/book_edition</item>
+        <item>@string/book_numberOfPages</item>
+        <item>@string/book_topics</item>
+        <item>@string/movie_length</item>
+        <item>@string/album_number</item>
+        <item>@string/customFields</item>
+    </string-array>
+
+    <string name="customFields_type_values_text">Text-Field</string>
+
+    <string name="sys_title">Title</string>
+    <string name="sys_description">Description</string>
+    <string name="sys_reload">Reload</string>
+    <string name="sys_reload_summary">Reload data…</string>
+    <string name="sys_date_format">yyyy-MM-dd</string>
+    <string name="sys_no_internet">No Internet!</string>
+
+    <string name="main_navigation_media">Media</string>
+    <string name="main_navigation_media_books">Books</string>
+    <string name="main_navigation_media_movies">Movies</string>
+    <string name="main_navigation_media_music">Music</string>
+    <string name="main_navigation_media_games">Games</string>
+
+    <string name="media_general">General</string>
+    <string name="media_general_originalTitle">Original-Title</string>
+    <string name="media_general_releaseDate">Release-Date</string>
+    <string name="media_general_price">Price</string>
+    <string name="media_general_code">Code</string>
+    <string name="media_general_category">Category</string>
+    <string name="media_general_tags">Tags</string>
+    <string name="media_persons">Persons</string>
+    <string name="media_persons_firstName">FirstName</string>
+    <string name="media_persons_lastName">FirstName</string>
+    <string name="media_persons_birthDate">Birthdate</string>
+    <string name="media_companies">Companies</string>
+    <string name="media_companies_foundation">Foundation</string>
+    <string name="media_rating_own">Own Rating</string>
+    <string name="media_rating_web">Web Rating</string>
+
+    <string name="book">Buch</string>
+    <string name="book_type">Type</string>
+    <string name="book_edition">Edition</string>
+    <string name="book_numberOfPages">Number of Pages</string>
+    <string name="book_topics">Topics</string>
+
+    <string name="movie">Movie</string>
+    <string name="movie_type">Type</string>
+    <string name="movie_length">Length</string>
+
+    <string name="album">Album</string>
+    <string name="album_number">Number</string>
+
+    <string name="game">Game</string>
+
+    <string name="customFields">CustomFields</string>
+
+    <string name="file_tree">Documents</string>
+    <string name="file_tree_system">System</string>
+    <string name="file_tree_gallery">Gallery</string>
+    <string name="file_tree_data">Data</string>
+    <string name="file_tree_embed">Embed</string>
+    <string name="file_tree_node_add">Add Node</string>
+    <string name="file_tree_file_add">Add File</string>
+    <string name="file_tree_load">Load Data!</string>
+    <string name="file_tree_load_db">Init Database (%s)…</string>
+    <string name="file_tree_load_tree">Init File-Tree…</string>
+    <string name="file_tree_load_files">Load Files…</string>
+    <string name="file_tree_view">View</string>
+    <string name="file_tree_context_copy">Copy</string>
+    <string name="file_tree_context_move">Move</string>
+    <string name="file_tree_context_paste">Paste</string>
+
+    <string name="filter_no_filter">No Filter!</string>
+
+    <string name="settings_general_media_order_creation">Order Creation</string>
+
+    <string name="library_lendOut">Lend out</string>
+
+    <string name="service_type_movies">Movies</string>
+    <string name="service_type_music">Music</string>
+    <string name="service_type_books">Books</string>
+    <string name="service_type_games">Games</string>
+    <string name="service_ean_data_search">Search by EAN-Code…</string>
+    <string name="service_ean_data_search_content">Search Media by EAN-Code…</string>
+    <string name="service_google_search" translatable="false">Google Books</string>
+    <string name="service_google_search_content">Search in Google Books…</string>
+    <string name="service_wiki_data_search" translatable="false">WikiData</string>
+    <string name="service_wiki_data_search_content">Search in WikiData…</string>
+    <string name="service_ean_data_key" translatable="false">ACDEF0595E238EA3</string>
+    <string name="service_movie_db_search" translatable="false">TheMovieDB</string>
+    <string name="service_movie_db_key" translatable="false">cf20ff3c013ba0c8f8c2f05158a07316</string>
+    <string name="service_movie_db_search_content">Search in TheMovieDB…</string>
+    <string name="service_audio_db_search" translatable="false">TheAudioDB</string>
+    <string name="service_audio_db_search_content">Search in TheAudioDB…</string>
+    <string name="service_igdb_search" translatable="false">IGDB</string>
+    <string name="service_igdb_key" translatable="false">4a53e72aa5d2e25e620bb1cbb77a15f0</string>
+    <string name="service_igdb_search_content">Search in IGDB…</string>
+</resources>

@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -31,15 +30,16 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.*;
 
+/** @noinspection rawtypes*/
 public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
-    private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
+    private MediaGeneralFragment mediaGeneralFragment;
     private AbstractFragment<BaseMediaObject> mediaMovieFragment;
     private AbstractFragment<BaseMediaObject> mediaPlayerFragment;
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
-    private Runnable runnable;
+    private final Runnable runnable;
     private boolean first = true;
 
     public MoviePagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
@@ -77,24 +77,16 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.mediaGeneralFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
-                return this.mediaMovieFragment;
-            case 4:
-                return this.mediaPlayerFragment;
-            case 5:
-                return this.mediaRatingFragment;
-            case 6:
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.mediaGeneralFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaPersonsCompaniesFragment;
+            case 3 -> this.mediaMovieFragment;
+            case 4 -> this.mediaPlayerFragment;
+            case 5 -> this.mediaRatingFragment;
+            case 6 -> this.mediaCustomFieldFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -103,29 +95,37 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
         switch (position) {
-            case 0:
+            case 0 -> {
                 this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
                 return this.mediaGeneralFragment;
-            case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+            }
+            case 1 -> {
+                this.mediaCoverFragment = (MediaCoverFragment<BaseMediaObject>) createdFragment;
                 return this.mediaCoverFragment;
-            case 2:
+            }
+            case 2 -> {
                 this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
                 return this.mediaPersonsCompaniesFragment;
-            case 3:
+            }
+            case 3 -> {
                 this.mediaMovieFragment = (MediaMovieFragment) createdFragment;
                 return this.mediaMovieFragment;
-            case 4:
+            }
+            case 4 -> {
                 this.mediaPlayerFragment = (MediaPlayerFragment) createdFragment;
                 return this.mediaPlayerFragment;
-            case 5:
+            }
+            case 5 -> {
                 this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
                 return this.mediaRatingFragment;
-            case 6:
+            }
+            case 6 -> {
                 this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
                 return this.mediaCustomFieldFragment;
-            default:
+            }
+            default -> {
                 return new Fragment();
+            }
         }
     }
 
@@ -169,17 +169,6 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         movie.setPath(tmpMovie.getPath());
         movie.setLastSeen(tmpMovie.getLastSeen());
         return movie;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.mediaGeneralFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaMovieFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPlayerFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

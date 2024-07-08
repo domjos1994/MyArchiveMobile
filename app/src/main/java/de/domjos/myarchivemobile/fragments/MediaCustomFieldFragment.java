@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -81,13 +80,11 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         this.values.clear();
         for(View view : this.views) {
             String value = "";
-            if(view instanceof EditText) {
-                EditText editText = (EditText) view;
+            if(view instanceof EditText editText) {
                 if(!editText.getText().toString().isEmpty()) {
                     value = editText.getText().toString();
                 }
-            } else if(view instanceof Spinner) {
-                Spinner sp = (Spinner) view;
+            } else if(view instanceof Spinner sp) {
                 if(sp.getSelectedItemPosition() != -1) {
                     value = sp.getSelectedItem().toString();
                 }
@@ -122,7 +119,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         if(this.container != null) {
             this.container.removeAllViews();
         }
-        this.customFields = MainActivity.GLOBALS.getDatabase().getCustomFields(String.format("%s=1", table));
+        this.customFields = MainActivity.GLOBALS.getDatabase(this.getActivity()).getCustomFields(String.format("%s=1", table));
         if(!this.customFields.isEmpty()) {
             for(CustomField customField : this.customFields) {
                 if(customField.getType().equals(this.getString(R.string.customFields_type_values_text))) {
@@ -160,7 +157,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
 
     private void addAutoCompleteTextView(CustomField customField) {
         AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
-        CustomAutoCompleteAdapter<String> values = new CustomAutoCompleteAdapter<>(Objects.requireNonNull(this.getContext()), autoCompleteTextView);
+        CustomAutoCompleteAdapter<String> values = new CustomAutoCompleteAdapter<>(this.requireContext(), autoCompleteTextView);
         for(String item : customField.getAllowedValues().split(";")) {
             values.add(item.trim());
         }
@@ -182,7 +179,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         TextView label = new TextView(this.getContext());
         label.setTextSize(16f);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int px = ConvertHelper.convertDPToPixels(2, Objects.requireNonNull(this.getContext()));
+        int px = ConvertHelper.convertDPToPixels(2, this.requireContext());
         layoutParams.setMargins(px, px, px, px);
         label.setLayoutParams(layoutParams);
         label.setTypeface(null, Typeface.BOLD);
@@ -196,7 +193,7 @@ public class MediaCustomFieldFragment extends AbstractFragment<BaseMediaObject> 
         Spinner sp = new Spinner(this.getContext());
         sp.setTag(customField.getId());
         sp.setContentDescription(customField.getTitle());
-        CustomSpinnerAdapter<String> values = new CustomSpinnerAdapter<>(Objects.requireNonNull(this.getContext()));
+        CustomSpinnerAdapter<String> values = new CustomSpinnerAdapter<>(this.requireContext());
         for(String item : customField.getAllowedValues().split(";")) {
             values.add(item.trim());
         }

@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -34,7 +33,6 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.fragments.CompanyFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.fragments.PersonFragment;
@@ -44,7 +42,7 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     private PersonFragment personFragment;
     private MediaCoverFragment<Person> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
-    private Context context;
+    private final Context context;
 
     public PersonPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
@@ -75,12 +73,12 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
             this.mediaCoverFragment.setMediaObject(mediaObject);
 
             List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("persons"))) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase(this.context).getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("persons"))) {
                 baseDescriptionObjects.add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.context));
             }
             this.mediaListFragment.setMediaObject(baseDescriptionObjects);
 
-            this.mediaListFragment.setLibraryObjects(MainActivity.GLOBALS.getDatabase().getLendOutObjects(mediaObject, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("persons")));
+            this.mediaListFragment.setLibraryObjects(MainActivity.GLOBALS.getDatabase(this.context).getLendOutObjects(mediaObject, MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("persons")));
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
@@ -93,26 +91,15 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
         return person;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.personFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaListFragment.onActivityResult(requestCode, resultCode, data);
-    }
-
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.personFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.personFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaListFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -121,17 +108,21 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
         switch (position) {
-            case 0:
+            case 0 -> {
                 this.personFragment = (PersonFragment) createdFragment;
                 return this.personFragment;
-            case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+            }
+            case 1 -> {
+                this.mediaCoverFragment = (MediaCoverFragment<Person>) createdFragment;
                 return this.mediaCoverFragment;
-            case 2:
+            }
+            case 2 -> {
                 this.mediaListFragment = (MediaListFragment) createdFragment;
                 return this.mediaListFragment;
-            default:
+            }
+            default -> {
                 return new Fragment();
+            }
         }
     }
 

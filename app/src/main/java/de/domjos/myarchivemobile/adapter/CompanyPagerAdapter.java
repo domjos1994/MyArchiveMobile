@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -44,7 +43,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     private CompanyFragment companyFragment;
     private MediaCoverFragment<Company> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
-    private Context context;
+    private final Context context;
 
     public CompanyPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
@@ -75,7 +74,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
             this.mediaCoverFragment.setMediaObject(mediaObject);
 
             List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("companies"))) {
+            for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase(this.context).getObjects(mediaObject.getTable(), mediaObject.getId(), MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("companies"))) {
                 baseDescriptionObjects.add(ControlsHelper.convertMediaToDescriptionObject(baseMediaObject, this.context));
             }
             this.mediaListFragment.setMediaObject(baseDescriptionObjects);
@@ -91,26 +90,15 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
         return company;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.companyFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaListFragment.onActivityResult(requestCode, resultCode, data);
-    }
-
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.companyFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.companyFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaListFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -119,17 +107,21 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
         switch (position) {
-            case 0:
+            case 0 -> {
                 this.companyFragment = (CompanyFragment) createdFragment;
                 return this.companyFragment;
-            case 1:
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
+            }
+            case 1 -> {
+                this.mediaCoverFragment = (MediaCoverFragment<Company>) createdFragment;
                 return this.mediaCoverFragment;
-            case 2:
+            }
+            case 2 -> {
                 this.mediaListFragment = (MediaListFragment) createdFragment;
                 return this.mediaListFragment;
-            default:
+            }
+            default -> {
                 return new Fragment();
+            }
         }
     }
 

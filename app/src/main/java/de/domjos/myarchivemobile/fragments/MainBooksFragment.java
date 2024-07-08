@@ -17,7 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,22 +30,20 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
-import de.domjos.myarchivelibrary.tasks.GoogleBooksTask;
+import de.domjos.myarchiveservices.mediaTasks.GoogleBooksTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.BookPagerAdapter;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
 
@@ -69,7 +66,7 @@ public class MainBooksFragment extends ParentFragment {
         this.lvBooks.setOnReloadListener(MainBooksFragment.this::reload);
         this.lvBooks.setOnDeleteListener(listObject -> {
             Book book = (Book) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(book);
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem(book);
             this.changeMode(false, false);
             this.bookPagerAdapter.setMediaObject(new Book());
         });
@@ -83,69 +80,56 @@ public class MainBooksFragment extends ParentFragment {
             for(BaseDescriptionObject baseDescriptionObject : list) {
                 Book book = (Book) baseDescriptionObject.getObject();
                 book.setLastRead(new Date());
-                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdNext:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) + 1, Globals.BOOKS);
-                    this.reload();
-                    break;
-                case R.id.cmdPrevious:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) - 1, Globals.BOOKS);
-                    this.reload();
-                    break;
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.bookPagerAdapter.setMediaObject(new Book());
-                        this.currentObject = null;
-                    } else {
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, (item) -> {
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.BOOKS) + 1, Globals.BOOKS);
+            this.reload();
+        }, (item) -> {
+            this.changePage = true;
+            MainActivity.GLOBALS.setPage(requireContext(), MainActivity.GLOBALS.getPage(requireContext(), Globals.BOOKS) - 1, Globals.BOOKS);
+            this.reload();
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_add))) {
+                this.changeMode(true, false);
+                this.bookPagerAdapter.setMediaObject(new Book());
+                this.currentObject = null;
+            } else {
+                this.changeMode(false, false);
+                this.bookPagerAdapter.setMediaObject(new Book());
+                this.currentObject = null;
+                this.reload();
+            }
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(this.currentObject != null) {
+                    this.changeMode(true, true);
+                    this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
+                }
+            } else {
+                if(this.validator.getState()) {
+                    Book book = this.bookPagerAdapter.getMediaObject();
+                    if(this.currentObject!=null) {
+                        book.setId(((Book) this.currentObject.getObject()).getId());
+                    }
+                    if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
                         this.changeMode(false, false);
                         this.bookPagerAdapter.setMediaObject(new Book());
                         this.currentObject = null;
                         this.reload();
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.currentObject != null) {
-                            this.changeMode(true, true);
-                            this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
-                        }
-                    } else {
-                        if(this.validator.getState()) {
-                            Book book = this.bookPagerAdapter.getMediaObject();
-                            if(this.currentObject!=null) {
-                                book.setId(((Book) this.currentObject.getObject()).getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                                this.changeMode(false, false);
-                                this.bookPagerAdapter.setMediaObject(new Book());
-                                this.currentObject = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
-                        }
-                    }
-                    break;
+                } else {
+                    MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
+                }
             }
-            return true;
         });
 
         this.reload();
         return root;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.bookPagerAdapter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -170,7 +154,7 @@ public class MainBooksFragment extends ParentFragment {
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book(), Globals.BOOKS));
+        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
         viewPager.setAdapter(this.bookPagerAdapter);
 
@@ -203,9 +187,16 @@ public class MainBooksFragment extends ParentFragment {
             this.lvBooks.getAdapter().clear();
             String key = this.returnKey();
             key = ControlsHelper.setThePage(this, "books", key);
-            LoadingTask<Book> loadingTask = new LoadingTask<>(this.getActivity(), new Book(), null, searchQuery, this.lvBooks, key);
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
+                    this.getActivity(), new BaseDescriptionObject(), null, searchQuery, this.lvBooks, key,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset("companies"),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy()
+            );
             String finalKey = key;
-            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) books -> {
+            loadingTask.after(books -> {
                 for(BaseDescriptionObject baseDescriptionObject : books) {
                     lvBooks.getAdapter().add(baseDescriptionObject);
                 }
@@ -244,11 +235,13 @@ public class MainBooksFragment extends ParentFragment {
         try {
             if(parent.equals(this.getString(R.string.main_navigation_media_books))) {
                 String[] code = codes.split("\n");
-                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, "", MainActivity.GLOBALS.getSettings().getGoogleBooksKey());
-                List<Book> books = googleBooksTask.execute(code).get();
-                for(Book book : books) {
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                }
+                GoogleBooksTask googleBooksTask = new GoogleBooksTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification, "", MainActivity.GLOBALS.getSettings(this.requireContext()).getGoogleBooksKey());
+                googleBooksTask.after(books -> {
+                    for(Book book : books) {
+                        MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateBook(book);
+                    }
+                });
+                googleBooksTask.execute(code);
                 this.reload();
             }
         } catch (Exception ex) {

@@ -32,12 +32,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -51,7 +49,7 @@ import de.domjos.myarchivemobile.adapter.CustomAutoCompleteAdapter;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingBaseDescriptionObjects;
 
 public class MainLibraryFragment extends ParentFragment {
     private EditText txtLibraryNumberOfDays, txtMediaLibraryNumberOfWeeks;
@@ -89,7 +87,7 @@ public class MainLibraryFragment extends ParentFragment {
 
         this.lvMediaHistory.setOnDeleteListener(listObject -> {
             long id = ((LibraryObject) listObject.getObject()).getId();
-            MainActivity.GLOBALS.getDatabase().deleteItem((LibraryObject) listObject.getObject());
+            MainActivity.GLOBALS.getDatabase(this.getActivity()).deleteItem((LibraryObject) listObject.getObject());
             BaseMediaObject baseMediaObject = (BaseMediaObject) this.currentObject.getObject();
             for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
                 if(baseMediaObject.getLibraryObjects().get(i).getId()==id) {
@@ -102,64 +100,55 @@ public class MainLibraryFragment extends ParentFragment {
             this.libraryObject = null;
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            LibraryObject libraryObject;
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        libraryObject = new LibraryObject();
-                        libraryObject.setDeadLine(new Date());
-                        this.setObject(libraryObject);
-                        this.libraryObject = null;
-                    } else {
-                        changeMode(false, false);
-                        setObject(new LibraryObject());
-                        this.libraryObject = null;
-                        reloadLibraryObjects();
-                    }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.libraryObject != null) {
-                            this.changeMode(true, true);
-                            setObject(this.libraryObject);
-                        }
-                    } else {
-                        try {
-                            libraryObject = this.getObject();
-                            if(this.libraryObject != null) {
-                                libraryObject.setId(this.libraryObject.getId());
-                            }
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
-
-                            if(this.libraryObject != null) {
-                                if(this.libraryObject.getId() != 0) {
-                                    BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                                    for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                        if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
-                                            baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
-                                }
-                            } else {
-                                ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
-                            }
-
-                            this.changeMode(false, false);
-                            this.libraryObject = null;
-                            this.reloadLibraryObjects();
-                            this.setObject(new LibraryObject());
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
-                        }
-                    }
-                    break;
+        ControlsHelper.onItemSelectedListener(this.bottomNavigationView, null, null, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_add))) {
+                this.changeMode(true, false);
+                libraryObject = new LibraryObject();
+                libraryObject.setDeadLine(new Date());
+                this.setObject(libraryObject);
+                this.libraryObject = null;
+            } else {
+                changeMode(false, false);
+                setObject(new LibraryObject());
+                this.libraryObject = null;
+                reloadLibraryObjects();
             }
-            return true;
+        }, (item) -> {
+            if(Objects.equals(item.getTitle(), this.getString(R.string.sys_edit))) {
+                if(this.libraryObject != null) {
+                    this.changeMode(true, true);
+                    setObject(this.libraryObject);
+                }
+            } else {
+                try {
+                    libraryObject = this.getObject();
+                    libraryObject.setId(this.libraryObject.getId());
+                    MainActivity.GLOBALS.getDatabase(this.getActivity()).insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+
+                    if(this.libraryObject != null) {
+                        if(this.libraryObject.getId() != 0) {
+                            BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
+                            for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                                if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                    baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
+                                    break;
+                                }
+                            }
+                        } else {
+                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
+                        }
+                    } else {
+                        ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
+                    }
+
+                    this.changeMode(false, false);
+                    this.libraryObject = null;
+                    this.reloadLibraryObjects();
+                    this.setObject(new LibraryObject());
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                }
+            }
         });
 
         this.changeMode(false, false);
@@ -180,8 +169,14 @@ public class MainLibraryFragment extends ParentFragment {
             }
 
             this.lvMediaLibrary.getAdapter().clear();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY);
-            loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
+            LoadingBaseDescriptionObjects<BaseDescriptionObject> loadingTask = new LoadingBaseDescriptionObjects<>(
+                    this.getActivity(), null, null, searchString, this.lvMediaLibrary, Globals.LIBRARY,
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.requireContext()),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getMediaCount(),
+                    MainActivity.GLOBALS.getOffset("companies"),
+                    MainActivity.GLOBALS.getSettings(this.requireContext()).getOrderBy() );
+            loadingTask.after(baseDescriptionObjects -> {
                 for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
                     baseDescriptionObject.setTitle(baseDescriptionObject.getTitle());
                     baseDescriptionObject.setDescription(baseDescriptionObject.getDescription());
@@ -235,7 +230,7 @@ public class MainLibraryFragment extends ParentFragment {
             this.lvMediaHistory.getAdapter().clear();
             if(this.currentObject != null) {
                 DatabaseObject databaseObject = (DatabaseObject) this.currentObject.getObject();
-                for(LibraryObject libraryObject : MainActivity.GLOBALS.getDatabase().getLibraryObjects("type='" + databaseObject.getTable() + "' AND media=" + databaseObject.getId())) {
+                for(LibraryObject libraryObject : MainActivity.GLOBALS.getDatabase(this.getActivity()).getLibraryObjects("type='" + databaseObject.getTable() + "' AND media=" + databaseObject.getId())) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(String.format("%s %s", libraryObject.getPerson().getFirstName(), libraryObject.getPerson().getLastName()).trim());
                     String description = "";
@@ -310,7 +305,7 @@ public class MainLibraryFragment extends ParentFragment {
 
         try {
             this.arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtLibraryPerson);
-            for(Person person : MainActivity.GLOBALS.getDatabase().getPersons("", 0)) {
+            for(Person person : MainActivity.GLOBALS.getDatabase(this.getActivity()).getPersons("", 0)) {
                 arrayAdapter.add(person);
             }
             this.txtLibraryPerson.setAdapter(arrayAdapter);

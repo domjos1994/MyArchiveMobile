@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +40,7 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
+import de.domjos.myarchivemobile.helper.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.helper.PDFReaderHelper;
 
@@ -133,10 +132,8 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
 
         cmdStop.setOnClickListener(event -> {
             if(this.type == Type.Book) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    if(this.pdfReaderHelper != null) {
-                        this.pdfReaderHelper.close();
-                    }
+                if (this.pdfReaderHelper != null) {
+                    this.pdfReaderHelper.close();
                 }
             } else {
                 if(this.vvCurrent.isPlaying()) {
@@ -166,9 +163,7 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
     @Override
     public BaseMediaObject getMediaObject() {
         if(this.type == Type.Book) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                this.pdfReaderHelper.close();
-            }
+            this.pdfReaderHelper.close();
         }
         return this.baseMediaObject;
     }
@@ -190,22 +185,14 @@ public class MediaPlayerFragment extends AbstractFragment<BaseMediaObject> {
 
     private void openPDF(int page) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                this.pdfReaderHelper = new PDFReaderHelper(this.path);
-                this.pdfReaderHelper.openPage(page);
-                this.current = this.pdfReaderHelper.getCurrentPageNumber();
-                this.max = this.pdfReaderHelper.getPagesCount();
-                String content = this.current + 1 + " / " + this.max;
-                this.lblCurrent.setText(content);
-                this.ivCurrent.setImage(ImageSource.cachedBitmap(this.pdfReaderHelper.getPage()));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    this.ivCurrent.setBackgroundColor(this.getResources().getColor(android.R.color.white, this.requireContext().getTheme()));
-                } else {
-                    this.ivCurrent.setBackgroundColor(this.requireContext().getResources().getColor(android.R.color.white));
-                }
-            } else {
-                IntentHelper.startPDFIntent(this.requireActivity(), this.path);
-            }
+            this.pdfReaderHelper = new PDFReaderHelper(this.path);
+            this.pdfReaderHelper.openPage(page);
+            this.current = this.pdfReaderHelper.getCurrentPageNumber();
+            this.max = this.pdfReaderHelper.getPagesCount();
+            String content = this.current + 1 + " / " + this.max;
+            this.lblCurrent.setText(content);
+            this.ivCurrent.setImage(ImageSource.cachedBitmap(this.pdfReaderHelper.getPage()));
+            this.ivCurrent.setBackgroundColor(this.getResources().getColor(android.R.color.white, this.requireContext().getTheme()));
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

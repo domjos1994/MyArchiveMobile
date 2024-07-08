@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -38,18 +37,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -73,7 +69,12 @@ import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.activities.CategoriesTagsActivity;
+import de.domjos.myarchivemobile.activities.CompanyActivity;
+import de.domjos.myarchivemobile.activities.LogActivity;
 import de.domjos.myarchivemobile.activities.MainActivity;
+import de.domjos.myarchivemobile.activities.PersonActivity;
+import de.domjos.myarchivemobile.activities.SettingsActivity;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.settings.Globals;
@@ -83,11 +84,12 @@ import static android.content.Intent.ACTION_SEND_MULTIPLE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+/** @noinspection rawtypes, unchecked */
 public class ControlsHelper {
     public static boolean fromHome = false;
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject, String key) {
+    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
         try {
             long id = -1;
             if(fragment.getArguments() != null) {
@@ -106,7 +108,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Album) currentObject.getObject();
                         } else {
-                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getAlbums(where, MainActivity.GLOBALS.getSettings(context).getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -118,7 +120,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Movie) currentObject.getObject();
                         } else {
-                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getMovies(where, MainActivity.GLOBALS.getSettings(context).getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -130,7 +132,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Game) currentObject.getObject();
                         } else {
-                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getGames(where, MainActivity.GLOBALS.getSettings(context).getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -142,7 +144,7 @@ public class ControlsHelper {
                         if(currentObject != null) {
                             baseMediaObject = (Book) currentObject.getObject();
                         } else {
-                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase(context).getBooks(where, MainActivity.GLOBALS.getSettings(context).getMediaCount(), 0);
                             if(!baseMediaObjects.isEmpty()) {
                                 baseMediaObject = baseMediaObjects.get(0);
                             } else {
@@ -179,20 +181,14 @@ public class ControlsHelper {
     public static void scheduleJob(Context context, List<Class<? extends JobService>> classes) {
         for(Class<? extends JobService> serviceClass : classes) {
             ComponentName serviceComponent = new ComponentName(context, serviceClass);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-                builder.setPeriodic(1000 * 60 * 60 * 24);
+            JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+            builder.setPeriodic(1000 * 60 * 60 * 24);
 
-                JobScheduler jobScheduler;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    jobScheduler = context.getSystemService(JobScheduler.class);
-                } else {
-                    jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                }
+            JobScheduler jobScheduler;
+            jobScheduler = context.getSystemService(JobScheduler.class);
 
-                if(jobScheduler != null) {
-                    jobScheduler.schedule(builder.build());
-                }
+            if(jobScheduler != null) {
+                jobScheduler.schedule(builder.build());
             }
         }
     }
@@ -210,16 +206,16 @@ public class ControlsHelper {
         try {
             baseDescriptionObject.setId(((BaseMediaObject)baseDescriptionObject.getObject()).getId());
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.book))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.movie))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.album))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getAlbums("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getAlbums("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.game))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getGames("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                return (T) MainActivity.GLOBALS.getDatabase(context).getGames("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
             }
         } catch (Exception ignored) {}
         return null;
@@ -230,7 +226,7 @@ public class ControlsHelper {
 
         if(mediaFilter.isList()) {
             try {
-                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase().getMediaLists("id=" + mediaFilter.getMediaList().getId(), MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key));
+                List<MediaList> mediaLists = MainActivity.GLOBALS.getDatabase(context).getMediaLists("id=" + mediaFilter.getMediaList().getId(), MainActivity.GLOBALS.getSettings(context).getMediaCount(), MainActivity.GLOBALS.getOffset(key));
                 mediaFilter.setMediaList(mediaLists==null ? mediaFilter.getMediaList() : mediaLists.get(0));
             } catch (Exception ignored) {}
             if(mediaFilter.getMediaList() != null) {
@@ -324,7 +320,7 @@ public class ControlsHelper {
 
     private static List<BaseDescriptionObject> getAllMediaItems(Context context, Map<DatabaseObject, String> mp, String key) {
         List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
-        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase().getObjectList(mp, MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset(key), ControlsHelper.returnOrderBy(context))) {
+        for(BaseMediaObject baseMediaObject : MainActivity.GLOBALS.getDatabase(context).getObjectList(mp, MainActivity.GLOBALS.getSettings(context).getMediaCount(), MainActivity.GLOBALS.getOffset(key), ControlsHelper.returnOrderBy(context))) {
             if(baseMediaObject instanceof Book) {
                 BaseDescriptionObject baseDescriptionObject = ControlsHelper.setItem(context, baseMediaObject);
                 try {
@@ -380,7 +376,7 @@ public class ControlsHelper {
 
     private static String returnOrderBy(Context context) {
         String orderBy = "";
-        String item = MainActivity.GLOBALS.getSettings().getOrderBy();
+        String item = MainActivity.GLOBALS.getSettings(context).getOrderBy();
         if(item != null) {
             if(item.equals("ID")) {
                 orderBy = " ORDER BY id";
@@ -479,16 +475,15 @@ public class ControlsHelper {
 
     public static void splitPaneEditMode(ViewGroup spl, boolean editMode) {
         if(spl != null) {
-            if(spl instanceof SplitPaneLayout) {
-                SplitPaneLayout layout = (SplitPaneLayout) spl;
+            if(spl instanceof SplitPaneLayout layout) {
                 layout.setSplitterPositionPercent(editMode ? 0.0f : 0.4f);
             }
         }
     }
 
     public static void setMediaStatistics(TextView txt, String key) {
-        int currentPage = MainActivity.GLOBALS.getPage(key);
-        int numberOfItems = MainActivity.GLOBALS.getSettings().getMediaCount();
+        int currentPage = MainActivity.GLOBALS.getPage(txt.getContext(), key);
+        int numberOfItems = MainActivity.GLOBALS.getSettings(txt.getContext()).getMediaCount();
         int max = (currentPage + 1) * numberOfItems;
 
         txt.setText(String.format("%s - %s", max - numberOfItems, max));
@@ -497,41 +492,24 @@ public class ControlsHelper {
     public static String setThePage(Fragment fragment, String table, String key) {
         if(fragment.getArguments() != null && ControlsHelper.fromHome) {
             long id = fragment.getArguments().getLong("id");
+            key = key.replace(Globals.RESET, "");
+            int page;
             if( id != 0) {
-                key = key.replace(Globals.RESET, "");
-                int page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
-                MainActivity.GLOBALS.setPage(page, key);
-                ControlsHelper.fromHome = false;
+                page = MainActivity.GLOBALS.getDatabase(fragment.getContext()).getPageOfItem(table, id, MainActivity.GLOBALS.getSettings(fragment.getContext()).getMediaCount());
             } else {
-                key = key.replace(Globals.RESET, "");
-                int page = 1;
-                MainActivity.GLOBALS.setPage(page, key);
-                ControlsHelper.fromHome = false;
+                page = 1;
             }
+            MainActivity.GLOBALS.setPage(fragment.getContext(), page, key);
+            ControlsHelper.fromHome = false;
         }
         return key;
-    }
-
-    public static void loadAd(Context context) {
-        if(MainActivity.GLOBALS.getSettings().showAd()) {
-            InterstitialAd interstitialAd = new InterstitialAd(context);
-            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
-            // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
-            interstitialAd.loadAd(new AdRequest.Builder().build());
-            interstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    interstitialAd.show();
-                }
-            });
-        }
     }
 
     public static void checkNetwork(Activity activity) {
         try {
             de.domjos.myarchivemobile.settings.Settings settings;
-            if(MainActivity.GLOBALS.getSettings() != null) {
-                settings = MainActivity.GLOBALS.getSettings();
+            if(MainActivity.GLOBALS.getSettings(activity) != null) {
+                settings = MainActivity.GLOBALS.getSettings(activity);
             } else {
                 settings =new de.domjos.myarchivemobile.settings.Settings(activity);
             }
@@ -560,12 +538,69 @@ public class ControlsHelper {
         return null;
     }
 
+    public static void onOptionsItemsSelected(
+            MenuItem item, Activity activity,
+            ActivityResultLauncher<Intent> person,
+            ActivityResultLauncher<Intent> company,
+            ActivityResultLauncher<Intent> categories,
+            ActivityResultLauncher<Intent> settings,
+            ActivityResultLauncher<Intent> log) {
+        Intent intent;
+        if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(activity, PersonActivity.class);
+            person.launch(intent);
+        }
+        if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(activity, CompanyActivity.class);
+            company.launch(intent);
+        }
+        if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(activity, CategoriesTagsActivity.class);
+            categories.launch(intent);
+        }
+        if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(activity, SettingsActivity.class);
+            settings.launch(intent);
+        }
+        if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(activity, LogActivity.class);
+            log.launch(intent);
+        }
+    }
+
+    public static void onItemSelectedListener(BottomNavigationView view, MenuFunc next, MenuFunc previous, MenuFunc add, MenuFunc edit) {
+        view.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdNext) {
+                if(next != null) {
+                    next.run(menuItem);
+                }
+            }
+            if(menuItem.getItemId() == R.id.cmdPrevious) {
+                if(previous != null) {
+                    previous.run(menuItem);
+                }
+            }
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(add != null) {
+                    add.run(menuItem);
+                }
+            }
+            if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(edit != null) {
+                    edit.run(menuItem);
+                }
+            }
+            return true;
+        });
+    }
+
+    public interface MenuFunc {
+        void run(MenuItem item);
+    }
+
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         try {
             Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                drawable = (DrawableCompat.wrap(Objects.requireNonNull(drawable))).mutate();
-            }
 
             Bitmap bitmap = Bitmap.createBitmap(Objects.requireNonNull(drawable).getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);

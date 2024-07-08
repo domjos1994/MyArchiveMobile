@@ -17,6 +17,8 @@
 
 package de.domjos.myarchivemobile.settings;
 
+import android.content.Context;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ public final class Globals {
     private Database database;
     private Settings settings;
     private boolean network;
-    private Map<String, Integer> page;
+    private final Map<String, Integer> page;
 
     public static final String BOOKS = "books";
     public static final String MOVIES = "movies";
@@ -47,20 +49,18 @@ public final class Globals {
         this.page = new LinkedHashMap<>();
     }
 
-    public Database getDatabase() {
+    public Database getDatabase(Context context) {
+        if(this.database == null) {
+            this.database = new Database(context);
+        }
         return this.database;
     }
 
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
-    public Settings getSettings() {
+    public Settings getSettings(Context context) {
+        if(this.settings == null) {
+            this.settings = new Settings(context);
+        }
         return this.settings;
-    }
-
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     public boolean isNetwork() {
@@ -71,17 +71,17 @@ public final class Globals {
         this.network = network;
     }
 
-    public void setPage(int page, String key) {
+    public void setPage(Context context, int page, String key) {
         boolean reset = key.contains(Globals.RESET);
         key = key.replace(Globals.RESET, "");
         if(reset) {
             page = 0;
         }
 
-        this.page.put(key, page * MainActivity.GLOBALS.getSettings().getMediaCount());
+        this.page.put(key, page * MainActivity.GLOBALS.getSettings(context).getMediaCount());
     }
 
-    public int getPage(String key) {
+    public int getPage(Context context, String key) {
         boolean reset = key.contains(Globals.RESET);
         key = key.replace(Globals.RESET, "");
 
@@ -94,7 +94,7 @@ public final class Globals {
 
         Integer number = this.page.get(key);
         if(number != null) {
-            return number / MainActivity.GLOBALS.getSettings().getMediaCount();
+            return number / MainActivity.GLOBALS.getSettings(context).getMediaCount();
         }
         return 0;
     }

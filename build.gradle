@@ -17,22 +17,37 @@
 
 // Top-level build file where you can icon_add configuration options common to all sub-projects/modules.
 
-ext.propVersion = 36
-ext.propVersionCode = "1.4"
+ext.propVersion = 37
+ext.propVersionCode = "2.0"
 
-ext.propJavaVersion = "8"
+ext.propJavaVersion = "17"
 
-ext.propCompVersion = 29
-ext.propMinVersion = 20
+ext.propCompVersion = 34
+ext.propMinVersion = 29
 
 ext.propMultiDex = true
 ext.propMinify = false
 ext.propShrink = false
 
 // android libraries
-ext.propDatabaseVersion = "2.1.0"
-ext.propAppCompatVersion = "1.2.0"
+ext.propDatabaseVersion = "2.4.0"
+ext.propAppCompatVersion = "1.6.1"
 ext.propLifeCycleExtVersion = "2.2.0"
+ext.propNavigation = "2.7.5"
+ext.propMaterial = "1.10.0"
+ext.propATV = "1.2.7"
+
+// services
+ext.propApi = "2.2.0"
+ext.propApiServices = "v1-rev114-1.25.0"
+
+// room
+ext.propRoom = "2.6.1"
+
+// test libraries
+ext.propJUnit = "4.13.2"
+ext.propJUnitExt = "1.1.5"
+ext.propEspresso = "3.5.1"
 
 // other libraries
 ext.propCustomWidgetsVersion = "3.5.0"
@@ -40,7 +55,7 @@ ext.propCustomWidgetsVersion = "3.5.0"
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -51,17 +66,19 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     gradle.projectsEvaluated {
-        tasks.withType (JavaCompile) {
-            options.compilerArgs << "-Xlint:deprecation"
-            options.compilerArgs << "-Xlint:unchecked"
+        tasks.withType(JavaCompile).tap {
+            configureEach {
+                options.compilerArgs << "-Xlint:deprecation"
+                options.compilerArgs << "-Xlint:unchecked"
+            }
         }
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Person;
-import de.domjos.myarchivelibrary.tasks.WikiDataPersonTask;
+import de.domjos.myarchiveservices.mediaTasks.WikiDataPersonTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomDatePickerField;
@@ -60,8 +60,9 @@ public class PersonFragment extends AbstractFragment<Person> {
         this.cmdPersonSearch.setOnClickListener(event -> {
             try {
                 this.person = this.getMediaObject();
-                WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
-                this.abstractPagerAdapter.setMediaObject(wikiDataPersonTask.execute(this.person).get().get(0));
+                WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings(this.requireContext()).isNotifications(), R.drawable.icon_notification);
+                wikiDataPersonTask.after((items) -> abstractPagerAdapter.setMediaObject(items.get(0)));
+                wikiDataPersonTask.execute(new Person[]{this.person});
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }

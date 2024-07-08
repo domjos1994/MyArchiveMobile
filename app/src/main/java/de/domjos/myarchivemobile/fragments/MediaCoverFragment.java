@@ -17,8 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -35,14 +33,36 @@ import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
+import de.domjos.myarchivemobile.helper.LifecycleObserver;
 
 public class MediaCoverFragment<T> extends AbstractFragment<T> {
     private ImageButton cmdMediaCoverPhoto, cmdMediaCoverGallery;
     private ImageView ivMediaCover;
+    private LifecycleObserver lifecycleObserver;
 
     private T object;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        this.lifecycleObserver = new LifecycleObserver(
+                this.requireActivity().getActivityResultRegistry(),
+                this.requireContext(),(bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            }
+        }, (bmp) -> {
+            if(bmp != null) {
+                this.ivMediaCover.setImageBitmap(bmp);
+            } else {
+                this.lifecycleObserver.startGallery();
+            }
+        });
+        this.getLifecycle().addObserver(this.lifecycleObserver);
+    }
 
     @Nullable
     @Override
@@ -56,8 +76,8 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.cmdMediaCoverGallery = view.findViewById(R.id.cmdMediaCoverGallery);
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
-        this.cmdMediaCoverGallery.setOnClickListener(view1 -> IntentHelper.startGalleryIntent(this.requireActivity()));
-        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> IntentHelper.startCameraIntent(this.requireActivity()));
+        this.cmdMediaCoverGallery.setOnClickListener(view1 -> this.lifecycleObserver.startGallery());
+        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> this.lifecycleObserver.startCamera());
 
         this.changeMode(false);
     }
@@ -67,24 +87,21 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.object = object;
 
         if(this.ivMediaCover != null) {
-            if(this.object instanceof BaseMediaObject) {
-                BaseMediaObject baseMediaObject = (BaseMediaObject) this.object;
+            if(this.object instanceof BaseMediaObject baseMediaObject) {
                 if(baseMediaObject.getCover() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(baseMediaObject.getCover(), 0, baseMediaObject.getCover().length));
                 } else {
                     this.ivMediaCover.setImageBitmap(null);
                 }
             }
-            if(this.object instanceof Person) {
-                Person person = (Person) this.object;
+            if(this.object instanceof Person person) {
                 if(person.getImage() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(person.getImage(), 0, person.getImage().length));
                 } else {
                     this.ivMediaCover.setImageBitmap(null);
                 }
             }
-            if(this.object instanceof Company) {
-                Company company = (Company) this.object;
+            if(this.object instanceof Company company) {
                 if(company.getCover() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(company.getCover(), 0, company.getCover().length));
                 } else {
@@ -125,20 +142,5 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
     @Override
     public Validator initValidation(Validator validator) {
         return validator;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        try {
-            Bitmap bitmap = IntentHelper.getCameraIntentResult(requestCode, resultCode, intent);
-            if(bitmap!=null) {
-                this.ivMediaCover.setImageBitmap(bitmap);
-            } else {
-                bitmap = IntentHelper.getGalleryIntentResult(requestCode, resultCode, intent, this.getActivity());
-                if(bitmap != null) {
-                    this.ivMediaCover.setImageBitmap(bitmap);
-                }
-            }
-        } catch (Exception ignored) {}
     }
 }

@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'de.domjos.myarchivedbvalidator'
+    compileSdk propCompVersion
+
+    defaultConfig {
+        minSdk propMinVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = propJavaVersion
+        targetCompatibility = propJavaVersion
+    }
+}
+
+dependencies {
+    // ui
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
+    implementation "com.google.android.material:material:$propMaterial"
+
+    // database
+    implementation "androidx.room:room-runtime:$propRoom"
+    implementation project(path: ":MyArchiveDatabase")
+
+    testImplementation "junit:junit:$propJUnit"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExt"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspresso"
+}

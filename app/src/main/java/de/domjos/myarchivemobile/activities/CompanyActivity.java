@@ -21,6 +21,9 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -28,23 +31,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.myarchivelibrary.model.general.Company;
-import de.domjos.myarchivelibrary.tasks.WikiDataCompanyTask;
+import de.domjos.myarchiveservices.mediaTasks.WikiDataCompanyTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.adapter.CompanyPagerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
-import de.domjos.myarchivemobile.tasks.LoadingTask;
+import de.domjos.myarchiveservices.tasks.LoadingCompanies;
 
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
@@ -56,6 +57,7 @@ public final class CompanyActivity extends AbstractActivity {
     private Company company = null;
     private Validator validator;
     private boolean firstReload = true;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public CompanyActivity() {
         super(R.layout.company_activity);
@@ -80,7 +82,7 @@ public final class CompanyActivity extends AbstractActivity {
         this.lvCompanies.setOnReloadListener(CompanyActivity.this::reload);
         this.lvCompanies.setOnDeleteListener(listObject -> {
             Company company = (Company) listObject.getObject();
-            MainActivity.GLOBALS.getDatabase().deleteItem(company);
+            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).deleteItem(company);
             this.changeMode(false, false);
             this.companyPagerAdapter.setMediaObject(new Company());
         });
@@ -95,54 +97,52 @@ public final class CompanyActivity extends AbstractActivity {
                 try {
                     Company company = (Company) baseDescriptionObject.getObject();
                     if(company != null) {
-                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
-                        wikiDataCompanyTask.after((AbstractTask.PostExecuteListener<List<Company>>) o -> {
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
+                        WikiDataCompanyTask wikiDataCompanyTask = new WikiDataCompanyTask(CompanyActivity.this, MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(), R.drawable.icon_notification);
+                        wikiDataCompanyTask.after(o -> {
+                            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateCompany(o.get(0), "", 0);
                             reload();
                         });
-                        wikiDataCompanyTask.execute(company);
+                        wikiDataCompanyTask.execute(new Company[] {company});
                     }
                 } catch (Exception ignored) {}
             }
         });
 
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.companyPagerAdapter.setMediaObject(new Company());
-                        this.company = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.company = null;
-                        this.reload();
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.companyPagerAdapter.setMediaObject(new Company());
+                    this.company = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.company = null;
+                    this.reload();
+                }
+            }
+            if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.company != null) {
+                        this.changeMode(true, true);
+                        this.companyPagerAdapter.setMediaObject(this.company);
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.company != null) {
-                            this.changeMode(true, true);
-                            this.companyPagerAdapter.setMediaObject(this.company);
+                } else {
+                    if(this.validator.getState()) {
+                        Company company = this.companyPagerAdapter.getMediaObject();
+                        if(this.company !=null) {
+                            company.setId(this.company.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertOrUpdateCompany(company, "", 0);
+                            this.changeMode(false, false);
+                            this.company = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Company company = this.companyPagerAdapter.getMediaObject();
-                            if(this.company !=null) {
-                                company.setId(this.company.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(company.getTitle(), company.getId(), this.lvCompanies.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(company, "", 0);
-                                this.changeMode(false, false);
-                                this.company = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CompanyActivity.this);
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -179,45 +179,27 @@ public final class CompanyActivity extends AbstractActivity {
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.icon_list);
         ControlsHelper.checkNetwork(this);
+        this.initCallBacks();
+    }
+
+    private void initCallBacks() {
+        this.emptyCallback = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {});
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isDebugMode());
         menu.findItem(R.id.menMainScanner).setVisible(false);
         return true;
     }
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
-        Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
-        }
-        if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
-        }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                emptyCallback, emptyCallback, emptyCallback, emptyCallback, emptyCallback
+        );
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,8 +230,12 @@ public final class CompanyActivity extends AbstractActivity {
         }
         try {
             this.lvCompanies.getAdapter().clear();
-            LoadingTask<Company> loadingTask = new LoadingTask<>(CompanyActivity.this, new Company(), null, search, this.lvCompanies, "companies");
-            loadingTask.after((AbstractTask.PostExecuteListener<List<Company>>) companies -> {
+            LoadingCompanies loadingTask = new LoadingCompanies(
+                    CompanyActivity.this, this.lvCompanies, search,
+                    MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isNotifications(),
+                    R.drawable.icon_notification, MainActivity.GLOBALS.getDatabase(this.getApplicationContext())
+            );
+            loadingTask.after(companies -> {
                 for(Company company : companies) {
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     baseDescriptionObject.setTitle(company.getTitle());
@@ -267,7 +253,7 @@ public final class CompanyActivity extends AbstractActivity {
         }
     }
 
-    protected void changeMode(boolean editMode, boolean selected) {
+    private void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, this.bottomNavigationView);
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();

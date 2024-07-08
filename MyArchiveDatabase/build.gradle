@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'de.domjos.myarchivedatabase'
+    compileSdk propCompVersion
+
+    defaultConfig {
+        minSdk propMinVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = propJavaVersion
+        targetCompatibility = propJavaVersion
+    }
+}
+
+dependencies {
+    // ui
+    implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
+    implementation "com.google.android.material:material:$propMaterial"
+
+    // room
+    implementation "androidx.room:room-runtime:$propRoom"
+    annotationProcessor "androidx.room:room-compiler:$propRoom"
+
+    // test
+    testImplementation "junit:junit:$propJUnit"
+    androidTestImplementation "androidx.room:room-testing:$propRoom"
+    androidTestImplementation "androidx.test.ext:junit:$propJUnitExt"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$propEspresso"
+}

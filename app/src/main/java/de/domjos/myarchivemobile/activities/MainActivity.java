@@ -37,6 +37,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -50,7 +52,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Arrays;
@@ -60,12 +61,10 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.myarchivelibrary.activities.ScanActivity;
-import de.domjos.myarchivelibrary.database.Database;
-import de.domjos.myarchivelibrary.services.AudioDBWebservice;
-import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
-import de.domjos.myarchivelibrary.services.IGDBWebservice;
-import de.domjos.myarchivelibrary.services.MovieDBWebservice;
+import de.domjos.myarchiveservices.services.AudioDBWebservice;
+import de.domjos.myarchiveservices.services.GoogleBooksWebservice;
+import de.domjos.myarchiveservices.services.IGDBWebservice;
+import de.domjos.myarchiveservices.services.MovieDBWebservice;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.dialogs.MediaDialog;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
@@ -74,13 +73,9 @@ import de.domjos.myarchivemobile.helper.ControlsHelper;
 import de.domjos.myarchivemobile.services.LibraryService;
 import de.domjos.myarchivemobile.services.ListService;
 import de.domjos.myarchivemobile.settings.Globals;
-import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
     private final static boolean INIT_WITH_EXAMPLE_DATA = false;
-    public final static int SETTINGS_REQUEST = 51;
-    public final static int PER_COMP_TAG_CAT_REQUEST = 52;
-    public final static int SCANNER_REQUEST = 53;
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
@@ -92,6 +87,11 @@ public final class MainActivity extends AbstractActivity {
     private String label;
     private boolean onlyOrientationChanged = false;
     private static String query = "";
+
+    private ActivityResultLauncher<Intent> scannerCallback;
+    private ActivityResultLauncher<Intent> settingsCallback;
+    private ActivityResultLauncher<Intent> categoriesCallback;
+    private ActivityResultLauncher<Intent> emptyCallback;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -128,7 +128,7 @@ public final class MainActivity extends AbstractActivity {
             AudioDBWebservice audioDBWebservice = new AudioDBWebservice(MainActivity.this, 0L);
             IGDBWebservice igdbWebservice = new IGDBWebservice(MainActivity.this, 0L, "");
 
-            MediaDialog mediaDialog = MediaDialog.newInstance("", this.getString(R.string.book), Arrays.asList(googleBooksWebservice, movieDBWebservice, audioDBWebservice, igdbWebservice));
+            MediaDialog mediaDialog = MediaDialog.newInstance("", this.getString(R.string.book), Arrays.asList(googleBooksWebservice, movieDBWebservice, audioDBWebservice, igdbWebservice), (result) -> {});
             mediaDialog.show(this.getSupportFragmentManager(), "dialog");
         });
 
@@ -160,8 +160,7 @@ public final class MainActivity extends AbstractActivity {
             parentFragment.reload(query, true);
         } else {
             for(Fragment fragment : fragments) {
-                if(fragment instanceof ParentFragment) {
-                    ParentFragment parentFragment = ((ParentFragment) fragment);
+                if(fragment instanceof ParentFragment parentFragment) {
                     parentFragment.reload(query, true);
                     return;
                 }
@@ -188,7 +187,7 @@ public final class MainActivity extends AbstractActivity {
 
         this.appBarConfiguration = new AppBarConfiguration.Builder(
             R.id.navMainHome, R.id.navMainMediaMusic, R.id.navMainMediaMovies, R.id.navMainMediaBooks, R.id.navMainMediaGames
-        ).setDrawerLayout(drawerLayout).build();
+        ).setOpenableLayout(drawerLayout).build();
 
         this.navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         this.navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -201,10 +200,8 @@ public final class MainActivity extends AbstractActivity {
         try {
             this.initGlobals();
 
-            MobileAds.initialize(MainActivity.this, initializationStatus -> ControlsHelper.loadAd(MainActivity.this));
-
             if(MainActivity.INIT_WITH_EXAMPLE_DATA) {
-                MainActivity.GLOBALS.getDatabase().insertExampleData();
+                MainActivity.GLOBALS.getDatabase(this.getApplicationContext()).insertExampleData();
             }
 
             this.selectFileTreeFragment();
@@ -213,10 +210,11 @@ public final class MainActivity extends AbstractActivity {
         }
 
         ControlsHelper.checkNetwork(this);
+        this.initOnResultCallBacks();
     }
 
     private void setTextColorForMenuItem(MenuItem menuItem) {
-        SpannableString spanString = new SpannableString(menuItem.getTitle().toString());
+        SpannableString spanString = new SpannableString(Objects.requireNonNull(menuItem.getTitle()).toString());
         spanString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.textColorPrimary)), 0, spanString.length(), 0);
         menuItem.setTitle(spanString);
     }
@@ -225,7 +223,7 @@ public final class MainActivity extends AbstractActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
+        menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).isDebugMode());
         menu.findItem(R.id.menMainScanner).setVisible(
                 (
                         this.label.equals(this.getString(R.string.main_navigation_media_books)) ||
@@ -241,38 +239,58 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
-        Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainScanner:
-                intent = new Intent(MainActivity.this, ScanActivity.class);
-                intent.putExtra("parent", this.label);
-                requestCode = MainActivity.SCANNER_REQUEST;
-                break;
-            case R.id.menMainPersons:
-                intent = new Intent(MainActivity.this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(MainActivity.this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(MainActivity.this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(MainActivity.this, LogActivity.class);
-                break;
+        Intent intent;
+
+        if(item.getItemId() == R.id.menMainScanner) {
+            intent = new Intent(MainActivity.this, ScanActivity.class);
+            intent.putExtra("parent", this.label);
+            this.scannerCallback.launch(intent);
         }
-        if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
-        }
+        ControlsHelper.onOptionsItemsSelected(item, this,
+                this.emptyCallback, this.emptyCallback, this.categoriesCallback,
+                this.settingsCallback, this.emptyCallback
+        );
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initOnResultCallBacks() {
+        this.scannerCallback = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if(result.getResultCode() == Activity.RESULT_OK) {
+                        List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
+                        for(Fragment fragment : fragments) {
+                            if(fragment instanceof ParentFragment) {
+                                if(result.getData() != null) {
+                                    ((ParentFragment) fragment).setCodes(result.getData().getStringExtra("codes"), result.getData().getStringExtra("parent"));
+                                }
+                            }
+                        }
+                    }
+                }
+        );
+        this.settingsCallback = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> this.menu.findItem(R.id.menMainLog)
+                        .setVisible(MainActivity.GLOBALS.getSettings(this.getApplicationContext())
+                                .isDebugMode()
+                        )
+        );
+        this.categoriesCallback = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    assert result.getData() != null;
+                    if(result.getData().hasExtra("type") && result.getData().hasExtra("id")) {
+                        String type = result.getData().getStringExtra("type");
+                        if(type != null) {
+                            this.selectTab(type, result.getData().getLongExtra("id", 0));
+                        }
+                    }
+                }
+        );
+        this.emptyCallback = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {}
+        );
     }
 
     @Override
@@ -283,45 +301,14 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         this.navController.navigateUp();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         this.initPermissions();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK) {
-            if(requestCode == MainActivity.SCANNER_REQUEST) {
-                List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
-                for(Fragment fragment : fragments) {
-                    if(fragment instanceof ParentFragment) {
-                        if(data != null) {
-                            ((ParentFragment) fragment).setCodes(data.getStringExtra("codes"), data.getStringExtra("parent"));
-                        }
-                    }
-                }
-            }
-            if(requestCode == MainActivity.SETTINGS_REQUEST) {
-                this.menu.findItem(R.id.menMainLog).setVisible(MainActivity.GLOBALS.getSettings().isDebugMode());
-            }
-            if(data != null) {
-                if(requestCode == MainActivity.PER_COMP_TAG_CAT_REQUEST && data.hasExtra("type") && data.hasExtra("id")) {
-                    String type = data.getStringExtra("type");
-                    if(type != null) {
-                        this.selectTab(type, data.getLongExtra("id", 0));
-                    }
-                }
-            }
-
-            List<Fragment> fragments = this.navHostFragment.getChildFragmentManager().getFragments();
-            for(Fragment fragment : fragments) {
-                fragment.onActivityResult(requestCode, resultCode, data);
-            }
-        }
     }
 
     @Override
@@ -366,7 +353,6 @@ public final class MainActivity extends AbstractActivity {
     }
 
     private void initGlobals() {
-        MainActivity.GLOBALS.setSettings(new Settings(this.getApplicationContext()));
         CheckNetwork checkNetwork = new CheckNetwork(this.getApplicationContext());
         checkNetwork.registerNetworkCallback(availableNetwork -> {
             if(menu != null && label != null) {
@@ -378,9 +364,6 @@ public final class MainActivity extends AbstractActivity {
                 runOnUiThread(() -> menu.findItem(R.id.menMainScanner).setVisible((book || movie || music || game) && MainActivity.GLOBALS.isNetwork()));
             }
         });
-
-        Database database = new Database(this.getApplicationContext());
-        MainActivity.GLOBALS.setDatabase(database);
 
         if(!onlyOrientationChanged) {
             try {

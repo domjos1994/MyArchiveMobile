@@ -20,8 +20,6 @@ package de.domjos.myarchivemobile.services;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
-import android.os.Build;
-import androidx.annotation.RequiresApi;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,9 +36,7 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.settings.Settings;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class LibraryService extends JobService {
     private Database database;
     private Context context;
@@ -50,7 +46,6 @@ public class LibraryService extends JobService {
     public boolean onStartJob(JobParameters jobParameters) {
         this.context = this.getApplicationContext();
         try {
-            Settings settings = new Settings(this.context);
             this.database = new Database(this.context);
             this.notifications = new LinkedList<>();
         } catch (Exception ex) {
@@ -58,16 +53,16 @@ public class LibraryService extends JobService {
         }
 
         try {
-            for(Book object : this.database.getBooks("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
+            for(Book object : this.database.getBooks("", MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Movie object : this.database.getMovies("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
+            for(Movie object : this.database.getMovies("", MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Album object : this.database.getAlbums("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
+            for(Album object : this.database.getAlbums("", MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
-            for(Game object : this.database.getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
+            for(Game object : this.database.getGames("", MainActivity.GLOBALS.getSettings(this.context).getMediaCount(), MainActivity.GLOBALS.getOffset("library"))) {
                 this.checkLibraryObject(object);
             }
         } catch (Exception ignored) {} finally {
