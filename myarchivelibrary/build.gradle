@@ -23,8 +23,6 @@ android {
     defaultConfig {
         minSdkVersion propMinVersion
         targetSdkVersion propCompVersion
-        versionCode propVersion
-        versionName propVersionCode
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -42,6 +40,7 @@ android {
         targetCompatibility = propJavaVersion
         sourceCompatibility = propJavaVersion
     }
+    namespace 'de.domjos.myarchivelibrary'
 }
 
 dependencies {

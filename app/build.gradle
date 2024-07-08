@@ -62,6 +62,7 @@ android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
     }
+    namespace 'de.domjos.myarchivemobile'
 }
 
 dependencies {
