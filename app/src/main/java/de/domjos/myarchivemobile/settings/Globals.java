@@ -29,7 +29,7 @@ public final class Globals {
     private Database database;
     private Settings settings;
     private boolean network;
-    private Map<String, Integer> page;
+    private final Map<String, Integer> page;
 
     public static final String BOOKS = "books";
     public static final String MOVIES = "movies";

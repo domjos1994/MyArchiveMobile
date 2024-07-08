@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -41,7 +40,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
@@ -80,11 +78,12 @@ import static android.content.Intent.ACTION_SEND_MULTIPLE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+/** @noinspection rawtypes, unchecked */
 public class ControlsHelper {
     public static boolean fromHome = false;
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject, String key) {
+    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
         try {
             long id = -1;
             if(fragment.getArguments() != null) {
@@ -176,20 +175,14 @@ public class ControlsHelper {
     public static void scheduleJob(Context context, List<Class<? extends JobService>> classes) {
         for(Class<? extends JobService> serviceClass : classes) {
             ComponentName serviceComponent = new ComponentName(context, serviceClass);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-                builder.setPeriodic(1000 * 60 * 60 * 24);
+            JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+            builder.setPeriodic(1000 * 60 * 60 * 24);
 
-                JobScheduler jobScheduler;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    jobScheduler = context.getSystemService(JobScheduler.class);
-                } else {
-                    jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                }
+            JobScheduler jobScheduler;
+            jobScheduler = context.getSystemService(JobScheduler.class);
 
-                if(jobScheduler != null) {
-                    jobScheduler.schedule(builder.build());
-                }
+            if(jobScheduler != null) {
+                jobScheduler.schedule(builder.build());
             }
         }
     }
@@ -203,6 +196,7 @@ public class ControlsHelper {
         return ControlsHelper.getAllMediaItems(context, mp, key);
     }
 
+    /** @noinspection unchecked*/
     public static <T extends BaseMediaObject> T getObject(BaseDescriptionObject baseDescriptionObject, Context context) {
         try {
             baseDescriptionObject.setId(((BaseMediaObject)baseDescriptionObject.getObject()).getId());
@@ -476,8 +470,7 @@ public class ControlsHelper {
 
     public static void splitPaneEditMode(ViewGroup spl, boolean editMode) {
         if(spl != null) {
-            if(spl instanceof SplitPaneLayout) {
-                SplitPaneLayout layout = (SplitPaneLayout) spl;
+            if(spl instanceof SplitPaneLayout layout) {
                 layout.setSplitterPositionPercent(editMode ? 0.0f : 0.4f);
             }
         }
@@ -545,9 +538,6 @@ public class ControlsHelper {
     private static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         try {
             Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                drawable = (DrawableCompat.wrap(Objects.requireNonNull(drawable))).mutate();
-            }
 
             Bitmap bitmap = Bitmap.createBitmap(Objects.requireNonNull(drawable).getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);

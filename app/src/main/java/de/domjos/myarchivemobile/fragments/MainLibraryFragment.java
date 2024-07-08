@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -102,62 +101,59 @@ public class MainLibraryFragment extends ParentFragment {
             this.libraryObject = null;
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
             LibraryObject libraryObject;
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        libraryObject = new LibraryObject();
-                        libraryObject.setDeadLine(new Date());
-                        this.setObject(libraryObject);
-                        this.libraryObject = null;
-                    } else {
-                        changeMode(false, false);
-                        setObject(new LibraryObject());
-                        this.libraryObject = null;
-                        reloadLibraryObjects();
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    libraryObject = new LibraryObject();
+                    libraryObject.setDeadLine(new Date());
+                    this.setObject(libraryObject);
+                    this.libraryObject = null;
+                } else {
+                    changeMode(false, false);
+                    setObject(new LibraryObject());
+                    this.libraryObject = null;
+                    reloadLibraryObjects();
+                }
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.libraryObject != null) {
+                        this.changeMode(true, true);
+                        setObject(this.libraryObject);
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
+                } else {
+                    try {
+                        libraryObject = this.getObject();
                         if(this.libraryObject != null) {
-                            this.changeMode(true, true);
-                            setObject(this.libraryObject);
+                            libraryObject.setId(this.libraryObject.getId());
                         }
-                    } else {
-                        try {
-                            libraryObject = this.getObject();
-                            if(this.libraryObject != null) {
-                                libraryObject.setId(this.libraryObject.getId());
-                            }
-                            MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
+                        MainActivity.GLOBALS.getDatabase().insertOrUpdateLibraryObject(libraryObject, (BaseMediaObject) currentObject.getObject());
 
-                            if(this.libraryObject != null) {
-                                if(this.libraryObject.getId() != 0) {
-                                    BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
-                                    for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
-                                        if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
-                                            baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
-                                            break;
-                                        }
+                        if(this.libraryObject != null) {
+                            if(this.libraryObject.getId() != 0) {
+                                BaseMediaObject baseMediaObject = (BaseMediaObject) currentObject.getObject();
+                                for(int i = 0; i<=baseMediaObject.getLibraryObjects().size()-1; i++) {
+                                    if(baseMediaObject.getLibraryObjects().get(i).getId()==this.libraryObject.getId()) {
+                                        baseMediaObject.getLibraryObjects().set(i, this.libraryObject);
+                                        break;
                                     }
-                                } else {
-                                    ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                                 }
                             } else {
                                 ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                             }
-
-                            this.changeMode(false, false);
-                            this.libraryObject = null;
-                            this.reloadLibraryObjects();
-                            this.setObject(new LibraryObject());
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                        } else {
+                            ((BaseMediaObject) currentObject.getObject()).getLibraryObjects().add(this.libraryObject);
                         }
+
+                        this.changeMode(false, false);
+                        this.libraryObject = null;
+                        this.reloadLibraryObjects();
+                        this.setObject(new LibraryObject());
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -213,7 +209,7 @@ public class MainLibraryFragment extends ParentFragment {
         this.txtLibraryReturnedAt.setDate(libraryObject.getReturned());
     }
 
-    private LibraryObject getObject() throws ParseException {
+    private LibraryObject getObject() {
         LibraryObject libraryObject = new LibraryObject();
         libraryObject.setNumberOfDays(Integer.parseInt(this.txtLibraryNumberOfDays.getText().toString()));
         libraryObject.setNumberOfWeeks(Integer.parseInt(this.txtMediaLibraryNumberOfWeeks.getText().toString()));

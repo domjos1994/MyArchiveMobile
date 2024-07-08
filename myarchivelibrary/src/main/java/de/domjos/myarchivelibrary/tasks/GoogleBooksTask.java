@@ -24,13 +24,13 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 
 public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
-    private String id, key;
+    private final String id, key;
 
     public GoogleBooksTask(Activity activity, boolean showNotifications, int icon, String id, String key) {
         super(activity, R.string.service_google_search, R.string.service_google_search_content, showNotifications, icon);

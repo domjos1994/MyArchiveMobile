@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -235,16 +235,16 @@ public class MediaDialog extends DialogFragment {
                 }
             } else {
                 if(this.theMovieDBTask != null) {
-                    this.theMovieDBTask.cancel(true);
+                    this.theMovieDBTask.shutDown();
                 }
                 if(this.theAudioDBTask != null) {
-                    this.theAudioDBTask.cancel(true);
+                    this.theAudioDBTask.shutDown();
                 }
                 if(this.googleBooksTask != null) {
-                    this.googleBooksTask.cancel(true);
+                    this.googleBooksTask.shutDown();
                 }
                 if(this.igdbTask != null) {
-                    this.igdbTask.cancel(true);
+                    this.igdbTask.shutDown();
                 }
 
                 this.cmdSave.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_save));
@@ -292,7 +292,7 @@ public class MediaDialog extends DialogFragment {
                 }
             } else {
                 if(this.searchTask != null) {
-                    this.searchTask.cancel(true);
+                    this.searchTask.shutDown();
                 }
 
                 this.cmdSearch.setImageDrawable(WidgetUtils.getDrawable(this.requireContext(), R.drawable.icon_search));
@@ -343,7 +343,7 @@ public class MediaDialog extends DialogFragment {
     }
 
     public static class SearchTask extends AbstractTask<String, Void, List<BaseDescriptionObject>> {
-        private TitleWebservice<? extends  BaseMediaObject> titleWebservice;
+        private final TitleWebservice<? extends  BaseMediaObject> titleWebservice;
 
         SearchTask(Activity activity, boolean showNotifications, TitleWebservice<? extends BaseMediaObject> titleWebservice) {
             super(activity, R.string.sys_search, R.string.sys_search, showNotifications, R.drawable.icon_notification);

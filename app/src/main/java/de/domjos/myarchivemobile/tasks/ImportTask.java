@@ -21,9 +21,7 @@ package de.domjos.myarchivemobile.tasks;
 import android.app.Activity;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -34,8 +32,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.myarchivelibrary.custom.ProgressBarTask;
 import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
@@ -51,24 +49,22 @@ import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 import de.domjos.myarchivelibrary.services.TextService;
-import de.domjos.customwidgets.model.tasks.StatusTask;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
-public class ImportTask extends StatusTask<Void, List<String>> {
-    private String path;
-    private boolean books, movies, music, webservice;
-    private Map<String, Spinner> cells;
-    private WeakReference<TextView> lblState;
-    private List<String> results;
-    private long listId;
+public class ImportTask extends ProgressBarTask<Void, List<String>> {
+    private final String path;
+    private final boolean books, movies, music, webservice;
+    private final Map<String, Spinner> cells;
+    private final List<String> results;
+    private final long listId;
 
-    public ImportTask(Activity activity, String path, ProgressBar pbProgress, TextView lblState, TextView lblMessage, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells, long listId) {
+    public ImportTask(Activity activity, String path, ProgressBar pbProgress, boolean books, boolean movies, boolean music, boolean webservice, Map<String, Spinner> cells, long listId) {
         super(
                 activity,
                 R.string.api_task_import,
                 R.string.api_task_import_content,
-                MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, pbProgress, lblMessage);
+                MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, pbProgress);
 
         this.path = path;
         this.books = books;
@@ -76,15 +72,8 @@ public class ImportTask extends StatusTask<Void, List<String>> {
         this.music = music;
         this.webservice = webservice;
         this.cells = cells;
-        this.lblState = new WeakReference<>(lblState);
         this.results = new LinkedList<>();
         this.listId = listId;
-    }
-
-    @Override
-    protected final void onProgressUpdate(TaskStatus... values) {
-        super.onProgressUpdate(values);
-        this.lblState.get().setText(String.format("%s / %s", this.max, values[0].getStatus()));
     }
 
     @Override
@@ -104,7 +93,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
 
         int i = 1;
         for(Map<String, String> row : rows) {
-            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_data)));
+            publishProgress(i);
             BaseMediaObject mediaObject;
             if(this.books) {
                 mediaObject = new Book();
@@ -151,127 +140,119 @@ public class ImportTask extends StatusTask<Void, List<String>> {
             }
 
             if(this.books) {
-                if(mediaObject instanceof Book) {
-                    Book book = (Book) mediaObject;
+                Book book = (Book) mediaObject;
+                try {
+                    if (this.webservice) {
+                        publishProgress(i);
+                        Book webServiceBook;
 
-                    try {
-                        if(this.webservice) {
-                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
-                            Book webServiceBook;
+                        String code = book.getCode();
+                        if (code.trim().isEmpty()) {
+                            code = "";
+                        } else if (code.contains(",")) {
+                            code = code.split(",")[0].trim();
+                        } else if (code.contains(";")) {
+                            code = code.split(";")[0].trim();
+                        } else {
+                            code = code.trim();
+                        }
 
-                            String code = book.getCode();
-                            if(code.trim().isEmpty()) {
-                                code = "";
-                            } else if(code.contains(",")) {
-                                code = code.split(",")[0].trim();
-                            } else if(code.contains(";")) {
-                                code = code.split(";")[0].trim();
-                            } else {
-                                code = code.trim();
-                            }
-
-                            if(code.isEmpty()) {
+                        if (code.isEmpty()) {
+                            webServiceBook = this.searchBookByTitle(book, null);
+                        } else {
+                            GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), code, "", "");
+                            webServiceBook = googleBooksWebservice.execute();
+                            if (webServiceBook == null) {
                                 webServiceBook = this.searchBookByTitle(book, null);
                             } else {
-                                GoogleBooksWebservice googleBooksWebservice = new GoogleBooksWebservice(this.getContext(), code, "", "");
-                                webServiceBook = googleBooksWebservice.execute();
-                                if(webServiceBook == null) {
-                                    webServiceBook = this.searchBookByTitle(book, null);
-                                } else {
-                                    if(webServiceBook.getCover() != null) {
-                                        webServiceBook = this.searchBookByTitle(book, webServiceBook);
-                                    }
+                                if (webServiceBook.getCover() != null) {
+                                    webServiceBook = this.searchBookByTitle(book, webServiceBook);
                                 }
                             }
-
-                            if(webServiceBook != null) {
-                                this.mergeDataFromWebservice(book, webServiceBook);
-                            }
                         }
-                    } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                    this.addObjectToList(book);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
+                        if (webServiceBook != null) {
+                            this.mergeDataFromWebservice(book, webServiceBook);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
+
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                this.addObjectToList(book);
+                this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else if(this.movies) {
-                if(mediaObject instanceof Movie) {
-                    Movie movie = (Movie) mediaObject;
+                Movie movie = (Movie) mediaObject;
+                try {
+                    if (this.webservice) {
+                        publishProgress(i);
+                        Movie webServiceMovie = null;
 
-                    try {
-                        if(this.webservice) {
-                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
-                            Movie webServiceMovie = null;
-
-                            MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
-                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(movie.getTitle());
-                            if(!baseMediaObjects.isEmpty()) {
-                                webservice =  new MovieDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), baseMediaObjects.get(0).getDescription(), "");
-                                webServiceMovie = webservice.execute();
-                            }
-
-                            if(webServiceMovie != null) {
-                                this.mergeDataFromWebservice(movie, webServiceMovie);
-                            }
+                        MovieDBWebservice webservice = new MovieDBWebservice(this.getContext(), 0, "", "");
+                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(movie.getTitle());
+                        if (!baseMediaObjects.isEmpty()) {
+                            webservice = new MovieDBWebservice(this.getContext(), baseMediaObjects.get(0).getId(), baseMediaObjects.get(0).getDescription(), "");
+                            webServiceMovie = webservice.execute();
                         }
-                    } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
-                    this.addObjectToList(movie);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
+                        if (webServiceMovie != null) {
+                            this.mergeDataFromWebservice(movie, webServiceMovie);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
+
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateMovie(movie);
+                this.addObjectToList(movie);
+                this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else if(this.music) {
-                if(mediaObject instanceof Album) {
-                    Album album = (Album) mediaObject;
+                Album album = (Album) mediaObject;
+                try {
+                    if (this.webservice) {
+                        publishProgress(i);
+                        Album webServiceAlbum = null;
 
-                    try {
-                        if(this.webservice) {
-                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
-                            Album webServiceAlbum = null;
-
-                            AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
-                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(album.getTitle());
-                            if(!baseMediaObjects.isEmpty()) {
-                                webservice =  new AudioDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId());
-                                webServiceAlbum = webservice.execute();
-                            }
-
-                            if(webServiceAlbum != null) {
-                                this.mergeDataFromWebservice(album, webServiceAlbum);
-                            }
+                        AudioDBWebservice webservice = new AudioDBWebservice(this.getContext(), 0);
+                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(album.getTitle());
+                        if (!baseMediaObjects.isEmpty()) {
+                            webservice = new AudioDBWebservice(this.getContext(), baseMediaObjects.get(0).getId());
+                            webServiceAlbum = webservice.execute();
                         }
-                    } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
-                    this.addObjectToList(album);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
+                        if (webServiceAlbum != null) {
+                            this.mergeDataFromWebservice(album, webServiceAlbum);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
+
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                this.addObjectToList(album);
+                this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             } else {
-                if(mediaObject instanceof Game) {
-                    Game game = (Game) mediaObject;
+                Game game = (Game) mediaObject;
+                try {
+                    if (this.webservice) {
+                        publishProgress(i);
+                        Game webServiceGame = null;
 
-                    try {
-                        if(this.webservice) {
-                            publishProgress(new TaskStatus(i, this.getContext().getString(R.string.api_task_import_webservice)));
-                            Game webServiceGame = null;
-
-                            IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
-                            List<BaseMediaObject> baseMediaObjects = webservice.getMedia(game.getTitle());
-                            if(!baseMediaObjects.isEmpty()) {
-                                webservice =  new IGDBWebservice(this.getContext(),  baseMediaObjects.get(0).getId(), "");
-                                webServiceGame = webservice.execute();
-                            }
-
-                            if(webServiceGame != null) {
-                                this.mergeDataFromWebservice(game, webServiceGame);
-                            }
+                        IGDBWebservice webservice = new IGDBWebservice(this.getContext(), 0, "");
+                        List<BaseMediaObject> baseMediaObjects = webservice.getMedia(game.getTitle());
+                        if (!baseMediaObjects.isEmpty()) {
+                            webservice = new IGDBWebservice(this.getContext(), baseMediaObjects.get(0).getId(), "");
+                            webServiceGame = webservice.execute();
                         }
-                    } catch (Exception ignored) {}
 
-                    MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                    this.addObjectToList(game);
-                    this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
+                        if (webServiceGame != null) {
+                            this.mergeDataFromWebservice(game, webServiceGame);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
+
+                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                this.addObjectToList(game);
+                this.results.add(String.format(this.getContext().getString(R.string.api_task_import_msg_success), i));
             }
             i++;
         }
@@ -333,8 +314,7 @@ public class ImportTask extends StatusTask<Void, List<String>> {
         }
         importedObject.setCover(webServiceObject.getCover());
 
-        if(importedObject instanceof Book) {
-            Book importedBook = (Book) importedObject;
+        if(importedObject instanceof Book importedBook) {
             Book webServiceBook = (Book) webServiceObject;
 
             if(importedBook.getNumberOfPages() == 0) {
@@ -344,24 +324,21 @@ public class ImportTask extends StatusTask<Void, List<String>> {
                 importedBook.setTopics(webServiceBook.getTopics());
             }
         }
-        if(importedObject instanceof Movie) {
-            Movie importedMovie = (Movie) importedObject;
+        if(importedObject instanceof Movie importedMovie) {
             Movie webServiceMovie = (Movie) webServiceObject;
 
             if(importedMovie.getLength() == 0.0) {
                 importedMovie.setLength(webServiceMovie.getLength());
             }
         }
-        if(importedObject instanceof Album) {
-            Album importedAlbum = (Album) importedObject;
+        if(importedObject instanceof Album importedAlbum) {
             Album webServiceAlbum = (Album) webServiceObject;
 
             if(importedAlbum.getNumberOfDisks() == 0) {
                 importedAlbum.setNumberOfDisks(webServiceAlbum.getNumberOfDisks());
             }
         }
-        if(importedObject instanceof Game) {
-            Game importedGame = (Game) importedObject;
+        if(importedObject instanceof Game importedGame) {
             Game webServiceGame = (Game) webServiceObject;
 
             if(importedGame.getLength() == 0.0) {

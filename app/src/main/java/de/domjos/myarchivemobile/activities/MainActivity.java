@@ -32,6 +32,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -159,8 +160,7 @@ public final class MainActivity extends AbstractActivity {
             parentFragment.reload(query, true);
         } else {
             for(Fragment fragment : fragments) {
-                if(fragment instanceof ParentFragment) {
-                    ParentFragment parentFragment = ((ParentFragment) fragment);
+                if(fragment instanceof ParentFragment parentFragment) {
                     parentFragment.reload(query, true);
                     return;
                 }
@@ -213,7 +213,7 @@ public final class MainActivity extends AbstractActivity {
     }
 
     private void setTextColorForMenuItem(MenuItem menuItem) {
-        SpannableString spanString = new SpannableString(menuItem.getTitle().toString());
+        SpannableString spanString = new SpannableString(Objects.requireNonNull(menuItem.getTitle()).toString());
         spanString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.textColorPrimary)), 0, spanString.length(), 0);
         menuItem.setTitle(spanString);
     }
@@ -240,31 +240,24 @@ public final class MainActivity extends AbstractActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int requestCode = 0;
         Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainScanner:
-                intent = new Intent(MainActivity.this, ScanActivity.class);
-                intent.putExtra("parent", this.label);
-                requestCode = MainActivity.SCANNER_REQUEST;
-                break;
-            case R.id.menMainPersons:
-                intent = new Intent(MainActivity.this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(MainActivity.this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(MainActivity.this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(MainActivity.this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(MainActivity.this, LogActivity.class);
-                break;
+        if(item.getItemId() == R.id.menMainScanner) {
+            intent = new Intent(this, ScanActivity.class);
+            intent.putExtra("parent", this.label);
+            requestCode = MainActivity.SCANNER_REQUEST;
+        } else if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(this, PersonActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(this, CompanyActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(this, CategoriesTagsActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(this, SettingsActivity.class);
+            requestCode = MainActivity.SETTINGS_REQUEST;
+        } else if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
             this.startActivityForResult(intent, requestCode);
@@ -285,6 +278,7 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         this.initPermissions();
     }
 
@@ -468,7 +462,7 @@ public final class MainActivity extends AbstractActivity {
                     }
                     cursor.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("Error", e.getLocalizedMessage(), e);
                 }
             } else if ("file".equalsIgnoreCase(uri.getScheme())) {
                 return uri.getPath();

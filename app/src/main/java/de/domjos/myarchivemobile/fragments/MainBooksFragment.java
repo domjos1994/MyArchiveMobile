@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -87,54 +87,49 @@ public class MainBooksFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdNext:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) + 1, Globals.BOOKS);
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdNext) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) + 1, Globals.BOOKS);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdPrevious) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) - 1, Globals.BOOKS);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.bookPagerAdapter.setMediaObject(new Book());
+                    this.currentObject = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.bookPagerAdapter.setMediaObject(new Book());
+                    this.currentObject = null;
                     this.reload();
-                    break;
-                case R.id.cmdPrevious:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.BOOKS) - 1, Globals.BOOKS);
-                    this.reload();
-                    break;
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.bookPagerAdapter.setMediaObject(new Book());
-                        this.currentObject = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.bookPagerAdapter.setMediaObject(new Book());
-                        this.currentObject = null;
-                        this.reload();
+                }
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.currentObject != null) {
+                        this.changeMode(true, true);
+                        this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.currentObject != null) {
-                            this.changeMode(true, true);
-                            this.bookPagerAdapter.setMediaObject((Book) this.currentObject.getObject());
+                } else {
+                    if(this.validator.getState()) {
+                        Book book = this.bookPagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            book.setId(((Book) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
+                            this.changeMode(false, false);
+                            this.bookPagerAdapter.setMediaObject(new Book());
+                            this.currentObject = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Book book = this.bookPagerAdapter.getMediaObject();
-                            if(this.currentObject!=null) {
-                                book.setId(((Book) this.currentObject.getObject()).getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(book.getTitle(), book.getId(), this.lvBooks.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBook(book);
-                                this.changeMode(false, false);
-                                this.bookPagerAdapter.setMediaObject(new Book());
-                                this.currentObject = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -170,7 +165,7 @@ public class MainBooksFragment extends ParentFragment {
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book(), Globals.BOOKS));
+        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
         viewPager.setAdapter(this.bookPagerAdapter);
 

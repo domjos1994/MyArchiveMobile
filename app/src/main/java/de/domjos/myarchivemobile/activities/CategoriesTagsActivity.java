@@ -34,9 +34,10 @@ import androidx.appcompat.widget.SearchView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -107,38 +108,31 @@ public final class CategoriesTagsActivity extends AbstractActivity {
             finish();
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                    } else {
-                        this.changeMode(false, false);
-                    }
-                    this.setObject(new BaseDescriptionObject());
-                    this.baseDescriptionObject = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        this.changeMode(true, true);
-                        this.setObject(baseDescriptionObject);
-                    } else {
-                        if(this.validator.getState()) {
-                            BaseDescriptionObject baseDescriptionObject = this.getObject();
-                            if(this.baseDescriptionObject != null) {
-                                baseDescriptionObject.setId(this.baseDescriptionObject.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
-                                this.changeMode(false, false);
-                                this.setObject(new BaseDescriptionObject());
-                                this.baseDescriptionObject = null;
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                this.changeMode(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add)), false);
+                this.setObject(new BaseDescriptionObject());
+                this.baseDescriptionObject = null;
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    this.changeMode(true, true);
+                    this.setObject(baseDescriptionObject);
+                } else {
+                    if(this.validator.getState()) {
+                        BaseDescriptionObject baseDescriptionObject = this.getObject();
+                        if(this.baseDescriptionObject != null) {
+                            baseDescriptionObject.setId(this.baseDescriptionObject.getId());
                         }
+                        if(this.validator.checkDuplicatedEntry(baseDescriptionObject.getTitle(), baseDescriptionObject.getId(), this.lvItems.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateBaseObject(baseDescriptionObject, this.table, "", 0);
+                            this.changeMode(false, false);
+                            this.setObject(new BaseDescriptionObject());
+                            this.baseDescriptionObject = null;
+                        }
+                    } else {
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, CategoriesTagsActivity.this);
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -154,17 +148,18 @@ public final class CategoriesTagsActivity extends AbstractActivity {
 
         this.spItems = this.findViewById(R.id.spItems);
         CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<String>(this.getApplicationContext()) {
+            @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 TextView tv = (TextView) super.getView(position, convertView, parent);
-                tv.setTextColor(getResources().getColor(R.color.textColorPrimary));
+                tv.setTextColor(getResources().getColor(R.color.textColorPrimary, getTheme()));
                 return tv;
             }
 
             @Override
             public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent){
                 TextView tv = (TextView) super.getDropDownView(position,convertView,parent);
-                tv.setTextColor(getResources().getColor(R.color.textColorPrimary));
+                tv.setTextColor(getResources().getColor(R.color.textColorPrimary, getTheme()));
                 return tv;
             }
         };
@@ -198,26 +193,20 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int requestCode = 0;
         Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
+        if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(this, PersonActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(this, CompanyActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(this, CategoriesTagsActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(this, SettingsActivity.class);
+            requestCode = MainActivity.SETTINGS_REQUEST;
+        } else if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
             this.startActivityForResult(intent, requestCode);

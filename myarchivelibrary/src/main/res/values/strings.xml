@@ -65,4 +65,5 @@
 
     <string name="sys_no_internet">No Internet-Connection!</string>
     <string name="sys_save">Save</string>
+    <string name="sys_cancel">Cancel</string>
 </resources>

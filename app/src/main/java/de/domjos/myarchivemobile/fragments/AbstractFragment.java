@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
 
+/** @noinspection rawtypes*/
 public abstract class AbstractFragment<T> extends Fragment {
     AbstractPagerAdapter abstractPagerAdapter;
 

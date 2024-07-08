@@ -1,5 +1,6 @@
 package de.domjos.myarchivemobile.custom;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class CustomTreeNodeHolder extends TreeNode.BaseNodeViewHolder<CustomTree
     @Override
     public View createNodeView(TreeNode node, CustomTreeNode value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
+        @SuppressLint("InflateParams")
         final View view = inflater.inflate(R.layout.main_fragment_file_tree_node, null, false);
 
         this.getLevel(node);

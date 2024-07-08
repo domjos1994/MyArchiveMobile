@@ -43,7 +43,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.CustomField;
 
 public class TextService {
-    private String path;
+    private final String path;
     private ICSVWriter csvWriter;
 
     public TextService(String path) {
@@ -56,7 +56,7 @@ public class TextService {
         reader.close();
 
         if(lines != null) {
-            if (lines.size() != 0) {
+            if (!lines.isEmpty()) {
                 return Arrays.asList(lines.get(0));
             }
         }
@@ -70,7 +70,7 @@ public class TextService {
         List<String[]> lines = reader.readAll();
 
         if(lines != null) {
-            if(lines.size() != 0) {
+            if(!lines.isEmpty()) {
                 String[] header = lines.get(0);
 
                 for(int row = 1; row <= lines.size()-1; row++) {

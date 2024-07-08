@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -86,54 +86,49 @@ public class MainMusicFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdNext:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) + 1, Globals.MUSIC);
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdNext) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) + 1, Globals.MUSIC);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdPrevious) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) - 1, Globals.MUSIC);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.albumPagerAdapter.setMediaObject(new Album());
+                    this.currentObject = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.albumPagerAdapter.setMediaObject(new Album());
+                    currentObject = null;
                     this.reload();
-                    break;
-                case R.id.cmdPrevious:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.MUSIC) - 1, Globals.MUSIC);
-                    this.reload();
-                    break;
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.albumPagerAdapter.setMediaObject(new Album());
-                        this.currentObject = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.albumPagerAdapter.setMediaObject(new Album());
-                        currentObject = null;
-                        this.reload();
+                }
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.currentObject != null) {
+                        this.changeMode(true, true);
+                        this.albumPagerAdapter.setMediaObject((Album) this.currentObject.getObject());
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.currentObject != null) {
-                            this.changeMode(true, true);
-                            this.albumPagerAdapter.setMediaObject((Album) this.currentObject.getObject());
+                } else {
+                    if(this.validator.getState()) {
+                        Album album = this.albumPagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            album.setId(((Album) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(album.getTitle(), album.getId(), this.lvAlbums.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
+                            this.changeMode(false, false);
+                            this.albumPagerAdapter.setMediaObject(new Album());
+                            this.currentObject = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Album album = this.albumPagerAdapter.getMediaObject();
-                            if(this.currentObject!=null) {
-                                album.setId(((Album) this.currentObject.getObject()).getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(album.getTitle(), album.getId(), this.lvAlbums.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateAlbum(album);
-                                this.changeMode(false, false);
-                                this.albumPagerAdapter.setMediaObject(new Album());
-                                this.currentObject = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -169,7 +164,7 @@ public class MainMusicFragment extends ParentFragment {
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album(), Globals.MUSIC));
+        this.albumPagerAdapter = new AlbumPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, albumPagerAdapter, currentObject, lvAlbums, new Album()));
         this.validator = this.albumPagerAdapter.initValidator();
         viewPager.setAdapter(this.albumPagerAdapter);
 

@@ -3,7 +3,6 @@ package de.domjos.myarchivemobile.dialogs;
 import android.app.Dialog;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -43,7 +41,6 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeFile;
 import de.domjos.myarchivelibrary.model.media.fileTree.TreeNode;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
@@ -163,11 +160,9 @@ public class TreeViewDialog extends DialogFragment {
 
         this.cmdFileDocumentNext.setOnClickListener(view -> {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if(this.current != (this.max - 1)) {
-                        this.current++;
-                        this.loadPage(this.current);
-                    }
+                if (this.current != (this.max - 1)) {
+                    this.current++;
+                    this.loadPage(this.current);
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
@@ -176,11 +171,9 @@ public class TreeViewDialog extends DialogFragment {
 
         this.cmdFileDocumentPrevious.setOnClickListener(view -> {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if(this.current > 0) {
-                        this.current--;
-                        this.loadPage(this.current);
-                    }
+                if (this.current > 0) {
+                    this.current--;
+                    this.loadPage(this.current);
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.drawable.icon_notification, this.requireActivity());
@@ -474,20 +467,16 @@ public class TreeViewDialog extends DialogFragment {
         try {
             if(this.checkExtension(this.file, TreeViewDialog.document_extensions)) {
                 this.ivImage.setBackgroundColor(this.getResources().getColor(R.color.colorAccent));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (this.file.getEmbeddedContent() != null) {
-                        File file = File.createTempFile(this.file.getTitle(), this.file.getTitle());
-                        ConvertHelper.convertByteArrayToFile(this.file.getEmbeddedContent(), file);
-                        file.deleteOnExit();
+                if (this.file.getEmbeddedContent() != null) {
+                    File file = File.createTempFile(this.file.getTitle(), this.file.getTitle());
+                    ConvertHelper.convertByteArrayToFile(this.file.getEmbeddedContent(), file);
+                    file.deleteOnExit();
 
-                        this.helper = new PDFReaderHelper(file.getAbsolutePath());
-                    } else {
-                        this.helper = new PDFReaderHelper(this.file.getPathToFile());
-                    }
-                    this.loadPage(0);
+                    this.helper = new PDFReaderHelper(file.getAbsolutePath());
                 } else {
-                    IntentHelper.startPDFIntent(this.requireActivity(), this.file.getPathToFile());
+                    this.helper = new PDFReaderHelper(this.file.getPathToFile());
                 }
+                this.loadPage(0);
             }
             if(this.checkExtension(this.file, TreeViewDialog.image_extensions)) {
                 if (this.file.getEmbeddedContent() != null) {
@@ -513,7 +502,6 @@ public class TreeViewDialog extends DialogFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void loadPage(int i) {
         try {
             if(this.helper != null) {

@@ -19,16 +19,12 @@ package de.domjos.myarchivemobile.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
-
-import androidx.annotation.RequiresApi;
 
 import java.io.File;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class PDFReaderHelper {
-    private PdfRenderer pdfRenderer;
+    private final PdfRenderer pdfRenderer;
     private int pageNumber;
     private PdfRenderer.Page page;
 

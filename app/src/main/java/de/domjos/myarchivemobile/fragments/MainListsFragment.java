@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -104,43 +104,36 @@ public class MainListsFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                    } else {
-                        changeMode(false, false);
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                this.changeMode(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add)), false);
+                this.setObject(new MediaList());
+                this.mediaList = null;
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(mediaList != null) {
+                        this.changeMode(true, true);
+                        this.setObject(mediaList);
                     }
-                    this.setObject(new MediaList());
-                    this.mediaList = null;
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(mediaList != null) {
-                            this.changeMode(true, true);
-                            this.setObject(mediaList);
-                        }
-                    } else {
-                        try {
-                            if(this.validator.getState()) {
-                                MediaList mediaList = this.getObject();
-                                if(this.mediaList != null) {
-                                    mediaList.setId(this.mediaList.getId());
-                                }
-                                if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
-                                    this.changeMode(false, false);
-                                    this.setObject(new MediaList());
-                                    this.mediaList = null;
-                                    this.reload();
-                                }
+                } else {
+                    try {
+                        if(this.validator.getState()) {
+                            MediaList mediaList = this.getObject();
+                            if(this.mediaList != null) {
+                                mediaList.setId(this.mediaList.getId());
                             }
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                            if(this.validator.checkDuplicatedEntry(mediaList.getTitle(), mediaList.getId(), this.lvMediaLists.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateMediaList(mediaList);
+                                this.changeMode(false, false);
+                                this.setObject(new MediaList());
+                                this.mediaList = null;
+                                this.reload();
+                            }
                         }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
                     }
-                    break;
+                }
             }
             return true;
         });

@@ -15,6 +15,7 @@ import java.util.Objects;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.myarchivemobile.R;
 
+/** @noinspection unused*/
 public class CustomDatePickerField extends androidx.appcompat.widget.AppCompatEditText {
     private Context context;
     private String dateFormat, timeFormat;

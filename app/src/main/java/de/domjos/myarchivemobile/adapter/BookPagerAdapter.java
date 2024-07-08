@@ -31,6 +31,7 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.*;
 
+/** @noinspection rawtypes*/
 public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
@@ -39,7 +40,7 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
-    private Runnable runnable;
+    private final Runnable runnable;
     private boolean first = true;
 
     public BookPagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
@@ -77,24 +78,16 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.mediaGeneralFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
-                return this.mediaBookFragment;
-            case 4:
-                return this.mediaPlayerFragment;
-            case 5:
-                return this.mediaRatingFragment;
-            case 6:
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.mediaGeneralFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaPersonsCompaniesFragment;
+            case 3 -> this.mediaBookFragment;
+            case 4 -> this.mediaPlayerFragment;
+            case 5 -> this.mediaRatingFragment;
+            case 6 -> this.mediaCustomFieldFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -102,31 +95,37 @@ public class BookPagerAdapter extends AbstractPagerAdapter<Book> {
     @SuppressWarnings("unchecked")
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        switch (position) {
-            case 0:
+        return switch (position) {
+            case 0 -> {
                 this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
-                return this.mediaGeneralFragment;
-            case 1:
+                yield this.mediaGeneralFragment;
+            }
+            case 1 -> {
                 this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                return this.mediaCoverFragment;
-            case 2:
+                yield this.mediaCoverFragment;
+            }
+            case 2 -> {
                 this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
+                yield this.mediaPersonsCompaniesFragment;
+            }
+            case 3 -> {
                 this.mediaBookFragment = (MediaBookFragment) createdFragment;
-                return this.mediaBookFragment;
-            case 4:
+                yield this.mediaBookFragment;
+            }
+            case 4 -> {
                 this.mediaPlayerFragment = (MediaPlayerFragment) createdFragment;
-                return this.mediaPlayerFragment;
-            case 5:
+                yield this.mediaPlayerFragment;
+            }
+            case 5 -> {
                 this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
-                return this.mediaRatingFragment;
-            case 6:
+                yield this.mediaRatingFragment;
+            }
+            case 6 -> {
                 this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+                yield this.mediaCustomFieldFragment;
+            }
+            default -> new Fragment();
+        };
     }
 
     @Override

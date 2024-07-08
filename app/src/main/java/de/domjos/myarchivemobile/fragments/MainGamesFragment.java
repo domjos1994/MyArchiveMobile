@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -86,54 +86,49 @@ public class MainGamesFragment extends ParentFragment {
             }
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdNext:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) + 1, Globals.GAMES);
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdNext) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) + 1, Globals.GAMES);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdPrevious) {
+                this.changePage = true;
+                MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) - 1, Globals.GAMES);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.gamePagerAdapter.setMediaObject(new Game());
+                    this.currentObject = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.gamePagerAdapter.setMediaObject(new Game());
+                    currentObject = null;
                     this.reload();
-                    break;
-                case R.id.cmdPrevious:
-                    this.changePage = true;
-                    MainActivity.GLOBALS.setPage(MainActivity.GLOBALS.getPage(Globals.GAMES) - 1, Globals.GAMES);
-                    this.reload();
-                    break;
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.gamePagerAdapter.setMediaObject(new Game());
-                        this.currentObject = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.gamePagerAdapter.setMediaObject(new Game());
-                        currentObject = null;
-                        this.reload();
+                }
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.currentObject != null) {
+                        this.changeMode(true, true);
+                        this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.currentObject != null) {
-                            this.changeMode(true, true);
-                            this.gamePagerAdapter.setMediaObject((Game) this.currentObject.getObject());
+                } else {
+                    if(this.validator.getState()) {
+                        Game game = this.gamePagerAdapter.getMediaObject();
+                        if(this.currentObject!=null) {
+                            game.setId(((Game) this.currentObject.getObject()).getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
+                            this.changeMode(false, false);
+                            this.gamePagerAdapter.setMediaObject(new Game());
+                            this.currentObject = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Game game = this.gamePagerAdapter.getMediaObject();
-                            if(this.currentObject!=null) {
-                                game.setId(((Game) this.currentObject.getObject()).getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(game.getTitle(), game.getId(), this.lvGames.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdateGame(game);
-                                this.changeMode(false, false);
-                                this.gamePagerAdapter.setMediaObject(new Game());
-                                this.currentObject = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, this.getActivity());
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -169,7 +164,7 @@ public class MainGamesFragment extends ParentFragment {
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game(), Globals.GAMES));
+        this.gamePagerAdapter = new GamePagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, gamePagerAdapter, currentObject, lvGames, new Game()));
         this.validator = this.gamePagerAdapter.initValidator();
         viewPager.setAdapter(this.gamePagerAdapter);
 

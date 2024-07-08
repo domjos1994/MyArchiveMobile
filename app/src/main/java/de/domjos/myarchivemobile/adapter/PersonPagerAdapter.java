@@ -34,17 +34,17 @@ import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.fragments.CompanyFragment;
 import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.fragments.PersonFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
+/** @noinspection rawtypes*/
 public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     private PersonFragment personFragment;
     private MediaCoverFragment<Person> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
-    private Context context;
+    private final Context context;
 
     public PersonPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
@@ -103,16 +103,12 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.personFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.personFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaListFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -120,19 +116,21 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     @SuppressWarnings("unchecked")
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        switch (position) {
-            case 0:
+        return switch (position) {
+            case 0 -> {
                 this.personFragment = (PersonFragment) createdFragment;
-                return this.personFragment;
-            case 1:
+                yield this.personFragment;
+            }
+            case 1 -> {
                 this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                return this.mediaCoverFragment;
-            case 2:
+                yield this.mediaCoverFragment;
+            }
+            case 2 -> {
                 this.mediaListFragment = (MediaListFragment) createdFragment;
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+                yield this.mediaListFragment;
+            }
+            default -> new Fragment();
+        };
     }
 
     @Override

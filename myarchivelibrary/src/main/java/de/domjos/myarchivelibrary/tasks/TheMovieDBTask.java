@@ -24,13 +24,13 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 
 public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
-    private String type, key;
+    private final String type, key;
 
     public TheMovieDBTask(Activity activity, boolean showNotifications, int icon, String type, String key) {
         super(activity, R.string.service_movie_db_search, R.string.service_movie_db_search_content, showNotifications, icon);

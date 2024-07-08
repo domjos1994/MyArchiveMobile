@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaList;
@@ -85,9 +85,9 @@ public class MainApiFragment extends ParentFragment {
     private EditText txtApiName, txtApiPath, txtApiListNew;
     private Spinner spApiList;
     private String[] typeArray, formatArray;
-    private Map<String, Spinner> mpCells = new LinkedHashMap<>();
+    private final Map<String, Spinner> mpCells = new LinkedHashMap<>();
     private ProgressBar pbProgress;
-    private TextView lblState, lblMessage;
+    private TextView lblMessage;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_api, container, false);
@@ -117,7 +117,6 @@ public class MainApiFragment extends ParentFragment {
         this.tblCells = root.findViewById(R.id.tblCells);
 
         this.pbProgress = root.findViewById(R.id.pbProgress);
-        this.lblState = root.findViewById(R.id.lblState);
         this.lblMessage = root.findViewById(R.id.lblMessage);
 
         this.txtApiPath = root.findViewById(R.id.txtApiPath);
@@ -239,7 +238,7 @@ public class MainApiFragment extends ParentFragment {
                             if(chkApiGames.isChecked()) {
                                 baseMediaObjects.addAll(MainActivity.GLOBALS.getDatabase().getGames("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("api")));
                             }
-                            ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, this.lblState, this.lblMessage, baseMediaObjects);
+                            ExportTask exportTask = new ExportTask(this.getActivity(), path, this.pbProgress, baseMediaObjects);
                             exportTask.after(o -> {
                                 MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
                                 saveSettings(spApiFormat, spApiType);
@@ -337,7 +336,7 @@ public class MainApiFragment extends ParentFragment {
         ImportTask importTask = new ImportTask(
                 MainApiFragment.this.getActivity(),
                 this.txtApiPath.getText().toString(),
-                this.pbProgress, this.lblState, this.lblMessage, this.chkApiBooks.isChecked(),
+                this.pbProgress, this.chkApiBooks.isChecked(),
                 this.chkApiMovies.isChecked(), this.chkApiMusic.isChecked(), this.chkApiWebService.isChecked(),
                 this.mpCells, this.createList());
         importTask.after((AbstractTask.PostExecuteListener<List<String>>) o -> {
@@ -364,8 +363,7 @@ public class MainApiFragment extends ParentFragment {
             if(this.txtApiListNew.getText().toString().trim().isEmpty()) {
                 Object object = this.spApiList.getSelectedItem();
                 if(object != null) {
-                    if(object instanceof MediaList) {
-                        MediaList mediaList = (MediaList) object;
+                    if(object instanceof MediaList mediaList) {
                         return mediaList.getId();
                     }
                 }

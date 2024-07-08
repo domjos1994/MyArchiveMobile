@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -107,42 +107,39 @@ public final class PersonActivity extends AbstractActivity {
         });
 
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.personPagerAdapter.setMediaObject(new Person());
-                        this.person = null;
-                    } else {
-                        this.changeMode(false, false);
-                        this.person = null;
-                        this.reload();
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add))) {
+                    this.changeMode(true, false);
+                    this.personPagerAdapter.setMediaObject(new Person());
+                    this.person = null;
+                } else {
+                    this.changeMode(false, false);
+                    this.person = null;
+                    this.reload();
+                }
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(this.person != null) {
+                        this.changeMode(true, true);
+                        this.personPagerAdapter.setMediaObject(this.person);
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(this.person != null) {
-                            this.changeMode(true, true);
-                            this.personPagerAdapter.setMediaObject(this.person);
+                } else {
+                    if(this.validator.getState()) {
+                        Person person = this.personPagerAdapter.getMediaObject();
+                        if(this.person!=null) {
+                            person.setId(this.person.getId());
+                        }
+                        if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
+                            MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
+                            this.changeMode(false, false);
+                            this.person = null;
+                            this.reload();
                         }
                     } else {
-                        if(this.validator.getState()) {
-                            Person person = this.personPagerAdapter.getMediaObject();
-                            if(this.person!=null) {
-                                person.setId(this.person.getId());
-                            }
-                            if(this.validator.checkDuplicatedEntry(String.format("%s %s", person.getFirstName(), person.getLastName()), person.getId(), this.lvPersons.getAdapter().getList())) {
-                                MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(person, "", 0);
-                                this.changeMode(false, false);
-                                this.person = null;
-                                this.reload();
-                            }
-                        } else {
-                            MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
-                        }
+                        MessageHelper.printMessage(this.validator.getResult(), R.mipmap.ic_launcher_round, PersonActivity.this);
                     }
-                    break;
+                }
             }
             return true;
         });
@@ -194,26 +191,20 @@ public final class PersonActivity extends AbstractActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int requestCode = 0;
         Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
+        if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(this, PersonActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(this, CompanyActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(this, CategoriesTagsActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(this, SettingsActivity.class);
+            requestCode = MainActivity.SETTINGS_REQUEST;
+        } else if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
             this.startActivityForResult(intent, requestCode);
@@ -267,7 +258,7 @@ public final class PersonActivity extends AbstractActivity {
         }
     }
 
-    protected void changeMode(boolean editMode, boolean selected) {
+    private void changeMode(boolean editMode, boolean selected) {
         this.validator.clear();
         ControlsHelper.navViewEditMode(editMode, selected, bottomNavigationView);
         Map<SwipeRefreshDeleteList, Integer> mp = new LinkedHashMap<>();

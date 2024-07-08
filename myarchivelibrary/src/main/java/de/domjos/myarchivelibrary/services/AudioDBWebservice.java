@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -68,9 +69,15 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
         return album;
     }
 
+    /** @noinspection CharsetObjectCanBeUsed*/
     public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-        JSONObject jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8"))));
+        JSONObject jsonObject;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, StandardCharsets.UTF_8))));
+        } else {
+            jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8"))));
+        }
         if(!jsonObject.isNull("album")) {
             JSONArray albumArray = jsonObject.getJSONArray("album");
             for(int i = 0; i<=albumArray.length()-1; i++) {

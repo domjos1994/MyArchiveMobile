@@ -22,7 +22,7 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.services.WikiDataWebservice;

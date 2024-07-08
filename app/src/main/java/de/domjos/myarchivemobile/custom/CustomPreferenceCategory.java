@@ -18,16 +18,17 @@
 package de.domjos.myarchivemobile.custom;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
 import de.domjos.myarchivemobile.R;
 
+/** @noinspection unused*/
 public class CustomPreferenceCategory extends PreferenceCategory {
     public CustomPreferenceCategory(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -46,7 +47,7 @@ public class CustomPreferenceCategory extends PreferenceCategory {
     }
 
     @Override
-    public void onBindViewHolder(PreferenceViewHolder holder) {
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
         TextView titleView = holder.itemView.findViewById(android.R.id.title);
@@ -56,10 +57,6 @@ public class CustomPreferenceCategory extends PreferenceCategory {
         summaryView.setMarqueeRepeatLimit(-1);
         summaryView.setSelected(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            titleView.setTextColor(this.getContext().getColor(R.color.textColorPrimary));
-        } else {
-            titleView.setTextColor(this.getContext().getResources().getColor(R.color.textColorPrimary));
-        }
+        titleView.setTextColor(this.getContext().getColor(R.color.textColorPrimary));
     }
 }

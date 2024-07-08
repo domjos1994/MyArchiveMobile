@@ -17,8 +17,8 @@
 
 package de.domjos.myarchivemobile.activities;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.Menu;
@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.myarchivelibrary.custom.AsyncTaskExecutorService;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
@@ -103,26 +104,20 @@ public final class LogActivity extends AbstractActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int requestCode = 0;
         Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
+        if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(this, PersonActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(this, CompanyActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(this, CategoriesTagsActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(this, SettingsActivity.class);
+            requestCode = MainActivity.SETTINGS_REQUEST;
+        } else if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
             this.startActivityForResult(intent, requestCode);
@@ -130,7 +125,11 @@ public final class LogActivity extends AbstractActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class Task extends AsyncTask<Void, Void, List<String>> {
+    public static class Task extends AsyncTaskExecutorService<Void, Void, List<String>> {
+
+        protected Task(Activity activity) {
+            super(activity);
+        }
 
         @Override
         protected List<String> doInBackground(Void... voids) {
@@ -144,14 +143,19 @@ public final class LogActivity extends AbstractActivity {
                     }
                 }
             } catch (IOException ex) {
-                this.cancel(true);
+                this.shutDown();
             }
             return content;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> strings) {
+
         }
     }
 
     private String getContent() throws ExecutionException, InterruptedException {
-        Task task = new Task();
+        Task task = new Task(this);
         List<String> items = task.execute().get();
 
         StringBuilder content = new StringBuilder();

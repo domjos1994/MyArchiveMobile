@@ -48,8 +48,8 @@ public class PDFService {
     private Document document;
     private final Map<String, Font> fonts;
     private final Map<String, Integer> positions;
-    private int icon;
-    private Context context;
+    private final int icon;
+    private final Context context;
 
     public PDFService(String file, int icon, Context context) {
         this.fonts = new LinkedHashMap<>();
@@ -189,7 +189,7 @@ public class PDFService {
     }
 
     private class HeaderFooter extends PdfPageEventHelper {
-        private String font;
+        private final String font;
 
         HeaderFooter(String font) {
             this.font = font;

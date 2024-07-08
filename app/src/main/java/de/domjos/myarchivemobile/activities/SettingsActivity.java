@@ -59,26 +59,20 @@ public final class SettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int requestCode = 0;
         Intent intent = null;
-        switch (item.getItemId()) {
-            case R.id.menMainPersons:
-                intent = new Intent(this, PersonActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCompanies:
-                intent = new Intent(this, CompanyActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainCategoriesAndTags:
-                intent = new Intent(this, CategoriesTagsActivity.class);
-                requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
-                break;
-            case R.id.menMainSettings:
-                intent = new Intent(this, SettingsActivity.class);
-                requestCode = MainActivity.SETTINGS_REQUEST;
-                break;
-            case R.id.menMainLog:
-                intent = new Intent(this, LogActivity.class);
-                break;
+        if(item.getItemId() == R.id.menMainPersons) {
+            intent = new Intent(this, PersonActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCompanies) {
+            intent = new Intent(this, CompanyActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
+            intent = new Intent(this, CategoriesTagsActivity.class);
+            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
+        } else if(item.getItemId() == R.id.menMainSettings) {
+            intent = new Intent(this, SettingsActivity.class);
+            requestCode = MainActivity.SETTINGS_REQUEST;
+        } else if(item.getItemId() == R.id.menMainLog) {
+            intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
             this.startActivityForResult(intent, requestCode);

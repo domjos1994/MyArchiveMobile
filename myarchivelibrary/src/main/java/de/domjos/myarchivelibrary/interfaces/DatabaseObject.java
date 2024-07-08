@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivelibrary.interfaces;
 
+/** @noinspection unused*/
 public interface DatabaseObject {
 
     void setId(long id);

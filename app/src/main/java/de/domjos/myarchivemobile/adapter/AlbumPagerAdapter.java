@@ -37,6 +37,7 @@ import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
 import de.domjos.myarchivemobile.fragments.MediaRatingFragment;
 
+/** @noinspection rawtypes*/
 public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     private AbstractFragment<BaseMediaObject> mediaCoverFragment;
     private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
@@ -44,7 +45,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
     private AbstractFragment<BaseMediaObject> mediaRatingFragment;
     private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
-    private Runnable runnable;
+    private final Runnable runnable;
     private boolean first = true;
 
     public AlbumPagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
@@ -80,22 +81,15 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.mediaGeneralFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
-                return this.mediaAlbumFragment;
-            case 4:
-                return this.mediaRatingFragment;
-            case 5:
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.mediaGeneralFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaPersonsCompaniesFragment;
+            case 3 -> this.mediaAlbumFragment;
+            case 4 -> this.mediaRatingFragment;
+            case 5 -> this.mediaCustomFieldFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -103,28 +97,33 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     @SuppressWarnings("unchecked")
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        switch (position) {
-            case 0:
+        return switch (position) {
+            case 0 -> {
                 this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
-                return this.mediaGeneralFragment;
-            case 1:
+                yield this.mediaGeneralFragment;
+            }
+            case 1 -> {
                 this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                return this.mediaCoverFragment;
-            case 2:
+                yield this.mediaCoverFragment;
+            }
+            case 2 -> {
                 this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
-                return this.mediaPersonsCompaniesFragment;
-            case 3:
+                yield this.mediaPersonsCompaniesFragment;
+            }
+            case 3 -> {
                 this.mediaAlbumFragment = (MediaAlbumFragment) createdFragment;
-                return this.mediaAlbumFragment;
-            case 4:
+                yield this.mediaAlbumFragment;
+            }
+            case 4 -> {
                 this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
-                return this.mediaRatingFragment;
-            case 5:
+                yield this.mediaRatingFragment;
+            }
+            case 5 -> {
                 this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
-                return this.mediaCustomFieldFragment;
-            default:
-                return new Fragment();
-        }
+                yield this.mediaCustomFieldFragment;
+            }
+            default -> new Fragment();
+        };
     }
 
     @Override

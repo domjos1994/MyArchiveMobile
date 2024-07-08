@@ -10,8 +10,8 @@ public class TreeNode extends BaseDescriptionObject implements DatabaseObject {
     private BaseDescriptionObject category;
     private List<BaseDescriptionObject> tags;
     private TreeNode parent;
-    private List<TreeNode> children;
-    private List<TreeFile> files;
+    private final List<TreeNode> children;
+    private final List<TreeFile> files;
     private boolean gallery;
     private boolean system;
 

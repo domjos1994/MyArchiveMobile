@@ -34,11 +34,12 @@ public class WikiDataWebservice extends JSONService {
     private final static String DATA_TYPE = "datatype", VALUE = "value", DATA_VALUE = "datavalue", TIME = "time";
 
     private String id = "";
-    private String companyName, firstName, lastName;
+    private final String companyName;
+    private String firstName, lastName;
     private final static String DATE_FORMAT = "+yyyy-MM-dd'T'HH:mm:ss'Z'";
-    private String claimURL = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=%s&format=json&language=%s";
-    private List personProps = Arrays.asList("P569", "P734", "P735", "P18");
-    private List companyProps = Arrays.asList("P154", "P159", "P571", "P169");
+    private final String claimURL = "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=%s&format=json&language=%s";
+    private final List<String> personProps = Arrays.asList("P569", "P734", "P735", "P18");
+    private final List<String> companyProps = Arrays.asList("P154", "P159", "P571", "P169");
     private final String LANGUAGE = Locale.getDefault().getLanguage().toLowerCase();
 
     public WikiDataWebservice(String companyName) throws JSONException, IOException {
@@ -70,15 +71,14 @@ public class WikiDataWebservice extends JSONService {
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
 
-            for(Object objItem : this.personProps) {
-                String param =  (String) objItem;
-                if(claims.has(param)) {
-                    JSONObject paramObj = claims.getJSONArray(param).getJSONObject(0);
+            for(String objItem : this.personProps) {
+                if(claims.has(objItem)) {
+                    JSONObject paramObj = claims.getJSONArray(objItem).getJSONObject(0);
                     JSONObject mainSnak = paramObj.getJSONObject("mainsnak");
                     if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals("wikibase-item")) {
                         JSONObject valueObj = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getJSONObject(WikiDataWebservice.VALUE);
                         String valID = valueObj.getString("id");
-                        switch (param) {
+                        switch (objItem) {
                             case "P734":
                                 person.setLastName(this.getValue(valID));
                                 break;
@@ -121,10 +121,9 @@ public class WikiDataWebservice extends JSONService {
             JSONObject obj = new JSONObject(dataText);
             JSONObject claims = obj.getJSONObject("claims");
 
-            for(Object objItem : this.companyProps) {
-                String param = (String) objItem;
-                if(claims.has(param)) {
-                    JSONObject paramObj = claims.getJSONArray(param).getJSONObject(0);
+            for(String objItem : this.companyProps) {
+                if(claims.has(objItem)) {
+                    JSONObject paramObj = claims.getJSONArray(objItem).getJSONObject(0);
                     JSONObject mainSnak = paramObj.getJSONObject("mainsnak");
                     if(mainSnak.getString(WikiDataWebservice.DATA_TYPE).equals(WikiDataWebservice.TIME)) {
                         JSONObject valueObj = mainSnak.getJSONObject(WikiDataWebservice.DATA_VALUE).getJSONObject(WikiDataWebservice.VALUE);

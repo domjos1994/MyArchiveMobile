@@ -22,13 +22,13 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.myarchivelibrary.R;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
 public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
-    private String key;
+    private final String key;
 
     public EANDataAlbumTask(Activity activity, boolean showNotifications, int icon, String key) {
         super(activity, R.string.service_ean_data_search, R.string.service_ean_data_search_content, showNotifications, icon);

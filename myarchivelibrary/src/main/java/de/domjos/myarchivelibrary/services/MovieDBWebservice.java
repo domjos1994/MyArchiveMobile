@@ -44,7 +44,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
     private final static String NAME = "name";
     private final static String BASE_URL = "https://api.themoviedb.org/3";
     private final static String IMAGE_URL = "https://image.tmdb.org/t/p/w500";
-    private String type;
+    private final String type;
     private String key;
 
     public MovieDBWebservice(Context context, long id, String type, String key) {
@@ -102,6 +102,7 @@ public class MovieDBWebservice extends TitleWebservice<Movie> {
         return 0.0;
     }
 
+    /** @noinspection CharsetObjectCanBeUsed*/
     public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> movies = new LinkedList<>();
         String url = String.format("%s/search/multi?api_key=%s&language=%s&query=%s", MovieDBWebservice.BASE_URL, key, Locale.getDefault().getLanguage(), URLEncoder.encode(search, "UTF-8"));

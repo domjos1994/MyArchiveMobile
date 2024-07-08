@@ -18,6 +18,7 @@
 package de.domjos.myarchivelibrary.database;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -66,6 +67,7 @@ import de.domjos.myarchivelibrary.model.media.music.Song;
  * @author Dominic Joas
  * @version 1.0
  */
+@SuppressLint("Range")
 public class Database extends SQLiteOpenHelper {
     private final static String TYPE = "type";
     public final static String ALBUMS = "albums";
@@ -83,7 +85,7 @@ public class Database extends SQLiteOpenHelper {
     private final static String CATEGORIES = "categories";
     private final static String ID_FILTER = "id=";
 
-    private Context context;
+    private final Context context;
 
     public Database(Context context) {
         super(context, context.getString(R.string.sqLite_name), null, Integer.parseInt(context.getString(R.string.sqLite_version)));
@@ -131,21 +133,13 @@ public class Database extends SQLiteOpenHelper {
 
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT id, title, cover, type FROM media" + where(builder.toString()) + orderBy + " LIMIT " + number + " OFFSET " + offset, new String[]{});
         while (cursor.moveToNext()) {
-            BaseMediaObject baseMediaObject = null;
-            switch (cursor.getString(cursor.getColumnIndex("type"))) {
-                case Database.BOOKS:
-                    baseMediaObject = new Book();
-                    break;
-                case Database.MOVIES:
-                    baseMediaObject = new Movie();
-                    break;
-                case Database.GAMES:
-                    baseMediaObject = new Game();
-                    break;
-                case Database.ALBUMS:
-                    baseMediaObject = new Album();
-                    break;
-            }
+            BaseMediaObject baseMediaObject = switch (cursor.getString(cursor.getColumnIndex("type"))) {
+                case Database.BOOKS -> new Book();
+                case Database.MOVIES -> new Movie();
+                case Database.GAMES -> new Game();
+                case Database.ALBUMS -> new Album();
+                default -> null;
+            };
 
             if(baseMediaObject != null) {
                 baseMediaObject.setId(cursor.getLong(cursor.getColumnIndex("id")));
@@ -625,20 +619,16 @@ public class Database extends SQLiteOpenHelper {
             BaseMediaObject baseMediaObject = null;
             long id = cursor.getLong(cursor.getColumnIndex("media"));
             String type = cursor.getString(cursor.getColumnIndex("type"));
-            switch (type.trim().toLowerCase()) {
-                case Database.BOOKS:
-                    baseMediaObject = this.getBooks(Database.ID_FILTER + id, number, offset).get(0);
-                    break;
-                case Database.MOVIES:
-                    baseMediaObject = this.getMovies(Database.ID_FILTER + id, number, offset).get(0);
-                    break;
-                case "albums":
-                    baseMediaObject = this.getAlbums(Database.ID_FILTER + id, number, offset).get(0);
-                    break;
-                case Database.GAMES:
-                    baseMediaObject = this.getGames(Database.ID_FILTER + id, number, offset).get(0);
-                    break;
-            }
+            baseMediaObject = switch (type.trim().toLowerCase()) {
+                case Database.BOOKS ->
+                        this.getBooks(Database.ID_FILTER + id, number, offset).get(0);
+                case Database.MOVIES ->
+                        this.getMovies(Database.ID_FILTER + id, number, offset).get(0);
+                case "albums" -> this.getAlbums(Database.ID_FILTER + id, number, offset).get(0);
+                case Database.GAMES ->
+                        this.getGames(Database.ID_FILTER + id, number, offset).get(0);
+                default -> baseMediaObject;
+            };
             mp.put(baseMediaObject, libraryObject);
         }
         cursor.close();
@@ -936,7 +926,7 @@ public class Database extends SQLiteOpenHelper {
 
     public long insertOrUpdatePerson(Person person, String foreignTable, long id) {
         try {
-            if(person.getFirstName().trim().equals("") && person.getLastName().trim().equals("")) {
+            if(person.getFirstName().trim().isEmpty() && person.getLastName().trim().isEmpty()) {
                 return 0L;
             }
 
@@ -1066,7 +1056,7 @@ public class Database extends SQLiteOpenHelper {
 
     public void insertOrUpdateCompany(Company company, String foreignTable, long id) {
         try {
-            if(company.getTitle().trim().equals("")) {
+            if(company.getTitle().trim().isEmpty()) {
                 return;
             }
 
@@ -1455,9 +1445,12 @@ public class Database extends SQLiteOpenHelper {
         File backupDB = new File(path);
 
         if (currentDB.exists()) {
-            try (FileChannel src = new FileInputStream(currentDB).getChannel();
-                 FileChannel dst = new FileOutputStream(backupDB).getChannel()) {
-                dst.transferFrom(src, 0, src.size());
+            try(
+                    FileInputStream src = new FileInputStream(currentDB);
+                    FileOutputStream dst = new FileOutputStream(backupDB)) {
+                FileChannel srcChannel = src.getChannel();
+                FileChannel dstChannel = dst.getChannel();
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
             }
         }
     }
@@ -1470,10 +1463,12 @@ public class Database extends SQLiteOpenHelper {
         File backupDB = new File(path);
 
         if (currentDB.exists()) {
-            try (FileChannel src = new FileOutputStream(currentDB).getChannel();
-                 FileChannel dst = new FileInputStream(backupDB).getChannel()) {
-
-                src.transferFrom(dst, 0, dst.size());
+            try(
+                    FileInputStream src = new FileInputStream(currentDB);
+                    FileOutputStream dst = new FileOutputStream(backupDB)) {
+                FileChannel srcChannel = src.getChannel();
+                FileChannel dstChannel = dst.getChannel();
+                srcChannel.transferFrom(dstChannel, 0, dstChannel.size());
             }
         }
     }

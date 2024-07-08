@@ -20,9 +20,6 @@ package de.domjos.myarchivemobile.services;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,9 +31,7 @@ import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.model.media.MediaList;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.settings.Settings;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ListService extends JobService {
     private Database database;
     private Context context;
@@ -46,7 +41,6 @@ public class ListService extends JobService {
     public boolean onStartJob(JobParameters jobParameters) {
         this.context = this.getApplicationContext();
         try {
-            Settings settings = new Settings(this.context);
             this.database = new Database(this.context);
             this.notifications = new LinkedList<>();
         } catch (Exception ex) {

@@ -67,24 +67,21 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.object = object;
 
         if(this.ivMediaCover != null) {
-            if(this.object instanceof BaseMediaObject) {
-                BaseMediaObject baseMediaObject = (BaseMediaObject) this.object;
+            if(this.object instanceof BaseMediaObject baseMediaObject) {
                 if(baseMediaObject.getCover() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(baseMediaObject.getCover(), 0, baseMediaObject.getCover().length));
                 } else {
                     this.ivMediaCover.setImageBitmap(null);
                 }
             }
-            if(this.object instanceof Person) {
-                Person person = (Person) this.object;
+            if(this.object instanceof Person person) {
                 if(person.getImage() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(person.getImage(), 0, person.getImage().length));
                 } else {
                     this.ivMediaCover.setImageBitmap(null);
                 }
             }
-            if(this.object instanceof Company) {
-                Company company = (Company) this.object;
+            if(this.object instanceof Company company) {
                 if(company.getCover() != null) {
                     this.ivMediaCover.setImageBitmap(BitmapFactory.decodeByteArray(company.getCover(), 0, company.getCover().length));
                 } else {

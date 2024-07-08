@@ -17,7 +17,6 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -127,10 +126,5 @@ public class MediaMovieFragment extends AbstractFragment<BaseMediaObject> {
     @Override
     public Validator initValidation(Validator validator) {
         return validator;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-
     }
 }

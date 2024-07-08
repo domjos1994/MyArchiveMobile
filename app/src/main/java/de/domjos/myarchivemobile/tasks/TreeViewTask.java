@@ -2,13 +2,11 @@ package de.domjos.myarchivemobile.tasks;
 
 import android.app.Activity;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.StatusTask;
-import de.domjos.customwidgets.model.tasks.TaskStatus;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.myarchivelibrary.custom.ProgressBarTask;
 import de.domjos.myarchivelibrary.model.base.BaseDescriptionObject;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
@@ -24,14 +22,14 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.custom.CustomTreeNode;
 import de.domjos.myarchivemobile.custom.CustomTreeNodeHolder;
 
-public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeNode> {
-    private boolean initDatabase, checkDatabase, loadFiles, system;
-    private TreeNode parent;
-    private com.unnamed.b.atv.model.TreeNode node;
-    private String search;
+public class TreeViewTask extends ProgressBarTask<Void, com.unnamed.b.atv.model.TreeNode> {
+    private final boolean initDatabase, checkDatabase, loadFiles, system;
+    private final TreeNode parent;
+    private final com.unnamed.b.atv.model.TreeNode node;
+    private final String search;
 
-    public TreeViewTask(Activity activity, ProgressBar progressBar, TextView status, boolean initDatabase, boolean checkDatabase, boolean loadFiles, boolean system, com.unnamed.b.atv.model.TreeNode root, TreeNode parent, String search) {
-        super(activity, R.string.file_tree_load, R.string.file_tree_load, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, progressBar, status);
+    public TreeViewTask(Activity activity, ProgressBar progressBar, boolean initDatabase, boolean checkDatabase, boolean loadFiles, boolean system, com.unnamed.b.atv.model.TreeNode root, TreeNode parent, String search) {
+        super(activity, R.string.file_tree_load, R.string.file_tree_load, MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, progressBar);
 
         this.initDatabase = initDatabase;
         this.checkDatabase = checkDatabase;
@@ -52,7 +50,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
         String where = "";
 
         if(!this.loadFiles) {
-            this.publishProgress(new TaskStatus(0, this.getContext().getString(R.string.file_tree_load_tree)));
+            this.publishProgress(0);
             TreeNode root = MainActivity.GLOBALS.getDatabase().getRoot(where);
             CustomTreeNode customTreeNode = new CustomTreeNode(root, this.getContext());
             com.unnamed.b.atv.model.TreeNode treeNode = new com.unnamed.b.atv.model.TreeNode(customTreeNode).setViewHolder(new CustomTreeNodeHolder(this.getContext()));
@@ -65,7 +63,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     where = "title like '%" + this.search.trim() + "%' or description like '%" + this.search.trim() + "%'";
                 }
             }
-            this.publishProgress(new TaskStatus(0, this.getContext().getString(R.string.file_tree_load_files)));
+            this.publishProgress(0);
             List<TreeFile> treeFiles = MainActivity.GLOBALS.getDatabase().getTreeNodeFiles("parent=" + this.parent.getId() + (where.trim().isEmpty() ? "" : " and " + where.trim()));
             for(TreeFile treeFile : treeFiles) {
                 treeFile.setParent(this.parent);
@@ -73,9 +71,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 com.unnamed.b.atv.model.TreeNode node = new com.unnamed.b.atv.model.TreeNode(customTreeNode).setViewHolder(new CustomTreeNodeHolder(this.getContext()).system(this.system));
 
                 for(com.unnamed.b.atv.model.TreeNode tmp : this.node.getChildren()) {
-                    if(tmp.getValue() instanceof CustomTreeNode && node.getValue() instanceof CustomTreeNode) {
-                        CustomTreeNode tmpNode = (CustomTreeNode) tmp.getValue();
-                        CustomTreeNode nodeNode = (CustomTreeNode) node.getValue();
+                    if(tmp.getValue() instanceof CustomTreeNode tmpNode && node.getValue() instanceof CustomTreeNode nodeNode) {
                         if(tmpNode.getTreeItem().toString().equals(nodeNode.getTreeItem().toString())) {
                             this.node.deleteChild(tmp);
                             break;
@@ -85,7 +81,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                 this.node.addChild(node);
             }
         }
-        this.publishProgress(new TaskStatus(0, ""));
+        this.publishProgress(0);
 
         return this.node;
     }
@@ -93,7 +89,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
     private void initDatabase() {
         try {
             int status = 0;
-            this.publishProgress(new TaskStatus(status, this.getContext().getString(R.string.file_tree_load_db)));
+            this.publishProgress(status);
 
             TreeNode treeNode = MainActivity.GLOBALS.getDatabase().getRoot();
             BaseDescriptionObject systemCategory = new BaseDescriptionObject();
@@ -128,7 +124,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("persons");
                     treeFile.setInternalColumn("image");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
+                    this.publishProgress(++status);
                 }
 
                 status = 0;
@@ -149,7 +145,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("companies");
                     treeFile.setInternalColumn("cover");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
+                    this.publishProgress(++status);
                 }
 
                 TreeNode media = new TreeNode();
@@ -178,7 +174,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("books");
                     treeFile.setInternalColumn("cover");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
+                    this.publishProgress(++status);
                 }
 
                 status = 0;
@@ -199,7 +195,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("movies");
                     treeFile.setInternalColumn("cover");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
+                    this.publishProgress(++status);
                 }
 
                 status = 0;
@@ -220,7 +216,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("albums");
                     treeFile.setInternalColumn("cover");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
+                    this.publishProgress(++status);
                 }
 
                 status = 0;
@@ -241,7 +237,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                     treeFile.setInternalTable("games");
                     treeFile.setInternalColumn("cover");
                     MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                    this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
+                    this.publishProgress(++status);
                 }
             } else {
                 if(this.checkDatabase) {
@@ -256,7 +252,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                             treeFile.setInternalTable("persons");
                             treeFile.setInternalColumn("image");
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateTreeNodeFiles(treeFile);
-                            this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Persons")));
+                            this.publishProgress(++status);
                         }
                     }
 
@@ -266,7 +262,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(company, "companies", this.getContext().getString(R.string.media_companies));
                         }
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Companies")));
+                        this.publishProgress(++status);
                     }
                     status = 0;
                     for(Book book : MainActivity.GLOBALS.getDatabase().getBooks("", -1, 0)) {
@@ -274,7 +270,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(book, "books", this.getContext().getString(R.string.main_navigation_media_books));
                         }
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Books")));
+                        this.publishProgress(++status);
                     }
                     status = 0;
                     for(Movie movie : MainActivity.GLOBALS.getDatabase().getMovies("", -1, 0)) {
@@ -282,7 +278,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(movie, "movies", this.getContext().getString(R.string.main_navigation_media_movies));
                         }
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Movies")));
+                        this.publishProgress(++status);
                     }
                     status = 0;
                     for(Album album : MainActivity.GLOBALS.getDatabase().getAlbums("", -1, 0)) {
@@ -290,7 +286,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(album, "albums", this.getContext().getString(R.string.main_navigation_media_music));
                         }
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Music")));
+                        this.publishProgress(++status);
                     }
                     status = 0;
                     for(Game game : MainActivity.GLOBALS.getDatabase().getGames("", -1, 0)) {
@@ -298,11 +294,11 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
                         if(treeFiles.isEmpty()) {
                             this.addFileIfNotExists(game, "games", this.getContext().getString(R.string.main_navigation_media_games));
                         }
-                        this.publishProgress(new TaskStatus(++status, String.format(this.getContext().getString(R.string.file_tree_load_db), "Games")));
+                        this.publishProgress(++status);
                     }
                 }
             }
-            this.publishProgress(new TaskStatus(0, ""));
+            this.publishProgress(0);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
         }
@@ -316,8 +312,7 @@ public class TreeViewTask extends StatusTask<Void, com.unnamed.b.atv.model.TreeN
         treeFile.setInternalId(obj.getId());
         treeFile.setInternalTable(table);
         treeFile.setInternalColumn("cover");
-        if(obj instanceof BaseMediaObject) {
-            BaseMediaObject baseMediaObject = (BaseMediaObject) obj;
+        if(obj instanceof BaseMediaObject baseMediaObject) {
             treeFile.setCategory(baseMediaObject.getCategory());
             treeFile.setTags(baseMediaObject.getTags());
         }

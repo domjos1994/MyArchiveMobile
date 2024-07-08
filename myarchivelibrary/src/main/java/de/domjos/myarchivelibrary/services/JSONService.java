@@ -61,16 +61,10 @@ abstract class JSONService {
             StringBuilder sb = new StringBuilder();
             String line;
             InputStreamReader streamReader = new InputStreamReader(inputStream);
-            BufferedReader reader = new BufferedReader(streamReader);
-            try {
-
+            try (inputStream; streamReader; BufferedReader reader = new BufferedReader(streamReader)) {
                 while ((line = reader.readLine()) != null) {
                     sb.append(line).append(System.lineSeparator());
                 }
-            } finally {
-                reader.close();
-                streamReader.close();
-                inputStream.close();
             }
 
             return sb.toString();
@@ -91,18 +85,7 @@ abstract class JSONService {
         }
     }
 
-    Integer getInt(JSONObject obj, String key) throws JSONException {
-        if(obj.has(key)) {
-            if(!obj.isNull(key)) {
-                return obj.getInt(key);
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
-
+    /** @noinspection SameParameterValue*/
     Double getDouble(JSONObject obj, String key) throws JSONException {
         if(obj.has(key)) {
             if(!obj.isNull(key)) {

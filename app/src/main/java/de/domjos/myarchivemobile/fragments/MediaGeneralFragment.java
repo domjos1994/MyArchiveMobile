@@ -276,11 +276,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
             this.txtMediaGeneralCategory.setText("");
         }
         String tags = TextUtils.join(", ", this.baseMediaObject.getTags());
-        if(tags != null) {
-            this.txtMediaGeneralTags.setText(tags);
-        } else {
-            this.txtMediaGeneralTags.setText("");
-        }
+        this.txtMediaGeneralTags.setText(Objects.requireNonNullElse(tags, ""));
         this.txtMediaGeneralDescription.setText(this.baseMediaObject.getDescription());
     }
 

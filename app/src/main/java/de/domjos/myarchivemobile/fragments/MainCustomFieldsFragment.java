@@ -33,9 +33,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -80,45 +81,36 @@ public class MainCustomFieldsFragment extends ParentFragment {
             this.reload();
         });
 
-        this.bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.cmdAdd:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_add))) {
-                        this.changeMode(true, false);
-                        this.setObject(new CustomField());
-                        this.customField = null;
-                    } else {
-                        changeMode(false, false);
-                        this.setObject(new CustomField());
-                        this.customField = null;
+        this.bottomNavigationView.setOnItemSelectedListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.cmdAdd) {
+                this.changeMode(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_add)), false);
+                this.setObject(new CustomField());
+                this.customField = null;
+            } else if(menuItem.getItemId() == R.id.cmdEdit) {
+                if(Objects.equals(menuItem.getTitle(), this.getString(R.string.sys_edit))) {
+                    if(customField != null) {
+                        this.changeMode(true, true);
+                        setObject(customField);
                     }
-                    break;
-                case R.id.cmdEdit:
-                    if(menuItem.getTitle().equals(this.getString(R.string.sys_edit))) {
-                        if(customField != null) {
-                            this.changeMode(true, true);
-                            setObject(customField);
-                        }
-                    } else {
-                        try {
-                            if(this.validator.getState()) {
-                                CustomField customField = this.getObject();
-                                if(this.customField != null) {
-                                    customField.setId(this.customField.getId());
-                                }
-                                if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
-                                    MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
-                                    this.changeMode(false, false);
-                                    this.customField = null;
-                                    this.setObject(new CustomField());
-                                    this.reload();
-                                }
+                } else {
+                    try {
+                        if(this.validator.getState()) {
+                            CustomField customField = this.getObject();
+                            if(this.customField != null) {
+                                customField.setId(this.customField.getId());
                             }
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
+                            if(this.validator.checkDuplicatedEntry(customField.getTitle(), customField.getId(), this.lvCustomFields.getAdapter().getList())) {
+                                MainActivity.GLOBALS.getDatabase().insertOrUpdateCustomField(customField);
+                                this.changeMode(false, false);
+                                this.customField = null;
+                                this.setObject(new CustomField());
+                                this.reload();
+                            }
                         }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
                     }
-                    break;
+                }
             }
             return true;
         });

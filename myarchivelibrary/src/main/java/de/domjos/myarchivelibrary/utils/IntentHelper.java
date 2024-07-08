@@ -26,7 +26,7 @@ import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
@@ -41,14 +41,17 @@ public class IntentHelper {
         activity.startActivityForResult(i, IntentHelper.GALLERY_CODE);
     }
 
-    public static Bitmap getGalleryIntentResult(int requestCode, int resultCode, Intent intent, Activity activity) throws FileNotFoundException {
+    public static Bitmap getGalleryIntentResult(int requestCode, int resultCode, Intent intent, Activity activity) {
         if(resultCode == RESULT_OK && requestCode == IntentHelper.GALLERY_CODE) {
             Uri selectedImage = intent.getData();
 
             if(selectedImage != null) {
-                ParcelFileDescriptor parcelFileDescriptor = activity.getContentResolver().openFileDescriptor(selectedImage, "r");
-                if(parcelFileDescriptor != null) {
-                    return BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
+                try(ParcelFileDescriptor parcelFileDescriptor = activity.getContentResolver().openFileDescriptor(selectedImage, "r")) {
+                    if(parcelFileDescriptor != null) {
+                        return BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

@@ -10,7 +10,7 @@ import de.domjos.myarchivemobile.R;
 
 public class CustomTreeNode extends TreeNode {
     private final Drawable drawable;
-    private Object treeItem;
+    private final Object treeItem;
 
     public CustomTreeNode(de.domjos.myarchivelibrary.model.media.fileTree.TreeNode node, Context context) {
         super((node == null ? "" : node.getTitle() == null ? "" : node.getTitle()));

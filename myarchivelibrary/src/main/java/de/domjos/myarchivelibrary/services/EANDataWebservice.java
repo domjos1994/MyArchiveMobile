@@ -42,8 +42,8 @@ public class EANDataWebservice extends JSONService {
     private final static String KEY_CODE = "code";
     private final static String PRODUCT = "product";
 
-    private String key;
-    private String code;
+    private final String key;
+    private final String code;
 
     public EANDataWebservice(String code, String key, Context context) {
         this.code = code;

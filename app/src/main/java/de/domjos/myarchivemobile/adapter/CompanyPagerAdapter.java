@@ -40,11 +40,12 @@ import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
+/** @noinspection rawtypes*/
 public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     private CompanyFragment companyFragment;
     private MediaCoverFragment<Company> mediaCoverFragment;
     private MediaListFragment mediaListFragment;
-    private Context context;
+    private final Context context;
 
     public CompanyPagerAdapter(@NonNull FragmentManager fm, Context context) {
         super(fm, context);
@@ -101,16 +102,12 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return this.companyFragment;
-            case 1:
-                return this.mediaCoverFragment;
-            case 2:
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+        return switch (position) {
+            case 0 -> this.companyFragment;
+            case 1 -> this.mediaCoverFragment;
+            case 2 -> this.mediaListFragment;
+            default -> new Fragment();
+        };
     }
 
     @NonNull
@@ -118,19 +115,21 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
     @SuppressWarnings("unchecked")
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        switch (position) {
-            case 0:
+        return switch (position) {
+            case 0 -> {
                 this.companyFragment = (CompanyFragment) createdFragment;
-                return this.companyFragment;
-            case 1:
+                yield this.companyFragment;
+            }
+            case 1 -> {
                 this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                return this.mediaCoverFragment;
-            case 2:
+                yield this.mediaCoverFragment;
+            }
+            case 2 -> {
                 this.mediaListFragment = (MediaListFragment) createdFragment;
-                return this.mediaListFragment;
-            default:
-                return new Fragment();
-        }
+                yield this.mediaListFragment;
+            }
+            default -> new Fragment();
+        };
     }
 
     @Override

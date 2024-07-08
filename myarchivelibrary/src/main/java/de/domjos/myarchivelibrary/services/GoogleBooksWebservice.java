@@ -24,7 +24,6 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.books.Books;
 import com.google.api.services.books.model.Volume;
-import com.google.api.services.books.model.Volumes;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -44,9 +43,9 @@ import de.domjos.myarchivelibrary.model.media.books.Book;
 public class GoogleBooksWebservice extends TitleWebservice<Book> {
     private final static String HTTP = "http://", HTTPS = "https://";
 
-    private String code;
-    private String id;
-    private String key;
+    private final String code;
+    private final String id;
+    private final String key;
 
     public GoogleBooksWebservice(Context context, String code, String id, String key) {
         super(context, 0L);
@@ -64,7 +63,6 @@ public class GoogleBooksWebservice extends TitleWebservice<Book> {
                 list = list.setKey(this.key);
             }
             if(list != null) {
-                Volumes volume = list.execute();
                 List<Volume> volumes = list.execute().getItems();
                 if(volumes != null && !volumes.isEmpty()) {
                     return this.getBookFromList(volumes.get(0));
