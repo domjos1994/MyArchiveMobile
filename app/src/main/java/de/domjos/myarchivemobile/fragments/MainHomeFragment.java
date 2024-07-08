@@ -280,7 +280,7 @@ public class MainHomeFragment extends ParentFragment {
 
         this.txtFilterCustomFields = view.findViewById(R.id.txtFilterCustomFields);
         this.txtFilterCustomFields.setTokenizer(new CommaTokenizer());
-        List<CustomField> customFields = MainActivity.GLOBALS.getDatabase().getCustomFields("");
+        List<CustomField> customFields = MainActivity.GLOBALS.getDatabase(requireContext()).getCustomFields("");
         CustomAutoCompleteAdapter<String> arrayAdapter = new CustomAutoCompleteAdapter<>(this.requireContext(), this.txtFilterCustomFields);
         for(CustomField customField : customFields) {
             arrayAdapter.add(customField.getTitle());
@@ -526,7 +526,7 @@ public class MainHomeFragment extends ParentFragment {
         this.arrayAdapter.add(gamesFilter);
 
         try {
-            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings().getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
+            for(MediaList mediaList : MainActivity.GLOBALS.getDatabase().getMediaLists("", MainActivity.GLOBALS.getSettings(requireContext()).getMediaCount(), MainActivity.GLOBALS.getOffset("home"))) {
                 MediaFilter listFilter = new MediaFilter();
                 listFilter.setTitle("[" + mediaList.getTitle() + "]");
                 listFilter.setMediaList(mediaList);

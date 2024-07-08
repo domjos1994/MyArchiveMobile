@@ -18,7 +18,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion propCompVersion
+    compileSdk propCompVersion
 
     defaultConfig {
         minSdkVersion propMinVersion
@@ -66,6 +66,6 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.8.3'
     implementation "androidx.lifecycle:lifecycle-extensions:$propLifeCycleExtVersion"
 }

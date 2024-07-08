@@ -50,7 +50,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Arrays;
@@ -200,8 +199,6 @@ public final class MainActivity extends AbstractActivity {
         // init globals
         try {
             this.initGlobals();
-
-            MobileAds.initialize(MainActivity.this, initializationStatus -> ControlsHelper.loadAd(MainActivity.this));
 
             if(MainActivity.INIT_WITH_EXAMPLE_DATA) {
                 MainActivity.GLOBALS.getDatabase().insertExampleData();

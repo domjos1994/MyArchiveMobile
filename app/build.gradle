@@ -18,7 +18,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion propCompVersion
+    compileSdk propCompVersion
 
     defaultConfig {
         applicationId "de.domjos.myarchivemobile"
@@ -81,13 +81,12 @@ dependencies {
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 
     implementation "androidx.appcompat:appcompat:$propAppCompatVersion"
-    implementation "com.google.android.material:material:1.2.1"
-    implementation 'com.google.android.gms:play-services-ads:19.4.0'
+    implementation "com.google.android.material:material:1.12.0"
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation "androidx.navigation:navigation-fragment:2.3.0"
-    implementation "androidx.navigation:navigation-ui:2.3.0"
+    implementation "androidx.navigation:navigation-fragment:2.7.7"
+    implementation "androidx.navigation:navigation-ui:2.7.7"
     implementation "androidx.lifecycle:lifecycle-extensions:$propLifeCycleExtVersion"
 
     // import own libraries
@@ -95,8 +94,8 @@ dependencies {
     implementation project(path: ':myarchivelibrary')
 
     // test libraries
-    implementation 'androidx.preference:preference:1.1.1'
-    testImplementation "junit:junit:4.13"
-    androidTestImplementation "androidx.test.ext:junit:1.1.2"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
+    implementation 'androidx.preference:preference:1.2.1'
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.2.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
 }
