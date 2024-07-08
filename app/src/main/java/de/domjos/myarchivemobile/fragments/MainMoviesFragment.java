@@ -17,13 +17,13 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
@@ -138,8 +138,8 @@ public class MainMoviesFragment extends ParentFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.moviePagerAdapter.onActivityResult(requestCode, resultCode, data);
+    public void onResult(ActivityResult result) {
+        this.moviePagerAdapter.onResult(result);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class MainMoviesFragment extends ParentFragment {
                 this.select();
                 ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

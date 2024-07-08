@@ -189,25 +189,20 @@ public final class PersonActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
         Intent intent = null;
         if(item.getItemId() == R.id.menMainPersons) {
             intent = new Intent(this, PersonActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainCompanies) {
             intent = new Intent(this, CompanyActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
             intent = new Intent(this, CategoriesTagsActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainSettings) {
             intent = new Intent(this, SettingsActivity.class);
-            requestCode = MainActivity.SETTINGS_REQUEST;
         } else if(item.getItemId() == R.id.menMainLog) {
             intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
+            this.startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -252,7 +247,7 @@ public final class PersonActivity extends AbstractActivity {
                 }
                 this.select();
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, PersonActivity.this);
         }

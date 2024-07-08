@@ -147,7 +147,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
         this.searchView = this.findViewById(R.id.cmdSearch);
 
         this.spItems = this.findViewById(R.id.spItems);
-        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<String>(this.getApplicationContext()) {
+        CustomSpinnerAdapter<String> itemsAdapter = new CustomSpinnerAdapter<>(this.getApplicationContext()) {
             @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -189,27 +189,23 @@ public final class CategoriesTagsActivity extends AbstractActivity {
     }
 
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int requestCode = 0;
         Intent intent = null;
         if(item.getItemId() == R.id.menMainPersons) {
             intent = new Intent(this, PersonActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainCompanies) {
             intent = new Intent(this, CompanyActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainCategoriesAndTags) {
             intent = new Intent(this, CategoriesTagsActivity.class);
-            requestCode = MainActivity.PER_COMP_TAG_CAT_REQUEST;
         } else if(item.getItemId() == R.id.menMainSettings) {
             intent = new Intent(this, SettingsActivity.class);
-            requestCode = MainActivity.SETTINGS_REQUEST;
         } else if(item.getItemId() == R.id.menMainLog) {
             intent = new Intent(this, LogActivity.class);
         }
         if(intent != null) {
-            this.startActivityForResult(intent, requestCode);
+            this.startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -253,7 +249,7 @@ public final class CategoriesTagsActivity extends AbstractActivity {
                 }
             }
         });
-        task.execute();
+        task.execute((Void) null);
     }
 
     private void setObject(BaseDescriptionObject baseDescriptionObject) {

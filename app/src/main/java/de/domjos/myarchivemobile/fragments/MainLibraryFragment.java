@@ -186,7 +186,7 @@ public class MainLibraryFragment extends ParentFragment {
                 }
                 this.bottomNavigationView.getMenu().findItem(R.id.cmdAdd).setVisible(false);
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

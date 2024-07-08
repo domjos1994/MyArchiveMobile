@@ -31,6 +31,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -84,6 +87,15 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
     private final static int SUGGESTIONS_REQUEST = 345;
 
+    private final ActivityResultLauncher<Intent> scanLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    assert result.getData() != null;
+                    this.txtMediaGeneralCode.setText(result.getData().getStringExtra("codes"));
+                }
+            });
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -136,7 +148,7 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
             Intent intent = new Intent(this.getActivity(), ScanActivity.class);
             intent.putExtra("parent", "");
             intent.putExtra("single", true);
-            startActivityForResult(intent, 234);
+            scanLauncher.launch(intent);
         });
 
         this.cmdMediaGeneralTitleSearch.setOnClickListener(view1 -> {
@@ -338,16 +350,13 @@ public class MediaGeneralFragment extends AbstractFragment<BaseMediaObject> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onResult(ActivityResult result) {
         try {
-            if(resultCode == RESULT_OK && requestCode == 234) {
-                this.txtMediaGeneralCode.setText(intent.getStringExtra("codes"));
-            }
-
-            if(resultCode == RESULT_OK && requestCode == SUGGESTIONS_REQUEST) {
-                String type = intent.getStringExtra("type");
-                String description = intent.getStringExtra("description");
-                long id = intent.getLongExtra("id", 0);
+            if(result.getResultCode() == RESULT_OK) {
+                assert result.getData() != null;
+                String type = result.getData().getStringExtra("type");
+                String description = result.getData().getStringExtra("description");
+                long id = result.getData().getLongExtra("id", 0);
                 if(Objects.requireNonNull(type).equals(this.getString(R.string.movie))) {
                     TheMovieDBTask theMovieDBTask = new TheMovieDBTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification, description, MainActivity.GLOBALS.getSettings().getMovieDBKey());
                     List<Movie> movies = theMovieDBTask.execute(id).get();

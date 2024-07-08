@@ -66,8 +66,6 @@ import de.domjos.myarchivemobile.settings.Settings;
 import de.domjos.myarchivemobile.tasks.ExportTask;
 import de.domjos.myarchivemobile.tasks.ImportTask;
 
-import static android.app.Activity.RESULT_OK;
-
 public class MainApiFragment extends ParentFragment {
     private final static String BOOKS = "books";
     private final static String MOVIES = "movies";
@@ -243,7 +241,7 @@ public class MainApiFragment extends ParentFragment {
                                 MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)), R.mipmap.ic_launcher_round, getActivity());
                                 saveSettings(spApiFormat, spApiType);
                             });
-                            exportTask.execute();
+                            exportTask.execute((Void) null);
                             break;
                         case 3:
                             this.exportToDatabase();
@@ -355,7 +353,7 @@ public class MainApiFragment extends ParentFragment {
             MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.api)) + (logPath.trim().isEmpty()? "": ":" + logPath.trim()), R.mipmap.ic_launcher_round, getActivity());
             saveSettings(spApiFormat, spApiType);
         });
-        importTask.execute();
+        importTask.execute((Void) null);
     }
 
     private long createList() {
@@ -376,19 +374,6 @@ public class MainApiFragment extends ParentFragment {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
         }
         return 0;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-            String path = this.txtApiPath.getText().toString();
-            if(resultCode == RESULT_OK && requestCode == 965) {
-                MainActivity.GLOBALS.getDatabase().getDatabase(path);
-                MainApiFragment.triggerRebirth(this.requireContext());
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
-        }
     }
 
     private static void triggerRebirth(Context context) {

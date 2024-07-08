@@ -17,13 +17,13 @@
 
 package de.domjos.myarchivemobile.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
@@ -138,8 +138,8 @@ public class MainGamesFragment extends ParentFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.gamePagerAdapter.onActivityResult(requestCode, resultCode, data);
+    public void onResult(ActivityResult result) {
+        this.gamePagerAdapter.onResult(result);
     }
 
     @Override
@@ -178,18 +178,7 @@ public class MainGamesFragment extends ParentFragment {
 
     private void reload() {
         try {
-            String searchQuery = "";
-            if(this.search != null) {
-                if(!this.search.isEmpty()) {
-                    searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
-                }
-            } else {
-                if(!MainActivity.getQuery().isEmpty()) {
-                    searchQuery = "title like '%" + MainActivity.getQuery() + "%' or originalTitle like '%" + MainActivity.getQuery() + "%'";
-                } else {
-                    searchQuery = "";
-                }
-            }
+            String searchQuery = getString();
 
             this.lvGames.getAdapter().clear();
             String key = this.returnKey();
@@ -203,11 +192,27 @@ public class MainGamesFragment extends ParentFragment {
                 this.select();
                 ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
 
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
+    }
+
+    private @NonNull String getString() {
+        String searchQuery = "";
+        if(this.search != null) {
+            if(!this.search.isEmpty()) {
+                searchQuery = "title like '%" + this.search + "%' or originalTitle like '%" + this.search + "%'";
+            }
+        } else {
+            if(!MainActivity.getQuery().isEmpty()) {
+                searchQuery = "title like '%" + MainActivity.getQuery() + "%' or originalTitle like '%" + MainActivity.getQuery() + "%'";
+            } else {
+                searchQuery = "";
+            }
+        }
+        return searchQuery;
     }
 
     private String returnKey() {

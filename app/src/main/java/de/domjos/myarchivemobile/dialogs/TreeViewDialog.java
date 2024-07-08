@@ -21,7 +21,6 @@ import android.widget.VideoView;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -293,7 +292,7 @@ public class TreeViewDialog extends DialogFragment {
     }
 
     public void show(FragmentActivity activity) {
-        super.show((FragmentManager) activity.getSupportFragmentManager(), "dialog");
+        super.show(activity.getSupportFragmentManager(), "dialog");
     }
 
     private void initControls(View view) {
@@ -466,7 +465,7 @@ public class TreeViewDialog extends DialogFragment {
         this.ivImage.setBackground(null);
         try {
             if(this.checkExtension(this.file, TreeViewDialog.document_extensions)) {
-                this.ivImage.setBackgroundColor(this.getResources().getColor(R.color.colorAccent));
+                this.ivImage.setBackgroundColor(getResources().getColor(R.color.colorAccent, requireActivity().getTheme()));
                 if (this.file.getEmbeddedContent() != null) {
                     File file = File.createTempFile(this.file.getTitle(), this.file.getTitle());
                     ConvertHelper.convertByteArrayToFile(this.file.getEmbeddedContent(), file);

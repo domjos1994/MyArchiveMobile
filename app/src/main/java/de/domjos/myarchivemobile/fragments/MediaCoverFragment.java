@@ -17,25 +17,33 @@
 
 package de.domjos.myarchivemobile.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
-import de.domjos.myarchivelibrary.utils.IntentHelper;
 import de.domjos.myarchivemobile.R;
 
 public class MediaCoverFragment<T> extends AbstractFragment<T> {
@@ -43,6 +51,41 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
     private ImageView ivMediaCover;
 
     private T object;
+
+    ActivityResultLauncher<Intent> galleryResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    assert result.getData() != null;
+                    Uri selectedImage = result.getData().getData();
+
+                    Bitmap bitmap = null;
+                    if(selectedImage != null) {
+                        try(ParcelFileDescriptor parcelFileDescriptor = requireActivity()
+                                .getContentResolver().openFileDescriptor(selectedImage, "r")) {
+                            if(parcelFileDescriptor != null) {
+                                bitmap =  BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    if(bitmap!=null) {
+                        this.ivMediaCover.setImageBitmap(bitmap);
+                    }
+                }
+            });
+    ActivityResultLauncher<Intent> cameraResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    assert result.getData() != null;
+                    Bitmap bitmap =  (Bitmap) Objects.requireNonNull(result.getData().getExtras()).get("data");
+                    if(bitmap!=null) {
+                        this.ivMediaCover.setImageBitmap(bitmap);
+                    }
+                }
+            });
 
     @Nullable
     @Override
@@ -56,8 +99,14 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.cmdMediaCoverGallery = view.findViewById(R.id.cmdMediaCoverGallery);
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
-        this.cmdMediaCoverGallery.setOnClickListener(view1 -> IntentHelper.startGalleryIntent(this.requireActivity()));
-        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> IntentHelper.startCameraIntent(this.requireActivity()));
+        this.cmdMediaCoverGallery.setOnClickListener(view1 -> {
+            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            galleryResultLauncher.launch(i);
+        });
+        this.cmdMediaCoverPhoto.setOnClickListener(view1 -> {
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraResultLauncher.launch(cameraIntent);
+        });
 
         this.changeMode(false);
     }
@@ -122,20 +171,5 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
     @Override
     public Validator initValidation(Validator validator) {
         return validator;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        try {
-            Bitmap bitmap = IntentHelper.getCameraIntentResult(requestCode, resultCode, intent);
-            if(bitmap!=null) {
-                this.ivMediaCover.setImageBitmap(bitmap);
-            } else {
-                bitmap = IntentHelper.getGalleryIntentResult(requestCode, resultCode, intent, this.getActivity());
-                if(bitmap != null) {
-                    this.ivMediaCover.setImageBitmap(bitmap);
-                }
-            }
-        } catch (Exception ignored) {}
     }
 }

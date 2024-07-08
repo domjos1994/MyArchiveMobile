@@ -17,6 +17,7 @@
 
 package de.domjos.myarchivemobile.fragments;
 
+import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.Fragment;
 
 import de.domjos.customwidgets.utils.Validator;
@@ -36,4 +37,8 @@ public abstract class AbstractFragment<T> extends Fragment {
     public abstract void changeMode(boolean editMode);
 
     public abstract Validator initValidation(Validator validator);
+
+    public void onResult(ActivityResult result) {
+
+    }
 }

@@ -18,7 +18,6 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,6 +37,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -617,7 +617,7 @@ public class MainHomeFragment extends ParentFragment {
 
             this.lvMedia.getAdapter().clear();
             String key = this.returnKey();
-            LoadingTask<BaseDescriptionObject> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key);
+            LoadingTask<List<BaseDescriptionObject>> loadingTask = new LoadingTask<>(this.getActivity(), null, mediaFilter, searchString, this.lvMedia, key);
             loadingTask.after((AbstractTask.PostExecuteListener<List<BaseDescriptionObject>>) baseDescriptionObjects -> {
                 if(baseDescriptionObjects != null) {
                     for(BaseDescriptionObject baseDescriptionObject : baseDescriptionObjects) {
@@ -627,7 +627,7 @@ public class MainHomeFragment extends ParentFragment {
                     ControlsHelper.setMediaStatistics(lblEntriesCount, key);
                 }
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
@@ -681,8 +681,10 @@ public class MainHomeFragment extends ParentFragment {
     }
 
     @Override
-    public void onActivityResult(int result, int request, Intent intent) {
-        this.reloadFilterListList();
+    public void onResult(ActivityResult result) {
+        if(result.getResultCode() == Activity.RESULT_OK) {
+            this.reloadFilterListList();
+        }
     }
 
     private void showAnimation(FloatingActionButton fab) {

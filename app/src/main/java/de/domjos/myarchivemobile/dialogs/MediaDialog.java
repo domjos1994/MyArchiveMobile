@@ -65,8 +65,6 @@ import de.domjos.myarchivemobile.activities.MainActivity;
 import de.domjos.myarchivemobile.adapter.CustomSpinnerAdapter;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
-import static android.app.Activity.RESULT_OK;
-
 public class MediaDialog extends DialogFragment {
     private Activity activity;
     private BaseDescriptionObject currentObject;
@@ -228,7 +226,6 @@ public class MediaDialog extends DialogFragment {
                             intent.putExtra("id", ((BaseMediaObject) this.currentObject.getObject()).getId());
                             intent.putExtra("type", this.type);
                             intent.putExtra("description", ((BaseMediaObject) this.currentObject.getObject()).getDescription());
-                            Objects.requireNonNull(this.getTargetFragment()).onActivityResult(this.getTargetRequestCode(), RESULT_OK, intent);
                             this.dismiss();
                         }
                     }

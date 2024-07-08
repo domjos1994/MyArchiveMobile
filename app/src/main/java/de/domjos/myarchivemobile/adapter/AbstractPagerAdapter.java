@@ -18,8 +18,8 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -38,7 +38,7 @@ public abstract class AbstractPagerAdapter<T> extends FragmentStatePagerAdapter 
     public abstract void setMediaObject(T mediaObject);
     public abstract T getMediaObject();
 
-    public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
+    public abstract void onResult(ActivityResult result);
 
     public abstract Validator initValidator();
 }

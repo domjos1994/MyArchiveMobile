@@ -165,7 +165,7 @@ public class MainListsFragment extends ParentFragment {
                     this.lvMediaLists.getAdapter().add(baseDescriptionObject);
                 }
             });
-            loadingTask.execute();
+            loadingTask.execute((Void) null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

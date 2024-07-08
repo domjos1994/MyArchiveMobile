@@ -18,9 +18,9 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -94,10 +94,10 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.personFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaListFragment.onActivityResult(requestCode, resultCode, data);
+    public void onResult(ActivityResult result) {
+        this.personFragment.onResult(result);
+        this.mediaCoverFragment.onResult(result);
+        this.mediaListFragment.onResult(result);
     }
 
     @NonNull

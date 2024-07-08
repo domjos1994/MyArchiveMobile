@@ -18,9 +18,9 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -160,13 +160,13 @@ public class GamePagerAdapter extends AbstractPagerAdapter<Game> {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.mediaGeneralFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCoverFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaPersonsCompaniesFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaGameFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaRatingFragment.onActivityResult(requestCode, resultCode, data);
-        this.mediaCustomFieldFragment.onActivityResult(requestCode, resultCode, data);
+    public void onResult(ActivityResult result) {
+        this.mediaGeneralFragment.onResult(result);
+        this.mediaCoverFragment.onResult(result);
+        this.mediaPersonsCompaniesFragment.onResult(result);
+        this.mediaGameFragment.onResult(result);
+        this.mediaRatingFragment.onResult(result);
+        this.mediaCustomFieldFragment.onResult(result);
     }
 
     @Override
