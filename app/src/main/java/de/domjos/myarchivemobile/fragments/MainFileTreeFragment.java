@@ -72,11 +72,11 @@ public class MainFileTreeFragment extends ParentFragment {
 
         this.navigationView.setOnItemSelectedListener(menuItem -> {
             if(menuItem.getItemId() == R.id.cmdAddFile) {
-                TreeViewDialog fileDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, this.node.getId());
+                TreeViewDialog fileDialog = TreeViewDialog.newInstance(TreeViewDialog.FILE, (this.node!=null?this.node.getId():0));
                 fileDialog.addPreExecute(this::reset);
                 fileDialog.show(this.requireActivity());
             } else if(menuItem.getItemId() == R.id.cmdAddNode) {
-                TreeViewDialog nodeDialog = TreeViewDialog.newInstance(TreeViewDialog.NODE, this.node.getId());
+                TreeViewDialog nodeDialog = TreeViewDialog.newInstance(TreeViewDialog.NODE, (this.node!=null?this.node.getId():0));
                 nodeDialog.addPreExecute(this::reset);
                 nodeDialog.show(this.requireActivity());
             } else if(menuItem.getItemId() == R.id.cmdReload) {
