@@ -334,6 +334,7 @@ public final class MainActivity extends AbstractActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         this.navController.navigateUp();
     }
 
