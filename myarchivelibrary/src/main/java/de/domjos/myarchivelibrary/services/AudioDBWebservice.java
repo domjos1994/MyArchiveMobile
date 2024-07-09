@@ -40,7 +40,7 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 
 public class AudioDBWebservice extends TitleWebservice<Album> {
-    private final static String BASE_URL = "https://theaudiodb.com/api/v1/json/1/searchalbum.php?a=";
+    private final static String BASE_URL = "https://theaudiodb.com/api/v1/json/2/searchalbum.php?a=";
 
     public AudioDBWebservice(Context context, long id) {
         super(context, id);
@@ -53,7 +53,7 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
 
     private Album getAlbumFromJson() throws JSONException, IOException {
         Album album = new Album();
-        JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/album.php?m=" + this.SEARCH)));
+        JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/2/album.php?m=" + this.SEARCH)));
         JSONObject albumObject = jsonObject.getJSONArray("album").getJSONObject(0);
         album.setTitle(albumObject.getString("strAlbum"));
         album.setOriginalTitle(albumObject.getString("strAlbumStripped"));
@@ -72,12 +72,13 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
     /** @noinspection CharsetObjectCanBeUsed*/
     public List<BaseMediaObject> getMedia(String search) throws IOException, JSONException {
         List<BaseMediaObject> baseMediaObjects = new LinkedList<>();
-        JSONObject jsonObject;
+        String data;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, StandardCharsets.UTF_8))));
+            data = readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, StandardCharsets.UTF_8)));
         } else {
-            jsonObject = new JSONObject(readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8"))));
+            data = readUrl(new URL(AudioDBWebservice.BASE_URL + URLEncoder.encode(search, "UTF-8")));
         }
+        JSONObject jsonObject = new JSONObject(data);
         if(!jsonObject.isNull("album")) {
             JSONArray albumArray = jsonObject.getJSONArray("album");
             for(int i = 0; i<=albumArray.length()-1; i++) {
@@ -157,7 +158,7 @@ public class AudioDBWebservice extends TitleWebservice<Album> {
 
     private void setArtist(JSONObject albumObject, Album album) throws JSONException, IOException {
         if(albumObject.has("idArtist") && !albumObject.isNull("idArtist")) {
-            JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/1/artist.php?i=" + albumObject.getLong("idArtist"))));
+            JSONObject jsonObject = new JSONObject(readUrl(new URL("https://theaudiodb.com/api/v1/json/2/artist.php?i=" + albumObject.getLong("idArtist"))));
             JSONObject artistObject = jsonObject.getJSONArray("artists").getJSONObject(0);
             Company company = new Company();
             company.setTitle(artistObject.getString("strArtist"));

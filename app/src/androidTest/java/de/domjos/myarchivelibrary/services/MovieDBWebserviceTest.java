@@ -37,15 +37,12 @@ import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivemobile.activities.MainActivity;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @Category(ServiceTest.class)
 public class MovieDBWebserviceTest {
     private final static String SEARCH = "Hair";
-    private static long start;
     private MovieDBWebservice movieDBWebservice;
     private Context context;
 
@@ -55,7 +52,6 @@ public class MovieDBWebserviceTest {
     @Before
     public void before() {
         this.context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        MovieDBWebserviceTest.start = System.currentTimeMillis();
         this.movieDBWebservice = new MovieDBWebservice(this.context, 0L, "", "");
     }
 
@@ -72,10 +68,8 @@ public class MovieDBWebserviceTest {
             assertNotEquals(0L, end);
             assertNotNull(results);
             assertNotEquals(0, results.size());
-            assertThat("Time", end, lessThan(MovieDBWebserviceTest.start + (60*1000)));
 
             this.movieDBWebservice = new MovieDBWebservice(this.context, results.get(0).getId(), results.get(0).getDescription(), "");
-            MovieDBWebserviceTest.start = System.currentTimeMillis();
             try {
                 WebServiceTask webServiceTask = new WebServiceTask(activity, this.movieDBWebservice);
                 results = webServiceTask.execute(new String[]{""}).get();

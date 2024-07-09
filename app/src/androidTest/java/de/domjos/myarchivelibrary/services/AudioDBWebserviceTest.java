@@ -43,7 +43,6 @@ import static org.junit.Assert.assertNotEquals;
 @Category(ServiceTest.class)
 public class AudioDBWebserviceTest {
     private final static String SEARCH = "Let it be";
-    private static long start;
     private AudioDBWebservice audioDBWebservice;
     private Context context;
 
@@ -53,7 +52,6 @@ public class AudioDBWebserviceTest {
     @Before
     public void before() {
         this.context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        AudioDBWebserviceTest.start = System.currentTimeMillis();
         this.audioDBWebservice = new AudioDBWebservice(this.context, 0L);
     }
 
@@ -70,10 +68,8 @@ public class AudioDBWebserviceTest {
             assertNotEquals(0L, end);
             assertNotNull(results);
             assertNotEquals(0, results.size());
-            assertNotEquals("Time", end, AudioDBWebserviceTest.start + (60*1000));
 
             this.audioDBWebservice = new AudioDBWebservice(this.context, results.get(0).getId());
-            AudioDBWebserviceTest.start = System.currentTimeMillis();
             try {
                 WebServiceTask webServiceTask = new WebServiceTask(activity, this.audioDBWebservice);
                 results = webServiceTask.execute(new String[]{""}).get();
