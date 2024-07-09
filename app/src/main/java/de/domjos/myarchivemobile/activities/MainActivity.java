@@ -81,8 +81,6 @@ import de.domjos.myarchivemobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity {
     private final static boolean INIT_WITH_EXAMPLE_DATA = false;
-    public final static int SETTINGS_REQUEST = 51;
-    public final static int PER_COMP_TAG_CAT_REQUEST = 52;
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
