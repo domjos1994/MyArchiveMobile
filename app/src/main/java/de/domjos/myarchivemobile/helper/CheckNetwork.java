@@ -20,6 +20,7 @@ package de.domjos.myarchivemobile.helper;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
 
 import androidx.annotation.NonNull;
 
@@ -38,8 +39,27 @@ public class CheckNetwork {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (networkListener != null) {
-                MainActivity.GLOBALS.setNetwork(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
-                networkListener.hasConnections(Objects.requireNonNull(connectivityManager).getAllNetworks().length != 0);
+                if(connectivityManager != null) {
+                    Network network = connectivityManager.getActiveNetwork();
+                    if(network != null) {
+                        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+                        if(networkCapabilities != null) {
+                            if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                                MainActivity.GLOBALS.setNetwork(true);
+                                networkListener.hasConnections(true);
+                            } else {
+                                MainActivity.GLOBALS.setNetwork(false);
+                                networkListener.hasConnections(false);
+                            }
+                        } else {
+                            MainActivity.GLOBALS.setNetwork(false);
+                            networkListener.hasConnections(false);
+                        }
+                    } else {
+                        MainActivity.GLOBALS.setNetwork(false);
+                        networkListener.hasConnections(false);
+                    }
+                }
             }
 
             Objects.requireNonNull(connectivityManager).registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback() {

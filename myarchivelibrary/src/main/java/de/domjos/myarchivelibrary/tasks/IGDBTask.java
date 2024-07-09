@@ -29,7 +29,7 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.services.IGDBWebservice;
 
-public class IGDBTask extends AbstractTask<Long, Void, List<Game>> {
+public class IGDBTask extends AbstractTask<Long[], Void, List<Game>> {
     private final String key;
 
     public IGDBTask(Activity activity, boolean showNotifications, int icon, String key) {
@@ -38,7 +38,7 @@ public class IGDBTask extends AbstractTask<Long, Void, List<Game>> {
     }
 
     @Override
-    protected List<Game> doInBackground(Long... ids) {
+    protected List<Game> doInBackground(Long[] ids) {
         LinkedList<Game> movies = new LinkedList<>();
 
         for(Long id : ids) {

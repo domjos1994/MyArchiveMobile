@@ -42,7 +42,7 @@ public class TreeViewTask extends ProgressBarTask<Void, com.unnamed.b.atv.model.
     }
 
     @Override
-    protected com.unnamed.b.atv.model.TreeNode doInBackground(Void... voids) {
+    protected com.unnamed.b.atv.model.TreeNode doInBackground(Void voids) {
         if(this.initDatabase) {
             this.initDatabase();
         }

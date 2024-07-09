@@ -19,7 +19,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -65,8 +64,7 @@
                     android:autofillHints="@string/sys_title"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:layout_height="wrap_content"
-                    tools:targetApi="o" />
+                    android:layout_height="wrap_content" />
                 <Spinner
                     android:id="@+id/spCustomFieldType"
                     android:layout_width="0dp"
@@ -80,8 +78,7 @@
                     android:autofillHints="@string/customFields_allowed"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:layout_height="wrap_content"
-                    tools:targetApi="o" />
+                    android:layout_height="wrap_content" />
                 <TableRow>
                     <CheckBox
                         android:id="@+id/chkCustomFieldBooks"
@@ -121,8 +118,7 @@
                     android:autofillHints="@string/sys_description"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:layout_height="wrap_content"
-                    tools:targetApi="o" />
+                    android:layout_height="wrap_content" />
             </TableLayout>
         </ScrollView>
     </LinearLayout>

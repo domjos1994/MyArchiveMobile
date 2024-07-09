@@ -22,10 +22,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.SearchView;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public final class PersonActivity extends AbstractActivity {
     private SearchView searchView;
     private PersonPagerAdapter personPagerAdapter;
     private BottomNavigationView bottomNavigationView;
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
 
     private Person person = null;
     private Validator validator;
@@ -100,7 +101,7 @@ public final class PersonActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdatePerson(o.get(0), "", 0);
                             reload();
                         });
-                        wikiDataPersonTask.execute(person);
+                        wikiDataPersonTask.execute(new Person[]{person});
                     }
                 } catch (Exception ignored) {}
             }
@@ -159,11 +160,12 @@ public final class PersonActivity extends AbstractActivity {
         TabLayout tabLayout = this.findViewById(R.id.tabLayout);
         this.viewPager = this.findViewById(R.id.viewPager);
         this.viewPager.setOffscreenPageLimit(4);
-        tabLayout.setupWithViewPager(this.viewPager);
 
-        this.personPagerAdapter = new PersonPagerAdapter(this.getSupportFragmentManager(), getApplicationContext());
+        this.personPagerAdapter = new PersonPagerAdapter(this, getApplicationContext());
         this.validator = this.personPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.personPagerAdapter);
+
+        new TabLayoutMediator(tabLayout, this.viewPager, (tab, position) -> tab.setText(" ")).attach();
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
@@ -247,7 +249,7 @@ public final class PersonActivity extends AbstractActivity {
                 }
                 this.select();
             });
-            loadingTask.execute((Void) null);
+            loadingTask.execute(null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, PersonActivity.this);
         }

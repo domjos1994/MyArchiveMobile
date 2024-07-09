@@ -29,7 +29,7 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.services.MovieDBWebservice;
 
-public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
+public class TheMovieDBTask extends AbstractTask<Long[], Void, List<Movie>> {
     private final String type, key;
 
     public TheMovieDBTask(Activity activity, boolean showNotifications, int icon, String type, String key) {
@@ -39,7 +39,7 @@ public class TheMovieDBTask extends AbstractTask<Long, Void, List<Movie>> {
     }
 
     @Override
-    protected List<Movie> doInBackground(Long... ids) {
+    protected List<Movie> doInBackground(Long[] ids) {
         LinkedList<Movie> movies = new LinkedList<>();
 
         for(Long id : ids) {

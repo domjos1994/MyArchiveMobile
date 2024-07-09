@@ -29,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -59,6 +60,7 @@ import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.SplitPaneLayout;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.myarchivelibrary.database.Database;
 import de.domjos.myarchivelibrary.interfaces.DatabaseObject;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
 import de.domjos.myarchivelibrary.model.media.MediaFilter;
@@ -69,7 +71,7 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.activities.MainActivity;
-import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
+import de.domjos.myarchivemobile.adapter.AbstractStateAdapter;
 import de.domjos.myarchivemobile.fragments.ParentFragment;
 import de.domjos.myarchivemobile.settings.Globals;
 
@@ -83,7 +85,7 @@ public class ControlsHelper {
     public static boolean fromHome = false;
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractPagerAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
+    public static <T extends BaseMediaObject> BaseDescriptionObject loadItem(Context context, ParentFragment fragment, AbstractStateAdapter abstractPagerAdapter, BaseDescriptionObject currentObject, SwipeRefreshDeleteList lv, T emptyObject) {
         try {
             long id = -1;
             if(fragment.getArguments() != null) {
@@ -96,68 +98,68 @@ public class ControlsHelper {
                     abstractPagerAdapter.setMediaObject(emptyObject);
                     currentObject = null;
                 } else {*/
-                    String where = "id=" + id;
-                    BaseMediaObject baseMediaObject = null;
-                    if(emptyObject instanceof Album) {
-                        if(currentObject != null) {
-                            baseMediaObject = (Album) currentObject.getObject();
+                String where = "id=" + id;
+                BaseMediaObject baseMediaObject = null;
+                if(emptyObject instanceof Album) {
+                    if(currentObject != null) {
+                        baseMediaObject = (Album) currentObject.getObject();
+                    } else {
+                        List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                        if(!baseMediaObjects.isEmpty()) {
+                            baseMediaObject = baseMediaObjects.get(0);
                         } else {
-                            List<Album> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getAlbums(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
-                            if(!baseMediaObjects.isEmpty()) {
-                                baseMediaObject = baseMediaObjects.get(0);
-                            } else {
-                                baseMediaObject = new Album();
-                            }
+                            baseMediaObject = new Album();
                         }
                     }
-                    if(emptyObject instanceof Movie) {
-                        if(currentObject != null) {
-                            baseMediaObject = (Movie) currentObject.getObject();
+                }
+                if(emptyObject instanceof Movie) {
+                    if(currentObject != null) {
+                        baseMediaObject = (Movie) currentObject.getObject();
+                    } else {
+                        List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                        if(!baseMediaObjects.isEmpty()) {
+                            baseMediaObject = baseMediaObjects.get(0);
                         } else {
-                            List<Movie> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getMovies(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
-                            if(!baseMediaObjects.isEmpty()) {
-                                baseMediaObject = baseMediaObjects.get(0);
-                            } else {
-                                baseMediaObject = new Movie();
-                            }
+                            baseMediaObject = new Movie();
                         }
                     }
-                    if(emptyObject instanceof Game) {
-                        if(currentObject != null) {
-                            baseMediaObject = (Game) currentObject.getObject();
+                }
+                if(emptyObject instanceof Game) {
+                    if(currentObject != null) {
+                        baseMediaObject = (Game) currentObject.getObject();
+                    } else {
+                        List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                        if(!baseMediaObjects.isEmpty()) {
+                            baseMediaObject = baseMediaObjects.get(0);
                         } else {
-                            List<Game> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getGames(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
-                            if(!baseMediaObjects.isEmpty()) {
-                                baseMediaObject = baseMediaObjects.get(0);
-                            } else {
-                                baseMediaObject = new Game();
-                            }
+                            baseMediaObject = new Game();
                         }
                     }
-                    if(emptyObject instanceof Book) {
-                        if(currentObject != null) {
-                            baseMediaObject = (Book) currentObject.getObject();
+                }
+                if(emptyObject instanceof Book) {
+                    if(currentObject != null) {
+                        baseMediaObject = (Book) currentObject.getObject();
+                    } else {
+                        List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
+                        if(!baseMediaObjects.isEmpty()) {
+                            baseMediaObject = baseMediaObjects.get(0);
                         } else {
-                            List<Book> baseMediaObjects = MainActivity.GLOBALS.getDatabase().getBooks(where, MainActivity.GLOBALS.getSettings().getMediaCount(), 0);
-                            if(!baseMediaObjects.isEmpty()) {
-                                baseMediaObject = baseMediaObjects.get(0);
-                            } else {
-                                baseMediaObject = new Book();
-                            }
+                            baseMediaObject = new Book();
                         }
                     }
-                    if(baseMediaObject != null) {
-                        for(int i = 0; i<=lv.getAdapter().getItemCount()-1; i++) {
-                            BaseDescriptionObject baseDescriptionObject = lv.getAdapter().getItem(i);
-                            if(((BaseMediaObject)baseDescriptionObject.getObject()).getId()==baseMediaObject.getId()) {
-                                currentObject = baseDescriptionObject;
-                                break;
-                            }
+                }
+                if(baseMediaObject != null) {
+                    for(int i = 0; i<=lv.getAdapter().getItemCount()-1; i++) {
+                        BaseDescriptionObject baseDescriptionObject = lv.getAdapter().getItem(i);
+                        if(((BaseMediaObject)baseDescriptionObject.getObject()).getId()==baseMediaObject.getId()) {
+                            currentObject = baseDescriptionObject;
+                            break;
                         }
-                        //fragment.changeMode(false, true);
-                        abstractPagerAdapter.setMediaObject(baseMediaObject);
-                        lv.select(currentObject);
                     }
+                    //fragment.changeMode(false, true);
+                    abstractPagerAdapter.setMediaObject(baseMediaObject);
+                    lv.select(currentObject);
+                }
                 //}
             }
         } catch (Exception ex) {
@@ -196,12 +198,19 @@ public class ControlsHelper {
         return ControlsHelper.getAllMediaItems(context, mp, key);
     }
 
-    /** @noinspection unchecked*/
+    @SuppressWarnings("unchecked")
     public static <T extends BaseMediaObject> T getObject(BaseDescriptionObject baseDescriptionObject, Context context) {
         try {
             baseDescriptionObject.setId(((BaseMediaObject)baseDescriptionObject.getObject()).getId());
+            Database db = MainActivity.GLOBALS.getDatabase();
+            long id = ((BaseMediaObject)baseDescriptionObject.getObject()).getId();
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.book))) {
-                return (T) MainActivity.GLOBALS.getDatabase().getBooks("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
+                List<Book> books = db.getBooks("ID=" + id, 100, 0);
+                if(!books.isEmpty()) {
+                    if(books.get(0) != null) {
+                        return (T) books.get(0);
+                    }
+                }
             }
             if(baseDescriptionObject.getDescription().trim().equals(context.getString(R.string.movie))) {
                 return (T) MainActivity.GLOBALS.getDatabase().getMovies("ID=" + ((BaseMediaObject)baseDescriptionObject.getObject()).getId(), 100, 0).get(0);
@@ -487,17 +496,15 @@ public class ControlsHelper {
     public static String setThePage(Fragment fragment, String table, String key) {
         if(fragment.getArguments() != null && ControlsHelper.fromHome) {
             long id = fragment.getArguments().getLong("id");
+            key = key.replace(Globals.RESET, "");
+            int page;
             if( id != 0) {
-                key = key.replace(Globals.RESET, "");
-                int page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
-                MainActivity.GLOBALS.setPage(page, key);
-                ControlsHelper.fromHome = false;
+                page = MainActivity.GLOBALS.getDatabase().getPageOfItem(table, id, MainActivity.GLOBALS.getSettings().getMediaCount());
             } else {
-                key = key.replace(Globals.RESET, "");
-                int page = 1;
-                MainActivity.GLOBALS.setPage(page, key);
-                ControlsHelper.fromHome = false;
+                page = 1;
             }
+            MainActivity.GLOBALS.setPage(page, key);
+            ControlsHelper.fromHome = false;
         }
         return key;
     }
@@ -524,13 +531,18 @@ public class ControlsHelper {
         } catch (Exception ignored) {}
     }
 
+    @SuppressWarnings("deprecation")
     public static Uri getDataFromOtherApp(Activity activity) {
         Intent intent = activity.getIntent();
         String action = intent.getAction();
         String type = intent.getType();
 
         if(action != null && (action.equals(ACTION_SEND) || action.equals(ACTION_SEND_MULTIPLE)) && type != null) {
-            return intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                return intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri.class);
+            } else {
+                return intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            }
         }
         return null;
     }

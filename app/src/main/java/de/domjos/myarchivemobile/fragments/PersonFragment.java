@@ -61,7 +61,7 @@ public class PersonFragment extends AbstractFragment<Person> {
             try {
                 this.person = this.getMediaObject();
                 WikiDataPersonTask wikiDataPersonTask = new WikiDataPersonTask(this.getActivity(), MainActivity.GLOBALS.getSettings().isNotifications(), R.drawable.icon_notification);
-                this.abstractPagerAdapter.setMediaObject(wikiDataPersonTask.execute(this.person).get().get(0));
+                this.abstractStateAdapter.setMediaObject(wikiDataPersonTask.execute(new Person[]{this.person}).get().get(0));
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext());
             }

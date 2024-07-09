@@ -21,17 +21,17 @@ import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.Fragment;
 
 import de.domjos.customwidgets.utils.Validator;
-import de.domjos.myarchivemobile.adapter.AbstractPagerAdapter;
+import de.domjos.myarchivemobile.adapter.AbstractStateAdapter;
 
 /** @noinspection rawtypes*/
 public abstract class AbstractFragment<T> extends Fragment {
-    AbstractPagerAdapter abstractPagerAdapter;
+    AbstractStateAdapter abstractStateAdapter;
 
     public abstract void setMediaObject(T baseMediaObject);
     public abstract T getMediaObject();
 
-    public void setAbstractPagerAdapter(AbstractPagerAdapter abstractPagerAdapter) {
-        this.abstractPagerAdapter = abstractPagerAdapter;
+    public void setAbstractStateAdapter(AbstractStateAdapter abstractStateAdapter) {
+        this.abstractStateAdapter = abstractStateAdapter;
     }
 
     public abstract void changeMode(boolean editMode);

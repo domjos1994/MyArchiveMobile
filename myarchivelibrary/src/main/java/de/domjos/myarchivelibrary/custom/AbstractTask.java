@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
 import de.domjos.myarchivelibrary.tools.Notifications;
 import de.domjos.myarchivelibrary.tools.Receiver;
 
-/** @noinspection rawtypes, unchecked , unchecked , unused */
+@SuppressWarnings("unchecked,rawtypes,unused")
 public abstract class AbstractTask<Params, Progress, Result> extends AsyncTaskExecutorService<Params, Progress, Result> {
     private final WeakReference<Context> weakReference;
     private final int icon;
@@ -85,8 +85,8 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTaskEx
         }
     }
 
-    /** @noinspection unchecked*/
     @Override
+    @SuppressWarnings("unchecked")
     protected void onPostExecute(Result result) {
         if (this.showNotifications) {
             this.notifications.cancelNotification(this.id);

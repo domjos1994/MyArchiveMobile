@@ -18,12 +18,10 @@
 package de.domjos.myarchivemobile.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +29,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Objects;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Calendar;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -49,41 +49,25 @@ import de.domjos.myarchivemobile.R;
 public class MediaCoverFragment<T> extends AbstractFragment<T> {
     private ImageButton cmdMediaCoverPhoto, cmdMediaCoverGallery;
     private ImageView ivMediaCover;
+    private Uri imageUri;
 
     private T object;
 
-    ActivityResultLauncher<Intent> galleryResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
+    ActivityResultLauncher<androidx.activity.result.PickVisualMediaRequest> galleryResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.PickVisualMedia(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    assert result.getData() != null;
-                    Uri selectedImage = result.getData().getData();
-
-                    Bitmap bitmap = null;
-                    if(selectedImage != null) {
-                        try(ParcelFileDescriptor parcelFileDescriptor = requireActivity()
-                                .getContentResolver().openFileDescriptor(selectedImage, "r")) {
-                            if(parcelFileDescriptor != null) {
-                                bitmap =  BitmapFactory.decodeStream(new FileInputStream(parcelFileDescriptor.getFileDescriptor()));
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                if(result != null) {
+                    Bitmap bitmap = uriToBitmap(result);
                     if(bitmap!=null) {
                         this.ivMediaCover.setImageBitmap(bitmap);
                     }
                 }
             });
-    ActivityResultLauncher<Intent> cameraResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
+    ActivityResultLauncher<Uri> cameraResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.TakePicture(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    assert result.getData() != null;
-                    Bitmap bitmap =  (Bitmap) Objects.requireNonNull(result.getData().getExtras()).get("data");
-                    if(bitmap!=null) {
-                        this.ivMediaCover.setImageBitmap(bitmap);
-                    }
+                if (result) {
+                    this.ivMediaCover.setImageBitmap(uriToBitmap(this.imageUri));
                 }
             });
 
@@ -100,15 +84,30 @@ public class MediaCoverFragment<T> extends AbstractFragment<T> {
         this.ivMediaCover = view.findViewById(R.id.ivMediaCover);
 
         this.cmdMediaCoverGallery.setOnClickListener(view1 -> {
-            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            galleryResultLauncher.launch(i);
+            PickVisualMediaRequest.Builder builder = new PickVisualMediaRequest.Builder();
+            builder.setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE);
+            galleryResultLauncher.launch(builder.build());
         });
         this.cmdMediaCoverPhoto.setOnClickListener(view1 -> {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            cameraResultLauncher.launch(cameraIntent);
+            this.imageUri = this.createImageUri();
+            cameraResultLauncher.launch(this.imageUri);
         });
 
         this.changeMode(false);
+    }
+
+    private Uri createImageUri() {
+        Activity act = this.requireActivity();
+        File image = new File(act.getExternalCacheDir(), Calendar.getInstance().getTimeInMillis() + ".jpg");
+        return FileProvider.getUriForFile(act, act.getPackageName() + ".provider", image);
+    }
+
+    private Bitmap uriToBitmap(Uri uri) {
+        try {
+            InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
+            return BitmapFactory.decodeStream(inputStream);
+        } catch (Exception ignored) {}
+        return null;
     }
 
     @Override

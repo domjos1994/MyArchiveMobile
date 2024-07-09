@@ -18,12 +18,11 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,15 +39,14 @@ import de.domjos.myarchivemobile.fragments.MediaCoverFragment;
 import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
-/** @noinspection rawtypes*/
-public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
-    private CompanyFragment companyFragment;
-    private MediaCoverFragment<Company> mediaCoverFragment;
-    private MediaListFragment mediaListFragment;
+public class CompanyPagerAdapter extends AbstractStateAdapter<Company> {
+    private final CompanyFragment companyFragment;
+    private final MediaCoverFragment<Company> mediaCoverFragment;
+    private final MediaListFragment mediaListFragment;
     private final Context context;
 
-    public CompanyPagerAdapter(@NonNull FragmentManager fm, Context context) {
-        super(fm, context);
+    public CompanyPagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context) {
+        super(fragmentActivity, context);
 
         this.context = context;
 
@@ -57,9 +55,9 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
         this.mediaListFragment = new MediaListFragment();
         this.mediaListFragment.setPerson(false);
 
-        this.companyFragment.setAbstractPagerAdapter(this);
-        this.mediaCoverFragment.setAbstractPagerAdapter(this);
-        this.mediaListFragment.setAbstractPagerAdapter(this);
+        this.companyFragment.setAbstractStateAdapter(this);
+        this.mediaCoverFragment.setAbstractStateAdapter(this);
+        this.mediaListFragment.setAbstractStateAdapter(this);
     }
 
     @Override
@@ -101,7 +99,7 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return switch (position) {
             case 0 -> this.companyFragment;
             case 1 -> this.mediaCoverFragment;
@@ -110,30 +108,8 @@ public class CompanyPagerAdapter extends AbstractPagerAdapter<Company> {
         };
     }
 
-    @NonNull
     @Override
-    @SuppressWarnings("unchecked")
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        return switch (position) {
-            case 0 -> {
-                this.companyFragment = (CompanyFragment) createdFragment;
-                yield this.companyFragment;
-            }
-            case 1 -> {
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                yield this.mediaCoverFragment;
-            }
-            case 2 -> {
-                this.mediaListFragment = (MediaListFragment) createdFragment;
-                yield this.mediaListFragment;
-            }
-            default -> new Fragment();
-        };
-    }
-
-    @Override
-    public int getCount() {
+    public int getItemCount() {
         return 3;
     }
 

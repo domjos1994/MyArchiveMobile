@@ -27,7 +27,7 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.games.Game;
 import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
-public class EANDataGameTask extends AbstractTask<String, Void, List<Game>> {
+public class EANDataGameTask extends AbstractTask<String[], Void, List<Game>> {
     private final String key;
 
     public EANDataGameTask(Activity activity, boolean showNotifications, int icon, String key) {
@@ -36,7 +36,7 @@ public class EANDataGameTask extends AbstractTask<String, Void, List<Game>> {
     }
 
     @Override
-    protected List<Game> doInBackground(String... strings) {
+    protected List<Game> doInBackground(String[] strings) {
         LinkedList<Game> games = new LinkedList<>();
 
         for(String code : strings) {

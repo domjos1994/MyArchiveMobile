@@ -40,7 +40,7 @@ public class ExportTask extends ProgressBarTask<Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Void doInBackground(Void voids) {
         try {
             int i = 0;
             if(this.path.toLowerCase().endsWith("pdf")) {

@@ -27,14 +27,14 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.general.Person;
 import de.domjos.myarchivelibrary.services.WikiDataWebservice;
 
-public class WikiDataPersonTask extends AbstractTask<Person, Void, List<Person>> {
+public class WikiDataPersonTask extends AbstractTask<Person[], Void, List<Person>> {
 
     public WikiDataPersonTask(Activity activity, boolean showNotifications, int icon) {
         super(activity, R.string.service_wiki_data_search, R.string.service_wiki_data_search_content, showNotifications, icon);
     }
 
     @Override
-    protected List<Person> doInBackground(Person... people) {
+    protected List<Person> doInBackground(Person[] people) {
         List<Person> persons = new LinkedList<>();
 
         try {

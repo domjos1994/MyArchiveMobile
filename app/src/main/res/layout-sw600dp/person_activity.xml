@@ -16,17 +16,18 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
@@ -50,8 +51,7 @@
         android:id="@+id/lvPersons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_below="@+id/appBarLayout"
-        android:layout_above="@+id/viewPager"
+        android:layout_weight="4"
         app:itemIcon="@drawable/icon_person"
         app:listItemBackground="@drawable/background"
         app:selectedListItemBackground="@drawable/background_selected"
@@ -59,18 +59,26 @@
         app:iconColor="@color/textColorPrimary"
         android:padding="4dp"/>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_above="@+id/navigationView"
-        android:contentDescription="@string/media_persons">
-
+        android:layout_height="1dp"
+        android:background="@color/separatorColor"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:orientation="vertical">
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </androidx.viewpager.widget.ViewPager>
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/main_navigation_media_games"/>
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
@@ -80,6 +88,5 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/navigation_bottom"
-        android:layout_alignParentBottom="true"/>
-</RelativeLayout>
+        app:menu="@menu/navigation_bottom"/>
+</LinearLayout>

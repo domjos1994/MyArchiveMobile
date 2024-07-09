@@ -22,10 +22,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.SearchView;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ import de.domjos.myarchivemobile.tasks.LoadingTask;
 public final class CompanyActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvCompanies;
     private SearchView searchView;
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
     private CompanyPagerAdapter companyPagerAdapter;
     private BottomNavigationView bottomNavigationView;
 
@@ -100,7 +101,7 @@ public final class CompanyActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getDatabase().insertOrUpdateCompany(o.get(0), "", 0);
                             reload();
                         });
-                        wikiDataCompanyTask.execute(company);
+                        wikiDataCompanyTask.execute(new Company[]{company});
                     }
                 } catch (Exception ignored) {}
             }
@@ -159,11 +160,12 @@ public final class CompanyActivity extends AbstractActivity {
         TabLayout tabLayout = this.findViewById(R.id.tabLayout);
         this.viewPager = this.findViewById(R.id.viewPager);
         this.viewPager.setOffscreenPageLimit(4);
-        tabLayout.setupWithViewPager(this.viewPager);
 
-        this.companyPagerAdapter = new CompanyPagerAdapter(this.getSupportFragmentManager(), getApplicationContext());
+        this.companyPagerAdapter = new CompanyPagerAdapter(this, getApplicationContext());
         this.validator = this.companyPagerAdapter.initValidator();
         this.viewPager.setAdapter(this.companyPagerAdapter);
+
+        new TabLayoutMediator(tabLayout, this.viewPager, (tab, position) -> tab.setText(" ")).attach();
 
         for(int i = 0; i<=tabLayout.getTabCount()-1; i++) {
             tabLayout.setScrollPosition(i, 0f, true);
@@ -247,7 +249,7 @@ public final class CompanyActivity extends AbstractActivity {
                 }
                 this.select();
             });
-            loadingTask.execute((Void) null);
+            loadingTask.execute(null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CompanyActivity.this);
         }

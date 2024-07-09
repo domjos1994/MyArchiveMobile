@@ -27,7 +27,7 @@ import de.domjos.myarchivelibrary.custom.AbstractTask;
 import de.domjos.myarchivelibrary.model.media.music.Album;
 import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
-public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
+public class EANDataAlbumTask extends AbstractTask<String[], Void, List<Album>> {
     private final String key;
 
     public EANDataAlbumTask(Activity activity, boolean showNotifications, int icon, String key) {
@@ -36,7 +36,7 @@ public class EANDataAlbumTask extends AbstractTask<String, Void, List<Album>> {
     }
 
     @Override
-    protected List<Album> doInBackground(String... strings) {
+    protected List<Album> doInBackground(String[] strings) {
         LinkedList<Album> albums = new LinkedList<>();
 
         for(String code : strings) {

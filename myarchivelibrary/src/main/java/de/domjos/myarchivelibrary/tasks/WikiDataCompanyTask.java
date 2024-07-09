@@ -27,14 +27,14 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.general.Company;
 import de.domjos.myarchivelibrary.services.WikiDataWebservice;
 
-public class WikiDataCompanyTask extends AbstractTask<Company, Void, List<Company>> {
+public class WikiDataCompanyTask extends AbstractTask<Company[], Void, List<Company>> {
 
     public WikiDataCompanyTask(Activity activity, boolean showNotifications, int icon) {
         super(activity, R.string.service_wiki_data_search, R.string.service_wiki_data_search_content, showNotifications, icon);
     }
 
     @Override
-    protected List<Company> doInBackground(Company... companies) {
+    protected List<Company> doInBackground(Company[] companies) {
         List<Company> companyList = new LinkedList<>();
 
         try {

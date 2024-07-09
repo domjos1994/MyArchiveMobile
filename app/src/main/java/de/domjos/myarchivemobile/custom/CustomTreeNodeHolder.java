@@ -31,18 +31,18 @@ public class CustomTreeNodeHolder extends TreeNode.BaseNodeViewHolder<CustomTree
         this.getLevel(node);
         view.setPadding(this.level * 20, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
 
-        this.tvValue = (TextView) view.findViewById(R.id.txt);
+        this.tvValue = view.findViewById(R.id.txt);
         this.tvValue.setText(value.getValue().toString());
 
-        this.selectedColor = this.context.getResources().getColor(R.color.selected_colorPrimary);
-        this.unselectedColor = this.context.getResources().getColor(R.color.textColorPrimary);
+        this.selectedColor = this.context.getResources().getColor(R.color.selected_colorPrimary, context.getTheme());
+        this.unselectedColor = this.context.getResources().getColor(R.color.textColorPrimary, context.getTheme());
         if(this.system) {
-            this.unselectedColor = this.context.getResources().getColor(R.color.hintColor);
+            this.unselectedColor = this.context.getResources().getColor(R.color.hintColor, context.getTheme());
         } else {
             if(value.getTreeItem() instanceof de.domjos.myarchivelibrary.model.media.fileTree.TreeNode) {
                 if(((de.domjos.myarchivelibrary.model.media.fileTree.TreeNode)value.getTreeItem()).isSystem()) {
                     this.system = true;
-                    this.unselectedColor = this.context.getResources().getColor(R.color.hintColor);
+                    this.unselectedColor = this.context.getResources().getColor(R.color.hintColor, context.getTheme());
                 }
             }
         }

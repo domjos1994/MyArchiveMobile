@@ -36,7 +36,7 @@
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintHeight_percent="0.78"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/viewPager"/>
+        app:layout_constraintEnd_toStartOf="@+id/llTabs"/>
 
     <TextView
         android:id="@+id/lblNumber"
@@ -47,23 +47,30 @@
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintHeight_percent="0.08"
         app:layout_constraintBottom_toTopOf="@+id/navigationView"
-        app:layout_constraintEnd_toStartOf="@+id/viewPager"/>
+        app:layout_constraintEnd_toStartOf="@+id/llTabs"/>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+
+    <LinearLayout
+        android:id="@+id/llTabs"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_weight="6"
+        android:orientation="vertical"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintHeight_percent="0.86"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lvMediaAlbum"
-        android:contentDescription="@string/main_navigation_media_music">
-
+        app:layout_constraintStart_toEndOf="@+id/lvMediaAlbum">
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </androidx.viewpager.widget.ViewPager>
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/main_navigation_media_games"/>
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"

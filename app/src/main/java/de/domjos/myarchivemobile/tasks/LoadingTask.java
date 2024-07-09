@@ -56,9 +56,9 @@ public class LoadingTask<T> extends ProgressBarTask<Void, T> {
         this.searchString = searchString;
     }
 
-    /** @noinspection unchecked*/
     @Override
-    protected T doInBackground(Void... voids) {
+    @SuppressWarnings("unchecked")
+    protected T doInBackground(Void voids) {
         try {
             ((Activity) this.getContext()).runOnUiThread(() -> {
                 this.lv.get().getAdapter().clear();

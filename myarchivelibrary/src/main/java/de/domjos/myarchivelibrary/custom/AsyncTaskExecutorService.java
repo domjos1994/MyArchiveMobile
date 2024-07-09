@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-/** @noinspection unchecked, unused */
+/** @noinspection unused */
 public abstract class AsyncTaskExecutorService<Params,Progress,Result> {
 
     private final ExecutorService executor;
@@ -67,25 +67,24 @@ public abstract class AsyncTaskExecutorService<Params,Progress,Result> {
         // Override this method where ever you want to perform task before background execution get started
     }
 
-    protected abstract Result doInBackground(Params... params);
+    protected abstract Result doInBackground(Params params);
 
     protected abstract void onPostExecute(Result result);
 
-    protected void onProgressUpdate(@NotNull Progress... value) {
+    protected void onProgressUpdate(@NotNull Progress value) {
         // Override this method where ever you want update a progress result
     }
 
     // used for push progress report to UI
-    public void publishProgress(@NotNull Progress... value) {
+    public void publishProgress(@NotNull Progress value) {
         getHandler().post(() -> onProgressUpdate(value));
     }
 
     public Future<Result> execute() {
-        return execute((Params) null);
+        return execute(null);
     }
 
-    @SafeVarargs
-    public final Future<Result> execute(Params... params) {
+    public final Future<Result> execute(Params params) {
         getHandler().post(() -> {
             this.refActivity.get().runOnUiThread(this::onPreExecute);
             try {

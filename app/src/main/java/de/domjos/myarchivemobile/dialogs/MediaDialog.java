@@ -170,7 +170,7 @@ public class MediaDialog extends DialogFragment {
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
                                     });
-                                    theMovieDBTask.execute(id);
+                                    theMovieDBTask.execute(new Long[]{id});
                                 } else if(currentWebService instanceof AudioDBWebservice) {
                                     theAudioDBTask = new TheAudioDBTask(this.activity, notification, icon);
                                     theAudioDBTask.after((AbstractTask.PostExecuteListener<List<Album>>) o -> {
@@ -182,7 +182,7 @@ public class MediaDialog extends DialogFragment {
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
                                     });
-                                    theAudioDBTask.execute(id);
+                                    theAudioDBTask.execute(new Long[]{id});
                                 } else if(currentWebService instanceof GoogleBooksWebservice) {
                                     String key = MainActivity.GLOBALS.getSettings().getGoogleBooksKey();
                                     googleBooksTask = new GoogleBooksTask(this.activity, notification, icon, description, key);
@@ -195,7 +195,7 @@ public class MediaDialog extends DialogFragment {
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
                                     });
-                                    googleBooksTask.execute("");
+                                    googleBooksTask.execute(new String[]{""});
                                 } else if(currentWebService instanceof IGDBWebservice) {
                                     String key = MainActivity.GLOBALS.getSettings().getIGDBKey();
                                     igdbTask = new IGDBTask(this.activity, notification, icon, key);
@@ -208,7 +208,7 @@ public class MediaDialog extends DialogFragment {
                                         MessageHelper.printMessage(String.format(getString(R.string.sys_success), getString(R.string.sys_save)), icon, activity);
                                         MediaDialog.this.setCancelable(true);
                                     });
-                                    igdbTask.execute(id);
+                                    igdbTask.execute(new Long[]{id});
                                 }
                             } else {
                                 MessageHelper.printMessage(validator.getResult(), R.mipmap.ic_launcher_round, this.activity);
@@ -348,10 +348,10 @@ public class MediaDialog extends DialogFragment {
         }
 
         @Override
-        protected List<BaseDescriptionObject> doInBackground(String... strings) {
+        protected List<BaseDescriptionObject> doInBackground(String strings) {
             List<BaseDescriptionObject> baseDescriptionObjects = new LinkedList<>();
             try {
-                List<BaseMediaObject> baseMediaObjects = titleWebservice.getMedia(strings[0]);
+                List<BaseMediaObject> baseMediaObjects = titleWebservice.getMedia(strings);
                 if (baseMediaObjects != null) {
                     for (BaseMediaObject baseMediaObject : baseMediaObjects) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();

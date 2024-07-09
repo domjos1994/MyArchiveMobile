@@ -77,7 +77,7 @@ public class ImportTask extends ProgressBarTask<Void, List<String>> {
     }
 
     @Override
-    protected List<String> doInBackground(Void... voids) {
+    protected List<String> doInBackground(Void voids) {
         try {
             this.importToTXTOrCSV();
         } catch (Exception ex) {

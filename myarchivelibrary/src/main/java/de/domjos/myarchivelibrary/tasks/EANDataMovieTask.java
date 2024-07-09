@@ -27,7 +27,7 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivelibrary.services.EANDataWebservice;
 
-public class EANDataMovieTask extends AbstractTask<String, Void, List<Movie>> {
+public class EANDataMovieTask extends AbstractTask<String[], Void, List<Movie>> {
     private final String key;
 
     public EANDataMovieTask(Activity activity, boolean showNotifications, int icon, String key) {
@@ -36,7 +36,7 @@ public class EANDataMovieTask extends AbstractTask<String, Void, List<Movie>> {
     }
 
     @Override
-    protected List<Movie> doInBackground(String... strings) {
+    protected List<Movie> doInBackground(String[] strings) {
         LinkedList<Movie> movies = new LinkedList<>();
 
         for(String code : strings) {

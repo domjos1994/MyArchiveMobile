@@ -25,10 +25,11 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.Date;
 import java.util.List;
@@ -159,15 +160,15 @@ public class MainBooksFragment extends ParentFragment {
         this.txtStatistics = view.findViewById(R.id.lblNumber);
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        ViewPager viewPager = view.findViewById(R.id.viewPager);
+        ViewPager2 viewPager = view.findViewById(R.id.viewPager);
         viewPager.setOffscreenPageLimit(6);
-        tabLayout.setupWithViewPager(viewPager);
 
         this.spl = view.findViewById(R.id.spl);
 
-        this.bookPagerAdapter = new BookPagerAdapter(Objects.requireNonNull(this.getParentFragmentManager()), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
+        this.bookPagerAdapter = new BookPagerAdapter(this.requireActivity(), this.getContext(), () -> currentObject = ControlsHelper.loadItem(this.getActivity(), this, bookPagerAdapter, currentObject, lvBooks, new Book()));
         this.validator = this.bookPagerAdapter.initValidator();
         viewPager.setAdapter(this.bookPagerAdapter);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(" ")).attach();
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.icon_general);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.icon_image);
@@ -207,7 +208,7 @@ public class MainBooksFragment extends ParentFragment {
                 this.select();
                 ControlsHelper.setMediaStatistics(this.txtStatistics, finalKey);
             });
-            loadingTask.execute((Void) null);
+            loadingTask.execute(null);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }

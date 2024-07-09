@@ -18,12 +18,11 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentActivity;
 
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -31,20 +30,19 @@ import de.domjos.myarchivelibrary.model.media.movies.Movie;
 import de.domjos.myarchivemobile.R;
 import de.domjos.myarchivemobile.fragments.*;
 
-/** @noinspection rawtypes*/
-public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
-    private AbstractFragment<BaseMediaObject> mediaCoverFragment;
-    private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
-    private AbstractFragment<BaseMediaObject> mediaMovieFragment;
-    private AbstractFragment<BaseMediaObject> mediaPlayerFragment;
-    private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
-    private AbstractFragment<BaseMediaObject> mediaRatingFragment;
-    private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
+public class MoviePagerAdapter extends AbstractStateAdapter<Movie> {
+    private final AbstractFragment<BaseMediaObject> mediaCoverFragment;
+    private final AbstractFragment<BaseMediaObject> mediaGeneralFragment;
+    private final AbstractFragment<BaseMediaObject> mediaMovieFragment;
+    private final AbstractFragment<BaseMediaObject> mediaPlayerFragment;
+    private final AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private final AbstractFragment<BaseMediaObject> mediaRatingFragment;
+    private final AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
     private final Runnable runnable;
     private boolean first = true;
 
-    public MoviePagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
-        super(fm, context);
+    public MoviePagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context, Runnable runnable) {
+        super(fragmentActivity, context);
 
         this.runnable = runnable;
 
@@ -56,28 +54,23 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaRatingFragment = new MediaRatingFragment();
         this.mediaCustomFieldFragment = new MediaCustomFieldFragment();
 
-        this.mediaCoverFragment.setAbstractPagerAdapter(this);
-        this.mediaGeneralFragment.setAbstractPagerAdapter(this);
-        this.mediaMovieFragment.setAbstractPagerAdapter(this);
-        this.mediaPlayerFragment.setAbstractPagerAdapter(this);
-        this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
-        this.mediaRatingFragment.setAbstractPagerAdapter(this);
-        this.mediaCustomFieldFragment.setAbstractPagerAdapter(this);
-    }
-
-    @Override
-    public void finishUpdate(@NonNull ViewGroup container) {
-        super.finishUpdate(container);
-
-        if(this.first) {
-            this.runnable.run();
-            this.first = false;
-        }
+        this.mediaCoverFragment.setAbstractStateAdapter(this);
+        this.mediaGeneralFragment.setAbstractStateAdapter(this);
+        this.mediaMovieFragment.setAbstractStateAdapter(this);
+        this.mediaPlayerFragment.setAbstractStateAdapter(this);
+        this.mediaPersonsCompaniesFragment.setAbstractStateAdapter(this);
+        this.mediaRatingFragment.setAbstractStateAdapter(this);
+        this.mediaCustomFieldFragment.setAbstractStateAdapter(this);
     }
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
+        if(this.first) {
+            this.runnable.run();
+            this.first = false;
+        }
+
         return switch (position) {
             case 0 -> this.mediaGeneralFragment;
             case 1 -> this.mediaCoverFragment;
@@ -90,42 +83,9 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         };
     }
 
-    @NonNull
     @Override
-    @SuppressWarnings("unchecked")
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        return switch (position) {
-            case 0 -> {
-                this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
-                yield this.mediaGeneralFragment;
-            }
-            case 1 -> {
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                yield this.mediaCoverFragment;
-            }
-            case 2 -> {
-                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
-                yield this.mediaPersonsCompaniesFragment;
-            }
-            case 3 -> {
-                this.mediaMovieFragment = (MediaMovieFragment) createdFragment;
-                yield this.mediaMovieFragment;
-            }
-            case 4 -> {
-                this.mediaPlayerFragment = (MediaPlayerFragment) createdFragment;
-                yield this.mediaPlayerFragment;
-            }
-            case 5 -> {
-                this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
-                yield this.mediaRatingFragment;
-            }
-            case 6 -> {
-                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
-                yield this.mediaCustomFieldFragment;
-            }
-            default -> new Fragment();
-        };
+    public int getItemCount() {
+        return 7;
     }
 
     @Override
@@ -179,16 +139,6 @@ public class MoviePagerAdapter extends AbstractPagerAdapter<Movie> {
         this.mediaPlayerFragment.onResult(result);
         this.mediaRatingFragment.onResult(result);
         this.mediaCustomFieldFragment.onResult(result);
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return " ";
-    }
-
-    @Override
-    public int getCount() {
-        return 7;
     }
 
     @Override

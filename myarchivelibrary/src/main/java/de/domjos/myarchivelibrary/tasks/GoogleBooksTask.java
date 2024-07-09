@@ -29,7 +29,7 @@ import de.domjos.myarchivelibrary.R;
 import de.domjos.myarchivelibrary.model.media.books.Book;
 import de.domjos.myarchivelibrary.services.GoogleBooksWebservice;
 
-public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
+public class GoogleBooksTask extends AbstractTask<String[], Void, List<Book>> {
     private final String id, key;
 
     public GoogleBooksTask(Activity activity, boolean showNotifications, int icon, String id, String key) {
@@ -39,7 +39,7 @@ public class GoogleBooksTask extends AbstractTask<String, Void, List<Book>> {
     }
 
     @Override
-    protected List<Book> doInBackground(String... strings) {
+    protected List<Book> doInBackground(String[] strings) {
         LinkedList<Book> books = new LinkedList<>();
 
         for(String code : strings) {

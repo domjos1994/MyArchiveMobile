@@ -18,12 +18,11 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,15 +38,14 @@ import de.domjos.myarchivemobile.fragments.MediaListFragment;
 import de.domjos.myarchivemobile.fragments.PersonFragment;
 import de.domjos.myarchivemobile.helper.ControlsHelper;
 
-/** @noinspection rawtypes*/
-public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
-    private PersonFragment personFragment;
-    private MediaCoverFragment<Person> mediaCoverFragment;
-    private MediaListFragment mediaListFragment;
+public class PersonPagerAdapter extends AbstractStateAdapter<Person> {
+    private final PersonFragment personFragment;
+    private final MediaCoverFragment<Person> mediaCoverFragment;
+    private final MediaListFragment mediaListFragment;
     private final Context context;
 
-    public PersonPagerAdapter(@NonNull FragmentManager fm, Context context) {
-        super(fm, context);
+    public PersonPagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context) {
+        super(fragmentActivity, context);
 
         this.context = context;
 
@@ -56,9 +54,9 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
         this.mediaListFragment = new MediaListFragment();
         this.mediaListFragment.setPerson(true);
 
-        this.personFragment.setAbstractPagerAdapter(this);
-        this.mediaCoverFragment.setAbstractPagerAdapter(this);
-        this.mediaListFragment.setAbstractPagerAdapter(this);
+        this.personFragment.setAbstractStateAdapter(this);
+        this.mediaCoverFragment.setAbstractStateAdapter(this);
+        this.mediaListFragment.setAbstractStateAdapter(this);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return switch (position) {
             case 0 -> this.personFragment;
             case 1 -> this.mediaCoverFragment;
@@ -111,30 +109,8 @@ public class PersonPagerAdapter extends AbstractPagerAdapter<Person> {
         };
     }
 
-    @NonNull
     @Override
-    @SuppressWarnings("unchecked")
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        return switch (position) {
-            case 0 -> {
-                this.personFragment = (PersonFragment) createdFragment;
-                yield this.personFragment;
-            }
-            case 1 -> {
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                yield this.mediaCoverFragment;
-            }
-            case 2 -> {
-                this.mediaListFragment = (MediaListFragment) createdFragment;
-                yield this.mediaListFragment;
-            }
-            default -> new Fragment();
-        };
-    }
-
-    @Override
-    public int getCount() {
+    public int getItemCount() {
         return 3;
     }
 

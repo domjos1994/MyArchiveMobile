@@ -40,6 +40,9 @@ android {
         targetCompatibility = propJavaVersion
         sourceCompatibility = propJavaVersion
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
     namespace 'de.domjos.myarchivelibrary'
 }
 

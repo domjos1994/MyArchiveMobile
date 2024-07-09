@@ -127,7 +127,7 @@ public final class LogActivity extends AbstractActivity {
         }
 
         @Override
-        protected List<String> doInBackground(Void... voids) {
+        protected List<String> doInBackground(Void voids) {
             List<String> content = new LinkedList<>();
             try {
                 Process process = Runtime.getRuntime().exec("logcat -d");

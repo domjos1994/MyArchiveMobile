@@ -18,12 +18,11 @@
 package de.domjos.myarchivemobile.adapter;
 
 import android.content.Context;
-import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentActivity;
 
 import de.domjos.customwidgets.utils.Validator;
 import de.domjos.myarchivelibrary.model.media.BaseMediaObject;
@@ -37,19 +36,18 @@ import de.domjos.myarchivemobile.fragments.MediaGeneralFragment;
 import de.domjos.myarchivemobile.fragments.MediaPersonsCompaniesFragment;
 import de.domjos.myarchivemobile.fragments.MediaRatingFragment;
 
-/** @noinspection rawtypes*/
-public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
-    private AbstractFragment<BaseMediaObject> mediaCoverFragment;
-    private AbstractFragment<BaseMediaObject> mediaGeneralFragment;
-    private AbstractFragment<BaseMediaObject> mediaAlbumFragment;
-    private AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
-    private AbstractFragment<BaseMediaObject> mediaRatingFragment;
-    private AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
+public class AlbumPagerAdapter extends AbstractStateAdapter<Album> {
+    private final AbstractFragment<BaseMediaObject> mediaCoverFragment;
+    private final AbstractFragment<BaseMediaObject> mediaGeneralFragment;
+    private final AbstractFragment<BaseMediaObject> mediaAlbumFragment;
+    private final AbstractFragment<BaseMediaObject> mediaPersonsCompaniesFragment;
+    private final AbstractFragment<BaseMediaObject> mediaRatingFragment;
+    private final AbstractFragment<BaseMediaObject> mediaCustomFieldFragment;
     private final Runnable runnable;
     private boolean first = true;
 
-    public AlbumPagerAdapter(@NonNull FragmentManager fm, Context context, Runnable runnable) {
-        super(fm, context);
+    public AlbumPagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context, Runnable runnable) {
+        super(fragmentActivity, context);
 
         this.runnable = runnable;
 
@@ -60,27 +58,22 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
         this.mediaRatingFragment = new MediaRatingFragment();
         this.mediaCustomFieldFragment = new MediaCustomFieldFragment();
 
-        this.mediaCoverFragment.setAbstractPagerAdapter(this);
-        this.mediaGeneralFragment.setAbstractPagerAdapter(this);
-        this.mediaAlbumFragment.setAbstractPagerAdapter(this);
-        this.mediaPersonsCompaniesFragment.setAbstractPagerAdapter(this);
-        this.mediaRatingFragment.setAbstractPagerAdapter(this);
-        this.mediaCustomFieldFragment.setAbstractPagerAdapter(this);
-    }
-
-    @Override
-    public void finishUpdate(@NonNull ViewGroup container) {
-        super.finishUpdate(container);
-
-        if(this.first) {
-            this.runnable.run();
-            this.first = false;
-        }
+        this.mediaCoverFragment.setAbstractStateAdapter(this);
+        this.mediaGeneralFragment.setAbstractStateAdapter(this);
+        this.mediaAlbumFragment.setAbstractStateAdapter(this);
+        this.mediaPersonsCompaniesFragment.setAbstractStateAdapter(this);
+        this.mediaRatingFragment.setAbstractStateAdapter(this);
+        this.mediaCustomFieldFragment.setAbstractStateAdapter(this);
     }
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
+        if(this.first) {
+            this.runnable.run();
+            this.first = false;
+        }
+
         return switch (position) {
             case 0 -> this.mediaGeneralFragment;
             case 1 -> this.mediaCoverFragment;
@@ -88,40 +81,6 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
             case 3 -> this.mediaAlbumFragment;
             case 4 -> this.mediaRatingFragment;
             case 5 -> this.mediaCustomFieldFragment;
-            default -> new Fragment();
-        };
-    }
-
-    @NonNull
-    @Override
-    @SuppressWarnings("unchecked")
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-        return switch (position) {
-            case 0 -> {
-                this.mediaGeneralFragment = (MediaGeneralFragment) createdFragment;
-                yield this.mediaGeneralFragment;
-            }
-            case 1 -> {
-                this.mediaCoverFragment = (MediaCoverFragment) createdFragment;
-                yield this.mediaCoverFragment;
-            }
-            case 2 -> {
-                this.mediaPersonsCompaniesFragment = (MediaPersonsCompaniesFragment) createdFragment;
-                yield this.mediaPersonsCompaniesFragment;
-            }
-            case 3 -> {
-                this.mediaAlbumFragment = (MediaAlbumFragment) createdFragment;
-                yield this.mediaAlbumFragment;
-            }
-            case 4 -> {
-                this.mediaRatingFragment = (MediaRatingFragment) createdFragment;
-                yield this.mediaRatingFragment;
-            }
-            case 5 -> {
-                this.mediaCustomFieldFragment = (MediaCustomFieldFragment) createdFragment;
-                yield this.mediaCustomFieldFragment;
-            }
             default -> new Fragment();
         };
     }
@@ -176,12 +135,7 @@ public class AlbumPagerAdapter extends AbstractPagerAdapter<Album> {
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
-        return " ";
-    }
-
-    @Override
-    public int getCount() {
+    public int getItemCount() {
         return 6;
     }
 
